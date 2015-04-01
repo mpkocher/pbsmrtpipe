@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<chunk-operator id="pbsmrtpipe.operators.chunk_dev_fofn">
+
+    <task-id>pbsmrtpipe.tasks.dev_fofn_example</task-id>
+
+    <scatter>
+        <scatter-task-id>pbsmrtpipe.tasks.dev_fofn_scatter_di</scatter-task-id>
+        <chunks>
+            <chunk out="$chunk.fofn_id" in="pbsmrtpipe.tasks.dev_txt_to_fofn_report:0"/>
+            <chunk out="$chunk.fofn_report_id" in="pbsmrtpipe.tasks.dev_fofn:1"/>
+        </chunks>
+    </scatter>
+    <!-- Define the Gather Mechanism -->
+    <gather>
+        <chunks>
+            <chunk>
+                <!-- This is actually a txt -->
+                <gather-task-id>pbsmrtpipe.tasks.gather_fofn</gather-task-id>
+                <chunk-key>$chunk.cfofn_id</chunk-key>
+                <task-output>pbsmrtpipe.tasks.dev_fofn:0</task-output>
+            </chunk>
+        </chunks>
+    </gather>
+</chunk-operator>

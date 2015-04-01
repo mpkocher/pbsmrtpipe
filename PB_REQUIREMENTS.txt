@@ -1,0 +1,14 @@
+jinja2
+numpy
+h5py
+networkx
+rdflib
+pbcore
+pyparsing==1.5.7
+pydot
+jsonschema
+xmlbuilder
+# this doesn't play well with the 2.3 SMRTAnalysis build
+#semantic_version
+fabric>=1.9.1
+#sphinx-bootstrap-theme

@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<pipeline-template-preset id="MyPreset">
+
+     <import-template id="pbsmrtpipe.pipelines.rs_resequencing_1" />
+
+    <!-- Default Task specific Options -->
+
+</pipeline-template-preset>

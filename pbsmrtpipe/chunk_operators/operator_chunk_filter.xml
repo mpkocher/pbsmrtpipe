@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<chunk-operator id="pbsmrtpipe.operators.chunk_filter">
+    <!--
+
+    The task that chunk operator will be applied to
+
+    At a high level
+
+    File1 -> Task1 -> File2 -> Task2
+
+    Will be transformed to:
+
+    File1 -> ScatterTask1 -> **scatter.chunk.json** -> (0..N) Task1 -> **gather.chunk.json** -> GatherTask1 -> File2 -> Task2
+
+    -->
+    <task-id>pbsmrtpipe.tasks.filter</task-id>
+    <!--
+
+    The scatter task by id. The scatter task and task must
+    have the same input type signature.
+    -->
+    <scatter>
+        <scatter-task-id>pbsmrtpipe.tasks.filter_scatter</scatter-task-id>
+        <chunks>
+            <!--
+
+            The scatter task will create a scatter.chunk.json file.
+
+            Values in the chunk.json file will be referenced by chunk key are
+            supplied to inputs of (0..N) Chunked tasks
+            -->
+            <chunk out="$chunk.fofn_id" in="pbsmrtpipe.tasks.filter:0"/>
+            <chunk out="$chunk.fofn_report_id" in="pbsmrtpipe.tasks.filter:1"/>
+        </chunks>
+    </scatter>
+    <!-- Define the Gather Mechanism -->
+    <gather>
+        <chunks>
+            <chunk>
+                <!--
+                A Gather task input is chunk.json and has one output type
+
+                Each output of the gather task must be mapped back to the
+                output of the original chunked task, so that downstream tasks
+                bindings are updated accordingly.
+
+                -->
+                <gather-task-id>pbsmrtpipe.tasks.gather_fofn</gather-task-id>
+                <chunk-key>$chunk.rgn_fofn_id</chunk-key>
+                <!--
+
+                Any downstream tasks that depend of pbsmrtpipe.filter.* will
+                be re-mapped to the output of a specific gather task.
+
+                Every output of task must be re-mapped.
+                -->
+                <task-output>pbsmrtpipe.tasks.filter:0</task-output>
+            </chunk>
+            <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
+                <chunk-key>$chunk.csv_id</chunk-key >
+                <task-output>pbsmrtpipe.tasks.filter:1</task-output>
+            </chunk>
+        </chunks>
+    </gather>
+</chunk-operator>

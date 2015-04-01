@@ -1,0 +1,63 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+.idea
+
+# goofy syncing script
+sync_to_cluster.sh
+sync_to_cluster
+scratch*.py
+dirty.py
+report_unittests.log
+ToDo.rst
+rc.cfg
+*.ipynb
+
+# goofy SEYMOUR_HOME mock for local testing
+setup_env.sh
+rsynced_at.txt
+update_and_test.sh
+Makefile
+
+# doc build directory
+.noseids
+docs/_build/*
+notebooks/*
+notebooks/run_local.sh
+notebooks/*.dot
+.ipynb_checkpoints/*
+notebooks/A Live Demo Example 1.html
+notebooks/A Live Demo Example 2.html
+notebooks/A Live Demo Example 3.html

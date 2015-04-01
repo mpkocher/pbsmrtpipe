@@ -1,0 +1,41 @@
+{
+  "comments": "Example scatter chunks with metadata",
+  "nchunks": 5,
+  "chunks": {
+    "0": {
+      "$chunk.movie_fofn_id": "/path/to/chunk_0_movie.fofn",
+      "nfofns": 4,
+      "$chunk.report_id": "/path/to/report.json",
+      "$chunk.rgn_fofn_id": "/path/to/chunk_region_a.fofn",
+      "$chunk.csv_id": "/path/to/file_0.csv"
+    },
+    "1": {
+      "$chunk.movie_fofn_id": "/path/to/chunk_1_movie.fofn",
+      "nfofns": 2,
+      "$chunk.report_id": "/path/to/report.json",
+      "$chunk.rgn_fofn_id": "/path/to/chunk_region_b.fofn",
+      "$chunk.csv_id": "/path/to/file_1.csv"
+    },
+    "2": {
+      "$chunk.movie_fofn_id": "/path/to/chunk_2_movie.fofn",
+      "nfofns": 3,
+      "$chunk.report_id": "/path/to/report.json",
+      "$chunk.rgn_fofn_id": "/path/to/chunk_region_c.fofn",
+      "$chunk.csv_id": "/path/to/file_2.csv"
+    },
+    "3": {
+      "$chunk.movie_fofn_id": "/path/to/chunk_3_movie.fofn",
+      "nfofns": 4,
+      "$chunk.report_id": "/path/to/report.json",
+      "$chunk.rgn_fofn_id": "/path/to/chunk_region_d.fofn",
+      "$chunk.csv_id": "/path/to/file_3.csv"
+    },
+    "4": {
+      "$chunk.movie_fofn_id": "/path/to/chunk_4_movie.fofn",
+      "nfofns": 3,
+      "$chunk.report_id": "/path/to/report.json",
+      "$chunk.rgn_fofn_id": "/path/to/chunk_region_e.fofn",
+      "$chunk.csv_id": "/path/to/file_4.csv"
+    }
+  }
+}

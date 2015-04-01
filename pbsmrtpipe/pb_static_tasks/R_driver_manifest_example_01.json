@@ -1,0 +1,19 @@
+{
+  "_comment": "Example of a Driver manifest. This should also have the 'meta_task' section",
+  "task": {
+    "task_id": "pbinternal.tasks.dev_static_task_R",
+    "task_type": "pbsmrtpipe.constants.local_task",
+    "input_files": ["/tmp/file.csv"],
+    "output_files": ["/tmp/file.report.json"],
+    "options": {},
+    "nproc": 3,
+    "resources": [
+      ["$tmpdir", "/tmp/tmpdir"],
+      ["$logfile", "/tmp/task-dir/file.log"]]
+  },
+  "driver": {
+    "_comment": "This is the driver exe. The workflow will call ${exe} config.json",
+    "exe": "/path/to/pbsmrtpipe.R",
+    "env": {}
+  }
+}

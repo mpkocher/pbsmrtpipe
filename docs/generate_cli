@@ -1,0 +1,21 @@
+#!/bin/bash
+
+pbexe=pbsmrtpipe
+
+$pbexe --help > cli_pbsmrtpipe_help.sh
+
+$pbexe pipeline --help > cli_pbsmrtpipe_workflow_help.sh
+
+$pbexe task --help > cli_pbsmrtpipe_task_help.sh
+
+$pbexe show-templates > cli_pbsmrtpipe_show_workflow_templates_help.sh
+
+$pbexe show-template-details pbsmrtpipe.pipelines.rs_resequencing_1 > cli_pbsmrtpipe_show_template_details_help.sh
+
+$pbexe show-tasks > cli_pbsmrtpipe_show_tasks_help.sh
+
+$pbexe show-task-details pbsmrtpipe.tasks.dev_hello_world > cli_pbsmrtpipe_show_task_details_hello_world_help.sh
+
+$pbexe show-task-details pbsmrtpipe.tasks.align > cli_pbsmrtpipe_show_task_details_align_help.sh
+
+$pbexe show-workflow-options > cli_pbsmrtpipe_show_workflow_options_help.sh

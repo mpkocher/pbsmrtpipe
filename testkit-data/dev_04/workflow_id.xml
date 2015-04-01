@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline-template>
+
+    <!-- Reference a workflow template defined in -->
+    <import-template id="pbsmrtpipe.pipelines.dev_04_w_static_task" />
+
+    <options>
+    <!-- workflow level options  -->
+        <option id="pbsmrtpipe.options.distributed_mode" >
+            <value>True</value>
+        </option>
+        <option id="pbsmrtpipe.options.nchunks" >
+            <value>7</value>
+        </option>
+        <option id="pbsmrtpipe.options.max_nproc" >
+            <value>13</value>
+        </option>
+
+        <option id="pbsmrtpipe.options.distributed_mode" >
+            <value>True</value>
+        </option>
+
+    </options>
+
+    <!-- task level options here -->
+    <task-options>
+        <option id="pbsmrtpipe.task_option.option_id1">
+            <value>1234</value>
+        </option>
+        <option id="pbsmrtpipe.task_option.option_id2">
+        <value>abcd</value>
+        </option>
+    </task-options>
+
+</pipeline-template>

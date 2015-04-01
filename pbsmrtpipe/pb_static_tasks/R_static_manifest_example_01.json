@@ -1,0 +1,21 @@
+{
+  "_comment": "Example Static Manifest",
+  "_version": "0.1.0",
+  "driver": {
+    "_comment": "The execution layer will call '${exe} manifest.json' as the to_cmd",
+    "exe": "/path/to/pbsmrtpipe.R",
+    "env": {}
+  },
+  "meta_task": {
+    "version": "0.2.1",
+    "task_id": "pbinternal.tasks.dev_static_task_R",
+    "task_type": "pbsmrtpipe.constants.local",
+    "name": "Filter Stat Report",
+    "input_types": ["pbsmrtpipe.files.csv"],
+    "output_types": ["pbsmrtpipe.files.report"],
+    "schema_options": {},
+    "nproc": "$max_nproc",
+    "resource_types": ["$tmpdir", "$logfile"],
+    "description": "Computes a filter stat summary statistics and plots"
+  }
+}

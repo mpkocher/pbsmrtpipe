@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "pbsmrtpipe Static Task Manifest Schema",
+  "type": "object",
+  "properties": {
+    "meta_task": {
+      "type": "object",
+      "oneOf": [{"$ref": "#/definitions/meta_task"}]
+    },
+    "driver": {
+      "type": "object",
+      "oneOf": [{"$ref": "#/definitions/driver"}]
+    }
+  },
+  "required": ["meta_task", "driver"],
+  "definitions": {
+    "meta_task": {
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "task_type": {
+          "properties": {
+            "type": {
+              "enum": ["pbsmrtpipe.constants.local_task", "pbsmrtpipe.constants.distributed_task"]}
+          }
+        },
+        "input_types": {},
+        "output_types": {},
+        "nproc": {},
+        "version": {"type": "string"},
+        "description": {"type": "string"},
+        "schema_options": {},
+        "resource_types": {}
+      },
+      "required": ["task_id", "task_type", "input_types", "output_types", "nproc", "version", "description", "schema_options", "resource_types"]
+    },
+    "driver": {
+      "properties": {
+        "exe": {"type": "string"},
+        "env": {}
+      },
+      "required": ["exe", "env"]
+    }
+  }
+}

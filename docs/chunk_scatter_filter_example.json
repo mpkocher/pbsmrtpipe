@@ -1,0 +1,11 @@
+{
+  "comments": "Scattered Filter chunks",
+  "nchunks": 5,
+  "chunks": {
+    "0": {"movie_fofn_id": "/path/to/chunk_0.fofn"},
+    "1": {"movie_fofn_id": "/path/to/chunk_1.fofn"},
+    "2": {"movie_fofn_id": "/path/to/chunk_2.fofn"},
+    "3": {"movie_fofn_id": "/path/to/chunk_3.fofn"},
+    "4": {"movie_fofn_id": "/path/to/chunk_4.fofn"}
+  }
+}

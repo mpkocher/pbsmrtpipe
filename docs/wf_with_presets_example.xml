@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<workflowBuilder>
+    <!-- This file should be deleted -->
+
+    <!-- The template will get looked up by id
+    It might be better to look up, or resolve template
+    from a URL
+    
+    Group a list of Presets and a Template
+    -->
+    <pipeline-template id="wf_template_01" />
+    <presetGroup>
+        <displayName>Filtering</displayName>
+        <preset id="wf_preset_01" />
+        <preset id="wf_preset_02" />
+        <preset id="wf_preset_03" />
+    </presetGroup>
+    <presetGroup>
+        <displayName>Mapping</displayName>
+        <preset id="wf_mapping_01" />
+        <preset id="wf_mapping_02" />
+    </presetGroup>
+</workflowBuilder>

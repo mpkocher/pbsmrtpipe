@@ -1,0 +1,23 @@
+include *.txt *.md
+recursive-include pbsmrtpipe/cluster_templates *
+# added by check_manifest.py
+include *.py
+include nose.cfg
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include notebooks *.sh
+recursive-include pbsmrtpipe *.css
+recursive-include pbsmrtpipe *.html
+recursive-include pbsmrtpipe *.js
+recursive-include pbsmrtpipe *.py
+recursive-include tests *
+#recursive-include tests *.cfg
+#recursive-include tests *.dot
+#recursive-include tests *.py
+#recursive-include tests *.xml
+
+# added by check_manifest.py
+# recursive-include notebooks *.ipynb
+recursive-include pbsmrtpipe *.cfg
+recursive-include pbsmrtpipe *.xml

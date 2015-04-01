@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<pipeline-template-preset id="MyPreset">
+
+    <!-- Default Workflow level Options -->
+    <options>
+    <!-- workflow level options. Same as with the Protocol -->
+        <!-- MAX Number of Processors -->
+        <option id="pbsmrtpipe.options.max_nproc">
+            <value>24</value>
+        </option>
+
+        <!-- MAX Number of NPROC -->
+        <option id="pbsmrtpipe.options.max_nchunks">
+            <value>48</value>
+        </option>
+
+    </options>
+
+    <!-- Default Task specific Options -->
+
+    <task-options>
+        <option id="pbsmrtpipe.task_options.filter_read_score">
+            <value>0.7500</value>
+        </option>
+        <option id="pbsmrtpipe.task_options.filter_min_subread_length">
+            <value>50</value>
+        </option>
+        <option id="pbsmrtpipe.task_options.filter_min_read_length">
+            <value>50</value>
+        </option>
+        <option id="pbsmrtpipe.task_options.filter_trim">
+            <value>True</value>
+        </option>
+
+           <!-- Mapping opts -->
+         <option id="pbsmrtpipe.task_options.use_subreads">
+            <value>True</value>
+        </option>
+
+        <option id="pbsmrtpipe.task_options.pbalign_opts">
+            <value>--minAccuracy=0.75 --minLength=50</value>
+        </option>
+
+        <!-- This is also known as maxDivergence in the old code -->
+        <option id="pbsmrtpipe.task_options.max_error">
+            <value>30</value>
+        </option>
+
+        <option id="pbsmrtpipe.task_options.min_anchor_size">
+            <value>12</value>
+        </option>
+
+        <option id="pbsmrtpipe.task_options.max_hits">
+            <value>1</value>
+        </option>
+
+    </task-options>
+
+</pipeline-template-preset>

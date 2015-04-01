@@ -1,0 +1,32 @@
+[
+    {
+        "id": "pbsmrtpipe.tasks.filter_subreads",
+        "inputs": [
+            "pbsmrtpipe.files.moviefofn",
+            "pbsmrtpipe.files.filteredregionfofn"
+        ],
+        "meta": {
+            "nproc": 1,
+            "tmp_dirs": [],
+            "tmp_files": [],
+            "type": "DistributableTask",
+            "version": "1.0.0"
+        },
+        "meta_manifest": {
+            "class": "FilterSubreadsTask",
+            "language": "python",
+            "module": "pbsmrtpipe.task_modules.filter"
+        },
+        "options": {
+            "use_subreads": {
+                "default_value": true,
+                "id": "use_subreads",
+                "optional": true
+            }
+        },
+        "outputs": [
+            "pbsmrtpipe.files.filteredsubreadsfasta",
+            "pbsmrtpipe.files.filteredsubreadsfastq"
+        ]
+    }
+]

@@ -1,0 +1,10 @@
+{
+  "nchunks": 5,
+  "chunks": {
+    "0": {"$chunk.fofn_fasta_id": "/path/to/chunk_0_fasta.fofn"},
+    "1": {"$chunk.fofn_fasta_id": "/path/to/chunk_1_fasta.fofn"},
+    "2": {"$chunk.fofn_fasta_id": "/path/to/chunk_2_fasta.fofn"},
+    "3": {"$chunk.fofn_fasta_id": "/path/to/chunk_3_fasta.fofn"},
+    "4": {"$chunk.fofn_fasta_id": "/path/to/chunk_4_fasta.fofn"}
+  }
+}

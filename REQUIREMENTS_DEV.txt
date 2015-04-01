@@ -1,0 +1,14 @@
+nose
+nosexcover
+ipython
+pyzmq
+tornado
+pylint
+pep8
+autopep8
+rednose
+ipdb
+ipdbplugin
+sphinx
+sphinx-bootstrap-theme
+#pygraphviz

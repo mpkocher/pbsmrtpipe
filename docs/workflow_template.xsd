@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd"
+           elementFormDefault="qualified">
+	
+	<xs:element name="workflow">
+		<xs:e>
+		<xs:sequence>
+			<xs:element name="options">
+			
+		</xs:sequence> 
+		
+</xs:element>	
+	
+<xs:complexType name="AddressType">
+    <xs:sequence>
+        <xs:element name="Line1" type="xs:string"/> 
+        <xs:element name="Line2" type="xs:string"/>
+    </xs:sequence> 
+</xs:complexType>	
+	
+<xs:complexType name="option">
+    <xs:sequence>
+        <xs:element name="Line1" type="xs:string"/> 
+        <xs:element name="Line2" type="xs:string"/>
+    </xs:sequence> 
+</xs:complexType>		
+	
+</xs:schema>

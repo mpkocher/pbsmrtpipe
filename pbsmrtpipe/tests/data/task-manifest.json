@@ -1,0 +1,38 @@
+{
+  "cluster": {
+    "interactive": "qsub -S /bin/bash -sync y -V -q production -N ${JOB_ID} \\\n    -o \"${STDOUT_FILE}\" \\\n    -e \"${STDERR_FILE}\" \\\n    -pe smp ${NPROC} \\\n    \"${CMD}\"", 
+    "kill": "qdel ${JOB_ID}", 
+    "start": "qsub -pe smp ${NPROC} -S /bin/bash -V -q production -N ${JOB_ID} \\\n    -o ${STDOUT_FILE}\\\n    -e ${STDERR_FILE} ${EXTRAS}\\\n    ${CMD}"
+  }, 
+  "env": [], 
+  "id": "dev_hello_worlder-0", 
+  "resource_types": [
+    {
+      "path": "/var/folders/_c/8_r02r4s7vl3kx1pt92sbcmr0000gn/T/tmpWYMqmy.file", 
+      "resource_type": "$tmpfile"
+    }
+  ], 
+  "task": {
+    "cmds": [
+      "echo \"creating TMP file\" > /var/folders/_c/8_r02r4s7vl3kx1pt92sbcmr0000gn/T/tmpWYMqmy.file", 
+      "echo \"Hello from Dev Hello Worlder\" > /Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_01/job_output/tasks/dev_hello_worlder-0/file.txt", 
+      "cat /Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_01/job_output/tasks/dev_hello_world-0/file.txt >> /Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_01/job_output/tasks/dev_hello_worlder-0/file.txt"
+    ], 
+    "input_files": [
+      "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_01/job_output/tasks/dev_hello_world-0/file.txt"
+    ], 
+    "nproc": 1, 
+    "output_dir": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_01/job_output/tasks/dev_hello_worlder-0", 
+    "output_files": [
+      "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_01/job_output/tasks/dev_hello_worlder-0/file.txt"
+    ], 
+    "resolved_options": {}, 
+    "resources": [
+      "/var/folders/_c/8_r02r4s7vl3kx1pt92sbcmr0000gn/T/tmpWYMqmy.file"
+    ], 
+    "task_id": "pbsmrtpipe.tasks.dev_hello_worlder", 
+    "task_py_module": "pbsmrtpipe.pb_tasks.dev", 
+    "task_type": "pbsmrtpipe.constants.local_task"
+  }, 
+  "version": "0.2.0"
+}

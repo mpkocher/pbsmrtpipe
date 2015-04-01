@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<pipeline-templateView>
+
+    <!-- Must Reference Workflow template by id -->
+    <pipeline-template id="pbsmrtpipe.pipelines.rs_resquencing_1" />
+
+    <!-- Default Workflow level Options -->
+    <workflowOptionViews>
+        <optionView>
+            <option id="pbsmrtpipe.option.nproc">
+                <value>Default Value</value>
+                <displayName>Number of Processors</displayName>
+                <hidden>true</hidden>
+            </option>
+        </optionView>
+    </workflowOptionViews>
+
+    <!-- Default Task specific Options and Views
+
+    Should consider a model that allows a preset to have
+    'advanced' options, which are hidden by default.
+    -->
+    <taskOptionViews>
+        <optionView>
+            <option id="pbsmrtpipe.task_option.option_01">
+                <value>1234</value>
+                <displayName>My Name</displayName>
+                <hidden>false</hidden>
+            </option>
+        </optionView>
+        <optionView>
+            <option id="pbsmrtpipe.task_option.option_03">
+                <value>1234</value>
+                <displayName>My Name</displayName>
+                <hidden>true</hidden>
+            </option>
+        </optionView>
+    </taskOptionViews>
+
+    <!-- Report Views -->
+    <reportViews>
+        <reportView>
+            <task id="pbsmrtpipe.tasks.filter_tasks">
+                <reportRule id="filter_rules.xml">
+                </reportRule>
+            </task>
+        </reportView>
+        <reportView>
+            <!-- The Default pbsmrtpipe report -->
+            <task id="pbsmrtpipe.tasks.pbsmrtpipe">
+                <reportRule id="pbsmrtpipe_default_rules.xml">
+                </reportRule>
+            </task>
+        </reportView>
+    </reportViews>
+</pipeline-templateView>

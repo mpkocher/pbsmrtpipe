@@ -1,0 +1,14 @@
+language: python
+python:
+  - "2.7"
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq libhdf5-serial-dev
+    - sudo apt-get install graphviz 2>&1 | tail -n 2
+# command to install dependencies
+install:
+  - "pip install cython"
+  - "pip install -r REQUIREMENTS.txt"
+  - "pip install ."
+# command to run tests
+script: "nosetests --verbose --logging-conf=nose.cfg -c nose.cfg pbsmrtpipe/pb_tasks/tests pbsmrtpipe/tests"

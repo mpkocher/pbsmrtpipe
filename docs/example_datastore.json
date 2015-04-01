@@ -1,0 +1,17 @@
+{
+    "files": [
+        {
+            "file_id": "global-graph-file-node-id",
+            "type_id": "pbsmrtpipe.files.report",
+            "path": "relative/path/to/report.json",
+            "produced_by": "task_instance_id"
+        },
+        {
+            "file_id": "my_file_id",
+            "type_id": "pbsmrtpipe.files.csv",
+            "path": "relative/path/to/f.csv",
+            "produced_by": "task_id-instance_id"
+        }
+    ],
+    "version": "0.4.3"
+}

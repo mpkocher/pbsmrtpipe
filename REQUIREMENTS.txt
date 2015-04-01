@@ -1,0 +1,15 @@
+jinja2
+numpy
+h5py
+networkx
+rdflib
+# be loose about the version of pbcore for now
+-e git+git://github.com/PacificBiosciences/pbcore.git@2.3-bam#egg=pbcore
+pyparsing==1.5.7
+pydot
+jsonschema
+xmlbuilder
+# this doesn't play well with the 2.3 SMRTAnalysis build
+#semantic_version
+fabric>=1.9.1
+sphinx-bootstrap-theme

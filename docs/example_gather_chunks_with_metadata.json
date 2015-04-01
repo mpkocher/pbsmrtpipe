@@ -1,0 +1,11 @@
+{
+  "comments": "Example gather chunks with metadata",
+  "nchunks": 5,
+  "chunks": {
+    "0": {"$chunk.movie_fofn_id": "/path/to/chunk_0_movie.fofn", "nfofns": 4, "$chunk.rgn_fofn_id":"/path/to/region_A.fofn"},
+    "1": {"$chunk.movie_fofn_id": "/path/to/chunk_1_movie.fofn", "nfofns": 2, "$chunk.rgn_fofn_id":"/path/to/region_B.fofn"},
+    "2": {"$chunk.movie_fofn_id": "/path/to/chunk_2_movie.fofn", "nfofns": 3, "$chunk.rgn_fofn_id":"/path/to/region_C.fofn"},
+    "3": {"$chunk.movie_fofn_id": "/path/to/chunk_3_movie.fofn", "nfofns": 4, "$chunk.rgn_fofn_id":"/path/to/region_D.fofn"},
+    "4": {"$chunk.movie_fofn_id": "/path/to/chunk_4_movie.fofn", "nfofns": 3, "$chunk.rgn_fofn_id":"/path/to/region_E.fofn"}
+  }
+}

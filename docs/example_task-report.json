@@ -1,0 +1,29 @@
+{
+    "_changelist": 127707,
+    "_version": "2.1",
+    "attributes": [
+        {
+            "id": "workflow_task.host",
+            "name": null,
+            "value": "mp-f027.nanofluidics.com"
+        },
+        {
+            "id": "workflow_task.run_time",
+            "name": null,
+            "value": 3563
+        },
+        {
+            "id": "workflow_task.exit_code",
+            "name": null,
+            "value": 0
+        },
+        {
+            "id": "workflow_task.error_msg",
+            "name": null,
+            "value": ""
+        }
+    ],
+    "id": "workflow_task",
+    "plotGroups": [],
+    "tables": []
+}

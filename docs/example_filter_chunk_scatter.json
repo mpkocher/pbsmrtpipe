@@ -1,0 +1,11 @@
+{
+  "comments": "Example scatter chunks with metadata",
+  "nchunks": 5,
+  "chunks": {
+    "0": {"$chunk.movie_fofn_id": "/path/to/chunk_0_movie.fofn", "nfofns": 4, "$chunk.report_id": "/path/to/report.json"},
+    "1": {"$chunk.movie_fofn_id": "/path/to/chunk_1_movie.fofn", "nfofns": 2, "$chunk.report_id": "/path/to/report.json"},
+    "2": {"$chunk.movie_fofn_id": "/path/to/chunk_2_movie.fofn", "nfofns": 3, "$chunk.report_id": "/path/to/report.json"},
+    "3": {"$chunk.movie_fofn_id": "/path/to/chunk_3_movie.fofn", "nfofns": 4, "$chunk.report_id": "/path/to/report.json"},
+    "4": {"$chunk.movie_fofn_id": "/path/to/chunk_4_movie.fofn", "nfofns": 3, "$chunk.report_id": "/path/to/report.json"}
+  }
+}

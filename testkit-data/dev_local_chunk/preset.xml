@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<pipeline-template-preset id="MyPreset">
+
+    <!-- Default Workflow level Options -->
+    <options>
+    <!-- workflow level options -->
+        <option id="pbsmrtpipe.options.distributed_mode">
+            <value>False</value>
+        </option>
+         <!-- This will be disabled -->
+        <option id="pbsmrtpipe.options.cluster_manager" >
+            <value>pbsmrtpipe.cluster_templates.sge</value>
+        </option>
+
+        <option id="pbsmrtpipe.options.max_total_nproc" >
+            <value>1000</value>
+        </option>
+
+        <!-- MAX Number of Processors -->
+        <option id="pbsmrtpipe.options.max_nproc">
+            <value>24</value>
+        </option>
+
+        <!-- MAX Number of NPROC -->
+        <option id="pbsmrtpipe.options.max_nchunks">
+            <value>48</value>
+        </option>
+
+        <option id="pbsmrtpipe.options.cluster_manager" >
+            <value>pbsmrtpipe.cluster_templates.sge</value>
+        </option>
+
+    </options>
+
+    <!-- Default Task specific Options -->
+    <task-options>
+        <option id="pbsmrtpipe.task_options.dev.hello_message">
+            <value>My Custom Preset Message</value>
+        </option>
+    </task-options>
+
+</pipeline-template-preset>
