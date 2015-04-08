@@ -14,6 +14,7 @@ clean: doc-clean
 	find . -name "*.egg-info" | xargs rm -rf;\
 	rm -rf dist/;\
 	find . -name "*.pyc" | xargs rm -f;
+	find . -name "job_output" | xargs rm -rf;
 	rm -f nosetests.xml
 
 doc:

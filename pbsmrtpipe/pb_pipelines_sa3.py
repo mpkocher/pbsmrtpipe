@@ -30,6 +30,7 @@ def sa3_align():
     # convert to RS dataset
     b1 = [(Constants.ENTRY_RS_MOVIE_XML, "pbsmrtpipe.tasks.rs_movie_to_hdf5_dataset:0")]
 
+    # h5 dataset to subread dataset via bax2bam
     b2 = [("pbsmrtpipe.tasks.rs_movie_to_hdf5_dataset:0", "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
 
     # Call blasr/pbalign
@@ -37,3 +38,19 @@ def sa3_align():
           (Constants.ENTRY_REF_DS, "pbsmrtpipe.tasks.align_ds:1")]
 
     return b1 + b2 + b3
+
+
+@register_pipeline(to_pipeline_ns("sa3_resequencing"), "SA3 Resequencing")
+def sa3_resequencing():
+
+    # Generate FASTA metadata report and write contig headers FOFN
+    b0 = [(Constants.ENTRY_REF_DS, 'pbsmrtpipe.tasks.ref_to_report:0'),
+          (Constants.ENTRY_REF_DS, "pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0"),
+          ('pbsmrtpipe.tasks.ref_to_report:0', 'pbsmrtpipe.tasks.write_reference_contig_idx_chunks:1')]
+
+    # Quiver
+    b1 = [(Constants.ENTRY_REF_DS, "pbsmrtpipe.tasks.bam_call_variants_with_fastx:0"),
+         ("pbsmrtpipe.pipelines.sa3_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:1"),
+         ("pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:2")]
+
+    return b0 + b1
