@@ -139,7 +139,7 @@ def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
               f=output_files[1],
               q=output_files[2])
 
-    c = "variantCaller.py --skipUnrecognizedContigs -W \"{c}\" {d} {vf} {cf} -vv --numWorkers {n} --algorithm={a} {h} --reference '{r}' -o {g} -o {f} -o {q}"
+    c = "variantCaller --skipUnrecognizedContigs -W \"{c}\" {d} {vf} {cf} -vv --numWorkers {n} --algorithm={a} {h} --reference '{r}' -o {g} -o {f} -o {q}"
 
     return c.format(**_d)
 
@@ -148,7 +148,7 @@ class CallVariants(MetaTaskBase):
     """Compute the Consensus"""
     TASK_ID = "pbsmrtpipe.tasks.call_variants_with_fastx"
     NAME = "Call Variants"
-    VERSION = "1.0.0"
+    VERSION = "1.1.0"
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
     INPUT_TYPES = [(FileTypes.FASTA, "fasta", "Reference Fasta file"),
