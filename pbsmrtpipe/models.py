@@ -526,12 +526,12 @@ class DataStoreFile(object):
         return "<{k} {i} type:{t} filename:{p} >".format(**_d)
 
     def to_dict(self):
-        return dict(file_id=self.file_id,
-                    file_type_id=self.file_type_id,
+        return dict(fileId=self.file_id,
+                    fileTypeId=self.file_type_id,
                     path=self.path,
-                    file_size=self.file_size,
-                    created_at=str(self.created_at),
-                    modified_at=str(self.modified_at))
+                    fileSize=self.file_size,
+                    createdAt=str(self.created_at),
+                    modifiedAt=str(self.modified_at))
 
 _JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
 JobResources = namedtuple("JobResources", _JOB_ATTRS)
@@ -559,8 +559,8 @@ class DataStore(object):
     def to_dict(self):
         fs = [f.to_dict() for i, f in self.files.iteritems()]
         _d = dict(version=self.version,
-                  created_at=str(self.created_at),
-                  updated_at=str(self.updated_at), files=fs)
+                  createdAt=str(self.created_at),
+                  updatedAt=str(self.updated_at), files=fs)
         return _d
 
     def _write_json(self, file_name, permission):
