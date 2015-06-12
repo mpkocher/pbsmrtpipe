@@ -531,7 +531,7 @@ class DataStoreFile(object):
 
     def to_dict(self):
         return dict(fileId=self.file_id,
-                    uniqueId=str(uuid),
+                    uniqueId=str(self.uuid),
                     fileTypeId=self.file_type_id,
                     path=self.path,
                     fileSize=self.file_size,
