@@ -38,7 +38,7 @@ test-pipelines:
 test-tasks:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/test_*.py
 
-test-suite: test-unit test-dev
+test-suite: test-tasks test-pipelines test-unit test-dev
 
 test-clean-suite: install test-suite
 

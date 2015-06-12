@@ -92,3 +92,31 @@ class AlignDataSetTask(MetaTaskBase):
         cmds.append("mv sorted.bam {o}".format(o=output_files[0]))
         cmds.append('samtools index {o}'.format(o=output_files[0]))
         return cmds
+
+
+class MappingReportTask(MetaTaskBase):
+    """
+    Create a Alignment Report from a Alignment DataSet
+    """
+    TASK_ID = "pbsmrtpipe.tasks.mapping_ds_report"
+    NAME = "Mapping DataSet Report"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.DISTRIBUTED
+    INPUT_TYPES = [(FileTypes.BAM, "ds", "Alignment DataSet")]
+    OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "Alignment Mapping Report")]
+    OUTPUT_FILE_NAMES = [("mapping_report", "json")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    RESOURCE_TYPES = None
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        exe = "mapping_stats"
+        # this needs to be changed
+        output_dir = os.path.dirname(output_files[0])
+        report_json = os.path.basename(output_files[0])
+        _d = dict(e=exe, i=input_files[0], o=output_dir, j=report_json)
+        return "{e} --debug {i} --output {o} {j}".format(**_d)

@@ -37,7 +37,9 @@ def sa3_align():
     b3 = [("pbsmrtpipe.tasks.h5_subreads_to_subread:0", "pbsmrtpipe.tasks.align_ds:0"),
           (Constants.ENTRY_REF_DS, "pbsmrtpipe.tasks.align_ds:1")]
 
-    return b1 + b2 + b3
+    b4 = [("pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.mapping_ds_report:0")]
+
+    return b1 + b2 + b3 + b4
 
 
 @register_pipeline(to_pipeline_ns("sa3_resequencing"), "SA3 Resequencing")
