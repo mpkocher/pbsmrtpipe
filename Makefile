@@ -24,13 +24,13 @@ doc-clean:
 	cd docs && make clean
 
 unit-test:
-	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests pbsmrtpipe/tests
+	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/*.py pbsmrtpipe/tests/test_*.py
 
 test-dev:
 	cd testkit-data && fab cleaner && pbtestkit-multirunner --debug --nworkers 4 dev.fofn
 
 test-unit:
-	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests pbsmrtpipe/tests
+	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/*.py pbsmrtpipe/tests/test_*.py
 
 test-pipelines:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/tests/test_pb_pipelines_sanity.py

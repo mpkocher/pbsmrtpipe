@@ -5,6 +5,7 @@ import os
 import datetime
 import collections
 import warnings
+import uuid
 
 import jsonschema
 
@@ -509,6 +510,9 @@ class RunnableTask(object):
 
 class DataStoreFile(object):
     def __init__(self, file_id, type_id, path):
+        # adding this for consistency. In the scala code, the unique id must be
+        # a uuid format
+        self.uuid = uuid.uuid4()
         # this must globally unique
         self.file_id = file_id
         # Consistent with a value in FileTypes
@@ -527,6 +531,7 @@ class DataStoreFile(object):
 
     def to_dict(self):
         return dict(fileId=self.file_id,
+                    uniqueId=str(uuid),
                     fileTypeId=self.file_type_id,
                     path=self.path,
                     fileSize=self.file_size,
