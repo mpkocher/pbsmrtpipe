@@ -172,6 +172,9 @@ class FileTypes(object):
     # generic Txt file
     TXT = FileType(to_file_ns('txt'), 'file', 'txt', 'text/plain')
 
+    # THIS NEEDS TO BE CONSISTENT with scala code.
+    # MK. Putting this hack in here temporarily.
+    #REPORT = FileType(to_file_ns('report'), "report", "json", 'application/json')
     REPORT = FileType(to_file_ns('report'), "report", "json", 'application/json')
     CHUNK = FileType(to_file_ns("chunk"), "chunk", "json", 'application/json')
 
@@ -531,9 +534,16 @@ class DataStoreFile(object):
         return "<{k} {i} type:{t} filename:{p} >".format(**_d)
 
     def to_dict(self):
+        # THIS IS TERRIBLE, but changing all the file types to be consistent with
+        # Aaron's naming will require a bit of work
+        if self.file_type_id == FileTypes.REPORT.file_type_id:
+            file_type_id = "PacBio.FileTypes.JsonReport"
+        else:
+            file_type_id = self.file_type_id
+
         return dict(sourceId=self.file_id,
                     uniqueId=str(self.uuid),
-                    fileTypeId=self.file_type_id,
+                    fileTypeId=file_type_id,
                     path=self.path,
                     fileSize=self.file_size,
                     createdAt=str(self.created_at),
