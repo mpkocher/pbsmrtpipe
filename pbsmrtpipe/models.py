@@ -12,7 +12,7 @@ import jsonschema
 from pbsmrtpipe.constants import (to_constant_ns,
                                   to_file_ns, to_workflow_option_ns,
                                   DATASTORE_VERSION, DRIVER_MANIFEST_JSON,
-                                  RX_CHUNK_KEY)
+                                  RX_CHUNK_KEY, to_ds_ns)
 from pbsmrtpipe.exceptions import (MalformedOperatorError, MalformedChunkKeyError)
 
 
@@ -172,14 +172,14 @@ class FileTypes(object):
     # generic Txt file
     TXT = FileType(to_file_ns('txt'), 'file', 'txt', 'text/plain')
 
-    # THIS NEEDS TO BE CONSISTENT with scala code.
-    # MK. Putting this hack in here temporarily.
-    #REPORT = FileType(to_file_ns('report'), "report", "json", 'application/json')
-    REPORT = FileType(to_file_ns('report'), "report", "json", 'application/json')
-    CHUNK = FileType(to_file_ns("chunk"), "chunk", "json", 'application/json')
+    # THIS NEEDS TO BE CONSISTENT with scala code. When the datastore
+    # is written to disk the file type id's might be translated to
+    # the DataSet style file type ids.
+    REPORT = FileType(to_file_ns('JsonReport'), "report", "json", 'application/json')
+    CHUNK = FileType(to_file_ns("CHUNK"), "chunk", "json", 'application/json')
 
-    FASTA = FileType(to_file_ns('fasta'), "file", "fasta", 'text/plain')
-    FASTQ = FileType(to_file_ns('fastq'), "file", "fastq", 'text/plain')
+    FASTA = FileType(to_file_ns('Fasta'), "file", "fasta", 'text/plain')
+    FASTQ = FileType(to_file_ns('Fastq'), "file", "fastq", 'text/plain')
 
     # Not sure this should be a special File Type?
     INPUT_XML = FileType(to_file_ns('input_xml'), "input", "xml", 'application/xml')
@@ -200,10 +200,10 @@ class FileTypes(object):
     XML = FileType(to_file_ns('xml'), "file", "xml", 'application/xml')
 
     # DataSet Types
-    DS_SUBREADS = FileType(to_file_ns("ds_subreads_h5"), "file", "h5.subreads.xml", "application/xml")
-    DS_SUBREADS_H5 = FileType(to_file_ns("ds_subreads"), "file", "subreads.xml", "application/xml")
-    DS_REF = FileType(to_file_ns("ds_reference"), "file", "reference.dataset.xml", "application/xml")
-    DS_BAM = FileType(to_file_ns("ds_bam"), "file", "aligned", "application/xml")
+    DS_SUBREADS = FileType(to_ds_ns("HdfSubreadSet"), "file", "h5.subreads.xml", "application/xml")
+    DS_SUBREADS_H5 = FileType(to_ds_ns("SubreadSet"), "file", "subreads.xml", "application/xml")
+    DS_REF = FileType(to_file_ns("ReferenceSet"), "file", "reference.dataset.xml", "application/xml")
+    DS_BAM = FileType(to_file_ns("AlignmentSet"), "file", "aligned", "application/xml")
 
     RS_MOVIE_XML = FileType(to_file_ns("rs_movie_metadata"), "file", "rs_movie.metadata.xml", "application/xml")
 
@@ -534,16 +534,9 @@ class DataStoreFile(object):
         return "<{k} {i} type:{t} filename:{p} >".format(**_d)
 
     def to_dict(self):
-        # THIS IS TERRIBLE, but changing all the file types to be consistent with
-        # Aaron's naming will require a bit of work
-        if self.file_type_id == FileTypes.REPORT.file_type_id:
-            file_type_id = "PacBio.FileTypes.JsonReport"
-        else:
-            file_type_id = self.file_type_id
-
         return dict(sourceId=self.file_id,
                     uniqueId=str(self.uuid),
-                    fileTypeId=file_type_id,
+                    fileTypeId=self.file_type_id,
                     path=self.path,
                     fileSize=self.file_size,
                     createdAt=str(self.created_at),

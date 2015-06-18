@@ -2,8 +2,8 @@
     {
         "id": "pbsmrtpipe.tasks.filter_subreads",
         "inputs": [
-            "pbsmrtpipe.files.moviefofn",
-            "pbsmrtpipe.files.filteredregionfofn"
+            "PacBio.FileTypes.moviefofn",
+            "PacBio.FileTypes.filteredregionfofn"
         ],
         "meta": {
             "nproc": 1,
@@ -25,8 +25,8 @@
             }
         },
         "outputs": [
-            "pbsmrtpipe.files.filteredsubreadsfasta",
-            "pbsmrtpipe.files.filteredsubreadsfastq"
+            "PacBio.FileTypes.filteredsubreadsfasta",
+            "PacBio.FileTypes.filteredsubreadsfastq"
         ]
     }
 ]

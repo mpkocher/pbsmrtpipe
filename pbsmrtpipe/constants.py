@@ -69,7 +69,11 @@ TASK_MANIFEST_VERSION = '0.2.1'
 
 class PacBioNamespaces(object):
     # File Types
-    PBSMRTPIPE_FILE_PREFIX = 'pbsmrtpipe.files'
+    #PBSMRTPIPE_FILE_PREFIX = 'pbsmrtpipe.files'
+    # NEW File Type Identifier style Prefix
+    NEW_PBSMRTPIPE_FILE_PREFIX = "PacBio.FileTypes"
+    # New DataSet Identifier Prefix
+    DATASET_FILE_PREFIX = "PacBio.DataSet"
     # Task Ids
     PBSMRTPIPE_TASK_PREFIX = 'pbsmrtpipe.tasks'
     # Task Options
@@ -86,7 +90,8 @@ def __to_type(prefix, name):
     return ".".join([prefix, name])
 
 to_constant_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_CONSTANTS_PREFIX)
-to_file_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_FILE_PREFIX)
+to_file_ns = functools.partial(__to_type, PacBioNamespaces.NEW_PBSMRTPIPE_FILE_PREFIX)
+to_ds_ns = functools.partial(__to_type, PacBioNamespaces.DATASET_FILE_PREFIX)
 to_task_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TASK_OPTS_PREFIX)
 to_task_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TASK_PREFIX)
 to_workflow_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_OPTS_PREFIX)

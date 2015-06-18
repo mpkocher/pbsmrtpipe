@@ -12,8 +12,8 @@
     "task_type": "pbsmrtpipe.constants.local_task",
     "version": "0.2.1",
     "description": "Example static task",
-    "input_types": ["pbsmrtpipe.files.gff", "pbsmrtpipe.files.csv"],
-    "output_types": ["pbsmrtpipe.files.report"],
+    "input_types": ["PacBio.FileTypes.gff", "PacBio.FileTypes.csv"],
+    "output_types": ["PacBio.FileTypes.JsonReport"],
     "schema_options": {},
     "nproc": "$max_nproc",
     "resource_types": ["$tmpdir", "$logfile"]

@@ -2,13 +2,13 @@
     "files": [
         {
             "file_id": "global-graph-file-node-id",
-            "type_id": "pbsmrtpipe.files.report",
+            "type_id": "PacBio.FileTypes.JsonReport",
             "path": "relative/path/to/report.json",
             "produced_by": "task_instance_id"
         },
         {
             "file_id": "my_file_id",
-            "type_id": "pbsmrtpipe.files.csv",
+            "type_id": "PacBio.FileTypes.csv",
             "path": "relative/path/to/f.csv",
             "produced_by": "task_id-instance_id"
         }
