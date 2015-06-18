@@ -513,7 +513,8 @@ class DataStoreFile(object):
         # adding this for consistency. In the scala code, the unique id must be
         # a uuid format
         self.uuid = uuid.uuid4()
-        # this must globally unique
+        # this must globally unique. This is used to provide context to where
+        # the file originated from (i.e., the tool author
         self.file_id = file_id
         # Consistent with a value in FileTypes
         self.file_type_id = type_id
@@ -530,7 +531,7 @@ class DataStoreFile(object):
         return "<{k} {i} type:{t} filename:{p} >".format(**_d)
 
     def to_dict(self):
-        return dict(fileId=self.file_id,
+        return dict(sourceId=self.file_id,
                     uniqueId=str(self.uuid),
                     fileTypeId=self.file_type_id,
                     path=self.path,
