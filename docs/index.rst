@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Overview and Design Docs
-========================
+pbsmrtpipe
+==========
 
 .. toctree::
    :maxdepth: 1
@@ -19,11 +19,4 @@ Overview and Design Docs
    task_model_advanced
    testkit
    chunking
-
-
-
-Indices and tables
-==================
-
-* :ref:`search`
    
