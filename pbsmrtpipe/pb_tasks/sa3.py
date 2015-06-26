@@ -71,7 +71,7 @@ class AlignDataSetTask(MetaTaskBase):
 
     INPUT_TYPES = [(FileTypes.DS_SUBREADS, "rs_movie_metadata", "A RS Movie metadata.xml"),
                    (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]
-    OUTPUT_TYPES = [(FileTypes.BAM, "bam", "Aligned BAM")]
+    OUTPUT_TYPES = [(FileTypes.DS_ALIGNMENT, "bam", "Aligned BAM")]
     OUTPUT_FILE_NAMES = [("file", "aligned.bam")]
 
     SCHEMA_OPTIONS = {}
@@ -103,7 +103,7 @@ class MappingReportTask(MetaTaskBase):
     VERSION = "0.1.0"
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
-    INPUT_TYPES = [(FileTypes.BAM, "ds", "Alignment DataSet")]
+    INPUT_TYPES = [(FileTypes.DS_ALIGNMENT, "ds", "Alignment DataSet")]
     OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "Alignment Mapping Report")]
     OUTPUT_FILE_NAMES = [("mapping_report", "json")]
 

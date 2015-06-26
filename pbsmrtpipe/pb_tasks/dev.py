@@ -39,6 +39,29 @@ class MyDevHelloTask(MetaTaskBase):
         return cmds
 
 
+class DevSubreadDataSet(MetaTaskBase):
+    """Hello world PacBio Subread DataSet Report"""
+    TASK_ID = "pbsmrtpipe.tasks.dev_subread_report"
+    NAME = "Dev Subread Report"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+    INPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds", "Subread DataSet")]
+    OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "Subread Report")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    OUTPUT_FILE_NAMES = (("subread-dataset.report", "json"), )
+    RESOURCE_TYPES = ()
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        exe = "python -m pbsmrtpipe.tools.dev dataset-report"
+        _d = dict(e=exe, i=input_files[0], o=output_files[0])
+        return "{e} --debug {i} {o}".format(**_d)
+
+
 class DevHelloWorlder(MetaTaskBase):
     TASK_ID = 'pbsmrtpipe.tasks.dev_hello_worlder'
     NAME = "Dev Hello Worlder"

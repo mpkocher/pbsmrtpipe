@@ -203,7 +203,7 @@ class FileTypes(object):
     DS_SUBREADS = FileType(to_ds_ns("HdfSubreadSet"), "file", "h5.subreads.xml", "application/xml")
     DS_SUBREADS_H5 = FileType(to_ds_ns("SubreadSet"), "file", "subreads.xml", "application/xml")
     DS_REF = FileType(to_file_ns("ReferenceSet"), "file", "reference.dataset.xml", "application/xml")
-    DS_BAM = FileType(to_file_ns("AlignmentSet"), "file", "aligned", "application/xml")
+    DS_ALIGNMENT = FileType(to_file_ns("AlignmentSet"), "file", "aligned", "application/xml")
 
     RS_MOVIE_XML = FileType(to_file_ns("rs_movie_metadata"), "file", "rs_movie.metadata.xml", "application/xml")
 

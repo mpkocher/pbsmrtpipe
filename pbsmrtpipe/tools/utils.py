@@ -73,3 +73,7 @@ add_fastq_input = _add_input_file("fastq_in", validate_file, "Path to Input FAST
 
 add_fofn_input = _add_input_file("fofn_in", validate_fofn, "Path to Input FOFN (File of file names) File")
 add_fofn_output = _add_input_file("fofn_out", str, "Path to output FOFN.")
+
+add_report_output = _add_input_file("json_report", str, "Path to PacBio JSON Report")
+
+add_subread_input = _add_input_file("subread_ds", validate_file, "Path to PacBio Subread DataSet XML")

@@ -427,7 +427,7 @@ class Report(BaseReportElement):
     It can be serialized to json.
     """
 
-    def __init__(self, id_, tables=(), attributes=(), plotgroups=()):
+    def __init__(self, id_, tables=(), attributes=(), plotgroups=(), dataset_uuids=()):
         """
         :param id_: (str) Should be a string that identifies the report, like 'adapter'.
         :param tables: (list of table instances)
@@ -447,6 +447,7 @@ class Report(BaseReportElement):
         if plotgroups:
             for plotgroup in plotgroups:
                 self.add_plotgroup(plotgroup)
+        self.dataset_uuids = list(set(dataset_uuids))
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__,
@@ -527,6 +528,7 @@ class Report(BaseReportElement):
         d = BaseReportElement.to_dict(self, id_parts=id_parts)
         d['_version'] = version
         d['_changelist'] = changelist
+        d['dataset_uuids'] = self.dataset_uuids
         return d
 
     def to_json(self):

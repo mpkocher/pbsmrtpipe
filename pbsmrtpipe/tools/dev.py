@@ -6,9 +6,11 @@ import tempfile
 import sys
 import string
 
-from pbcore.io import FastaRecord, FastaWriter, FastaReader, FastqWriter, FastqRecord
+from pbcore.io import (FastaRecord, FastaWriter, FastaReader, FastqWriter,
+                       FastqRecord, DataSet)
 
 from pbsmrtpipe.cli_utils import main_runner_default
+from pbsmrtpipe.report_model import Report, Attribute
 import pbsmrtpipe.tools.utils as U
 
 __version__ = '0.1.0'
@@ -167,9 +169,39 @@ def run_random_fofn(output_fofn, output_dir, nfofns):
     write_fofn(output_fofn, fofns)
     return 0
 
-
 def _args_run_random_fofn(args):
     return run_random_fofn(args.fofn_out, args.output_dir, args.nfofns)
+
+
+def dataset_to_report(ds):
+    """
+    :type ds: DataSet
+    :param ds:
+    :return:
+    """
+    is_vaild = all(os.path.exists(p) for p in ds.toExternalFiles())
+    datum = [("uuid", ds.uuid, "Unique Id"),
+             ("total_records", ds.numRecords, "num Records"),
+             ("valid_files", is_vaild, "External files exist")]
+    attributes = [Attribute(x, y, name=z) for x, y, z in datum]
+    return Report("ds_report", attributes=attributes, dataset_uuids=[ds.uuid])
+
+
+def subread_dataset_report(subread_path, report_path):
+    ds = DataSet(subread_path)
+    report = dataset_to_report(ds)
+    report.write_json(report_path)
+    return 0
+
+def _add_run_dataset_report(p):
+    U.add_debug_option(p)
+    U.add_subread_input(p)
+    U.add_report_output(p)
+    return p
+
+
+def _args_run_dataset_report(args):
+    return subread_dataset_report(args.subread_ds, args.json_report)
 
 
 def get_main_parser():
@@ -187,6 +219,8 @@ def get_main_parser():
     _builder('fofn', "Generate a random FOFN file", _add_run_random_fofn_options, _args_run_random_fofn)
 
     _builder('filter-fasta', "Filter a Fasta file by sequence length", _add_run_fasta_filter_options, _args_run_fasta_filter)
+
+    _builder("dataset-report", "DataSet Report Generator", _add_run_dataset_report, _args_run_dataset_report)
 
     return p
 

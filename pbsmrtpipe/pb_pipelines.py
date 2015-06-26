@@ -36,9 +36,12 @@ class Constants(object):
     ENTRY_RS_MOVIE_XML = to_entry("rs_movie_xml")
     ENTRY_INPUT_XML = to_entry("eid_input_xml")
     ENTRY_REF_FASTA = to_entry("eid_ref_fasta")
-    ENTRY_REF_DS = to_entry("eid_ref_dataset")
+
+    ENTRY_DS_REF = to_entry("eid_ref_dataset")
     ENTRY_BARCODE_FASTA = to_entry("eid_barcode_fasta")
     ENTRY_BAM_ALIGNMENT = to_entry("eid_bam_alignment")
+    ENTRY_DS_HDF = to_entry("eid_hdfsubread")
+    ENTRY_DS_SUBREAD = to_entry("eid_subread")
 
 
 def get_fetch_task_groups():

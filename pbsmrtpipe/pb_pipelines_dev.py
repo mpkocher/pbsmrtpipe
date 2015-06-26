@@ -28,6 +28,14 @@ def f():
     return b
 
 
+@register_pipeline("pbsmrtpipe.pipelines.dev_01_ds", "Example Dev 01 Subread DataSet pipeline")
+def f():
+    """Simplest possible pipeline, a single Task"""
+    b = [("$entry:e_01", "pbsmrtpipe.tasks.dev_subread_report:0")]
+    return b
+
+
+
 @register_pipeline("pbsmrtpipe.pipelines.dev_02", "Example Dev 02 pipeline")
 def f():
     # Reuse existing pipeline and reference a specific task output

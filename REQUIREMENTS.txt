@@ -4,7 +4,8 @@ h5py
 networkx
 rdflib
 # be loose about the version of pbcore for now
--e git+git://github.com/PacificBiosciences/pbcore.git@2.3-bam#egg=pbcore
+#-e git+git://github.com/PacificBiosciences/pbcore.git@2.3-bam#egg=pbcore
+pbcore
 pyparsing==1.5.7
 pydot
 jsonschema
