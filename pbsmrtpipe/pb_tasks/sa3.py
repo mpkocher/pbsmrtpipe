@@ -4,6 +4,8 @@ import os
 from pbsmrtpipe.core import MetaTaskBase
 from pbsmrtpipe.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 #import _mapping_opts as AOPTS
+import pbsmrtpipe.schema_opt_utils as OP
+from pbsmrtpipe.pb_tasks.genomic_consensus import _to_call_variants_opts_schema
 
 log = logging.getLogger(__name__)
 
@@ -120,3 +122,70 @@ class MappingReportTask(MetaTaskBase):
         report_json = os.path.basename(output_files[0])
         _d = dict(e=exe, i=input_files[0], o=output_dir, j=report_json)
         return "{e} --debug {i} --output {o} {j}".format(**_d)
+
+
+def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
+    """Generic to_cmd for CallVariants"""
+    algorithm = ropts[OP.to_opt_id("consensus.algorithm")]
+    minConfidence = ropts[OP.to_opt_id("consensus.min_confidence")]
+    minCoverage = ropts[OP.to_opt_id("consensus.min_coverage")]
+    diploid_mode = ropts[OP.to_opt_id("consensus.diploid_mode")]
+
+    diploid_str = ' --diploid' if diploid_mode else ""
+
+    if minConfidence is not None:
+        confidenceFilter = "-q %s" % minConfidence
+    else:
+        confidenceFilter = ""
+
+    if minCoverage is not None:
+        coverageFilter = "-x {x}".format(x=minCoverage)
+    else:
+        coverageFilter = ""
+
+    #
+    _d = dict(d=diploid_str,
+              vf=coverageFilter,
+              cf=confidenceFilter,
+              n=nproc,
+              a=algorithm,
+              h=input_files[1],
+              r=input_files[0],
+              g=output_files[0],
+              f=output_files[1],
+              q=output_files[2])
+
+    c = "variantCaller --skipUnrecognizedContigs {d} {vf} {cf} -vv --numWorkers {n} --algorithm={a} {h} --reference '{r}' -o {g} -o {f} -o {q}"
+
+    return c.format(**_d)
+
+
+
+class DataSetCallVariants(MetaTaskBase):
+    """BAM interface to quiver. The contig 'ids' (using the pbcore 'id' format)
+    are passed in via a FOFN
+    """
+
+    TASK_ID = "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds"
+    NAME = "DataSet Driven Call Variants"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.DISTRIBUTED
+    INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
+                   (FileTypes.DS_ALIGNMENT, "bam", "DataSet BAM Alignment")]
+
+    OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Consensus GFF"),
+                    (FileTypes.FASTA, "fasta", "Consensus Fasta"),
+                    (FileTypes.FASTQ, "fastq", "Consensus Fastq")]
+
+    OUTPUT_FILE_NAMES = [('variants', 'gff'),
+                         ('consensus', 'fasta'),
+                         ('consensus', 'fastq')]
+
+    NPROC = SymbolTypes.MAX_NPROC
+    SCHEMA_OPTIONS = _to_call_variants_opts_schema()
+    RESOURCE_TYPES = None
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        return _to_consensus_cmd(input_files, output_files, ropts, nproc, resources)
