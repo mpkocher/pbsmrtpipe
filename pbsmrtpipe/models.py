@@ -200,8 +200,8 @@ class FileTypes(object):
     XML = FileType(to_file_ns('xml'), "file", "xml", 'application/xml')
 
     # DataSet Types
-    DS_SUBREADS = FileType(to_ds_ns("HdfSubreadSet"), "file", "h5.subreads.xml", "application/xml")
-    DS_SUBREADS_H5 = FileType(to_ds_ns("SubreadSet"), "file", "subreads.xml", "application/xml")
+    DS_SUBREADS = FileType(to_ds_ns("SubreadSet"), "file", "h5.subreads.xml", "application/xml")
+    DS_SUBREADS_H5 = FileType(to_ds_ns("HdfSubreadSet"), "file", "subreads.xml", "application/xml")
     DS_REF = FileType(to_file_ns("ReferenceSet"), "file", "reference.dataset.xml", "application/xml")
     DS_ALIGNMENT = FileType(to_file_ns("AlignmentSet"), "file", "aligned", "application/xml")
 
