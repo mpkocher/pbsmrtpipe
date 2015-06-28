@@ -512,10 +512,10 @@ class RunnableTask(object):
 
 
 class DataStoreFile(object):
-    def __init__(self, file_id, type_id, path):
+    def __init__(self, uuid, file_id, type_id, path):
         # adding this for consistency. In the scala code, the unique id must be
         # a uuid format
-        self.uuid = uuid.uuid4()
+        self.uuid = uuid
         # this must globally unique. This is used to provide context to where
         # the file originated from (i.e., the tool author
         self.file_id = file_id
@@ -541,6 +541,13 @@ class DataStoreFile(object):
                     fileSize=self.file_size,
                     createdAt=str(self.created_at),
                     modifiedAt=str(self.modified_at))
+
+    @staticmethod
+    def from_dict(d):
+        # FIXME. This isn't quite right.
+        to_a = lambda x: x.encode('ascii', 'ignore')
+        to_k = lambda x: to_a(d[x])
+        return DataStoreFile(to_k('uniqueId'), to_k('sourceId'), to_k('fileTypeId'), to_k('path'))
 
 _JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
 JobResources = namedtuple("JobResources", _JOB_ATTRS)
@@ -584,6 +591,14 @@ class DataStore(object):
     def write_update_json(self, file_name):
         """Overwrite Datastore with current state"""
         self._write_json(file_name, 'w+')
+
+    @staticmethod
+    def load_from_json(path):
+        with open(path, 'r') as reader:
+            d = json.loads(reader.read())
+
+        ds_files = [DataStoreFile.from_dict(x) for x in d['files']]
+        return DataStore(ds_files)
 
 
 class Pipeline(object):

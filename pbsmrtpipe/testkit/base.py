@@ -1,9 +1,9 @@
 import os
 import logging
-import functools
 import types
 
-from pbsmrtpipe.testkit.validators import ValidatorBase
+from pbsmrtpipe.models import DataStore
+from pbsmrtpipe.testkit.validators2 import DataStoreFileValidator
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +17,8 @@ class Constants(object):
     HTML_FILES = 'HTML_FILES'
 
     WORKFLOW_FILES = 'WORKFLOW_FILES'
+
+    DATASTORE_FILE_VALIDATORS = "DATASTORE_FILE_VALIDATORS"
 
 
 def _sanitize_test_name(name):
@@ -40,6 +42,20 @@ def _test_job_resource_dir_exists(dir_name):
 
 def _test_job_resource_file_exists(file_name):
     return __test_job_resource(os.path.isfile, 'test_job_resource_file_exists', file_name)
+
+
+def _test_validator(file_type_id, validator_func, **kwargs):
+    def wrapper(self):
+        ds_path = os.path.join(self.job_dir, "workflow", "datastore.json")
+        ds = DataStore.load_from_json(ds_path)
+        # log.info("Loaded datastore {d}".format(d=ds))
+        for ds_file in ds.files.values():
+            if ds_file.file_type_id == file_type_id:
+                validator_func(ds_file.path, **kwargs)
+                log.debug("Successfully validated {p}".format(p=ds_file.path))
+        self.assertTrue(True)
+
+    return wrapper
 
 
 def _bolt_on_test_func(cls, test_func, method_name):
@@ -74,8 +90,12 @@ def _bolt_on_resources(validation_func_wrapper, cls, class_constant_id):
             func = validation_func_wrapper(file_name_or_validator)
             fname = "_".join([func.__name__, _sanitize_test_name(file_name_or_validator)])
             _bolt_on_test_func(cls, func, fname)
-        elif isinstance(file_name_or_validator, ValidatorBase):
-            log.warn("Validators are not yet supported")
+        elif isinstance(file_name_or_validator, DataStoreFileValidator):
+            log.info("Validator {f}".format(f=file_name_or_validator))
+            log.info(file_name_or_validator)
+            fname = "_".join(["test_validators_datastore_file_", _sanitize_test_name(file_name_or_validator.file_type_id.lower())])
+            func = _test_validator(file_name_or_validator.file_type_id, file_name_or_validator.func, **file_name_or_validator.validator_func_kwargs)
+            _bolt_on_test_func(cls, func, fname)
         else:
             raise ValueError("Unsupported {f} type {x}".format(f=class_constant_id))
 
@@ -104,6 +124,11 @@ def _bolt_on_resource_workflow_dir_file(cls, class_constant_id):
     return _bolt_on_resources(_test_job_resource_workflow_dir_file, cls, class_constant_id)
 
 
+def _bolt_on_datastore_validators(cls, class_constant_id):
+    # FIXME. this is a little odd
+    return _bolt_on_resources(lambda x: x, cls, class_constant_id)
+
+
 def monkey_patch(cls):
     cls._was_monkey_patched = True
 
@@ -118,6 +143,9 @@ def monkey_patch(cls):
 
     if hasattr(cls, Constants.WORKFLOW_FILES):
         _bolt_on_resource_workflow_dir_file(cls, Constants.WORKFLOW_FILES)
+
+    if hasattr(cls, Constants.DATASTORE_FILE_VALIDATORS):
+        _bolt_on_datastore_validators(cls, Constants.DATASTORE_FILE_VALIDATORS)
 
     log.info("Completed monkey_patch on {c}".format(c=cls.__name__))
     return cls

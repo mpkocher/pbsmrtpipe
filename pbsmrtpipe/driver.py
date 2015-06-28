@@ -12,6 +12,7 @@ import types
 import shutil
 import functools
 from collections import namedtuple
+import uuid
 
 import pbsmrtpipe
 from pbsmrtpipe import opts_graph as GX
@@ -237,7 +238,7 @@ def datastore_to_report(ds):
              Attribute("ds_updated_at", ds.updated_at, name="Updated At")]
 
     columns_names = [("file_id", "File Id"),
-                     ("file_type_id", "File Type"),
+                     ("file_type_obj", "File Type"),
                      ("path", "Path"),
                      ("file_size", "Size"),
                      ("created_at", "Created At"),
@@ -252,7 +253,7 @@ def datastore_to_report(ds):
 
     for file_id, ds_file in ds.files.iteritems():
         t.add_data_by_column_id(to_i("file_id"), ds_file.file_id)
-        t.add_data_by_column_id(to_i("file_type_id"), ds_file.file_type_id)
+        t.add_data_by_column_id(to_i("file_type_obj"), ds_file.file_type_id)
         t.add_data_by_column_id(to_i("path"), _to_relative_path(ds_file.path))
         t.add_data_by_column_id(to_i("file_size"), ds_file.file_size)
         t.add_data_by_column_id(to_i("created_at"), ds_file.created_at)
@@ -766,7 +767,9 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
                     # Update Analysis Reports and Register output files to Datastore
                     for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
-                        ds.add(DataStoreFile("{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id), file_type_.file_type_id, path_, ))
+                        # FIXME. if the file is a DataSet type, then reuse that uuid as the datastore uuid
+                        source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
+                        ds.add(DataStoreFile(uuid.uuid4(), source_id, file_type_.file_type_id, path_, ))
                         ds.write_update_json(job_resources.datastore_json)
                         dsr = datastore_to_report(ds)
                         R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
