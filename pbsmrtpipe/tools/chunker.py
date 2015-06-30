@@ -8,7 +8,8 @@ import math
 from pbcore.io.FastaIO import FastaReader
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
-from pbsmrtpipe.legacy.reference_utils import load_reference_entry, ReferenceEntry
+from pbsmrtpipe.legacy.reference_utils import (load_reference_entry,
+                                               ReferenceEntry)
 
 from pbsmrtpipe.models import PipelineChunk
 
@@ -43,6 +44,7 @@ class Constants(object):
     FOFN_REPORT_ID = "fofn_chunk_report"
     FOFN_ATTRIBUTE_ID = "fofn_nchunks"
 
+    CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
     CHUNK_KEY_FOFN = "$chunk.fofn_id"
     CHUNK_KEY_MOVIE_FOFN = "$chunk.movie_id"
     CHUNK_KEY_RGN_FOFN = "$chunk.rgn_id"
@@ -116,6 +118,8 @@ add_input_rgn_fofn_option = _add_input_file_option('region_fofn', validate_fofn,
 add_input_fasta_option = _add_input_file_option('fasta', validate_file, "Path to Fasta file.")
 add_input_fasta_reference_option = _add_input_file_option('fasta', validate_file, "Path to PacBio Reference Entry Fasta file.")
 add_input_fastq_option = _add_input_file_option('fastq', validate_file, "Path to Fastq file")
+add_input_alignmentset_option = _add_input_file_option(
+    'alignmentset', validate_file, "Path to AlignmentSet XML file")
 add_input_csv_option = _add_input_file_option('csv', validate_file, help="Path to CSV")
 add_output_chunk_json_report_option = _add_input_file_option('chunk_report_json', str, help="Path to chunked JSON output")
 
@@ -309,6 +313,21 @@ def _args_run_chunk_fastq(args):
     return CU.write_fastq_chunks_to_file(args.chunk_report_json, args.fasta, args.max_total_chunks, args.output_dir, "chunk_fq", 'fastq')
 
 
+def _add_chunk_alignmentset_options(p):
+    add_input_alignmentset_option(p)
+    add_input_fasta_reference_option(p)
+    _add_common_chunk_options(p)
+    return p
+
+
+def _args_run_chunk_alignmentset(args):
+    return CU.write_alignmentset_chunks_to_file(args.chunk_report_json,
+                                                args.alignmentset, args.fasta,
+                                                args.max_total_chunks,
+                                                args.output_dir,
+                                                "chunk_alignmentset", 'xml')
+
+
 def _add_chunk_csv_options(p):
     p = add_input_csv_option(p)
     p = _add_common_chunk_options(p)
@@ -353,6 +372,10 @@ def get_parser():
     builder("fasta", "Create a chunk.json from a Fasta file", _add_chunk_fasta_options, _args_run_chunk_fasta)
 
     builder("fastq", "Create a chunk.json from a Fastq file", _add_chunk_fastq_options, _args_run_chunk_fastq)
+
+    builder("alignmentset",
+            "Create a chunk.json from an AlignmentSet XML file",
+            _add_chunk_alignmentset_options, _args_run_chunk_alignmentset)
 
     builder("csv", "Create a chunk.json CSV from a CSV file", _add_chunk_csv_options, _args_run_chunk_csv)
 

@@ -1,7 +1,7 @@
 import logging
 import os
 
-from pbsmrtpipe.core import MetaTaskBase
+from pbsmrtpipe.core import MetaTaskBase, MetaScatterTaskBase
 from pbsmrtpipe.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 #import _mapping_opts as AOPTS
 import pbsmrtpipe.schema_opt_utils as OP
@@ -155,7 +155,7 @@ def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
               f=output_files[1],
               q=output_files[2])
 
-    c = "variantCaller --skipUnrecognizedContigs {d} {vf} {cf} -vv --numWorkers {n} --algorithm={a} {h} --reference '{r}' -o {g} -o {f} -o {q}"
+    c = "variantCaller --alignmentSetRefWindows {d} {vf} {cf} -vv --numWorkers {n} --algorithm={a} {h} --reference '{r}' -o {g} -o {f} -o {q}"
 
     return c.format(**_d)
 
@@ -189,3 +189,43 @@ class DataSetCallVariants(MetaTaskBase):
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):
         return _to_consensus_cmd(input_files, output_files, ropts, nproc, resources)
+
+
+class AlignmentSetScatterContigs(MetaScatterTaskBase):
+    """AlignmentSet scattering by Contigs
+    """
+    # MK. Inheritance is specifically not allowed
+
+    TASK_ID = "pbsmrtpipe.tasks.alignment_contig_scatter"
+    NAME = "AlignmentSet Contig Scatter"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+    INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
+                   (FileTypes.DS_ALIGNMENT, "bam", "DataSet BAM Alignment")]
+
+    OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
+                     'Generic Chunked JSON AlignmentSet')]
+
+    OUTPUT_FILE_NAMES = [('alignmentset_chunked', 'json'),]
+
+    NPROC = 1
+    SCHEMA_OPTIONS = {}
+    RESOURCE_TYPES = None
+    NCHUNKS = SymbolTypes.MAX_NCHUNKS
+    # Keys that are expected to be written to the chunk.json file
+    CHUNK_KEYS = ('$chunk.alignmentset_id', )
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
+        exe = "pbtools-chunker alignmentset"
+        chunk_key = "alignmentset"
+        mode = "alignmentset"
+        _d = dict(e=exe,
+                  i=input_files[1],
+                  r=input_files[0],
+                  o=output_files[0],
+                  n=nchunks)
+        return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
+
+

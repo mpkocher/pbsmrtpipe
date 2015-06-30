@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<chunk-operator id="pbsmrtpipe.operators.chunk_bam_call_variants_with_fastx_ds">
+
+    <task-id>pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds</task-id>
+
+    <scatter>
+        <scatter-task-id>pbsmrtpipe.tasks.alignment_contig_scatter</scatter-task-id>
+        <chunks>
+            <chunk out="$chunk.reference_id" in="pbsmrtpipe.tasks.ds_call_variants:0" />
+            <chunk out="$chunk.alignmentset_id" in="pbsmrtpipe.tasks.ds_call_variants:1"/>
+        </chunks>
+    </scatter>
+    <!-- Define the Gather Mechanism -->
+    <gather>
+        <chunks>
+            <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_gff</gather-task-id>
+                <chunk-key>$chunk.gff_id</chunk-key>
+                <task-output>pbsmrtpipe.tasks.ds_call_variants:0</task-output>
+            </chunk>
+             <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_fasta</gather-task-id>
+                <chunk-key>$chunk.fasta_id</chunk-key>
+                <task-output>pbsmrtpipe.tasks.ds_call_variants:1</task-output>
+            </chunk>
+            <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_fastq</gather-task-id>
+                <chunk-key>$chunk.fastq_id</chunk-key>
+                <task-output>pbsmrtpipe.tasks.ds_call_variants:2</task-output>
+            </chunk>
+        </chunks>
+    </gather>
+</chunk-operator>
