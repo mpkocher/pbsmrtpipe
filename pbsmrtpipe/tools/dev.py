@@ -7,7 +7,9 @@ import sys
 import string
 
 from pbcore.io import (FastaRecord, FastaWriter, FastaReader, FastqWriter,
-                       FastqRecord, DataSet)
+                       FastqRecord)
+
+import pbcore.io.dataset as DIO
 
 from pbsmrtpipe.cli_utils import main_runner_default
 from pbsmrtpipe.report_model import Report, Attribute
@@ -179,16 +181,16 @@ def dataset_to_report(ds):
     :param ds:
     :return:
     """
-    is_vaild = all(os.path.exists(p) for p in ds.toExternalFiles())
+    is_valid = all(os.path.exists(p) for p in ds.toExternalFiles())
     datum = [("uuid", ds.uuid, "Unique Id"),
              ("total_records", ds.numRecords, "num Records"),
-             ("valid_files", is_vaild, "External files exist")]
+             ("valid_files", is_valid, "External files exist")]
     attributes = [Attribute(x, y, name=z) for x, y, z in datum]
     return Report("ds_report", attributes=attributes, dataset_uuids=[ds.uuid])
 
 
 def subread_dataset_report(subread_path, report_path):
-    ds = DataSet(subread_path)
+    ds = DIO.DataSet(subread_path)
     report = dataset_to_report(ds)
     report.write_json(report_path)
     return 0

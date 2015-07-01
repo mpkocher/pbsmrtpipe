@@ -13,6 +13,7 @@ import shutil
 import functools
 from collections import namedtuple
 import uuid
+from pbcore.io import DataSet
 
 import pbsmrtpipe
 from pbsmrtpipe import opts_graph as GX
@@ -534,6 +535,31 @@ def _status(bg):
     return "Workflow status {n}/{t} completed/total tasks".format(t=ntasks, n=ncompleted_tasks)
 
 
+def _get_dataset_uuid_or_create(path):
+    """
+    Extract the uuid from the DataSet or assign a new UUID
+
+    :param path: Path to file
+
+    :rtype: str
+    :return: uuid string
+    """
+    try:
+        ds = DataSet(path)
+        ds_id = ds.uuid
+        # make sure it's a validate uuid
+        _ = uuid.UUID(ds_id)
+    except ValueError as e:
+        log.error("DataSet {p} uuid is malformed. {e}".format(e=e, p=path))
+        ds_id = uuid.uuid4
+    except Exception:
+        # not a DataSet file
+        ds_id = uuid.uuid4()
+
+    return ds_id
+
+
+
 def _get_last_lines_of_stderr(n, stderr_path):
     lines = []
     if os.path.exists(stderr_path):
@@ -767,9 +793,9 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
                     # Update Analysis Reports and Register output files to Datastore
                     for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
-                        # FIXME. if the file is a DataSet type, then reuse that uuid as the datastore uuid
                         source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
-                        ds.add(DataStoreFile(uuid.uuid4(), source_id, file_type_.file_type_id, path_, ))
+                        ds_uuid = _get_dataset_uuid_or_create(path_)
+                        ds.add(DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_))
                         ds.write_update_json(job_resources.datastore_json)
                         dsr = datastore_to_report(ds)
                         R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
