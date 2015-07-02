@@ -7,6 +7,7 @@ import os
 import importlib
 import logging
 import sys
+import functools
 
 import pbsmrtpipe.models as M
 
@@ -64,34 +65,52 @@ def load_all_pb_tasks_from_python_module_name(name):
     return _REGISTERED_TASKS
 
 
+
+def _load_all_pb_static_tasks(registered_tasks_d, filter_filename_func, processing_func):
+
+    import pbsmrtpipe.pb_io as IO
+
+    m = importlib.import_module("pbsmrtpipe.pb_static_tasks")
+
+    d = os.path.dirname(m.__file__)
+    log.debug("Loading static meta tasks from {m}".format(m=d))
+
+    for x in os.listdir(d):
+        if filter_filename_func(x):
+            json_file = os.path.join(d, x)
+            try:
+                meta_task = processing_func(json_file)
+                log.info(meta_task)
+                registered_tasks_d[meta_task.task_id] = meta_task
+            except Exception as e:
+                log.error("Failed loading Static Task from '{x}'".format(x=json_file))
+                sys.stderr.write(e.message + "\n")
+                log.error(e.message)
+                raise
+
+    return _REGISTERED_STATIC_TASKS
+
+
 def load_all_pb_static_tasks():
 
     import pbsmrtpipe.pb_io as IO
 
+    # this is gross.
     global _REGISTERED_STATIC_TASKS
 
     if _REGISTERED_STATIC_TASKS is None:
         _REGISTERED_STATIC_TASKS = {}
 
-        m = importlib.import_module("pbsmrtpipe.pb_static_tasks")
+    def filter_by(name, path):
+        return path.endswith(".json") and name in path
 
-        d = os.path.dirname(m.__file__)
-        log.debug("Loading static meta tasks from {m}".format(m=d))
+    filter_manifests = functools.partial(filter_by, "static_manifest")
+    filter_contracts = functools.partial(filter_by, "tool_contract")
 
-        for x in os.listdir(d):
-            if x.endswith(".json") and 'static_manifest' in x:
-                json_file = os.path.join(d, x)
-                try:
-                    meta_task = IO.load_static_meta_task_from_file(json_file)
-                    log.info(meta_task)
-                    _REGISTERED_STATIC_TASKS[meta_task.task_id] = meta_task
-                except Exception as e:
-                    log.error("Failed loading Static Task from '{x}'".format(x=json_file))
-                    sys.stderr.write(e.message + "\n")
-                    log.error(e.message)
-                    raise
+    rtasks = _load_all_pb_static_tasks(_REGISTERED_STATIC_TASKS, filter_manifests, IO.load_static_meta_task_from_file)
+    rtasks = _load_all_pb_static_tasks(rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
 
-    return _REGISTERED_STATIC_TASKS
+    return rtasks
 
 
 def load_xml_chunk_operators_from_python_module_name(name):

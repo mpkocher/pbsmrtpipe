@@ -5,8 +5,7 @@ import logging
 import argparse
 import functools
 
-from pbcore.io import FastaWriter, FastqReader, FastaRecord
-from pbreports.util import fofn_to_files
+from pbcore.io import FastaWriter, FastqReader, FastaRecord, readFofn
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
 from pbsmrtpipe.legacy.input_xml import InputXml, input_xml_to_report, fofn_to_report
@@ -125,7 +124,7 @@ def _add_fofn_to_report_options(p):
 
 
 def _args_fofn_to_report(args):
-    files = fofn_to_files(args.input_fofn)
+    files = list(readFofn(args.input_fofn))
     report = fofn_to_report(len(files))
     write_report_and_log(report, args.report_json)
     return 0

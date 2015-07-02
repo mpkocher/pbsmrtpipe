@@ -9,7 +9,9 @@ import json
 import warnings
 
 import jsonschema
+from pbsystem.common.cmdline.tool_contract import load_tool_contract_from
 from xmlbuilder import XMLBuilder
+from pbsmrtpipe.core import validate_provided_file_types, validate_task_type
 from pbsmrtpipe.exceptions import PipelineTemplateIdNotFoundError
 
 import pbsmrtpipe.schema_opt_utils as OP
@@ -741,6 +743,53 @@ def load_static_meta_task_from_file(path):
                        output_file_names, mutable_files, task_desc, display_name,
                        version=task_version, driver=driver)
     return m
+
+
+def tool_contract_to_meta_task(tc):
+    """Shim layer to load tool contracts and convert them to StaticMetaTask
+
+    The new models in pbsystem need to be pulled used here.
+    """
+    # there needs to be special attention here. This is side stepping all the
+    # validation layers used in the rest of the code.
+
+    def _get_ft(x_):
+        return REGISTERED_FILE_TYPES[x_]
+
+    # Completely ignore options for now
+    schema_opts = {}
+    mutable_files = []
+    output_file_names = []
+    driver = DriverExe(tc.driver.driver_exe)
+
+    # resolve strings to FileType instances
+    input_types = validate_provided_file_types([_get_ft(x) for x in tc.task.input_file_types])
+    output_types = validate_provided_file_types([_get_ft(x) for x in tc.task.output_file_types])
+
+    #
+    task_type = validate_task_type(tc.task.task_type)
+
+    meta_task = MetaStaticTask(tc.task.task_id,
+                               task_type,
+                               input_types,
+                               output_types,
+                               schema_opts,
+                               tc.task.nproc,
+                               tc.task.resources,
+                               output_file_names,
+                               mutable_files,
+                               tc.task.description,
+                               tc.task.name,
+                               version=tc.task.version,
+                               driver=driver)
+    return meta_task
+
+
+def tool_contract_to_meta_task_from_file(path):
+    """Loads a tool contract from a path and converts it to a StaticMetaTask"""
+    tc = load_tool_contract_from(path)
+    return tool_contract_to_meta_task(tc)
+
 
 
 def to_driver_manifest_d(static_meta_task, task):

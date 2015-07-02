@@ -9,33 +9,12 @@ from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.tools.utils as U
+import pbsmrtpipe.mock as M
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
 __version__ = '1.0'
-
-
-def __write_mock_file(s, p):
-    with open(p, 'w') as f:
-        f.write(s)
-    log.debug("Wrote mock file {p}".format(p=p))
-
-
-def _to_json():
-    d = {"key": "value", "_comment": "MOCK DATA"}
-    return json.dumps(d)
-
-_write_mock_file = functools.partial(__write_mock_file, "MOCK\n")
-_write_mock_json_file = functools.partial(__write_mock_file, _to_json())
-
-
-def write_mock_file(p):
-    if not os.path.exists(p):
-        if p.endswith(".json"):
-            _write_mock_json_file(p)
-        else:
-            _write_mock_file(p)
 
 
 def run_driver(dm):
@@ -49,9 +28,10 @@ def run_driver(dm):
         if not os.path.exists(path):
             log.warn("Unable to find input {i} {p}".format(i=i, p=path))
 
+    nrecords = 10
     # write mock files
     for path in dm.task['output_files']:
-        write_mock_file(path)
+        M.write_mock_file_by_type(path, nrecords)
 
     return 0
 

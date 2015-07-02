@@ -62,11 +62,13 @@ def f():
 
 @register_pipeline("pbsmrtpipe.pipelines.dev_04", "Example Dev 04")
 def f():
-    b = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fofn:0")]
+    b0 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fofn:0")]
+    b1 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
+    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_static_task_tc:0")]
 
-    b2 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
+    b3 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
 
-    return b + b2
+    return b0 + b1 + b2 + b3
 
 
 @register_pipeline("pbsmrtpipe.pipelines.dev_04_w_static_task", "Pipeline that leverages a python static tasks")
@@ -74,9 +76,12 @@ def f():
 
     b = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_static_txt_task:0")]
 
-    b2 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
+    b1 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
+    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_static_task_tc:0")]
 
-    return b + b2
+    b3 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
+
+    return b + b1 + b2 + b3
 
 
 @register_pipeline(to_pipeline_ns("dev_local_chunk"), "Dev Local Hello Chunkable Pipeline")

@@ -6,98 +6,18 @@ import tempfile
 import sys
 import string
 
-from pbcore.io import (FastaRecord, FastaWriter, FastaReader, FastqWriter,
-                       FastqRecord)
+from pbcore.io import (FastaWriter, FastaReader)
 
 import pbcore.io.dataset as DIO
 
 from pbsmrtpipe.cli_utils import main_runner_default
 from pbsmrtpipe.report_model import Report, Attribute
 import pbsmrtpipe.tools.utils as U
+import pbsmrtpipe.mock as M
 
 __version__ = '0.1.0'
 
 log = logging.getLogger(__name__)
-
-
-class Constants(object):
-    SEQ = ('A', 'C', 'G', 'T')
-
-
-def _random_dna_sequence(min_length=100, max_length=1000):
-    n = random.choice(list(xrange(min_length, max_length)))
-    return "".join([random.choice(Constants.SEQ) for _ in xrange(n)])
-
-
-def _to_fasta_record(header, seq):
-    return FastaRecord(header, seq)
-
-
-def _to_fastq_record(header, seq):
-    quality = [ord(random.choice(string.ascii_letters)) for _ in seq]
-    return FastqRecord(header, seq, quality=quality)
-
-
-def __to_fastx_records(n, _to_seq_func, _to_record_func):
-    """
-
-    :param n:
-    :param _to_seq_func: () => DNA seq
-    :param _to_record_func: (header, dna_seq) => Record
-    :return: Fastq/Fasta Record
-    """
-    for i in xrange(n):
-        header = "record_{i}".format(i=i)
-        seq = _to_seq_func()
-        r = _to_record_func(header, seq)
-        yield r
-
-
-def to_fasta_records(n):
-    return __to_fastx_records(n, _random_dna_sequence, _to_fasta_record)
-
-
-def to_fastq_records(n):
-    return __to_fastx_records(n, _random_dna_sequence, _to_fastq_record)
-
-
-def write_fastx_records(fastx_writer_klass, records, path):
-    n = 0
-    with fastx_writer_klass(path) as w:
-        for record in records:
-            n += 1
-            w.writeRecord(record)
-
-    log.debug("Completed writing {n} records to {p}".format(n=n, p=path))
-    return 0
-
-
-def _to_random_tmp_fofn(nrecords):
-    def _to_f(name):
-        suffix = "".join([name, '.fofn'])
-        t = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
-        t.close()
-        return t.name
-
-    paths = []
-    for x in xrange(nrecords):
-        path = _to_f("random_{i}".format(i=x))
-        paths.append(path)
-
-    return paths
-
-
-def write_fofn(path, file_paths):
-    with open(path, 'w') as w:
-        w.write("\n".join(file_paths))
-
-
-def write_random_fofn(path, nrecords):
-    """Write a generic fofn"""
-
-    fofns = _to_random_tmp_fofn(nrecords)
-    write_fofn(path, fofns)
-    return fofns
 
 
 def _add_run_random_fasta_file(p):
@@ -108,7 +28,8 @@ def _add_run_random_fasta_file(p):
 
 
 def _args_run_to_random_fasta_file(args):
-    return write_fastx_records(FastaWriter, to_fasta_records(args.max_records), args.fasta_out)
+    M.write_random_fasta_records(args.fasta_out, args.max_records)
+    return 0
 
 
 def _add_run_fasta_filter_options(p):
@@ -141,7 +62,8 @@ def _add_run_random_fastq_options(p):
 
 
 def _args_run_random_fastq_file(args):
-    return write_fastx_records(FastqWriter, to_fastq_records(args.max_records), args.fastq_out)
+    M.write_random_fastq_records(args.fastq_out, nrecords=args.max_records)
+    return 0
 
 
 def _add_run_random_fofn_options(p):
@@ -168,7 +90,7 @@ def run_random_fofn(output_fofn, output_dir, nfofns):
             w.write(name)
         fofns.append(p)
 
-    write_fofn(output_fofn, fofns)
+    M.write_fofn(output_fofn, fofns)
     return 0
 
 def _args_run_random_fofn(args):

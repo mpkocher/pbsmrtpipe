@@ -310,7 +310,7 @@ def __validate_provided_file_types(file_types):
     return file_types
 
 
-def _validate_provided_file_types(file_type_or_file_types):
+def validate_provided_file_types(file_type_or_file_types):
     if isinstance(file_type_or_file_types, FileType):
         return [file_type_or_file_types]
 
@@ -408,7 +408,7 @@ def _raise_malformed_task_attr(msg):
     return _wrapper
 
 
-def _validate_task_type(x):
+def validate_task_type(x):
     task_types = (TaskTypes.DISTRIBUTED, TaskTypes.LOCAL)
 
     _raise = _raise_malformed_task_attr("TASK_TYPE must be a DI List or primitive value {x}.".format(x=task_types))
@@ -593,8 +593,8 @@ def _validate_chunk_keys(chunk_keys):
 
 def register_task(task_id, task_type, input_types_, output_types_, opt_schema, nproc, resource_types, output_file_names=None, mutable_files=None):
 
-    input_types = _validate_provided_file_types(input_types_)
-    output_types = _validate_provided_file_types(output_types_)
+    input_types = validate_provided_file_types(input_types_)
+    output_types = validate_provided_file_types(output_types_)
 
     if mutable_files is not None:
         _validate_mutable_files(mutable_files, input_types, output_types)
@@ -622,7 +622,7 @@ def register_task(task_id, task_type, input_types_, output_types_, opt_schema, n
 
         # Remove this when all the tasks are converted to the new structure
         display_name = ""
-        t = MetaTask(task_id, _validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), rtypes, func, out_names, mutable_files, desc, display_name, version="1.0.0")
+        t = MetaTask(task_id, validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), rtypes, func, out_names, mutable_files, desc, display_name, version="1.0.0")
         _register_or_raise(t)
 
     return wrapped_func
@@ -630,8 +630,8 @@ def register_task(task_id, task_type, input_types_, output_types_, opt_schema, n
 
 def register_scatter_task(task_id, task_type, input_types_, output_types_, opt_schema, nproc, resource_types, nchunks, chunk_keys, output_file_names=None, mutable_files=None):
 
-    input_types = _validate_provided_file_types(input_types_)
-    output_types = _validate_provided_file_types(output_types_)
+    input_types = validate_provided_file_types(input_types_)
+    output_types = validate_provided_file_types(output_types_)
     _validate_chunk_only_input_type(output_types)
 
     def f(func):
@@ -654,7 +654,7 @@ def register_scatter_task(task_id, task_type, input_types_, output_types_, opt_s
         chunk_keys_ = _validate_chunk_keys(chunk_keys)
 
         display_name = ""
-        t = MetaScatterTask(task_id, _validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), r, func, to_f(nchunks), chunk_keys_, out_names, mutable_files, desc, display_name, version="1.0.0")
+        t = MetaScatterTask(task_id, validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), r, func, to_f(nchunks), chunk_keys_, out_names, mutable_files, desc, display_name, version="1.0.0")
 
         _register_or_raise(t)
 
@@ -663,8 +663,8 @@ def register_scatter_task(task_id, task_type, input_types_, output_types_, opt_s
 
 def register_gather_task(task_id, task_type, input_types_, output_types_, opt_schema, nproc, resource_types, output_file_names=None, mutable_files=None):
 
-    input_types = _validate_provided_file_types(input_types_)
-    output_types = _validate_provided_file_types(output_types_)
+    input_types = validate_provided_file_types(input_types_)
+    output_types = validate_provided_file_types(output_types_)
     _validate_chunk_only_input_type(input_types)
 
     def f(func):
@@ -688,7 +688,7 @@ def register_gather_task(task_id, task_type, input_types_, output_types_, opt_sc
         out_names = _validate_output_file_names_or_raise(output_types, output_file_names, task_id)
 
         display_name = ""
-        t = MetaGatherTask(task_id, _validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), rtypes, func, out_names, mutable_files, desc, display_name)
+        t = MetaGatherTask(task_id, validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), rtypes, func, out_names, mutable_files, desc, display_name)
 
         _register_or_raise(t)
 
@@ -720,7 +720,7 @@ def _metaklass_to_metatask(klass, cls, name, parents, dct, validate_input_types_
     input_types = _to_value("INPUT_TYPES", validate_input_types_func)
     output_types = _to_value("OUTPUT_TYPES", validate_output_types_func)
     schema_opts = _to_value("SCHEMA_OPTIONS", _validate_schema_options)
-    task_type = _to_value("TASK_TYPE", _validate_task_type)
+    task_type = _to_value("TASK_TYPE", validate_task_type)
     nproc = _to_value("NPROC", _validate_nproc)
     version = _to_value("VERSION", _validate_version)
     resource_types = _validate_resource_types(dct.get("RESOURCE_TYPES", None))

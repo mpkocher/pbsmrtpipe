@@ -2,7 +2,7 @@ import logging
 import os
 import unittest
 
-import pbsmrtpipe.tools.dev as DT
+import pbsmrtpipe.mock as M
 from pbsmrtpipe.models import FileTypes
 from pbsmrtpipe.dataset_io import dispatch_metadata_resolver, DatasetMetadata
 
@@ -38,7 +38,7 @@ class DatasetFofnTest(unittest.TestCase):
         nrecords = 15
         name = "example_fofn"
         f = get_temp_file(name)
-        _ = DT.write_random_fofn(f, nrecords)
+        _ = M.write_random_fofn(f, nrecords)
         ds_metadata = dispatch_metadata_resolver(self.FILE_TYPE, f)
         self.assertEquals(ds_metadata.nrecords, nrecords)
         os.remove(f)
