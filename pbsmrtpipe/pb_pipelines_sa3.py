@@ -81,15 +81,19 @@ def ds_align():
 @register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing")
 def ds_resequencing():
 
-    # Generate FASTA metadata report and write contig headers FOFN
-    #b0 = [(Constants.ENTRY_DS_REF, 'pbsmrtpipe.tasks.ref_to_report:0'),
-    #      (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0"),
-    #      ('pbsmrtpipe.tasks.ref_to_report:0', 'pbsmrtpipe.tasks.write_reference_contig_idx_chunks:1')]
-
-    b4 = [("pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.mapping_ds_report:0")]
-
     # Call consensus
     b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0"),
          ("pbsmrtpipe.pipelines.sa3_ds_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:1")]
 
-    return b1 + b4
+    # Consensus Report
+    # b3 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
+    #       ("pbsmrtpipe.tasks.call_variants_with_fastx:0", "pbsmrtpipe.tasks.ds_variants_report:1")]
+    #
+    # # this won't work until the extension-less issue is sorted out.
+    # #b4 = [("pbsmrtpipe.tasks.enrich_summarize_consensus:0", "pbsmrtpipe.tasks.variants_report:1")]
+    #
+    # # What is the other gff file
+    # b5 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
+    #       ("pbsmrtpipe.tasks.call_variants_with_fastx:0", "pbsmrtpipe.tasks.variants_report:2")]
+
+    return b1

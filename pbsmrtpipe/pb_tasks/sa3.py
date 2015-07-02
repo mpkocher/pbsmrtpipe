@@ -67,14 +67,14 @@ class AlignDataSetTask(MetaTaskBase):
     """
     TASK_ID = "pbsmrtpipe.tasks.align_ds"
     NAME = "Align DataSet"
-    VERSION = "0.1.1"
+    VERSION = "0.1.2"
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
 
     INPUT_TYPES = [(FileTypes.DS_SUBREADS, "rs_movie_metadata", "A RS Movie metadata.xml"),
                    (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]
-    OUTPUT_TYPES = [(FileTypes.DS_ALIGNMENT, "bam", "Aligned BAM")]
-    OUTPUT_FILE_NAMES = [("file", "aligned.bam")]
+    OUTPUT_TYPES = [(FileTypes.DS_ALIGNMENT, "align_ds", "Alignment DataSet")]
+    OUTPUT_FILE_NAMES = [("file", "alignment_set.xml")]
 
     SCHEMA_OPTIONS = {}
     NPROC = SymbolTypes.MAX_NPROC
@@ -84,15 +84,8 @@ class AlignDataSetTask(MetaTaskBase):
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):
         e = "pbalign"
-        # FIXME.
-        d = os.path.dirname(output_files[0])
-        tmp_bam = os.path.join(d, 'tmp.bam')
         cmds = []
-        cmds.append("{e} --verbose --nproc={n} {i} {r} {t}".format(e=e, i=input_files[0], n=nproc, r=input_files[1], t=tmp_bam))
-        # this auto naming stuff is nonsense
-        cmds.append("samtools sort {t} sorted".format(t=tmp_bam))
-        cmds.append("mv sorted.bam {o}".format(o=output_files[0]))
-        cmds.append('samtools index {o}'.format(o=output_files[0]))
+        cmds.append("{e} --verbose --nproc={n} {i} {r} {t}".format(e=e, i=input_files[0], n=nproc, r=input_files[1], t=output_files[0]))
         return cmds
 
 
@@ -191,6 +184,99 @@ class DataSetCallVariants(MetaTaskBase):
         return _to_consensus_cmd(input_files, output_files, ropts, nproc, resources)
 
 
+class GffToVcf(MetaTaskBase):
+    """Utility for converting variant GFF3 files to 1000 Genomes VCF"""
+    TASK_ID = "pbsmrtpipe.tasks.ds_gff_to_vcf"
+    NAME = "GFF to VCF"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.DISTRIBUTED
+    INPUT_TYPES = [(FileTypes.GFF, "gff", "Gff File"),
+                   (FileTypes.DS_REF, "ds_ref", "Reference DataSet")]
+    OUTPUT_TYPES = [(FileTypes.VCF, "vcf", "VCF File")]
+    OUTPUT_FILE_NAMES = [("consensus", "vcf")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+    RESOURCE_TYPES = None
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        _d = dict(r=input_files[1], g=input_files[0], o=output_files[0])
+        cmd = "gffToVcf --globalReference={r} {g} > {o}"
+        return cmd.format(**_d)
+
+
+class GffToBed(MetaTaskBase):
+    """Utility for converting GFF3 to BED format. Currently supports regional coverage or variant .bed output"""
+    TASK_ID = "pbsmrtpipe.tasks.consensus_gff_to_bed2"
+    NAME = "GFF to Bed"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.DISTRIBUTED
+    INPUT_TYPES = [(FileTypes.GFF, "gff", "Gff Consensus")]
+    OUTPUT_TYPES = [(FileTypes.BED, "bed", "Bed Consensus")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+    RESOURCE_TYPES = None
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        name = 'variants'
+        purpose = 'variants'
+        trackDescription = 'PacBio: snps, insertions, and deletions derived from consensus calls against reference'
+        exe = "gffToBed"
+        cmd = "{e} --name={n} --description='{d}' '{p}' {i} > {o}"
+        _d = dict(e=exe, n=name, p=purpose, d=trackDescription,
+                  i=input_files[0], o=output_files[0])
+        return cmd.format(**_d)
+
+
+class SummarizeConsensus(MetaTaskBase):
+    """ Enrich Alignment Summary"""
+    TASK_ID = "pbsmrtpipe.tasks.enrich_summarize_consensus2"
+    NAME = "Enrich Alignment Summarize Consensus"
+    VERSION = "1.0.0"
+
+    TASK_TYPE = TaskTypes.DISTRIBUTED
+    INPUT_TYPES = [(FileTypes.GFF, "algn_gff", "GFF Alignment"),
+                   (FileTypes.GFF, "var_gff", "Gff Variants")]
+    OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Gff Alignment Summary")]
+    OUTPUT_FILE_NAMES = [('alignment_summary_with_variants', 'gff')]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+    RESOURCE_TYPES = (ResourceTypes.TMP_FILE,)
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        """
+        Augment the alignment_summary.gff file with consensus and variants
+        information.
+
+        positional arguments:
+          inputAlignmentSummaryGff
+                                Input alignment_summary.gff filename
+
+        optional arguments:
+          -h, --help            show this help message and exit
+          --variantsGff VARIANTSGFF
+                                Input variants.gff or variants.gff.gz filename
+          --output OUTPUT, -o OUTPUT
+                                Output alignment_summary.gff filename
+
+        """
+        # This has a bit of mutable nonsense.
+        cmds = []
+        tmp_file = resources[0]
+
+        exe = 'summarizeConsensus'
+        cmd = "{e} --variantsGff {g} {f} --output {t}"
+        _d = dict(e=exe, g=input_files[0], f=input_files[1], t=output_files[0])
+        cmds.append(cmd.format(**_d))
+        return cmds
+
 class AlignmentSetScatterContigs(MetaScatterTaskBase):
     """AlignmentSet scattering by Contigs
     """
@@ -229,3 +315,71 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
         return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
 
 
+class TopVariantsReport(MetaTaskBase):
+    """Consensus Reports to compute Top Variants"""
+    TASK_ID = 'pbsmrtpipe.tasks.ds_top_variants_report'
+    NAME = "Top Variants Report"
+    VERSION = "0.1.0"
+
+    TASK_TYPE =  TaskTypes.DISTRIBUTED
+
+    INPUT_TYPES = [(FileTypes.DS_REF, "ds_ref", "PacBio ReferenceSet XML"),
+                   (FileTypes.GFF, 'gff', "GFF Alignment Summary")]
+    OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "Pacbio JSON Report")]
+    OUTPUT_FILE_NAMES = [('top_variants_report', 'json')]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+    RESOURCE_TYPES = None
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+
+        reference_dir = os.path.dirname(os.path.dirname(input_files[0]))
+        exe = "pbreport.py topvariants"
+        json_report = os.path.basename(output_files[0])
+        o = os.path.dirname(output_files[0])
+
+        cmd = "{e} --debug {o} {j} {g} {rd}"
+        _d = dict(e=exe, o=o, j=json_report, g=input_files[1], rd=reference_dir)
+        return cmd.format(**_d)
+
+
+class VariantsReport(MetaTaskBase):
+    """Consensus Variants Reports"""
+    TASK_ID = 'pbsmrtpipe.tasks.ds_variants_report'
+    NAME = "Variants Report"
+    VERSION = "1.0.0"
+
+    TASK_TYPE = TaskTypes.DISTRIBUTED
+
+    INPUT_TYPES = [(FileTypes.DS_REF, "ds_ref", "PacBio ReferenceSet XML"),
+                   (FileTypes.GFF, "gff", "Gff File"),
+                   (FileTypes.GFF, "gff", "Gff File")]
+    OUTPUT_TYPES = [(FileTypes.REPORT, 'rpt', "Pacbio JSON Report")]
+    OUTPUT_FILE_NAMES = [('variants_report', 'json')]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+    RESOURCE_TYPES = None
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        """
+        Generates a table showing consensus stats and a report showing variants
+        plots for the top 25 contigs of the supplied reference.
+
+        Inputs types: Reference Entry dir, Alignment.gff, Variants.gff
+
+        """
+        exe = "pbreport.py variants --debug"
+        json_report = os.path.basename(output_files[0])
+        output_dir = os.path.dirname(output_files[0])
+        reference_dir = os.path.dirname(os.path.dirname(input_files[0]))
+
+        cmd = "{e} {o} {j} '{rd}' {g} {v}"
+        d = dict(e=exe, o=output_dir, j=json_report,
+                 g=input_files[1], rd=reference_dir,
+                 v=input_files[2])
+
+        return cmd.format(**d)
