@@ -114,7 +114,7 @@ class MappingReportTask(MetaTaskBase):
         output_dir = os.path.dirname(output_files[0])
         report_json = os.path.basename(output_files[0])
         _d = dict(e=exe, i=input_files[0], o=output_dir, j=report_json)
-        return "{e} --debug {i} --output {o} {j}".format(**_d)
+        return "{e} --debug {i} {j}".format(**_d)
 
 
 def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
