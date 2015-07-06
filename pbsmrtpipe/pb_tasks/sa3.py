@@ -110,10 +110,7 @@ class MappingReportTask(MetaTaskBase):
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):
         exe = "mapping_stats"
-        # this needs to be changed
-        output_dir = os.path.dirname(output_files[0])
-        report_json = os.path.basename(output_files[0])
-        _d = dict(e=exe, i=input_files[0], o=output_dir, j=report_json)
+        _d = dict(e=exe, i=input_files[0], j=output_files[0])
         return "{e} --debug {i} {j}".format(**_d)
 
 
