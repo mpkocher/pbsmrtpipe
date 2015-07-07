@@ -31,7 +31,7 @@ def f():
 @register_pipeline("pbsmrtpipe.pipelines.dev_01_ds", "Example Dev 01 Subread DataSet pipeline")
 def f():
     """Simplest possible pipeline, a single Task"""
-    b = [("$entry:e_01", "pbsmrtpipe.tasks.dev_subread_report:0")]
+    b = [("$entry:eid_subread", "pbsmrtpipe.tasks.dev_subread_report:0")]
     return b
 
 
