@@ -39,13 +39,6 @@ LogMessage = namedtuple("LogMessage", "sourceId level message")
 PbsmrtpipeLogResource = LogResource(SERVICE_LOGGER_RESOURCE_ID, "Pbsmrtpipe",
                                     "Secondary Analysis Pbsmrtpipe Job logger")
 
-# Official updating of job state. The scala jobtype executor will set this
-# EventMessage = namedtuple("EventMessage", "")
-
-
-def log_progress_state(log_service, log_resource, log_message):
-    pass
-
 
 class JobTypes(object):
     IMPORT_DS = "import-dataset"
@@ -79,6 +72,7 @@ rqget = _get_requests(HEADERS)
 
 
 def _process_rget(func):
+    # apply the tranform func to the output of GET request if it was successful
     def wrapper(total_url):
         r = rqget(total_url)
         r.raise_for_status()
@@ -89,6 +83,7 @@ def _process_rget(func):
 
 
 def _process_rpost(func):
+    # apply the transform func to the output of POST request if it was successful
     def wrapper(total_url, payload_d):
         r = rqpost(total_url, payload_d)
         r.raise_for_status()
@@ -149,6 +144,7 @@ class ServiceAccessLayer(object):
         return _process_rget(_null_func)(_to_url(self.uri,"/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
 
     def _import_dataset(self, dataset_type, path):
+        # This returns a job resource
         return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
 
     def import_dataset_subread(self, path):
