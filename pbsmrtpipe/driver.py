@@ -1024,13 +1024,14 @@ def _validate_entry_points_or_raise(entry_points_d):
     return True
 
 
-def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline, entry_points_d, preset_xml, rc_preset_or_none):
+def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=False):
     """
     Load and resolve input IO layer
 
     # Load Presets and Workflow Options. Resolve and Merge
     # The Order of loading is
     # - rc, workflow.xml, then preset.xml
+    # force_distribute will attempt to override ALL settings (if cluster_manager is defined)
 
     :returns: A tuple of Workflow Bindings, Workflow Level Options, Task Opts, ClusterRenderer)
     :rtype: (List[(str, str)], WorkflowLevelOpts, {TaskId:value}, ClusterRenderer)
@@ -1097,13 +1098,16 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
+        # override distributed mode
+        if force_distribute:
+            workflow_level_opts.distributed_mode = True
     else:
         cluster_render = None
 
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
-def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none):
+def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=False):
 
     slog.info("validating entry points. {e}".format(e=entry_points_d))
     _validate_entry_points_or_raise(entry_points_d)
@@ -1138,6 +1142,9 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
 
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
+        # override distributed mode
+        if force_distribute:
+            workflow_level_opts.distributed_mode = True
     else:
         cluster_render = None
 
@@ -1227,7 +1234,7 @@ def workflow_exception_exitcode_handler(func):
 
 
 @workflow_exception_exitcode_handler
-def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode, serivice_uri):
+def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode, serivice_uri, force_distribute=False):
     """
 
 
@@ -1251,7 +1258,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     log.debug(pprint.pformat(entry_points_d))
 
     workflow_bindings, workflow_level_opts, task_opts, cluster_render = _load_io_for_workflow(registered_tasks_d, registered_pipelines_d, workflow_template_xml,
-                                                                                              entry_points_d, preset_xml, rc_preset_or_none)
+                                                                                              entry_points_d, preset_xml, rc_preset_or_none, force_distribute=force_distribute)
 
     slog.info("building graph")
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, workflow_bindings)
@@ -1313,7 +1320,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 
 
 @workflow_exception_exitcode_handler
-def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none, service_config):
+def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none, service_config, force_distribute=False):
     """
     Run a task by id.
 
@@ -1329,7 +1336,7 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
                        "'show-tasks' to get a list of registered tasks.".format(i=task_id))
 
     print entry_points_d
-    workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d, preset_xml, rc_preset_or_none)
+    workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=force_distribute)
 
     task_runner_func = run_task_manifest
     task_cluster_runner_func = run_task_manifest_on_cluster
@@ -1342,7 +1349,7 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
 
     return exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
                         registered_tasks_d,
-                        registered_file_types_d, cluster_render, task_runner_func, task_cluster_runner_func)
+                        registered_file_types_d, cluster_render, task_runner_func, task_cluster_runner_func, service_config)
 
 
 

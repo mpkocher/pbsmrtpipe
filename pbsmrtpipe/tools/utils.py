@@ -31,7 +31,8 @@ def get_base_pacbio_parser(version, description):
     :param description: Description of your tool
     :return: Parser instance
     """
-    p = argparse.ArgumentParser(version=version, description=description,
+    p = argparse.ArgumentParser(version=version,
+                                description=description,
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     return p
 
@@ -77,3 +78,9 @@ add_fofn_output = _add_input_file("fofn_out", str, "Path to output FOFN.")
 add_report_output = _add_input_file("json_report", str, "Path to PacBio JSON Report")
 
 add_subread_input = _add_input_file("subread_ds", validate_file, "Path to PacBio Subread DataSet XML")
+
+
+def add_force_distribute_option(p):
+    p.add_argument('--force-distribute', action="store_true",
+                   help="Override distribute mode in preset.xml and enabling distributed mode. If pbsmrtpipe.options.cluster_manager is not defined, distribute mode will still be disabled.")
+    return p

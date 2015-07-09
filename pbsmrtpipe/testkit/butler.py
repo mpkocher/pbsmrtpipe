@@ -8,7 +8,11 @@ log = logging.getLogger(__name__)
 
 EXE = "pbsmrtpipe"
 
-__all__ = ['ButlerTask', 'ButlerWorkflow', 'config_parser_to_butler']
+__all__ = ['ButlerTask',
+           'ButlerWorkflow',
+           'config_parser_to_butler']
+
+__author__ = "Michael Kocher"
 
 
 class TestkitCfgParserError(ValueError):
@@ -35,12 +39,12 @@ class Constants(object):
 class Butler(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, output_dir, entry_points, preset_xml, debug, mock_mode):
+    def __init__(self, output_dir, entry_points, preset_xml, debug, force_distribute=False):
         self.output_dir = output_dir
         self.entry_points = entry_points
         self.preset_xml = preset_xml
         self.debug_mode = debug
-        self.mock_mode = mock_mode
+        self.force_distribute = force_distribute
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, p=self.prefix)
@@ -54,12 +58,12 @@ class Butler(object):
     def to_cmd(self):
         return _to_pbsmrtpipe_cmd(self.prefix, self.output_dir,
                                   self.entry_points, self.preset_xml,
-                                  self.debug_mode, self.mock_mode)
+                                  self.debug_mode, self.force_distribute)
 
 
 class ButlerWorkflow(Butler):
-    def __init__(self, output_dir, workflow_xml, entry_points, preset_xml_path, debug, mock_mode):
-        super(ButlerWorkflow, self).__init__(output_dir, entry_points, preset_xml_path, debug, mock_mode)
+    def __init__(self, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=False):
+        super(ButlerWorkflow, self).__init__(output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute)
         self.workflow_xml = workflow_xml
 
     @property
@@ -68,8 +72,8 @@ class ButlerWorkflow(Butler):
 
 
 class ButlerTask(Butler):
-    def __init__(self, output_dir, task_id, entry_points, preset_xml, debug, mock_mode):
-        super(ButlerTask, self).__init__(output_dir, entry_points, preset_xml, debug, mock_mode)
+    def __init__(self, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=False):
+        super(ButlerTask, self).__init__(output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute)
         self.task_id = task_id
 
     @property
@@ -77,14 +81,14 @@ class ButlerTask(Butler):
         return "task {i}".format(i=self.task_id)
 
 
-def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, mock_mode):
+def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, force_distribute):
     ep_str = " ".join([' -e ' + ":".join([k, v]) for k, v in entry_points_d.iteritems()])
     d_str = '--debug' if debug else " "
     p_str = " " if preset_xml is None else "--preset-xml={p}".format(p=preset_xml)
-    m_str = ' --mock ' if mock_mode else " "
     m_str = ' '
-    _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str)
-    cmd = "{x} {m} {d} {e} {p} {k} --output-dir={o}"
+    force_dist_str = "--force-distribute" if force_distribute else ""
+    _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str, f=force_dist_str)
+    cmd = "{x} {m} {d} {e} {p} {k} {f} --output-dir={o}"
     return cmd.format(**_d)
 
 
@@ -108,10 +112,6 @@ def _parse_preset_xml(section_name, p, base_dir):
             return p
         else:
             raise IOError("Unable to find preset XML '{p}'".format(p=p))
-
-
-def _parse_mock_mode(section_name, p):
-    return bool(_parse_or_default(section_name, Constants.CFG_MOCK, p, False))
 
 
 def _parse_debug_mode(section_name, p):
@@ -158,11 +158,10 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         if not os.path.exists(x):
             raise IOError("Unable to find pipeline XML '{x}'".format(x=x))
 
-        m = _parse_mock_mode(Constants.CFG_WORKFLOW, p)
         d = _parse_debug_mode(Constants.CFG_WORKFLOW, p)
         workflow_xml = os.path.abspath(x)
 
-        return ButlerWorkflow(job_output_dir, workflow_xml, ep_d, preset_xml, d, m)
+        return ButlerWorkflow(job_output_dir, workflow_xml, ep_d, preset_xml, d)
 
     return _parse_workflow_config
 
@@ -171,9 +170,8 @@ def _to_parse_task_config(output_dir, base_dir):
     def _parse_task_config(p):
         ep_d, preset_xml = _parse_entry_points_and_preset_xml(Constants.CFG_TASK, p, base_dir)
         task_id = p.get(Constants.CFG_TASK, Constants.CFG_TASK_ID)
-        m = _parse_mock_mode(Constants.CFG_TASK, p)
         d = _parse_debug_mode(Constants.CFG_TASK, p)
-        b = ButlerTask(output_dir, task_id, ep_d, preset_xml, d, m)
+        b = ButlerTask(output_dir, task_id, ep_d, preset_xml, d, force_distribute=False)
 
         return b
 

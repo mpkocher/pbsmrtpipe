@@ -134,6 +134,8 @@ def get_parser():
     desc = "Run multiple testkit.cfg files in parallel"
     p = TU.get_base_pacbio_parser(__version__, desc)
     TU.add_debug_option(p)
+    TU.add_force_distribute_option(p)
+
     p.add_argument('testkit_cfg_fofn', type=validate_testkit_cfg_fofn,
                    help="File of butler.cfg file name relative to the current dir (e.g., RS_Resquencing/testkit.cfg")
     p.add_argument('-n', '--nworkers', type=int, default=1, help="Number of jobs to concurrently run.")

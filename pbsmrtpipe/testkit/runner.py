@@ -24,7 +24,7 @@ from pbsmrtpipe.utils import setup_log, StdOutStatusLogFilter
 log = logging.getLogger()
 slog = logging.getLogger(SLOG_PREFIX + __name__)
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 
 def _patch_test_cases_with_job_dir(test_cases, job_dir):
@@ -88,7 +88,7 @@ def run_butler_tests(test_cases, output_dir, output_xml):
     return 0 if result.wasSuccessful() else 1
 
 
-def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.DEBUG):
+def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.DEBUG, force_distribute=False):
     """
     Run a Butler instance.
 
@@ -99,6 +99,10 @@ def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.
     :rtype: int
     """
     started_at = time.time()
+
+    if force_distribute:
+        butler.force_distribute = force_distribute
+
     cmd = butler.to_cmd()
 
     if not os.path.exists(butler.output_dir):
@@ -172,7 +176,7 @@ def _args_run_butler(args):
     if args.only_tests:
         return run_butler_tests(test_cases, butler.output_dir, output_xml)
     else:
-        rcode = run_butler(butler, test_cases, output_xml, log_file=args.log_file, log_level=args.log_level)
+        rcode = run_butler(butler, test_cases, output_xml, log_file=args.log_file, log_level=args.log_level, force_distribute=args.force_distribute)
         return rcode
 
 
@@ -189,12 +193,13 @@ def _add_config_file_option(p):
 def get_parser():
     desc = "Testkit Tool to run pbsmrtpipe jobs."
     p = TU.get_base_pacbio_parser(__version__, desc)
-    TU.add_debug_option(p)
 
-    funcs = [_add_config_file_option,
+    funcs = [TU.add_debug_option,
+             _add_config_file_option,
              add_tests_only_option,
              add_log_level_option,
-             add_log_file_options]
+             add_log_file_options,
+             TU.add_force_distribute_option]
 
     f = compose(*funcs)
     p = f(p)

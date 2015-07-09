@@ -47,11 +47,6 @@ def add_log_level_option(p):
     return p
 
 
-def _add_debug_option(p, message="Print debug output to stdout."):
-    p.add_argument('--debug', action='store_true', help=message)
-    return p
-
-
 def _add_mock_option(p):
     p.add_argument('--mock', action='store_true', help=argparse.SUPPRESS)
     return p
@@ -337,13 +332,7 @@ def _args_run_pipeline(args):
 
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri)
-
-
-def get_base_parser():
-    desc = "Description of pbsmrtpipe {v}".format(v=pbsmrtpipe.get_version())
-    p = argparse.ArgumentParser(version=pbsmrtpipe.get_version(), description=desc)
-    return p
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri, force_distribute=args.force_distribute)
 
 
 def _validate_entry_id(e):
@@ -396,10 +385,10 @@ def _add_webservice_config(p):
 
 def __add_pipeline_parser_options(p):
     """Common options for all running pipelines or tasks"""
-    funcs = [_add_debug_option, _add_output_dir_option,
+    funcs = [TU.add_debug_option, _add_output_dir_option,
              _add_entry_point_option, _add_preset_xml_option,
              _add_rc_preset_xml_option,
-             _add_mock_option, _add_webservice_config]
+             _add_mock_option, _add_webservice_config, TU.add_force_distribute_option]
 
     f = compose(*funcs)
     return f(p)
@@ -426,10 +415,9 @@ def add_show_template_details_parser_options(p):
 
 
 def add_task_parser_options(p):
-    _add_debug_option(p)
-    funcs = [_add_task_id_option, _add_entry_point_option, _add_output_dir_option,
+    funcs = [TU.add_debug_option,  _add_task_id_option, _add_entry_point_option, _add_output_dir_option,
              _add_preset_xml_option, _add_rc_preset_xml_option,
-             _add_mock_option]
+             _add_mock_option,  TU.add_force_distribute_option]
     f = compose(*funcs)
     return f(p)
 
@@ -443,7 +431,7 @@ def _args_task_runner(args):
     # the code expects entry: version
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
-    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri)
+    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri, force_distribute=args.force_distribute)
 
 
 def _args_run_show_workflow_level_options(args):
@@ -489,7 +477,8 @@ def _args_run_pipeline_id(args):
 
 
 def get_parser():
-    p = get_base_parser()
+    desc = "Pbsmrtpipe workflow engine"
+    p = TU.get_base_pacbio_parser(pbsmrtpipe.get_version(), desc)
 
     sp = p.add_subparsers(help='commands')
 
