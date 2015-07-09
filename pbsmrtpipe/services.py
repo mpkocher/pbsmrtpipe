@@ -112,7 +112,7 @@ def _import_dataset_by_type(dataset_type_id):
 
 
 class ServiceAccessLayer(object):
-    """Access Layer for interfacing with the Secondary Analysis SMRT Server"""
+    """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
     def __init__(self, base_url, port):
         self.base_url = base_url
         self.port = port
@@ -160,7 +160,41 @@ class ServiceAccessLayer(object):
         _d = dict(id=idx, name=name, description=description)
         return _process_rpost(_null_func)(_to_url(self.uri, "/loggers"), _d)
 
-    def log_progress_update(self, job_type_id, job_id, message, level,
-                            source_id):
+    def log_progress_update(self, job_type_id, job_id, message, level, source_id):
+        """This is the generic job logging mechanism"""
         _d = dict(message=message, level=level, sourceId=source_id)
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{t}/{i}/log".format(t=job_type_id, i=job_id)), _d)
+
+
+
+def log_pbsmrtpipe_progress(total_url, message, level, source_id, ignore_errors=True):
+    """Log the status of a pbsmrtpipe to SMRT Server"""
+
+    # Need to clarify the model here. Trying to pass the most minimal
+    # data necessary to pbsmrtpipe.
+    _d = dict(message=message, level=level, sourceId=source_id)
+    func = _process_rpost(_null_func)
+    if ignore_errors:
+        try:
+            return func(total_url, _d)
+        except Exception as e:
+            log.warn("Failed Request to {u} data: {d}. {e}".format(u=total_url, d=_d, e=e))
+    else:
+        return func(total_url, _d)
+
+
+def add_datastore_file(total_url, datastore_file, ignore_errors=True):
+    """Add datastore to SMRT Server
+
+    :type datastore_file: DataStoreFile
+    """
+    _d = datastore_file.to_dict()
+    func = _process_rpost(_null_func)
+    if ignore_errors:
+        try:
+            return func(total_url, _d)
+        except Exception as e:
+            log.warn("Failed Request to {u} data: {d}. {e}".format(u=total_url, d=_d, e=e))
+    else:
+        return func(total_url, _d)
+

@@ -17,8 +17,8 @@ from pbcore.io import DataSet
 
 import pbsmrtpipe
 from pbsmrtpipe import opts_graph as GX
-from pbsmrtpipe.exceptions import PipelineRuntimeError, \
-    PipelineRuntimeKeyboardInterrupt
+from pbsmrtpipe.exceptions import (PipelineRuntimeError,
+                                   PipelineRuntimeKeyboardInterrupt)
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.bgraph as B
 import pbsmrtpipe.cluster as C
@@ -37,6 +37,10 @@ from pbsmrtpipe.models import (FileTypes, RunnableTask, TaskTypes, Pipeline,
 from pbsmrtpipe.utils import setup_log
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
 from pbsmrtpipe.report_model import Attribute, Report, Table, Column, Plot, PlotGroup
+
+
+import pbsmrtpipe.services as WS
+
 import pbsmrtpipe.constants as GlobalConstants
 
 
@@ -601,23 +605,29 @@ def _are_workers_alive(workers):
     return all(w.is_alive() for w in workers.values())
 
 
-def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output_dir, registered_tasks_d, registered_file_types, cluster_renderer, task_manifest_runner_func, task_manifest_cluster_runner_func, workers, shutdown_event):
+def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output_dir,
+                   registered_tasks_d, registered_file_types, cluster_renderer,
+                   task_manifest_runner_func, task_manifest_cluster_runner_func, workers, shutdown_event, service_uri_or_none):
     """
+    Core runner of a workflow.
 
     :type bg: BindingsGraph
     :type cluster_renderer: ClusterTemplateRender | None
     :type workflow_opts: WorkflowLevelOptions
     :type output_dir: str
+    :type service_uri_or_none: str | None
 
     :param workers: {taskid:Worker}
     :return:
 
-    The function is doing way too much.
+    The function is doing way too much. This is really terrible.
     """
     job_id = random.randint(100000, 999999)
     m_ = "Distributed" if workflow_opts.distributed_mode is not None else "Local"
     slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
     log.info("exe'ing workflow Cluster renderer {c}".format(c=cluster_renderer))
+    slog.info("Service URI: {i} {t}".format(i=service_uri_or_none, t=type(service_uri_or_none)))
+
     started_at = time.time()
 
     # To store all the reports that are displayed in the analysis.html
@@ -679,7 +689,7 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
     max_nchunks = workflow_opts.max_nchunks
 
     # Setup logger, job directory and initialize DS
-    slog.info("creating jobs resources in {o}".format(o=output_dir))
+    slog.info("creating job resources in {o}".format(o=output_dir))
     job_resources, ds = _job_resource_create_and_setup_logs(output_dir, bg, task_opts, workflow_opts, ep_d)
     slog.info("successfully created job resources.")
 
@@ -696,6 +706,16 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
     def get_scatter_task_id_from_task_id(task_id_):
         return _get_scatterable_task_id(chunk_operators_d, task_id_)
+
+    def services_log_update_progress(source_id_, level_, message_):
+        if service_uri_or_none is not None:
+            total_log_uri = "{u}/log".format(u=service_uri_or_none)
+            WS.log_pbsmrtpipe_progress(total_log_uri, message_, level_, source_id_, ignore_errors=True)
+
+    def services_add_datastore_file(datastore_file_):
+       if service_uri_or_none is not None:
+            total_ds_uri = "{u}/datastore".format(u=service_uri_or_none)
+            WS.add_datastore_file(total_ds_uri, datastore_file_, ignore_errors=True)
 
     has_failed = False
     sleep_time = 1
@@ -744,6 +764,7 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                             msg = "Unable to find runnable task or any tasks running and workflow is NOT completed."
                             log.error(msg)
                             log.error(B.to_binding_graph_summary(bg))
+                            services_log_update_progress("pbsmrtpipe", WS.LogLevels.ERROR, msg)
                             raise PipelineRuntimeError(msg)
 
             time.sleep(sleep_time)
@@ -754,7 +775,9 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
             write_report_(bg, TaskStates.RUNNING, is_completed)
 
             if is_completed:
-                log.info("Workflow is completed. breaking out.")
+                msg_ = "Workflow is completed. breaking out."
+                log.info(msg_)
+                services_log_update_progress("pbsmrtpipe", WS.LogLevels.INFO, msg_)
                 break
 
             if len(workers) >= max_nworkers:
@@ -776,7 +799,9 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
                 # Process Successful Task Result
                 if state_ == TaskStates.SUCCESSFUL:
-                    slog.info("Task was successful {r}".format(r=result))
+                    msg_ = "Task was successful {r}".format(r=result)
+                    slog.info(msg_)
+                    services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.INFO, msg_)
 
                     is_valid_or_emsg = B.validate_outputs_and_update_task_to_success(bg, tnode_, run_time_, bg.node[tnode_]['task'].output_files)
 
@@ -795,8 +820,13 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                     for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
                         source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
                         ds_uuid = _get_dataset_uuid_or_create(path_)
-                        ds.add(DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_))
+                        ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_)
+                        ds.add(ds_file_)
                         ds.write_update_json(job_resources.datastore_json)
+
+                        # Update Services
+                        services_add_datastore_file(ds_file_)
+
                         dsr = datastore_to_report(ds)
                         R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
                         if file_type_ == FileTypes.REPORT:
@@ -810,9 +840,13 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                     log.error(msg_ + "\n")
                     sys.stderr.write(msg_ + "\n")
                     stderr_ = os.path.join(task_.output_dir, "stderr")
-                    for line_ in _get_last_lines_of_stderr(20, stderr_):
+                    task_error_lines = _get_last_lines_of_stderr(20, stderr_)
+                    for line_ in task_error_lines:
                         log.error(line_)
-                        sys.stderr.write(line_ + "\n")
+                        # these already have newlines
+                        sys.stderr.write(line_)
+                        sys.stderr.write("\n")
+                    services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.ERROR, "\n".join(task_error_lines))
 
                     # let the remaining running jobs continue
                     w_ = workers.pop(tid_)
@@ -922,8 +956,10 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
                 # Submit job to be run.
                 B.update_task_state(bg, tnode, TaskStates.SUBMITTED)
-                log.debug("Updating task {t} to SUBMITTED".format(t=tid))
+                msg_ = "Updating task {t} to SUBMITTED".format(t=tid)
+                log.debug(msg_)
                 tid_to_tnode[tid] = tnode
+                services_log_update_progress("pbsmrtpipe::{i}".format(i=tnode.idx), WS.LogLevels.INFO, msg_)
 
             elif isinstance(tnode, EntryOutBindingFileNode):
                 # Handle EntryPoint types. This is not a particularly elegant design :(
@@ -960,10 +996,11 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
         write_report_(bg, TaskStates.KILLED, False)
         write_task_summary_report(bg)
         raise
-    except Exception:
+    except Exception as e:
         # update workflow reports to failed
         write_report_(bg, TaskStates.FAILED, False)
         write_task_summary_report(bg)
+        services_log_update_progress("pbsmrtpipe", WS.LogLevels.ERROR, "Error {e}".format(e=e))
         raise
 
     return True if was_successful else False
@@ -1109,7 +1146,7 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
 
 def exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
                  registered_tasks_d, registered_file_types_d,
-                 cluster_render, task_runner_func, task_cluster_runner_func):
+                 cluster_render, task_runner_func, task_cluster_runner_func, service_uri):
     """This is the fundamental entry point to running a pbsmrtpipe workflow."""
 
     slog.info("Initializing Workflow")
@@ -1123,7 +1160,7 @@ def exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_
     try:
         state = __exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts,
                                output_dir, registered_tasks_d, registered_file_types_d, cluster_render,
-                               task_runner_func, task_cluster_runner_func, workers, shutdown_event)
+                               task_runner_func, task_cluster_runner_func, workers, shutdown_event, service_uri)
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
             emsg = "received SIGINT. Attempting to abort gracefully."
@@ -1190,7 +1227,7 @@ def workflow_exception_exitcode_handler(func):
 
 
 @workflow_exception_exitcode_handler
-def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode):
+def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode, serivice_uri):
     """
 
 
@@ -1207,6 +1244,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     :type output_dir: str
     :type preset_xml: str | None
     :type mock_mode: bool
+    :type serivice_uri: str | None
 
     :rtype: int
     """
@@ -1233,7 +1271,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
         chunk_operators = {}
 
     return exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
-                        registered_tasks_d, registered_file_types_d, cluster_render, task_runner_func, task_cluster_runner_func)
+                        registered_tasks_d, registered_file_types_d, cluster_render, task_runner_func, task_cluster_runner_func, serivice_uri)
 
 
 def _task_to_entry_point_ids(meta_task):
@@ -1275,7 +1313,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 
 
 @workflow_exception_exitcode_handler
-def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none):
+def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none, service_config):
     """
     Run a task by id.
 
@@ -1300,7 +1338,7 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
     binding_str = _task_to_binding_strings(meta_task)
 
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, binding_str)
-    slog.info("successfully built bindings graph for task {i}".format(i=task_id))
+    slog.info("successfully   bindings graph for task {i}".format(i=task_id))
 
     return exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
                         registered_tasks_d,

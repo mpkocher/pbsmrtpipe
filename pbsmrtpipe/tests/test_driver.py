@@ -67,10 +67,11 @@ def _test_run_driver(chunk_operators, register_tasks_d, rfiles_d, ep_d, bg, job_
     log.debug(workflow_level_options)
 
     started_at = time.time()
+    service_uri = None
 
     state = D.exe_workflow(chunk_operators, ep_d, bg, task_opts, workflow_level_options,
                            job_output_dir, register_tasks_d, rfiles_d, cluster_renderer,
-                           D.run_task_manifest, D.run_task_manifest_on_cluster)
+                           D.run_task_manifest, D.run_task_manifest_on_cluster, service_uri)
     run_time = time.time() - started_at
     log.debug("Completed running driver test in {s:.2} sec".format(s=run_time))
     return state

@@ -1,8 +1,10 @@
+import json
 import os
 import pprint
 import sys
 import argparse
 import logging
+import urlparse
 
 from pbsmrtpipe.cli_utils import main_runner, args_executer, validate_file
 import pbsmrtpipe
@@ -329,14 +331,13 @@ def _args_run_pipeline(args):
     if args.debug:
         slog.debug(args)
 
-
     ep_d = _cli_entry_point_args_to_dict(args.entry_points)
 
     registered_tasks_d, registered_files_d, chunk_operators, pipelines_d = __dynamically_load_all()
 
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock)
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri)
 
 
 def get_base_parser():
@@ -372,11 +373,34 @@ def _validate_entry(e):
     raise ValueError("Invalid entry id '{e}' format. Expected ('entry_idX:/path/to/file.txt')".format(e=e))
 
 
+def __validate_json_file(path):
+    with open(path) as f:
+        _ = json.loads(f.read())
+    return path
+
+
+def _validate_uri(value):
+    # little bit of sanity testing
+    u = urlparse.urlparse(value)
+    msg = "Invalid or unsupported service URI '{i}".format(i=value)
+    if u.scheme not in ("http", "https"):
+        raise ValueError(msg)
+    return value
+
+
+def _add_webservice_config(p):
+    p.add_argument('--service-uri', type=_validate_uri, default=None,
+                   help="Remote Webservices to send update and log status to. (JSON file with host, port).")
+    return p
+
+
 def __add_pipeline_parser_options(p):
+    """Common options for all running pipelines or tasks"""
     funcs = [_add_debug_option, _add_output_dir_option,
              _add_entry_point_option, _add_preset_xml_option,
              _add_rc_preset_xml_option,
-             _add_mock_option]
+             _add_mock_option, _add_webservice_config]
+
     f = compose(*funcs)
     return f(p)
 
@@ -419,7 +443,7 @@ def _args_task_runner(args):
     # the code expects entry: version
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
-    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir, args.preset_xml, args.preset_rc_xml)
+    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri)
 
 
 def _args_run_show_workflow_level_options(args):
@@ -461,7 +485,7 @@ def _args_run_pipeline_id(args):
 
     return D.run_pipeline(pipelines, registered_files_d, registered_tasks_d, chunk_operators,
                           pipeline,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock)
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri)
 
 
 def get_parser():
