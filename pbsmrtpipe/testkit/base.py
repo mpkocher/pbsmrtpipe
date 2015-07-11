@@ -1,6 +1,7 @@
 import os
 import logging
 import types
+import time
 
 from pbsmrtpipe.models import DataStore
 from pbsmrtpipe.testkit.validators2 import DataStoreFileValidator
@@ -51,8 +52,10 @@ def _test_validator(file_type_id, validator_func, **kwargs):
         # log.info("Loaded datastore {d}".format(d=ds))
         for ds_file in ds.files.values():
             if ds_file.file_type_id == file_type_id:
+                started_at = time.time()
                 validator_func(ds_file.path, **kwargs)
-                log.debug("Successfully validated {p}".format(p=ds_file.path))
+                run_time = time.time() - started_at
+                log.debug("Successfully validated in {s:.2f} sec {p}".format(p=ds_file.path, s=run_time))
         self.assertTrue(True)
 
     return wrapper
