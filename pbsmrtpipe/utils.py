@@ -258,7 +258,9 @@ def setup_log(alog, level=logging.INFO, file_name=None, log_filter=None,
     :param log_filter: (LogFilter, None)
     :param str_formatter: (str) log formatting str
     """
-    alog.setLevel(logging.DEBUG)
+    # MK. Why is this being done?
+    alog.setLevel(level)
+
     if file_name is None:
         handler = logging.StreamHandler(sys.stdout)
     else:

@@ -112,11 +112,11 @@ def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.
     # b_err = os.path.join(butler.output_dir, 'butler.stderr')
     b_out = os.path.join(butler.output_dir, 'butler.stdout')
 
-    setup_log(log, level=logging.DEBUG, file_name=b_log)
+    setup_log(log, level=log_level, file_name=b_log)
 
     # Butler stdout log
     str_formatter = '[%(levelname)s] %(message)s'
-    setup_log(slog, level=logging.INFO,
+    setup_log(slog, level=log_level,
               file_name=b_out,
               log_filter=StdOutStatusLogFilter(),
               str_formatter=str_formatter)
