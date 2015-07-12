@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<ReferenceSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://pacificbiosciences.com/PacBioDataModel.xsd" MetaType="PacBio.DataSet.ReferenceSet" Name="DataSet_ReferenceSet" Tags="reference converter" UniqueId="69341563-3c09-441c-9919-e0eab742cdfa" Version="0.5.0" CreatedAt="2015-07-10T16:13:20.599-07:00">
+  <ExternalResources>
+	  <ExternalResource Name="PacBio Reference" Description="Points to an example references FASTA file." MetaType="PacBio.ReferenceFile.ReferenceFastaFile" ResourceId="./sequence/example.fasta" Tags="reference">
+      <FileIndices>
+	      <FileIndex MetaType="PacBio.Index.SaWriterIndex" ResourceId="./sequence/example.fasta.sa"/>
+	      <FileIndex MetaType="PacBio.Index.SamIndex" ResourceId="./sequence/example.fasta.fai"/>
+      </FileIndices>
+    </ExternalResource>
+  </ExternalResources>
+  <DataSetMetadata>
+    <TotalLength>77444</TotalLength>
+    <NumRecords>50</NumRecords>
+    <Organism>Organism name</Organism>
+    <Ploidy>Unknown ploidy</Ploidy>
+    <Contigs>
+      <Contig Name="record_0" Description="record_0" Length="86" Digest="81f4af3446b8b8978c92997993a4b228"/>
+      <Contig Name="record_0" Description="record_0" Length="132" Digest="349c0f64d604e40ad62cb02382aace96"/>
+      <Contig Name="record_0" Description="record_0" Length="154" Digest="3b9884f7a66a41ba41907f68346eb2f2"/>
+      <Contig Name="record_0" Description="record_0" Length="240" Digest="d934cfd4e2dd535fda7cc753fa163e9d"/>
+      <Contig Name="record_0" Description="record_0" Length="308" Digest="5fa7b8a65a0ba6c5ed8ee054290fc39a"/>
+      <Contig Name="record_0" Description="record_0" Length="361" Digest="8d575ba456b06605306913f54de26cbc"/>
+      <Contig Name="record_0" Description="record_0" Length="454" Digest="fb5da9eb165d88fe80720a43ab0a6afe"/>
+      <Contig Name="record_0" Description="record_0" Length="492" Digest="e64f6d42df78a6c03712bee7fbc81bef"/>
+      <Contig Name="record_0" Description="record_0" Length="571" Digest="612e6fd50a438b2784c9d884f6916cf9"/>
+      <Contig Name="record_0" Description="record_0" Length="600" Digest="6fc8a500d33745270cc0b5f90d4388c7"/>
+      <Contig Name="record_0" Description="record_0" Length="620" Digest="289043cf7eec9151601bbfe61fdca893"/>
+      <Contig Name="record_0" Description="record_0" Length="643" Digest="3e7c9142ed899c8bf207320af264c5b0"/>
+      <Contig Name="record_0" Description="record_0" Length="723" Digest="3dc341a7da3890e3804b07884e3a28b6"/>
+      <Contig Name="record_0" Description="record_0" Length="763" Digest="ee226410a73cc91b839ab42107d1c150"/>
+      <Contig Name="record_0" Description="record_0" Length="858" Digest="b74e8d93d4add1f7296259a259f4624c"/>
+      <Contig Name="record_0" Description="record_0" Length="922" Digest="9012f04bc7506ca1d640eae35d6f2d76"/>
+      <Contig Name="record_0" Description="record_0" Length="947" Digest="61cb4722b074dee53f0cd6f14eab89e4"/>
+      <Contig Name="record_0" Description="record_0" Length="1041" Digest="6de201c2caf79afc3c0f4f3d0c433897"/>
+      <Contig Name="record_0" Description="record_0" Length="1099" Digest="44f2ee4ea9768d91784af68bb23c4358"/>
+      <Contig Name="record_0" Description="record_0" Length="1161" Digest="f267543c8ebc79df498261f1761bb522"/>
+      <Contig Name="record_0" Description="record_0" Length="1212" Digest="743ab9eaae4a64b82c408398a4d06a78"/>
+      <Contig Name="record_0" Description="record_0" Length="1289" Digest="4e1c8770a713eb069a8fb825edc04048"/>
+      <Contig Name="record_0" Description="record_0" Length="1359" Digest="445d2936fd9d120cd795e71e82783320"/>
+      <Contig Name="record_0" Description="record_0" Length="1458" Digest="a3a7e57d7ce77bf53cd536c3e22b9c47"/>
+      <Contig Name="record_0" Description="record_0" Length="1534" Digest="367223e36fe062e650d6ef5470aafa61"/>
+      <Contig Name="record_0" Description="record_0" Length="1617" Digest="7aad19ba6a5e1245c7fe55ba2d72f4b4"/>
+      <Contig Name="record_0" Description="record_0" Length="1668" Digest="1dbf16bae629f9efbbfbd7b0c1a31044"/>
+      <Contig Name="record_0" Description="record_0" Length="1757" Digest="efd9c9369a56e33a6be8a6177fedf910"/>
+      <Contig Name="record_0" Description="record_0" Length="1806" Digest="29bc80d50908b141619f3b639f77b8a8"/>
+      <Contig Name="record_0" Description="record_0" Length="1884" Digest="4a53f5d4f1e155ef2824f9cc6f29d016"/>
+      <Contig Name="record_0" Description="record_0" Length="1954" Digest="7635f2843f46af9acab41120c2332ea2"/>
+      <Contig Name="record_0" Description="record_0" Length="1983" Digest="0b46c61d89da0691992d6425b03b83e9"/>
+      <Contig Name="record_0" Description="record_0" Length="2013" Digest="1e31667096cb8e2a4487126fd405d509"/>
+      <Contig Name="record_0" Description="record_0" Length="2054" Digest="ba720bd4d5d785542064cc6ee257a76c"/>
+      <Contig Name="record_0" Description="record_0" Length="2093" Digest="cd227ec976f7015c1c924bc60a33fa03"/>
+      <Contig Name="record_0" Description="record_0" Length="2125" Digest="ff65f0f9be5d77c309e6dc45db1652a6"/>
+      <Contig Name="record_0" Description="record_0" Length="2207" Digest="7b85bf0e2204b6401db1f49a7de673c4"/>
+      <Contig Name="record_0" Description="record_0" Length="2287" Digest="44bce61df88eafc4227584903a88d684"/>
+      <Contig Name="record_0" Description="record_0" Length="2347" Digest="b554dcb3e986a53cbecd0e7b14cb6d10"/>
+      <Contig Name="record_0" Description="record_0" Length="2440" Digest="827b7b452a0c6c1bee84685e3e60c066"/>
+      <Contig Name="record_0" Description="record_0" Length="2520" Digest="07310bd0e9cdb5fc630a2e099e32ed4b"/>
+      <Contig Name="record_0" Description="record_0" Length="2612" Digest="08eae9b650aa8fe58f4ca2d6fd8c49b7"/>
+      <Contig Name="record_0" Description="record_0" Length="2661" Digest="02612aaedd93b951c4bb7ec77bc22793"/>
+      <Contig Name="record_0" Description="record_0" Length="2716" Digest="d5e5fbdf0f2060b00dad2ea062b2c128"/>
+      <Contig Name="record_0" Description="record_0" Length="2799" Digest="384888613268d143993d02be4a119f4e"/>
+      <Contig Name="record_0" Description="record_0" Length="2821" Digest="5142646d91eb004aa29c44b05feca733"/>
+      <Contig Name="record_0" Description="record_0" Length="2893" Digest="ccd74b2f4ee652b36b1dc85d52933d22"/>
+      <Contig Name="record_0" Description="record_0" Length="2987" Digest="5e3e4ef0f7e9deac464d3b5a451fc8f2"/>
+      <Contig Name="record_0" Description="record_0" Length="3038" Digest="9493c783bf9ee9a4cb0cebc81001b738"/>
+      <Contig Name="record_0" Description="record_0" Length="3135" Digest="cc7636d33357cf0c47c922d436504788"/>
+    </Contigs>
+  </DataSetMetadata>
+</ReferenceSet>

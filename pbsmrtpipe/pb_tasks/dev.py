@@ -430,3 +430,24 @@ class DevHelloDistributedTask(MetaTaskBase):
             cmds.append("cat {i} >> {o}".format(i=input_file, o=output_files[0]))
         cmds.append('echo "Ran task dev_hello_distributed" > {o}'.format(o=output_files[0]))
         return cmds
+
+
+class DevReferenceSetReportTask(MetaTaskBase):
+    TASK_ID = 'pbsmrtpipe.tasks.dev_reference_ds_report'
+    NAME = "Dev ReferenceSet Report"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.DS_REF, 'ds', "Reference DataSet")]
+    OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "A Report JSON")]
+    OUTPUT_FILE_NAMES = [('reference.report', 'json')]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 3
+    RESOURCE_TYPES = ()
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        _d = dict(i=input_files[0], o=output_files[0])
+        return "python -m pbsmrtpipe.tools.dev reference-ds-report --debug {i} {o}".format(**_d)

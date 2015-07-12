@@ -126,7 +126,6 @@ def get_dev_local_chunk():
     return b1 + b2 + b3 + b4 + b5
 
 
-
 @register_pipeline(to_pipeline_ns("dev_dist"), "Dev Hello Distributed Workflow Pipeline")
 def get_dist_dev_pipeline():
     """Simple distributed example pipeline"""
@@ -136,3 +135,12 @@ def get_dist_dev_pipeline():
           ('pbsmrtpipe.tasks.dev_hello_worlder:0', 'pbsmrtpipe.tasks.dev_hello_distributed:1')]
 
     return bs + b2
+
+
+@register_pipeline(to_pipeline_ns("dev_05"), "Reference Set Report")
+def get_reference_ds_report():
+    """Generate a simple report and plot from Reference DataSet"""
+
+    b = [("$entry:e_reference_ds", "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
+
+    return b

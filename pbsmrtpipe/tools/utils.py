@@ -79,6 +79,8 @@ add_report_output = _add_input_file("json_report", str, "Path to PacBio JSON Rep
 
 add_subread_input = _add_input_file("subread_ds", validate_file, "Path to PacBio Subread DataSet XML")
 
+add_ds_reference_input = _add_input_file("reference_ds", validate_file, "Path to PacBio Subread DataSet XML")
+
 
 def add_force_distribute_option(p):
     p.add_argument('--force-distribute', action="store_true",
