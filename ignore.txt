@@ -1,1 +1,7 @@
 .git
+.idea
+rsynced_at.txt
+notebooks/.ipynb_checkpoints
+sync_over_site_packages.sh
+sync_to_cluster.sh
+notebooks
