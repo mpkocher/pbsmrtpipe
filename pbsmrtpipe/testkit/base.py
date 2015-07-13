@@ -95,7 +95,7 @@ def _bolt_on_resources(validation_func_wrapper, cls, class_constant_id):
             _bolt_on_test_func(cls, func, fname)
         elif isinstance(file_name_or_validator, DataStoreFileValidator):
             log.info("Validator {f}".format(f=file_name_or_validator))
-            log.info(file_name_or_validator)
+            # log.info(file_name_or_validator)
             fname = "_".join(["test_validators_datastore_file_", _sanitize_test_name(file_name_or_validator.file_type_id.lower())])
             func = _test_validator(file_name_or_validator.file_type_id, file_name_or_validator.func, **file_name_or_validator.validator_func_kwargs)
             _bolt_on_test_func(cls, func, fname)
