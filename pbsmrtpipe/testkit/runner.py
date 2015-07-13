@@ -36,7 +36,7 @@ def _patch_test_cases_with_job_dir(test_cases, job_dir):
             # log.debug("Setting job dir on {c}".format(c=t))
 
 
-def _write_xunit_output(test_cases, result, output_xml):
+def _write_xunit_output(test_cases, result, output_xml, job_id):
     xml = X.convert_suite_and_result_to_xunit(test_cases, result)
 
     log.info("Writing Xunit XML output to {f}".format(f=output_xml))
@@ -48,10 +48,6 @@ def _write_xunit_output(test_cases, result, output_xml):
     slog.info(str(xsuite))
     slog.info(xsuite)
     nfailed_tests = xsuite.nfailure
-
-    # TODO FIXME
-    # job_name = pysiv_job_id_from_path(self.output_dir)
-    job_id = "job_{x}".format(x=random.randint(1, 100))
 
     jenkins_xml = X.xunit_file_to_jenkins(output_xml, job_name=job_id)
 
@@ -66,7 +62,7 @@ def _write_xunit_output(test_cases, result, output_xml):
     log.info("Completed running {t} tests. {n} failed tests.".format(n=nfailed_tests, t=len(xsuite)))
 
 
-def run_butler_tests(test_cases, output_dir, output_xml):
+def run_butler_tests(test_cases, output_dir, output_xml, job_id):
     """
 
     :return:
@@ -83,7 +79,7 @@ def run_butler_tests(test_cases, output_dir, output_xml):
     test_suite.run(result)
     log.debug(result)
 
-    _write_xunit_output(test_cases, result, output_xml)
+    _write_xunit_output(test_cases, result, output_xml, job_id)
 
     return 0 if result.wasSuccessful() else 1
 
@@ -130,6 +126,7 @@ def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.
         setup_log(log, level=level, file_name=log_file)
 
     # log.debug(pprint.pformat(butler.__dict__))
+    slog.info("Running butler with id {i}".format(i=butler.job_id))
     slog.info("Running cmd '{c}'".format(c=cmd))
 
     def _to_p(file_name):
@@ -152,7 +149,7 @@ def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.
                 slog.info(msg)
 
         if test_cases is not None:
-            trcode = run_butler_tests(test_cases, butler.output_dir, output_xml)
+            trcode = run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
         else:
             trcode = 0
 
@@ -174,7 +171,7 @@ def _args_run_butler(args):
     output_xml = os.path.join(butler.output_dir, 'testkit_xunit.xml')
 
     if args.only_tests:
-        return run_butler_tests(test_cases, butler.output_dir, output_xml)
+        return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
     else:
         rcode = run_butler(butler, test_cases, output_xml, log_file=args.log_file, log_level=args.log_level, force_distribute=args.force_distribute)
         return rcode

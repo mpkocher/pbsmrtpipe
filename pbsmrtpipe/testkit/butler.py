@@ -24,6 +24,8 @@ class Constants(object):
     CFG_TASK = 'pbsmrtpipe:task'
     CFG_WORKFLOW = 'pbsmrtpipe:pipeline'
 
+    CFG_JOB_ID ="id"
+
     CFG_ENTRY_POINTS = 'entry_points'
 
     CFG_PREFIX_XML = 'preset_xml'
@@ -39,12 +41,14 @@ class Constants(object):
 class Butler(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, output_dir, entry_points, preset_xml, debug, force_distribute=False):
+    def __init__(self, job_id, output_dir, entry_points, preset_xml, debug, force_distribute=False):
         self.output_dir = output_dir
         self.entry_points = entry_points
         self.preset_xml = preset_xml
         self.debug_mode = debug
         self.force_distribute = force_distribute
+        # this needs to be set in the Butler.cfg file.
+        self.job_id = job_id
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, p=self.prefix)
@@ -62,8 +66,8 @@ class Butler(object):
 
 
 class ButlerWorkflow(Butler):
-    def __init__(self, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=False):
-        super(ButlerWorkflow, self).__init__(output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute)
+    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=False):
+        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute)
         self.workflow_xml = workflow_xml
 
     @property
@@ -72,8 +76,8 @@ class ButlerWorkflow(Butler):
 
 
 class ButlerTask(Butler):
-    def __init__(self, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=False):
-        super(ButlerTask, self).__init__(output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute)
+    def __init__(self, job_id, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=False):
+        super(ButlerTask, self).__init__(job_id, output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute)
         self.task_id = task_id
 
     @property
@@ -161,17 +165,24 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         d = _parse_debug_mode(Constants.CFG_WORKFLOW, p)
         workflow_xml = os.path.abspath(x)
 
-        return ButlerWorkflow(job_output_dir, workflow_xml, ep_d, preset_xml, d)
+        # FIXME. This should be defined in cfg file.
+        default_job_id = os.path.basename(base_dir)
+        job_id = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_JOB_ID, p, default_job_id)
+
+        return ButlerWorkflow(job_id, job_output_dir, workflow_xml, ep_d, preset_xml, d)
 
     return _parse_workflow_config
 
 
 def _to_parse_task_config(output_dir, base_dir):
     def _parse_task_config(p):
+        # FIXME. This should be defined in cfg file.
+        default_job_id = os.path.basename(base_dir)
         ep_d, preset_xml = _parse_entry_points_and_preset_xml(Constants.CFG_TASK, p, base_dir)
+        job_id = _parse_or_default(Constants.CFG_TASK, Constants.CFG_JOB_ID, p, default_job_id)
         task_id = p.get(Constants.CFG_TASK, Constants.CFG_TASK_ID)
         d = _parse_debug_mode(Constants.CFG_TASK, p)
-        b = ButlerTask(output_dir, task_id, ep_d, preset_xml, d, force_distribute=False)
+        b = ButlerTask(job_id, output_dir, task_id, ep_d, preset_xml, d, force_distribute=False)
 
         return b
 
