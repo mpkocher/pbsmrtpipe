@@ -1024,7 +1024,7 @@ def _validate_entry_points_or_raise(entry_points_d):
     return True
 
 
-def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=False):
+def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
     """
     Load and resolve input IO layer
 
@@ -1098,8 +1098,8 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
-        # override distributed mode
-        if force_distribute:
+        # override distributed mode only if provided.
+        if force_distribute is not None:
             workflow_level_opts.distributed_mode = True
     else:
         cluster_render = None
@@ -1107,7 +1107,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
-def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=False):
+def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
 
     slog.info("validating entry points. {e}".format(e=entry_points_d))
     _validate_entry_points_or_raise(entry_points_d)
@@ -1143,8 +1143,9 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
         # override distributed mode
-        if force_distribute:
-            workflow_level_opts.distributed_mode = True
+        if force_distribute is not None:
+            if force_distribute is True:
+                workflow_level_opts.distributed_mode = True
     else:
         cluster_render = None
 
@@ -1234,7 +1235,7 @@ def workflow_exception_exitcode_handler(func):
 
 
 @workflow_exception_exitcode_handler
-def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode, serivice_uri, force_distribute=False):
+def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode, serivice_uri, force_distribute=None):
     """
 
 
@@ -1252,6 +1253,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     :type preset_xml: str | None
     :type mock_mode: bool
     :type serivice_uri: str | None
+    :type force_distribute: None | bool
 
     :rtype: int
     """
@@ -1320,7 +1322,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 
 
 @workflow_exception_exitcode_handler
-def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none, service_config, force_distribute=False):
+def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none, service_config, force_distribute=None):
     """
     Run a task by id.
 

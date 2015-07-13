@@ -330,9 +330,13 @@ def _args_run_pipeline(args):
 
     registered_tasks_d, registered_files_d, chunk_operators, pipelines_d = __dynamically_load_all()
 
+    #FIXME. Only override if value was provided.
+    #args.force_distribute
+    force_distribute = None
+
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri, force_distribute=args.force_distribute)
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri, force_distribute=force_distribute)
 
 
 def _validate_entry_id(e):
@@ -431,7 +435,11 @@ def _args_task_runner(args):
     # the code expects entry: version
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
-    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri, force_distribute=args.force_distribute)
+    # FIXME. This needs to only be over written if it's provided
+    force_distribute = None
+
+    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir,
+                             args.preset_xml, args.preset_rc_xml, args.service_uri, force_distribute=force_distribute)
 
 
 def _args_run_show_workflow_level_options(args):
