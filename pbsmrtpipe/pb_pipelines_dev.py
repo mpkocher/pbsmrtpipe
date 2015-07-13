@@ -141,6 +141,6 @@ def get_dist_dev_pipeline():
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 
-    b = [("$entry:e_reference_ds", "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
+    b = [("$entry:eid_ref_dataset", "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
 
     return b
