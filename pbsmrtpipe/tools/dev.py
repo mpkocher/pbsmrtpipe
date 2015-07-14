@@ -163,7 +163,7 @@ def _reference_dataset_plot_group(reference_ds, output_dir):
     name = "sequence_length_hist.png"
     png_path = os.path.join(output_dir, name)
     fig.savefig(png_path)
-    plots = [Plot("sequence_lengths", "./{n}".format(n=name))]
+    plots = [Plot("sequence_lengths", name)]
     pg = PlotGroup("reference_hist", "Sequence Lengths", plots=plots)
     return pg
 
