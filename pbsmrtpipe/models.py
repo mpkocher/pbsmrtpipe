@@ -561,13 +561,17 @@ class DataStore(object):
 
         :type ds_files: list[DataStoreFile]
         """
-        self.files = {f.file_id: f for f in ds_files}
+        self.files = {f.uuid: f for f in ds_files}
         self.created_at = datetime.datetime.now() if created_at is None else created_at
         self.updated_at = datetime.datetime.now()
 
+    def __repr__(self):
+        _d = dict(n=len(self.files), k=self.__class__.__name__)
+        return "<{k} nfiles={n} >".format(**_d)
+
     def add(self, ds_file):
         if isinstance(ds_file, DataStoreFile):
-            self.files[ds_file.file_id] = ds_file
+            self.files[ds_file.uuid] = ds_file
             self.updated_at = datetime.datetime.now()
         else:
             raise TypeError("DataStoreFile expected. Got type {t} for {d}".format(t=type(ds_file), d=ds_file))
