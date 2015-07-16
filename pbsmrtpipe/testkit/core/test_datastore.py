@@ -1,7 +1,6 @@
 import os
 import logging
 import json
-from pbsystem.common.cmdline.models import FileTypes
 
 from .base import TestBase
 from pbsmrtpipe.testkit.base import monkey_patch

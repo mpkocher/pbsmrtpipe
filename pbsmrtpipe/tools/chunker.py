@@ -1,8 +1,6 @@
-import json
 import os
 import sys
 import logging
-import argparse
 import math
 
 from pbcore.io.FastaIO import FastaReader
@@ -13,7 +11,7 @@ from pbsmrtpipe.legacy.reference_utils import (load_reference_entry,
 
 from pbsmrtpipe.models import PipelineChunk
 
-from pbsmrtpipe.report_model import Report, Attribute
+from pbcommand.models.report import Report, Attribute
 import pbsmrtpipe.tools.chunk_utils as CU
 import pbsmrtpipe.tools.utils as U
 import pbsmrtpipe.pb_io as IO

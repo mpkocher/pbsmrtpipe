@@ -1,17 +1,14 @@
 """CLI Tools to facilitate development testing."""
 import logging
 import os
-import random
-import tempfile
 import sys
-import string
 
 from pbcore.io import (FastaWriter, FastaReader, ReferenceSet)
 
 import pbcore.io.dataset as DIO
 
 from pbsmrtpipe.cli_utils import main_runner_default
-from pbsmrtpipe.report_model import Report, Attribute
+from pbcommand.models.report import Report, Attribute
 import pbsmrtpipe.tools.utils as U
 import pbsmrtpipe.mock as M
 from pbsmrtpipe.utils import compose

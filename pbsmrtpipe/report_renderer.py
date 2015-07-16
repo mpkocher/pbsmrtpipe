@@ -21,6 +21,30 @@ _LOADER = PackageLoader('pbsmrtpipe', package_path='html_templates')
 ENV = Environment(loader=_LOADER)
 
 
+def table_to_jinja(table):
+    """
+    Convert to jinja-template
+
+    Zip/Transpose the columns/data so easier to iterate in jinja template
+
+    :type Table
+
+    :param table:
+    :return:
+    """
+    nvalues = len(table.columns[0].values)
+
+    headers = [c.id for c in table.columns]
+    items = []
+    for c in table.columns:
+        items.append([c.values[i] for i in xrange(nvalues)])
+
+    rows = zip(*items)
+
+    _d = dict(table_id=table.id, headers=headers, rows=rows)
+    return _d
+
+
 def render_report(report):
     """
     General rendering a pbreport Report model to a string
@@ -32,13 +56,13 @@ def render_report(report):
     :rtype: str
     :return:
     """
-    import pbsmrtpipe.report_model as RM
+    import pbcommand.models.report as RM
 
     template = ENV.get_template("report.html")
 
     rattrs_d = [a.to_dict() for a in report.attributes if report.attributes]
     plot_groups_d = [pg.to_dict() for pg in report.plotGroups if report.plotGroups]
-    tables_d = [RM.table_to_jinja(t) for t in report.tables if report.tables]
+    tables_d = [table_to_jinja(t) for t in report.tables if report.tables]
 
     _d = dict(title="Report {i}".format(i=report.id),
               report_id=report.id,

@@ -5,7 +5,7 @@ import logging
 import warnings
 from xml.etree.ElementTree import ElementTree, ParseError
 
-from pbsmrtpipe.report_model import Report, Attribute
+from pbcommand.models.report import Report, Attribute
 
 log = logging.getLogger(__name__)
 

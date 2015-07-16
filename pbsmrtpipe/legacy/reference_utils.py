@@ -5,7 +5,7 @@ import functools
 
 import xml.etree.cElementTree as ET
 
-from pbsmrtpipe.report_model import Report, Attribute
+from pbcommand.models.report import Report, Attribute
 
 log = logging.getLogger(__name__)
 

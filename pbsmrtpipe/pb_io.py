@@ -9,8 +9,11 @@ import json
 import warnings
 
 import jsonschema
-from pbsystem.common.cmdline.tool_contract import load_tool_contract_from
+from pbcommand.pb_io.tool_contract_io import load_tool_contract_from
+from pbcommand.models.report import Plot, PlotGroup, Attribute, Report, Table, Column
+
 from xmlbuilder import XMLBuilder
+
 from pbsmrtpipe.core import validate_provided_file_types, validate_task_type
 from pbsmrtpipe.exceptions import PipelineTemplateIdNotFoundError
 
@@ -24,6 +27,7 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                DriverManifest, MetaStaticTask,
                                REGISTERED_FILE_TYPES)
 from pbsmrtpipe.constants import SEYMOUR_HOME
+
 
 
 log = logging.getLogger(__name__)

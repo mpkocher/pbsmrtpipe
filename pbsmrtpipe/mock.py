@@ -13,7 +13,7 @@ import pbsmrtpipe.bgraph as B
 from pbsmrtpipe.models import TaskStates, FileTypes
 
 from pbsmrtpipe.models import RunnableTask
-from pbsmrtpipe.report_model import Report, Attribute
+from pbcommand.models.report import Report, Attribute
 
 log = logging.getLogger(__name__)
 

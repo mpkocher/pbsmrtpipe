@@ -4,7 +4,7 @@ import os
 import functools
 import logging
 from pbcore.io import FastaReader, FastqReader
-from pbsystem.common.cmdline.models import FileTypes
+from pbcommand.models import FileTypes
 from pbsmrtpipe.testkit.validators import _validate_json_report
 
 log = logging.getLogger(__name__)

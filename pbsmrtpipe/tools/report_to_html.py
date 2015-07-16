@@ -3,9 +3,9 @@ import logging
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
-import pbreports.serializers as S
 import pbsmrtpipe.report_renderer as R
 import pbsmrtpipe.tools.utils as U
+from pbcommand.pb_io import load_report_from_json
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -15,7 +15,7 @@ __version__ = '1.0'
 
 def _validate_report(path):
     p = validate_file(path)
-    _ = S.json_file_to_report(path)
+    _ = load_report_from_json(path)
     return p
 
 
@@ -36,7 +36,7 @@ def _add_report_option(p):
 
 def _args_to_render_report(args):
     f = R.write_report_with_html_extras if args.with_extras else R.write_report_to_html
-    report = S.json_file_to_report(args.report_path)
+    report = load_report_from_json(args.report_path)
     return f(report, args.output_file)
 
 

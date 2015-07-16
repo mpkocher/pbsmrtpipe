@@ -36,7 +36,7 @@ from pbsmrtpipe.models import (FileTypes, RunnableTask, TaskTypes, Pipeline,
                                PipelineChunk, MetaStaticTask, MetaTask)
 from pbsmrtpipe.utils import setup_log
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
-from pbsmrtpipe.report_model import Attribute, Report, Table, Column, Plot, PlotGroup
+from pbcommand.models.report import Attribute, Report, Table, Column, Plot, PlotGroup
 
 
 import pbsmrtpipe.services as WS
