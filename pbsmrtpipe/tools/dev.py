@@ -2,6 +2,7 @@
 import logging
 import os
 import sys
+from pbcommand.cli import get_default_argparser
 
 from pbcore.io import (FastaWriter, FastaReader, ReferenceSet)
 
@@ -209,7 +210,7 @@ def _add_run_reference_dataset_report(p):
 
 
 def get_main_parser():
-    p = U.get_base_pacbio_parser(__version__, "Tool For generating MOCK data for development testing.")
+    p = get_default_argparser(__version__, "Tool For generating MOCK data for development testing.")
 
     sp = p.add_subparsers(help="Subparser Commands")
 

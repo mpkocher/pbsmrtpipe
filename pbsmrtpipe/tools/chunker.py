@@ -3,6 +3,9 @@ import sys
 import logging
 import math
 
+from pbcommand.cli import pacbio_args_runner, get_default_argparser
+from pbcommand.utils import setup_log
+
 from pbcore.io.FastaIO import FastaReader
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -358,7 +361,7 @@ def _args_run_movie_region_reference(args):
 
 def get_parser():
     desc = "Tool to create Chunk json files."
-    p = U.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
 
     sp = p.add_subparsers(help="Subparser Commands")
 

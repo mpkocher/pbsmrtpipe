@@ -7,7 +7,9 @@ import sys
 import time
 import unittest
 
-from pbsmrtpipe.cli_utils import main_runner_default, validate_file
+from pbcommand.cli import pacbio_args_runner, get_default_argparser
+# the pbcommand version raise OSError for some reason
+from pbsmrtpipe.cli_utils import validate_file
 
 from pbsmrtpipe.engine import run_command
 from pbsmrtpipe.cli import (add_log_file_options, add_log_level_option,
@@ -189,7 +191,7 @@ def _add_config_file_option(p):
 
 def get_parser():
     desc = "Testkit Tool to run pbsmrtpipe jobs."
-    p = TU.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
 
     funcs = [TU.add_debug_option,
              _add_config_file_option,
@@ -200,17 +202,13 @@ def get_parser():
 
     f = compose(*funcs)
     p = f(p)
-    p.set_defaults(func=_args_run_butler)
 
     return p
 
 
-def main(argv=None):
-
-    argv_ = sys.argv if argv is None else argv
+def main(argv=sys.argv):
     parser = get_parser()
-
-    return main_runner_default(argv_[1:], parser, log)
+    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_log)
 
 
 

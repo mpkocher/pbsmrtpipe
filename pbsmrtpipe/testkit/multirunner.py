@@ -5,7 +5,8 @@ import logging
 import sys
 import os
 
-from pbsmrtpipe.cli_utils import main_runner_default
+from pbcommand.cli import pacbio_args_runner, get_default_argparser
+from pbcommand.utils import setup_log
 
 import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import validate_file, compose
@@ -132,7 +133,7 @@ def _args_run_multi_testkit_cfg(args):
 
 def get_parser():
     desc = "Run multiple testkit.cfg files in parallel"
-    p = TU.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
     TU.add_debug_option(p)
     TU.add_force_distribute_option(p)
 
@@ -148,5 +149,5 @@ def main(argv=None):
 
     argv_ = sys.argv if argv is None else argv
     parser = get_parser()
+    return pacbio_args_runner(argv_[1:], parser, _args_run_multi_testkit_cfg, log, setup_log)
 
-    return main_runner_default(argv_[1:], parser, log)

@@ -5,6 +5,7 @@ import sys
 import argparse
 import logging
 import urlparse
+from pbcommand.cli import get_default_argparser
 
 from pbsmrtpipe.cli_utils import main_runner, args_executer, validate_file
 import pbsmrtpipe
@@ -486,7 +487,7 @@ def _args_run_pipeline_id(args):
 
 def get_parser():
     desc = "Pbsmrtpipe workflow engine"
-    p = TU.get_base_pacbio_parser(pbsmrtpipe.get_version(), desc)
+    p = get_default_argparser(pbsmrtpipe.get_version(), desc)
 
     sp = p.add_subparsers(help='commands')
 

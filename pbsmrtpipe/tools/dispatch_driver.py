@@ -1,6 +1,8 @@
 """Dispatch Driver from running Static Tasks"""
 import sys
 import logging
+from pbcommand.cli import pacbio_args_runner, get_default_argparser
+from pbcommand.utils import setup_log
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -34,7 +36,7 @@ def _args_run_driver(args):
 
 
 def get_parser():
-    p = U.get_base_pacbio_parser(__version__, "Dispatch Driver for running Static Tasks")
+    p = get_default_argparser(__version__, "Dispatch Driver for running Static Tasks")
     U.add_debug_option(p)
     p.add_argument("driver_manifest_json", type=validate_file, help="Path to driver-manifest.json")
     return p
@@ -44,9 +46,8 @@ def main(argv=None):
 
     argv_ = sys.argv if argv is None else argv
     parser = get_parser()
-    parser.set_defaults(func=_args_run_driver)
 
-    return main_runner_default(argv_[1:], parser, log)
+    return pacbio_args_runner(argv_[1:], parser, _args_run_driver, log, setup_log)
 
 
 if __name__ == '__main__':

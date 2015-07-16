@@ -125,6 +125,8 @@ def main_runner(argv, parser, exe_runner_func, setup_log_func, alog):
 
 
 def main_runner_default(argv, parser, alog):
-    # this has a loose assumption that debug has been defined in the parser
+    # FIXME. This still has the old set_defaults(func=func) and
+    # has the assumption that --debug has been assigned as an option
+    # This is used for all the subparsers
     setup_log_func = setup_log
     return main_runner(argv, parser, args_executer, setup_log_func, alog)

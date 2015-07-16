@@ -24,19 +24,6 @@ def subparser_builder(subparser, subparser_id, description, options_func, exe_fu
     return p
 
 
-def get_base_pacbio_parser(version, description):
-    """Get an argparse Parser instance
-
-    :param version: version of your tool
-    :param description: Description of your tool
-    :return: Parser instance
-    """
-    p = argparse.ArgumentParser(version=version,
-                                description=description,
-                                formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    return p
-
-
 def add_debug_option(p):
     p.add_argument('--debug', action='store_true',
                    help="Send logging info to stdout.")

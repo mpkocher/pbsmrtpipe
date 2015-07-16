@@ -3,6 +3,7 @@ import sys
 import functools
 import logging
 import inspect
+from pbcommand.cli import get_default_argparser
 
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
@@ -141,7 +142,7 @@ _args_fastq_scatter = functools.partial(_args_fastx, scatter_fastq)
 def get_parser():
 
     desc = "Scattering File Tool used within pbsmrtpipe."
-    p = U.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
 
     sp = p.add_subparsers(help="Subparser Commands")
 

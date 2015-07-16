@@ -1,5 +1,7 @@
 import sys
 import logging
+from pbcommand.cli import pacbio_args_runner, get_default_argparser
+from pbcommand.utils import setup_log
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -42,7 +44,7 @@ def _args_to_render_report(args):
 
 def get_parser():
     desc = "Transform pbreport Report to HTML file."
-    p = U.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
     U.add_debug_option(p)
     U.add_output_dir_option(p)
     _add_report_option(p)
@@ -56,6 +58,5 @@ def main(argv=None):
 
     argv_ = sys.argv if argv is None else argv
     parser = get_parser()
-
-    return main_runner_default(argv_[1:], parser, log)
+    return pacbio_args_runner(argv_[1:], parser, _args_to_render_report, log, setup_log)
 

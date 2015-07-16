@@ -3,6 +3,7 @@
 import sys
 import logging
 import argparse
+from pbcommand.cli import get_default_argparser
 
 import pbsmrtpipe
 
@@ -55,7 +56,7 @@ def _args_run_diagnostics(args):
 
 def get_main_parser():
     desc = "Tool for testing current workflow configuration."
-    p = U.get_base_pacbio_parser(pbsmrtpipe.get_version(), desc)
+    p = get_default_argparser(pbsmrtpipe.get_version(), desc)
     _add_preset_xml_option(p)
     _add_full_option(p)
 

@@ -3,6 +3,7 @@ import argparse
 import functools
 import logging
 import json
+from pbcommand.cli import get_default_argparser
 
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
@@ -204,7 +205,7 @@ _args_gather_csv = functools.partial(__args_gather_runner, gather_csv)
 def get_parser():
 
     desc = "Gathering File Tool used within pbsmrtpipe on chunk.json files."
-    p = U.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
 
     sp = p.add_subparsers(help="Commands")
 

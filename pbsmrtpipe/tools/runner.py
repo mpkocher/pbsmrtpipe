@@ -9,6 +9,7 @@ import time
 import datetime
 import functools
 import platform
+from pbcommand.cli import get_default_argparser
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
@@ -400,7 +401,7 @@ def get_main_parser():
     subparsers
     """
     desc = "General tool used by run task-manifests.json files."
-    p = U.get_base_pacbio_parser(__version__, desc)
+    p = get_default_argparser(__version__, desc)
 
     sp = p.add_subparsers(help='Subparser Commands')
 
