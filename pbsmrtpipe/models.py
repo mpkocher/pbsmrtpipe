@@ -40,6 +40,10 @@ __all__ = ['Constants', 'TaskTypes', 'SymbolTypes',
            'Pipeline', "PipelineChunk", 'ChunkOperator']
 
 
+def datetime_to_string(dt):
+    return dt.strftime('%Y-%m-%dT%H:%M:%S')
+
+
 class Constants(object):
     CHUNK_KEY_PREFIX = "$chunk."
 
@@ -539,8 +543,8 @@ class DataStoreFile(object):
                     fileTypeId=self.file_type_id,
                     path=self.path,
                     fileSize=self.file_size,
-                    createdAt=str(self.created_at),
-                    modifiedAt=str(self.modified_at))
+                    createdAt=datetime_to_string(self.created_at),
+                    modifiedAt=datetime_to_string(self.modified_at))
 
     @staticmethod
     def from_dict(d):
@@ -579,8 +583,8 @@ class DataStore(object):
     def to_dict(self):
         fs = [f.to_dict() for i, f in self.files.iteritems()]
         _d = dict(version=self.version,
-                  createdAt=str(self.created_at),
-                  updatedAt=str(self.updated_at), files=fs)
+                  createdAt=datetime_to_string(self.created_at),
+                  updatedAt=datetime_to_string(self.updated_at), files=fs)
         return _d
 
     def _write_json(self, file_name, permission):
