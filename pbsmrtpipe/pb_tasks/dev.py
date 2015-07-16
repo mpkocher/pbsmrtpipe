@@ -2,7 +2,9 @@ import logging
 
 from pbsmrtpipe.core import (MetaTaskBase, MetaScatterTaskBase,
                              MetaGatherTaskBase)
-from pbsmrtpipe.models import FileTypes, TaskTypes, ResourceTypes, SymbolTypes
+from pbsmrtpipe.models import (FileTypes, TaskTypes,
+                               ResourceTypes, SymbolTypes,
+                               MetaScatterTask)
 import pbsmrtpipe.schema_opt_utils as OP
 
 log = logging.getLogger(__name__)
@@ -280,10 +282,7 @@ class DevFofnScatterTask(MetaScatterTaskBase):
 
 
 def _simple_nchunks_di(max_nchunks, nfofn_records):
-    if max_nchunks > 2:
-        return max_nchunks / 2
-    else:
-        return 1
+     return min(max_nchunks, nfofn_records)
 
 
 class DevFofnScatterDependencyInjectionTask(MetaScatterTaskBase):
@@ -302,7 +301,18 @@ class DevFofnScatterDependencyInjectionTask(MetaScatterTaskBase):
     NPROC = 1
     RESOURCE_TYPES = None
 
-    NCHUNKS = [SymbolTypes.MAX_NCHUNKS, '$inputs.0.nrecords', _simple_nchunks_di]
+    # this works
+    NCHUNKS = (SymbolTypes.MAX_NCHUNKS, "$inputs.0.nrecords", _simple_nchunks_di)
+
+    # this works, but isn't validated after the value is computed
+    # setting NCHUNKS = 1000 will still pass the value to the cli-tool to compute
+    # max chunks correctly.
+
+    # NCHUNKS = 9
+
+    # This works.
+    # NCHUNKS = SymbolTypes.MAX_NCHUNKS
+
     # Keys that are expected to be written to the chunk.json file
     CHUNK_KEYS = ('$chunk.fofn_id', '$chunk.fofn_report_id')
 

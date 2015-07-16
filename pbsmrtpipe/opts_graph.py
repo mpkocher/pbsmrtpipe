@@ -8,6 +8,7 @@ import re
 import types
 import pprint
 import jsonschema
+from pbsmrtpipe.core import MetaScatterTaskBase
 from pbsmrtpipe.exceptions import (InvalidDependencyInjectError,
                                    MalformedDependencyInjectionFileMetadataError)
 
@@ -24,6 +25,7 @@ from pbsmrtpipe.dataset_io import (dispatch_metadata_resolver,
 import networkx as nx
 
 log = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.DEBUG)
 
 
 def get_report_json_attribute(report_file, attribute_id):
@@ -403,13 +405,17 @@ def meta_task_to_task(meta_task,
         return TaskTypes.DISTRIBUTED
 
     def _default_nchunks():
-        if isinstance(meta_task, MetaScatterTask):
+        # the old model should be removed.
+        if isinstance(meta_task, (MetaScatterTask, MetaScatterTaskBase)):
             if meta_task.chunk_di == SymbolTypes.MAX_NCHUNKS:
                 return max_nchunks
             elif isinstance(meta_task.chunk_di, int):
                 return min(meta_task.chunk_di, SymbolTypes.MAX_NCHUNKS)
 
-        return 1
+        # default to the max number of chunks. At the tool level, it
+        # should sort out how to the max number of chunks.
+        log.info("Default nchunks {x}".format(x=max_nchunks))
+        return max_nchunks
 
     default_resolve_ropts = functools.partial(default_to_ropts, resolved_values[SymbolTypes.OPTS], resolved_values[SymbolTypes.SCHEMA_OPTS])
 
@@ -450,7 +456,7 @@ def meta_task_to_task(meta_task,
         log.debug("Trying to resolve '{r}'".format(r=node))
         if node in resolved_values:
             # nothing to do here
-            #log.debug("Value {n} has been resolved. '{v}'".format(n=node, v=resolved_values[node]))
+            log.debug("Value {n} has been resolved. '{v}'".format(n=node, v=resolved_values[node]))
             pass
         else:
             # Are we using default funcs to resolve values
@@ -463,6 +469,10 @@ def meta_task_to_task(meta_task,
                 if is_di_list(di_values):
                     f = get_tail_func_or_raise(di_values)
 
+                    # this will be resolved args to func
+                    # For example, [$a, $b, func(a, b)]
+                    # then, the resolved value will computed via
+                    # value = func(a, b)
                     injectable = []
                     for x in di_values[:-1]:
                         if is_dollar_value(x):
@@ -483,7 +493,9 @@ def meta_task_to_task(meta_task,
                     log.debug("resolved '{k}' -> '{v}'".format(k=dollar_key, v=value))
                     resolved_values[dollar_key] = value
                 else:
-                    # use default value, it was supplied as a primitive
+                    # use default value, it was supplied as a primitive.
+                    # this still needs to validate the final value.
+                    # nchunks can still be computed to be > $MAX_NCHUNKS
 
                     f = default_funcs[method_prefix]
                     value = f()
@@ -491,7 +503,7 @@ def meta_task_to_task(meta_task,
                     resolved_values[dollar_key] = value
             else:
                 msg = "potentially unsupported value '{n}'".format(n=node)
-                # log.warn(msg)
+                log.warn(msg)
                 #raise ValueError(msg)
 
     # Sanity Check to make sure required values are resolved
