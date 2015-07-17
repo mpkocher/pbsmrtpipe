@@ -73,7 +73,7 @@ class AlignDataSetTask(MetaTaskBase):
 
     INPUT_TYPES = [(FileTypes.DS_SUBREADS, "rs_movie_metadata", "A RS Movie metadata.xml"),
                    (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]
-    OUTPUT_TYPES = [(FileTypes.DS_ALIGNMENT, "align_ds", "Alignment DataSet")]
+    OUTPUT_TYPES = [(FileTypes.DS_BAM, "align_ds", "Alignment DataSet")]
     OUTPUT_FILE_NAMES = [("file", "alignment_set.xml")]
 
     SCHEMA_OPTIONS = {}
@@ -98,7 +98,7 @@ class MappingReportTask(MetaTaskBase):
     VERSION = "0.1.0"
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
-    INPUT_TYPES = [(FileTypes.DS_ALIGNMENT, "ds", "Alignment DataSet")]
+    INPUT_TYPES = [(FileTypes.DS_BAM, "ds", "Alignment DataSet")]
     OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "Alignment Mapping Report")]
     OUTPUT_FILE_NAMES = [("mapping_report", "json")]
 
@@ -162,7 +162,7 @@ class DataSetCallVariants(MetaTaskBase):
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
-                   (FileTypes.DS_ALIGNMENT, "bam", "DataSet BAM Alignment")]
+                   (FileTypes.DS_BAM, "bam", "DataSet BAM Alignment")]
 
     OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Consensus GFF"),
                     (FileTypes.FASTA, "fasta", "Consensus Fasta"),
@@ -285,7 +285,7 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
 
     TASK_TYPE = TaskTypes.LOCAL
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
-                   (FileTypes.DS_ALIGNMENT, "bam", "DataSet BAM Alignment")]
+                   (FileTypes.DS_BAM, "bam", "DataSet BAM Alignment")]
 
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
                      'Generic Chunked JSON AlignmentSet')]

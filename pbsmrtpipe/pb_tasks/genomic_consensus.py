@@ -182,7 +182,7 @@ class BamCallVariants(MetaTaskBase):
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
-                   (FileTypes.DS_ALIGNMENT, "bam", "DataSet BAM Alignment"),
+                   (FileTypes.DS_BAM, "bam", "DataSet BAM Alignment"),
                    (FileTypes.TXT, "contigs_txt", "Contig Txt Header (pbcore Fasta id format)")]
 
     OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Consensus GFF"),
