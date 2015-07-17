@@ -1,11 +1,29 @@
 import logging
+import functools
 
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import to_pipeline_ns, ENTRY_PREFIX
 
-from .pb_pipelines import Constants
-
 log = logging.getLogger(__name__)
+
+
+def _to_entry(entry_prefix, value):
+    return "".join([entry_prefix, value])
+
+
+class Constants(object):
+    to_entry = functools.partial(_to_entry, ENTRY_PREFIX)
+
+    ENTRY_RS_MOVIE_XML = to_entry("rs_movie_xml")
+    ENTRY_INPUT_XML = to_entry("eid_input_xml")
+    ENTRY_REF_FASTA = to_entry("eid_ref_fasta")
+
+    ENTRY_DS_REF = to_entry("eid_ref_dataset")
+    ENTRY_BARCODE_FASTA = to_entry("eid_barcode_fasta")
+    ENTRY_BAM_ALIGNMENT = to_entry("eid_bam_alignment")
+    ENTRY_DS_HDF = to_entry("eid_hdfsubread")
+    ENTRY_DS_SUBREAD = to_entry("eid_subread")
+
 
 
 @register_pipeline(to_pipeline_ns("sa3_fetch"), "RS Movie to Subread DataSet")

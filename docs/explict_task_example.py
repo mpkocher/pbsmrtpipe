@@ -1,7 +1,6 @@
 import logging
 import os
 
-from pbsmrtpipe.core import register_task
 from pbsmrtpipe.models import TaskTypes, FileTypes
 
 

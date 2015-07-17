@@ -1,7 +1,7 @@
 import logging
 
 from pbsmrtpipe.models import ResourceTypes, FileTypes, TaskTypes
-from pbsmrtpipe.core import register_task, MetaTaskBase
+from pbsmrtpipe.core import MetaTaskBase
 import pbsmrtpipe.schema_opt_utils as OP
 from ._shared_options import GLOBAL_TASK_OPTIONS
 

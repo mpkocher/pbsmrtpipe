@@ -32,23 +32,6 @@ class TestAlignTaskCustomOptions(TestAlignTaskDefaultOptions):
                     OP.to_opt_id('pbalign_opts'): ' --minAccuracy=0.75 --minLength=50 '}
 
 
-class TestMutableTask(_TaskTestBase):
-    TASK_ID = 'pbsmrtpipe.tasks.cmph5_sort'
-    # the input files don't matter
-    INPUT_FILE_NAMES = ["alignz.cmp.h5"]
-    TASK_OPTIONS = {'pbsmrtpipe.task_options.cmph5_deep_sort': True}
-    MAX_NPROC = 1
-
-    NCOMMANDS = 1
-    RESOLVED_NPROC = 1
-
-    RESOLVED_TASK_TYPE = TaskTypes.DISTRIBUTED
-
-    def test_mutable_file(self):
-        mt = self._to_meta_tasks()
-        task = self._to_task()
-        self.assertEqual(task.input_files[0], task.output_files[0])
-
 
 class TestAlignBamDefaults(_TaskTestBase):
     TASK_ID = "pbsmrtpipe.tasks.bam_align"

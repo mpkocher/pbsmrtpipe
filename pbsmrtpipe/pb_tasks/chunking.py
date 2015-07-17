@@ -2,8 +2,7 @@ import logging
 import os
 
 from pbsmrtpipe.models import SymbolTypes, FileTypes, TaskTypes
-from pbsmrtpipe.core import register_task, register_scatter_task, register_gather_task, \
-    MetaGatherTaskBase, MetaScatterTaskBase
+from pbsmrtpipe.core import MetaGatherTaskBase, MetaScatterTaskBase
 
 log = logging.getLogger(__name__)
 

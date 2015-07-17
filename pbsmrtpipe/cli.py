@@ -123,7 +123,7 @@ def pretty_registered_pipelines(registered_new_pipelines_d):
 
 
 def pretty_bindings(bindings):
-    from pbsmrtpipe.pb_pipelines import Constants
+    from pbsmrtpipe.pb_pipelines_sa3 import Constants
 
     entry_points = {i for i, o in bindings if i.startswith(ENTRY_PREFIX)}
 

@@ -1,7 +1,7 @@
-from pbsmrtpipe.pb_pipelines import register_pipeline
+from pbsmrtpipe.core import register_pipeline
 
 
-@register_pipeline("MyWorkflowId")
+@register_pipeline("MyWorkflowId", "Description")
 def my_workflow():
     # return a list of bindings + explicit Entry points
     # this could also be serialized to XML or JSON.

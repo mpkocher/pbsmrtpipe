@@ -28,7 +28,7 @@ from pbsmrtpipe.utils import validate_type_or_raise
 
 log = logging.getLogger(__name__)
 
-__all__ = ['MetaTaskBase', 'MetaScatterTaskBase']
+__all__ = ['MetaTaskBase', 'MetaScatterTaskBase', "MetaGatherTaskBase"]
 
 
 def _binding_entry_points_to_tuple(bs):
@@ -598,110 +598,6 @@ def _validate_chunk_keys(chunk_keys):
     _raise_malformed_task_attr("CHUNK_KEYS '{m}' is malformed".format(m=chunk_keys))
 
 
-def register_task(task_id, task_type, input_types_, output_types_, opt_schema, nproc, resource_types, output_file_names=None, mutable_files=None):
-
-    input_types = validate_provided_file_types(input_types_)
-    output_types = validate_provided_file_types(output_types_)
-
-    if mutable_files is not None:
-        _validate_mutable_files(mutable_files, input_types, output_types)
-
-    # this is a bit sloppy
-
-    def wrapped_func(func):
-
-        _validate_func_with_n_args(5, func)
-
-        desc = "" if func.__doc__ is None else func.__doc__
-
-        def _(*args, **kwargs):
-            return args, kwargs
-        _validate_task_id(task_id)
-
-        to_f = to_list_if_necessary
-        r = resource_types if isinstance(resource_types, (tuple, list)) else (resource_types, )
-        rtypes = _validate_resource_types(r)
-
-        # need to copy schema opts (mutable in function)
-        sopts_copy = _validate_schema_options(copy.deepcopy(to_f(opt_schema)))
-
-        out_names = _validate_output_file_names_or_raise(output_types, output_file_names, task_id)
-
-        # Remove this when all the tasks are converted to the new structure
-        display_name = ""
-        t = MetaTask(task_id, validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), rtypes, func, out_names, mutable_files, desc, display_name, version="1.0.0")
-        _register_or_raise(t)
-
-    return wrapped_func
-
-
-def register_scatter_task(task_id, task_type, input_types_, output_types_, opt_schema, nproc, resource_types, nchunks, chunk_keys, output_file_names=None, mutable_files=None):
-
-    input_types = validate_provided_file_types(input_types_)
-    output_types = validate_provided_file_types(output_types_)
-    _validate_chunk_only_input_type(output_types)
-
-    def f(func):
-
-        _validate_task_id(task_id)
-        _validate_func_with_n_args(6, func)
-
-        desc = "" if func.__doc__ is None else func.__doc__
-
-        def _(*args, **kwargs):
-            return args, kwargs
-
-        to_f = to_list_if_necessary
-        r = resource_types if isinstance(resource_types, (tuple, list)) else (resource_types, )
-
-        # need to copy schema opts (mutables in function)
-        sopts_copy = _validate_schema_options(copy.deepcopy(to_f(opt_schema)))
-
-        out_names = _validate_output_file_names_or_raise(output_types, output_file_names, task_id)
-        chunk_keys_ = _validate_chunk_keys(chunk_keys)
-
-        display_name = ""
-        t = MetaScatterTask(task_id, validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), r, func, to_f(nchunks), chunk_keys_, out_names, mutable_files, desc, display_name, version="1.0.0")
-
-        _register_or_raise(t)
-
-    return f
-
-
-def register_gather_task(task_id, task_type, input_types_, output_types_, opt_schema, nproc, resource_types, output_file_names=None, mutable_files=None):
-
-    input_types = validate_provided_file_types(input_types_)
-    output_types = validate_provided_file_types(output_types_)
-    _validate_chunk_only_input_type(input_types)
-
-    def f(func):
-
-        _validate_task_id(task_id)
-        # Add chunk key
-        _validate_func_with_n_args(6, func)
-
-        desc = "" if func.__doc__ is None else func.__doc__
-
-        def _(*args, **kwargs):
-            return args, kwargs
-
-        to_f = to_list_if_necessary
-        r = resource_types if isinstance(resource_types, (tuple, list)) else (resource_types, )
-        rtypes = _validate_resource_types(r)
-
-        # need to copy schema opts (mutables in function)
-        sopts_copy = _validate_schema_options(copy.deepcopy(to_f(opt_schema)))
-
-        out_names = _validate_output_file_names_or_raise(output_types, output_file_names, task_id)
-
-        display_name = ""
-        t = MetaGatherTask(task_id, validate_task_type(task_type), input_types, output_types, sopts_copy, to_f(nproc), rtypes, func, out_names, mutable_files, desc, display_name)
-
-        _register_or_raise(t)
-
-    return f
-
-
 def _metaklass_to_metatask(klass, cls, name, parents, dct, validate_input_types_func, validate_output_types_func, validate_to_cmd_func):
     """
     This looks kinda crazy, but I am just trying to avoid metaclass
@@ -822,6 +718,7 @@ class _MetaScatterKlassTask(type):
 
 
 class MetaScatterTaskBase(object):
+    """This is the new model that all python defined tasks should use"""
     __metaclass__ = _MetaScatterKlassTask
 
      # this is really just for autocomplete to work
@@ -874,6 +771,7 @@ class _MetaGatherKlassTask(type):
 
 
 class MetaGatherTaskBase(object):
+    """This is the new model that all python defined tasks should use"""
     __metaclass__ = _MetaGatherKlassTask
 
     TASK_ID = None

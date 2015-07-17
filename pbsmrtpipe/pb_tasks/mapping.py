@@ -3,7 +3,7 @@ import logging
 import os
 import re
 
-from pbsmrtpipe.core import register_task, MetaTaskBase
+from pbsmrtpipe.core import MetaTaskBase
 from pbsmrtpipe.models import TaskTypes, FileTypes, SymbolTypes, ResourceTypes
 import pbsmrtpipe.schema_opt_utils as OP
 import pbsmrtpipe.pb_tasks._mapping_opts as AOP
@@ -197,55 +197,6 @@ def _to_sort_opts():
     return {oid: OP.to_option_schema(oid, "boolean", "Deep Sort", "CMP.H5 deep sort.", True)}
 
 
-@register_task("pbsmrtpipe.tasks.cmph5_sort",
-               TaskTypes.DISTRIBUTED,
-               FileTypes.ALIGNMENT_CMP_H5,
-               FileTypes.ALIGNMENT_CMP_H5,
-               _to_sort_opts(), SymbolTypes.MAX_NPROC, (),
-               mutable_files=(('$inputs.0', '$outputs.0'),))
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-    deep_flag = "--deep" if ropts['pbsmrtpipe.task_options.cmph5_deep_sort'] else ""
-    _d = dict(d=deep_flag, i=input_files[0])
-    return "cmph5tools.py -vv sort {d} --inPlace {i}".format(**_d)
-
-
-@register_task("pbsmrtpipe.tasks.cmph5_repack",
-               TaskTypes.LOCAL,
-               FileTypes.ALIGNMENT_CMP_H5,
-               FileTypes.ALIGNMENT_CMP_H5,
-                {},
-               SymbolTypes.MAX_NPROC,
-               (ResourceTypes.TMP_FILE, ),
-               mutable_files=(('$inputs.0', '$outputs.0'),))
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-    cmds = []
-    cmds.append("h5repack -f GZIP=1 {i} {f}".format(i=input_files[0], f=resources[0]))
-    cmds.append("mv {t} {i}".format(i=input_files[0], t=resources[0]))
-    return cmds
-
-
-def _to_cmph5_to_sam_opts():
-    oid = OP.to_opt_id("sam_read_groups")
-    return {oid: AOP._to_sam_read_groups()}
-
-
-@register_task("pbsmrtpipe.tasks.cmph5_to_sam",
-               TaskTypes.DISTRIBUTED,
-               (FileTypes.FASTA, FileTypes.ALIGNMENT_CMP_H5),
-               (FileTypes.BAM, FileTypes.BAMBAI, FileTypes.SAM),
-               _to_cmph5_to_sam_opts(),
-               1, ())
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-
-    #rgroups = ropts[OP.to_opt_id("sam_read_groups")]
-    rgroups = "movie"
-    exe = "pbsamtools"
-    reference_entry_dir = os.path.dirname(os.path.dirname(input_files[0]))
-    _d = dict(e=exe, o=output_files[2], r=reference_entry_dir, g=rgroups, c=input_files[1])
-    cmd = '{e} --bam --outfile "{o}" --refrepos "{r}" --readGroup "{g}" "{c}"'
-    return cmd.format(**_d)
-
-
 def _to_coverage_summary_opts():
     d = {}
     oid = OP.to_opt_id("sam_read_groups")
@@ -280,20 +231,6 @@ class AlignCoverageSummary(MetaTaskBase):
     def to_cmd(input_files, output_files, ropts, nproc, resources):
         return _to_summarize_coverage_cmd(input_files, output_files, ropts, nproc, resources)
 
-@register_task("pbsmrtpipe.tasks.extract_unmapped_subreads",
-               TaskTypes.LOCAL,
-               (FileTypes.FASTA, FileTypes.ALIGNMENT_CMP_H5),
-               FileTypes.FASTA,
-               {}, 1, (),
-               output_file_names=(('unmapped_subreads', 'fasta'), ))
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-    # s = ctrlCmpH5 = files.ctrlCmpH5.path if 'ctrlCmpH5' in files else ""
-    # This doesn't not support Control
-    exe = "extractUnmappedSubreads.py"
-    _d = dict(e=exe, s=input_files[0], c=input_files[1], o=output_files[0])
-    cmd = "{e} {s} {c} > {o}"
-    return cmd.format(**_d)
-
 
 class GffToBed(MetaTaskBase):
     TASK_ID = "pbsmrtpipe.tasks.mapping_gff_to_bed"
@@ -324,27 +261,4 @@ class GffToBed(MetaTaskBase):
 def _to_bridge_opts():
     opt_id = OP.to_opt_id("bridge_mapper.min_affix_length")
     return {opt_id: OP.to_option_schema(opt_id, ("number", "null"), "Min Affix Length", "Bridge Mapper Minimum Affix Length", None)}
-
-
-@register_task('pbsmrtpipe.tasks.run_bridge_mapper', TaskTypes.DISTRIBUTED,
-               (FileTypes.MOVIE_FOFN, FileTypes.ALIGNMENT_CMP_H5, FileTypes.FASTA),
-               FileTypes.TXT,
-               _to_bridge_opts(), SymbolTypes.MAX_NPROC, ())
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-
-    x = ropts[OP.to_opt_id('bridge_mapper.min_affix_length')]
-    minAffixLength = " " if x is None else " --min_affix_size {i} ".format(i=x)
-
-    task_dir = os.path.dirname(output_files[0])
-
-    cmds = []
-    d = dict(r=input_files[2],
-             i=input_files[0],
-             a=input_files[1],
-             n=nproc,
-             o=task_dir,
-             s=output_files,
-             m=minAffixLength)
-    cmds.append("pbbridgemapper --reference_path {r} --output_path {o} --split_reads_file {s} --nproc {n} {i} {a} {m}".format(**d))
-    return cmds
 

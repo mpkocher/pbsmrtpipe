@@ -146,7 +146,6 @@ def load_pipelines_from_python_module_name(name):
     global _REGISTERED_PIPELINES
 
     if _REGISTERED_PIPELINES is None:
-        import pbsmrtpipe.pb_pipelines
         import pbsmrtpipe.pb_pipelines_dev
         import pbsmrtpipe.pb_pipelines_sa3
         from pbsmrtpipe.models import REGISTERED_PIPELINES

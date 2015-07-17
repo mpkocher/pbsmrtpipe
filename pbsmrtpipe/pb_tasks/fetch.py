@@ -1,52 +1,12 @@
 import os
 import logging
 
-from pbsmrtpipe.core import register_task, MetaTaskBase
+from pbsmrtpipe.core import MetaTaskBase
 from pbsmrtpipe.models import TaskTypes, FileTypes
 import pbsmrtpipe.schema_opt_utils as OP
 
 
 log = logging.getLogger(__name__)
-
-
-@register_task('pbsmrtpipe.tasks.input_xml_to_fofn',
-               TaskTypes.LOCAL,
-               FileTypes.INPUT_XML,
-               (FileTypes.MOVIE_FOFN, FileTypes.REPORT),
-               {}, 1, (),
-               output_file_names=(('input', 'fofn'), ('movie_report', 'json')))
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-    """Maybe this new report just just be the overview report?"""
-    _d = dict(i=input_files[0], o=output_files[0], r=output_files[1])
-    return "pbtools-converter input-xml-to-fofn {i} {o} --report {r}".format(**_d)
-
-
-@register_task('pbsmrtpipe.tasks.movie_overview_report',
-               TaskTypes.DISTRIBUTED,
-               FileTypes.MOVIE_FOFN,
-               FileTypes.REPORT,
-               {}, 1, (),
-               output_file_names=(('overview_report', 'json'), ))
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-    _d = dict(i=input_files[0], o=output_files[0])
-    return "overview_report.py --debug {i} {o}".format(**_d)
-
-
-@register_task('pbsmrtpipe.tasks.adapter_report',
-               TaskTypes.DISTRIBUTED,
-               FileTypes.MOVIE_FOFN,
-               FileTypes.REPORT,
-               {}, 1, ('$outputdir', ),
-               output_file_names=(('adapter_report', 'json'), ))
-def to_cmd(input_files, output_files, ropts, nproc, resources):
-    exe = "pbreport.py adapter"
-    # the report must be give as a file name
-    # Leaving this for now. But all os.* should NOT be allowed.
-    json_file = os.path.basename(output_files[0])
-    report_dir = os.path.dirname(output_files[0])
-    d = dict(e=exe, o=report_dir, r=json_file, f=input_files[0])
-    cmd = "{e} {o} {r} {f}".format(**d)
-    return cmd
 
 
 def _to_reference_converter_opts():

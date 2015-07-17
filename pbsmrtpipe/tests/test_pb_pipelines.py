@@ -114,89 +114,89 @@ class _TestBase(unittest.TestCase):
         self.assertTrue(state)
 
 
-class TestRSFetch(_TestBase):
-    NTASKS = 4
-    NFILES = 8
-    EPOINTS = 1
-    PB_PIPELINE_ID = to_pipeline_ns("rs_fetch_1")
-
-
-class TestRSFilter(_TestBase):
-    NTASKS = 11
-    NFILES = 28
-    EPOINTS = 1
-    PB_PIPELINE_ID = to_pipeline_ns("rs_filter_1")
-
-
-class TestRSMapping(_TestBase):
-    NTASKS = 22
-    NFILES = 59
-    PB_PIPELINE_ID = to_pipeline_ns("rs_mapping_1")
-    EPOINTS = 2
-    EPOINTS_NAMES = {'eid_input_xml': '_entry-point_01.xml',
-                     'eid_ref_fasta': "_reference_sequence.fasta"}
-
-
-class TestRSResquencing(_TestBase):
-    NTASKS = 29
-    NFILES = 84
-    EPOINTS = 2
-    PB_PIPELINE_ID = to_pipeline_ns("rs_resequencing_1")
-    EPOINTS_NAMES = {'eid_input_xml': '_entry-point_01.xml',
-                     'eid_ref_fasta': "_reference_sequence.fasta"}
-
-
-class TestResequencingBarcode(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_resequencing_barcode_1")
-
-    NFILES = 94
-    EPOINTS = 3
-    NTASKS = 33
-
-
-class TestReadOfInsert(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_roi_1")
-
-    NFILES = 14
-    EPOINTS = 1
-    NTASKS = 6
-
-
-class TestReadOfInsertMapping(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_roi_mapping_1")
-
-    NFILES = 34
-    EPOINTS = 2
-    NTASKS = 14
-
-
-class TestSiteAcceptanceTest(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_sat_1")
-
-    NFILES = 88
-    EPOINTS = 2
-    NTASKS = 30
-
-
-class TestBridgeMapper(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_bridge_mapper_1")
-
-    NFILES = 63
-    EPOINTS = 2
-    NTASKS = 23
-
-
-class TestModificationDetection(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_modification_detection_1")
-
-    NFILES = 93
-    EPOINTS = 2
-    NTASKS = 31
-
-
-class TestModificationAndMotif(_TestBase):
-    PB_PIPELINE_ID = to_pipeline_ns("rs_modification_motif_analysis_1")
-
-    NFILES = 105
-    EPOINTS = 2
-    NTASKS = 34
+# class TestRSFetch(_TestBase):
+#     NTASKS = 4
+#     NFILES = 8
+#     EPOINTS = 1
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_fetch_1")
+#
+#
+# class TestRSFilter(_TestBase):
+#     NTASKS = 11
+#     NFILES = 28
+#     EPOINTS = 1
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_filter_1")
+#
+#
+# class TestRSMapping(_TestBase):
+#     NTASKS = 22
+#     NFILES = 59
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_mapping_1")
+#     EPOINTS = 2
+#     EPOINTS_NAMES = {'eid_input_xml': '_entry-point_01.xml',
+#                      'eid_ref_fasta': "_reference_sequence.fasta"}
+#
+#
+# class TestRSResquencing(_TestBase):
+#     NTASKS = 29
+#     NFILES = 84
+#     EPOINTS = 2
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_resequencing_1")
+#     EPOINTS_NAMES = {'eid_input_xml': '_entry-point_01.xml',
+#                      'eid_ref_fasta': "_reference_sequence.fasta"}
+#
+#
+# class TestResequencingBarcode(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_resequencing_barcode_1")
+#
+#     NFILES = 94
+#     EPOINTS = 3
+#     NTASKS = 33
+#
+#
+# class TestReadOfInsert(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_roi_1")
+#
+#     NFILES = 14
+#     EPOINTS = 1
+#     NTASKS = 6
+#
+#
+# class TestReadOfInsertMapping(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_roi_mapping_1")
+#
+#     NFILES = 34
+#     EPOINTS = 2
+#     NTASKS = 14
+#
+#
+# class TestSiteAcceptanceTest(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_sat_1")
+#
+#     NFILES = 88
+#     EPOINTS = 2
+#     NTASKS = 30
+#
+#
+# class TestBridgeMapper(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_bridge_mapper_1")
+#
+#     NFILES = 63
+#     EPOINTS = 2
+#     NTASKS = 23
+#
+#
+# class TestModificationDetection(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_modification_detection_1")
+#
+#     NFILES = 93
+#     EPOINTS = 2
+#     NTASKS = 31
+#
+#
+# class TestModificationAndMotif(_TestBase):
+#     PB_PIPELINE_ID = to_pipeline_ns("rs_modification_motif_analysis_1")
+#
+#     NFILES = 105
+#     EPOINTS = 2
+#     NTASKS = 34
