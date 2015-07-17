@@ -649,6 +649,11 @@ def write_pipeline_chunks(chunks, output_json_file, comment):
 
 
 def load_pipeline_chunks_from_json(path):
+    """Returns a list of Pipeline Chunks
+
+
+    :rtype: list[PipelineChunk]
+    """
 
     try:
         with open(path, 'r') as f:
