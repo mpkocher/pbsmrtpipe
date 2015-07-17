@@ -1,4 +1,5 @@
 """Binding Graph Model and Utils"""
+import copy
 import sys
 import datetime
 import functools
@@ -26,7 +27,7 @@ from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
                                    BindingFileTypeIncompatiblyError)
 from pbsmrtpipe.models import (FileType, TaskStates, ResourceTypes, DataStore,
                                DataStoreFile, MetaTask, MetaStaticTask,
-                               MetaScatterTask, MetaGatherTask)
+                               MetaScatterTask, MetaGatherTask, FileTypes)
 
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.utils import validate_type_or_raise
@@ -152,6 +153,11 @@ def binding_str_to_task_id_and_instance_id(s):
     return task_id, instance_id, in_out_index
 
 
+class _NodeLike(object):
+    """Base Graph Node type"""
+    NODE_ATTRS = {}
+
+
 class _NodeEqualityMixin(object):
 
     def __repr__(self):
@@ -178,14 +184,14 @@ class _DotAbleMixin(object):
     DOT_COLOR = DotColorConstants.WHITE
 
 
-class _FileLike(object):
+class _FileLike(_NodeLike):
     # Attributes initialized at the graph level
     NODE_ATTRS = {ConstantsNodes.FILE_ATTR_IS_RESOLVED: False,
                   ConstantsNodes.FILE_ATTR_PATH: None,
                   ConstantsNodes.FILE_ATTR_RESOLVED_AT: None}
 
 
-class _TaskLike(object):
+class _TaskLike(_NodeLike):
     # Attributes initialized at the graph level
     NODE_ATTRS = {ConstantsNodes.TASK_ATTR_STATE: TaskStates.CREATED,
                   ConstantsNodes.TASK_ATTR_ROPTS: {},
@@ -233,6 +239,7 @@ class EntryPointNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
 
 
 class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
+    """ Standard base Task Node """
     DOT_COLOR = DotColorConstants.AQUA
     DOT_SHAPE = DotShapeConstants.OCTAGON
 
@@ -264,6 +271,7 @@ class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
 
 
 class TaskChunkedBindingNode(TaskBindingNode):
+    """Chunked "instances" of a Task node, must have chunk_id"""
 
     DOT_SHAPE = DotShapeConstants.TRIPLE_OCTAGON
     DOT_COLOR = DotColorConstants.AQUA_DARK
@@ -279,6 +287,10 @@ class TaskChunkedBindingNode(TaskBindingNode):
 
 
 class TaskScatterBindingNode(TaskBindingNode):
+    """Scattered Task that produces a chunk.json output file type
+
+    This will have a 'companion' task that shares the same input file type signature
+    """
 
     DOT_SHAPE = DotShapeConstants.OCTAGON
     DOT_COLOR = DotColorConstants.ORANGE
@@ -290,17 +302,18 @@ class TaskScatterBindingNode(TaskBindingNode):
         self.original_task_id = original_task_id
 
 
-class TaskGatherBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
+class TaskGatherBindingNode(TaskBindingNode):
+    """Gathered Task node. Consumes a gathered chunk.json and emits a single
+    file type
+    """
     DOT_SHAPE = DotShapeConstants.OCTAGON
-    DOT_COLOR = DotColorConstants.BLUE
+    DOT_COLOR = DotColorConstants.GREY
 
-    def __init__(self, task_id):
-        self.task_id = task_id
-
-    @property
-    def idx(self):
-        _d = dict(k=self.__class__.__name__, i=self.task_id)
-        return "{k}-{i}".format(**_d)
+    def __init__(self, meta_task, instance_id, chunk_key):
+        super(TaskGatherBindingNode, self).__init__(meta_task, instance_id)
+        # Keep track of the chunk_key that was passed to the exe.
+        # Perhaps this should be in the meta task instance?
+        self.chunk_key = chunk_key
 
 
 class _BindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
@@ -1359,18 +1372,16 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
     import pbsmrtpipe.pb_io as IO
 
-    def _are_chunked_tasks_output_resolved(task_node):
-        print task_node, type(task_node)
-        if bg.node[task_node][ConstantsNodes.TASK_ATTR_STATE] == TaskStates.SUCCESSFUL:
-            return all(bg.node[f][ConstantsNodes.FILE_ATTR_PATH] is not None for f in bg.successors(task_node))
-        return True
-
     for node in bg.nodes():
         if isinstance(node, TaskScatterBindingNode):
-            # look for a completed Chunk.json file
+            # The Task was already scattered
+            if bg.node[node][ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING] is True:
+                continue
 
+            # look for a completed Chunk.json file
             if bg.node[node][ConstantsNodes.TASK_ATTR_STATE] != TaskStates.SUCCESSFUL:
                 continue
+
             #import ipdb; ipdb.set_trace()
 
             # list of all completed TaskChunkedBindingNode(s) for a given
@@ -1400,7 +1411,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                 continue
 
             scattered_pipeline_chunks = IO.load_pipeline_chunks_from_json(scattered_chunked_json_path)
-            slog.info("Loaded {n} pipeline scattered chunks form {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path))
+            slog.info("Loaded {n} pipeline scattered chunks from {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path))
             pipeline_chunks_d = {c.chunk_id: c for c in scattered_pipeline_chunks}
 
             # Look for all FC -> Fi bindings to get the tasks.
@@ -1411,27 +1422,63 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                         chunked_task_nodes.append(chunked_task_node)
                     else:
                         # TODO handle case if failed
-                        # this should exit
+                        # this should exit this func
                         continue
 
+            gathered_pipeline_chunks_d = copy.deepcopy(pipeline_chunks_d)
             # Found completed chunked files. Now:
             # 1. create Gathered JSON File and GatheredFileNode
             # 2. Create Gather tasks
             # 3. Map output of first chunked task to input of Gathered File Node (this is a hack)
+
+            # bind the first output of the first chunked task
+            all_chunked_out_files_nodes = []
             if chunked_task_nodes:
+
                 for chunked_task_node in chunked_task_nodes:
-                    print "Chunked task node", chunked_task_node, type(chunked_task_node)
-                    if isinstance(chunked_task_node, BindingChunkOutFileNode):
+                    # print "Chunked task node", chunked_task_node, type(chunked_task_node)
+                    #import ipdb; ipdb.set_trace()
+                    if isinstance(chunked_task_node, TaskChunkedBindingNode):
                         chunk_id = chunked_task_node.chunk_id
                         for output_node in bg.successors(chunked_task_node):
+                            #print "Outputs of chunked task ", output_node
+                            all_chunked_out_files_nodes.append(output_node)
                             # map to $chunk_key
                             output_chunk_key, _, _ = gs[output_node.index]
-                            pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node]['path']
+                            gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node]['path']
 
-                # write Pipeline chunks
-                print pipeline_chunks_d
-                #import ipdb; ipdb.set_trace()
-                IO.write_pipeline_chunks(pipeline_chunks_d.values(), "gathered-pipeline.chunks.json", "Gathered pipeline chunks {t}".format(t=node))
+                comment = "Gathered pipeline chunks {t}".format(t=node)
+                gathered_json = os.path.join(os.getcwd(), "gathered-pipeline.chunks.json")
+                IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
+
+                # Create New Gathered InFile Node
+                # Create all Gathered Tasks
+                for gi, gchunk in enumerate(chunk_operator.gather.chunks):
+                    g_meta_task = registered_tasks_d[gchunk.gather_task_id]
+                    g_node = TaskGatherBindingNode(g_meta_task, gi, gchunk.chunk_key)
+                    #import ipdb; ipdb.set_trace()
+                    # Both In/Out Gather Binding Types only have one input and
+                    # one output
+                    # this is still using the mixed form of [(FileType, label, desc), ]
+                    g_in_file = BindingInFileNode(g_meta_task, gi, 0, g_meta_task.input_types[0])
+                    g_out_file = BindingOutFileNode(g_meta_task, gi, 0, g_meta_task.output_types[0])
+
+                    add_node_by_type(bg, g_node)
+                    add_node_by_type(bg, g_in_file)
+                    # update the state, path of the resolved gathered file
+                    update_file_state_to_resolved(bg, g_in_file, gathered_json)
+                    add_node_by_type(bg, g_out_file)
+                    bg.add_edge(g_in_file, g_node)
+                    bg.add_edge(g_node, g_out_file)
+                    if all_chunked_out_files_nodes:
+                        for out_node in all_chunked_out_files_nodes:
+                            bg.add_edge(out_node, g_in_file)
+                    else:
+                        log.warn("No outputs found from task {n}".format(n=node))
+
+                # update chunked task to was
+                update_or_set_node_attrs(bg, [(ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING, True)], [node])
+                log.debug("Updated chunked task is_running {t}".format(t=node))
 
     return bg
 

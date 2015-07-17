@@ -521,12 +521,12 @@ def meta_task_to_task(meta_task,
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, nchunks_)
         t = ScatterTask(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles,
                         resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, resolved_values[SymbolTypes.NCHUNKS], output_dir, meta_task.chunk_keys)
-    elif isinstance(meta_task, MetaTask):
-        cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
-        t = Task(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     elif isinstance(meta_task, MetaGatherTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
         t = GatherTask(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
+    elif isinstance(meta_task, MetaTask):
+        cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
+        t = Task(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     else:
         raise TypeError("Unsupported meta task type {m}".format(m=meta_task))
 

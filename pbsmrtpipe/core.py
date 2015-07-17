@@ -480,8 +480,15 @@ def _validate_gather_input_types(x):
 def _validate_gather_output_types(x):
     _raise = _raise_malformed_task_attr("Gather output types must be a single file type. Got {x}".format(x=x))
     if isinstance(x, (list, tuple)):
+        # Only one output is allowed
         if len(x) == 1:
-            return x
+            # old format
+            if isinstance(x, FileType):
+                return [x]
+            # New Format [(FileType, label, desc)]
+            if isinstance(x[0], (list, tuple)):
+                if isinstance(x[0][0], FileType):
+                    return [x[0][0]]
     _raise()
 
 

@@ -7,6 +7,9 @@
         <option id="pbsmrtpipe.options.distributed_mode">
             <value>False</value>
         </option>
+        <option id="pbsmrtpipe.options.chunk_mode">
+            <value>True</value>
+        </option>
          <!-- This will be disabled -->
         <option id="pbsmrtpipe.options.cluster_manager" >
             <value>pbsmrtpipe.cluster_templates.sge</value>
