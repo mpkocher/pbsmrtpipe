@@ -10,12 +10,13 @@ import datetime
 import functools
 import platform
 from pbcommand.cli import get_default_argparser
+from pbcommand.models.report import Attribute, Report
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
 from pbsmrtpipe.engine import run_command, backticks
-from pbsmrtpipe.models import RunnableTask, ResourceTypes, TaskTypes
-import pbsmrtpipe.bgraph as B
+from pbsmrtpipe.models import RunnableTask, ResourceTypes, TaskTypes, TaskStates
+import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
 
 import pbsmrtpipe.tools.utils as U
@@ -58,6 +59,47 @@ def _add_run_on_cluster_option(p):
     p.add_argument('--cluster', action='store_true', default=False,
                    help="Submit tasks to cluster if the cluster env is defined and task type is 'distributed.'")
     return p
+
+
+def to_task_report(host, task_id, run_time_sec, exit_code, error_message, warning_message):
+    # Move this somewhere that makes sense
+
+    def to_a(idx, value):
+        return Attribute(idx, value)
+
+    datum = [('host', host),
+             ('task_id', task_id),
+             ('run_time', run_time_sec),
+             ('exit_code', exit_code),
+             ('error_msg', error_message),
+             ('warning_msg', warning_message)]
+
+    attributes = [to_a(i, v) for i, v in datum]
+    r = Report("workflow_task", attributes=attributes)
+    return r
+
+
+def write_task_report(job_resources, task_id, path_to_report, report_images):
+    """
+    Copy image files to job html images dir, convert the task report to HTML
+
+    :type job_resources: JobResources
+
+    :param task_id:
+    :param job_resources:
+    :param path_to_report: abspath to the json pbreport
+    :return:
+    """
+    report_html = os.path.join(job_resources.html, "{t}.html".format(t=task_id))
+    task_image_dir = os.path.join(job_resources.images, task_id)
+    if not os.path.exists(task_image_dir):
+        os.mkdir(task_image_dir)
+
+    shutil.copy(path_to_report, report_html)
+    for image in report_images:
+        shutil.copy(image, os.path.join(task_image_dir, os.path.basename(image)))
+
+    log.debug("Completed writing {t} report".format(t=task_id))
 
 
 def _create_tmp_file_resource(path):
@@ -216,12 +258,12 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
 
             total_run_time = time.time() - started_at
             warn_msg = ""
-            r = B.to_task_report(host, runnable_task.task_id, total_run_time, rcode, err_msg, warn_msg)
+            r = to_task_report(host, runnable_task.task_id, total_run_time, rcode, err_msg, warn_msg)
             task_report_path = os.path.join(output_dir, 'task-report.json')
             msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task_id)
             log.info(msg)
             stdout_fh.write(msg + "\n")
-            B.write_task_report(r, task_report_path)
+            r.write_json(task_report_path)
             stderr_fh.flush()
             stdout_fh.flush()
 
@@ -344,13 +386,51 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
             f.write(str(cstderr) + "\n")
             f.write(msg_ + "\n")
 
-    r = B.to_task_report(host, runnable_task.task_id, run_time, rcode, err_msg, warn_msg)
+    r = to_task_report(host, runnable_task.task_id, run_time, rcode, err_msg, warn_msg)
     task_report_path = os.path.join(output_dir, 'task-report.json')
     msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task_id)
     log.info(msg)
     B.write_task_report(r, task_report_path)
 
     return rcode, run_time
+
+
+def run_task_manifest(path):
+    output_dir = os.path.dirname(path)
+    stderr = os.path.join(output_dir, 'stderr')
+    stdout = os.path.join(output_dir, 'stdout')
+
+    try:
+        rt = RunnableTask.from_manifest_json(path)
+    except KeyError:
+        emsg = "Unable to deserialize RunnableTask from manifest {p}".format(p=path)
+        log.error(emsg)
+        raise
+
+    rcode, run_time = run_task(rt, output_dir, stdout, stderr, True)
+
+    state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
+    msg = "" if rcode == 0 else "Failed with exit code {r}".format(r=rcode)
+
+    return state, msg, run_time
+
+
+def run_task_manifest_on_cluster(path):
+    """
+    Run the Task on the queue (of possible)
+
+    :param path:
+    :return:
+    """
+    output_dir = os.path.dirname(path)
+    rt = RunnableTask.from_manifest_json(path)
+
+    rcode, run_time = run_task_on_cluster(rt, path, output_dir, True)
+
+    state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
+    msg = "{r} failed".format(r=rt) if rcode != 0 else ""
+
+    return state, msg, run_time
 
 
 def _args_run_task_manifest(args):

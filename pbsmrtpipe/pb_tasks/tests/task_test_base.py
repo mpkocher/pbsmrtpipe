@@ -7,7 +7,7 @@ import copy
 
 import pbsmrtpipe.loader
 import pbsmrtpipe.opts_graph as OG
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as B
 from pbsmrtpipe.core import REGISTERED_FILE_TYPES
 from pbsmrtpipe.models import TaskTypes
 

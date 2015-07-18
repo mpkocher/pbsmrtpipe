@@ -2,9 +2,9 @@ import json
 import os
 import pprint
 import sys
-import argparse
 import logging
 import urlparse
+
 from pbcommand.cli import get_default_argparser
 
 from pbsmrtpipe.cli_utils import main_runner, args_executer, validate_file
@@ -15,9 +15,7 @@ import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.driver as D
 import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import StdOutStatusLogFilter, setup_log, compose
-
-from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_VALID_BINDINGS, RX_ENTRY, RX_TASK_ID)
-
+from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY)
 
 log = logging.getLogger()
 slog = logging.getLogger('status.' + __file__)
@@ -45,11 +43,6 @@ def add_log_level_option(p):
     p.add_argument('--log-level',
                    default='INFO',
                    choices=LOG_LEVELS, help="Log LEVEL")
-    return p
-
-
-def _add_mock_option(p):
-    p.add_argument('--mock', action='store_true', help=argparse.SUPPRESS)
     return p
 
 
@@ -123,8 +116,6 @@ def pretty_registered_pipelines(registered_new_pipelines_d):
 
 
 def pretty_bindings(bindings):
-    from pbsmrtpipe.pb_pipelines_sa3 import Constants
-
     entry_points = {i for i, o in bindings if i.startswith(ENTRY_PREFIX)}
 
     s = "*" * 20
@@ -173,7 +164,7 @@ def run_show_template_details(template_id, output_preset_xml):
 
     rtasks, rfiles, operators, pipelines_d = __dynamically_load_all()
 
-    import pbsmrtpipe.bgraph as B
+    from pbsmrtpipe.graph.bgraph import binding_str_to_task_id_and_instance_id
 
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]
@@ -186,7 +177,7 @@ def run_show_template_details(template_id, output_preset_xml):
             task_options = {}
             for b_out, b_in, in pipeline.bindings:
                 for x in (b_out, b_in):
-                    task_id, _, _ = B.binding_str_to_task_id_and_instance_id(x)
+                    task_id, _, _ = binding_str_to_task_id_and_instance_id(x)
                     task = rtasks.get(task_id, None)
                     if task is None:
                         log.warn("Unable to load task {x}".format(x=task_id))
@@ -337,7 +328,7 @@ def _args_run_pipeline(args):
 
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri, force_distribute=force_distribute)
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri, force_distribute=force_distribute)
 
 
 def _validate_entry_id(e):
@@ -393,7 +384,7 @@ def __add_pipeline_parser_options(p):
     funcs = [TU.add_debug_option, _add_output_dir_option,
              _add_entry_point_option, _add_preset_xml_option,
              _add_rc_preset_xml_option,
-             _add_mock_option, _add_webservice_config, TU.add_force_distribute_option]
+             _add_webservice_config, TU.add_force_distribute_option]
 
     f = compose(*funcs)
     return f(p)
@@ -422,7 +413,7 @@ def add_show_template_details_parser_options(p):
 def add_task_parser_options(p):
     funcs = [TU.add_debug_option,  _add_task_id_option, _add_entry_point_option, _add_output_dir_option,
              _add_preset_xml_option, _add_rc_preset_xml_option,
-             _add_mock_option,  TU.add_force_distribute_option]
+             TU.add_force_distribute_option]
     f = compose(*funcs)
     return f(p)
 
@@ -482,7 +473,7 @@ def _args_run_pipeline_id(args):
 
     return D.run_pipeline(pipelines, registered_files_d, registered_tasks_d, chunk_operators,
                           pipeline,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.mock, args.service_uri)
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri)
 
 
 def get_parser():

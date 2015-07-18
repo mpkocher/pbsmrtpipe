@@ -38,6 +38,12 @@ test-pipelines:
 test-tasks:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/test_*.py
 
+test-loader:
+	python -c "import pbsmrtpipe.loader as L; L.load_all()"
+
+test-load-contracts:
+	python -c "import pbsmrtpipe.loader as L; L.load_all_pb_tool_contracts()"
+
 test-suite: test-tasks test-pipelines test-unit test-dev
 
 test-clean-suite: install test-suite

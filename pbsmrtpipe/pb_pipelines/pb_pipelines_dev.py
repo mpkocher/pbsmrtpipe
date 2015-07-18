@@ -3,6 +3,8 @@ import logging
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import to_pipeline_ns
 
+from .pb_pipelines_sa3 import Constants
+
 log = logging.getLogger(__name__)
 
 
@@ -64,24 +66,31 @@ def f():
 def f():
     b0 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fofn:0")]
     b1 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
+
+    # This needs to be ported
     b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_static_task_tc:0")]
 
     b3 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
 
-    return b0 + b1 + b2 + b3
+    return b0 + b1 + b3
 
 
 @register_pipeline("pbsmrtpipe.pipelines.dev_04_w_static_task", "Pipeline that leverages a python static tasks")
 def f():
 
-    b = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_static_txt_task:0")]
+    # pbsmrtpipe.tasks.dev_static_txt_task needs to be ported
+    #b = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_static_txt_task:0")]
 
     b1 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
-    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_static_task_tc:0")]
+
+    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_filter_fasta:0")]
+
+    # this needs to be ported to the new ToolContract interface
+    #b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_static_task_tc:0")]
 
     b3 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
 
-    return b + b1 + b2 + b3
+    return b1 + b2+ b3
 
 
 @register_pipeline(to_pipeline_ns("dev_local_chunk"), "Dev Local Hello Chunkable Pipeline")
@@ -105,25 +114,12 @@ def get_dev_local_chunk():
     return b1 + b2 + b3 + b4 + b5
 
 
-@register_pipeline(to_pipeline_ns("dev_local_chunk"), "Dev Local Hello Chunkable Pipeline")
-def get_dev_local_chunk():
-    """Simple example pipeline"""
-    b1 = [("$entry:e_01", "pbsmrtpipe.tasks.dev_txt_to_fofn:0")]
+@register_pipeline(to_pipeline_ns("dev_local_fasta_chunk"), "Dev local Task for Chunking pipelines")
+def get_dev_local_pipeline_chunk():
 
-    # fofn to report
-    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fofn:0", "pbsmrtpipe.tasks.fofn_to_report:0")]
+    b1 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
 
-    b3 = [
-        ("pbsmrtpipe.tasks.dev_txt_to_fofn:0", "pbsmrtpipe.tasks.dev_txt_to_fofn_report:0")]
-
-    # Add Chunk-able task using dev_fofn chunk operator
-    b4 = [("pbsmrtpipe.tasks.dev_txt_to_fofn_report:0", "pbsmrtpipe.tasks.dev_fofn_example:0"),
-          ("pbsmrtpipe.tasks.dev_txt_to_fofn_report:1", "pbsmrtpipe.tasks.dev_fofn_example:1")]
-
-    # Add a task to the chunked output of the txt
-    b5 = [("pbsmrtpipe.tasks.dev_txt_to_fofn_report:0", "pbsmrtpipe.tasks.dev_hello_worlder:0")]
-
-    return b1 + b2 + b3 + b4 + b5
+    return b1
 
 
 @register_pipeline(to_pipeline_ns("dev_dist"), "Dev Hello Distributed Workflow Pipeline")
@@ -141,6 +137,6 @@ def get_dist_dev_pipeline():
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 
-    b = [("$entry:eid_ref_dataset", "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
+    b = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
 
     return b

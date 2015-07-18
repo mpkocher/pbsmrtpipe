@@ -9,8 +9,10 @@ import json
 import warnings
 
 import jsonschema
-from pbcommand.pb_io.tool_contract_io import load_tool_contract_from
-from pbcommand.models.report import Plot, PlotGroup, Attribute, Report, Table, Column
+from pbcommand.models import (ToolDriver, ResolvedToolContract,
+                              ResolvedToolContractTask)
+
+from pbcommand.pb_io.tool_contract_io import load_tool_contract_from, write_resolved_tool_contract
 
 from xmlbuilder import XMLBuilder
 
@@ -19,14 +21,15 @@ from pbsmrtpipe.exceptions import PipelineTemplateIdNotFoundError
 
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.schema_opt_utils import crude_coerce_type_from_str
-from pbsmrtpipe.constants import ENV_PRESET
+from pbsmrtpipe.constants import ENV_PRESET, RESOLVED_TOOL_CONTRACT_JSON
 import pbsmrtpipe.cluster as C
 from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                PipelineChunk, ChunkOperator, Gather,
-                               GatherChunk, ScatterChunk, Scatter, DriverExe,
-                               DriverManifest, MetaStaticTask,
+                               GatherChunk, ScatterChunk, Scatter,
+                               MetaStaticTask,
                                REGISTERED_FILE_TYPES)
 from pbsmrtpipe.constants import SEYMOUR_HOME
+import pbsmrtpipe.constants as GlobalConstants
 
 
 
@@ -79,6 +82,12 @@ class Constants(object):
 REGISTERED_WORKFLOW_OPTIONS = {}
 # {option_id: [validate_func, ..]}
 OPTION_VALIDATORS = collections.defaultdict(list)
+
+
+def strip_entry_prefix(b):
+    if b.startswith(GlobalConstants.ENTRY_PREFIX):
+        return b.split(GlobalConstants.ENTRY_PREFIX)[1]
+    return b
 
 
 def register_workflow_option(func):
@@ -703,57 +712,6 @@ def parse_operator_xml(f):
     return ChunkOperator(operator_id, scatter, gather)
 
 
-def load_driver_manifest_from_file(path):
-    with open(path, 'r') as f:
-        d = json.loads(f.read())
-
-    driver_exe = d['driver']['exe']
-    driver_env = d['driver']['env']
-    driver = DriverExe(driver_exe, env=driver_env)
-
-    def _get(attr_name):
-        return d['task'][attr_name]
-
-    dm = DriverManifest(d['task'], driver)
-    return dm
-
-
-def load_static_meta_task_from_file(path):
-
-    with open(path, 'r') as f:
-        d = json.loads(f.read())
-
-    def _get(x_):
-        return d['meta_task'][x_]
-
-    def _get_ascii(x_):
-        return _get(x_).encode('ascii', 'ignore')
-
-    def _get_ft(x_):
-        return REGISTERED_FILE_TYPES[x_]
-
-    task_id = _get_ascii("task_id")
-    display_name = _get_ascii("name")
-    task_version = _get_ascii("version")
-    task_desc = _get_ascii("description")
-    task_type = _get_ascii("task_type")
-    input_types = [_get_ft(x) for x in _get("input_types")]
-    output_types = [_get_ft(x) for x in _get("output_types")]
-    schema_opts = _get("schema_options")
-    nproc = _get("nproc")
-    resource_types = _get("resource_types")
-    output_file_names = []
-    mutable_files = []
-
-    driver = DriverExe(d['driver']['exe'], env=d['driver']['env'])
-
-    m = MetaStaticTask(task_id, task_type, input_types, output_types,
-                       schema_opts, nproc, resource_types,
-                       output_file_names, mutable_files, task_desc, display_name,
-                       version=task_version, driver=driver)
-    return m
-
-
 def tool_contract_to_meta_task(tc):
     """Shim layer to load tool contracts and convert them to StaticMetaTask
 
@@ -769,11 +727,11 @@ def tool_contract_to_meta_task(tc):
     schema_opts = {}
     mutable_files = []
     output_file_names = []
-    driver = DriverExe(tc.driver.driver_exe)
+    driver = ToolDriver(tc.driver.driver_exe)
 
     # resolve strings to FileType instances
-    input_types = validate_provided_file_types([_get_ft(x) for x in tc.task.input_file_types])
-    output_types = validate_provided_file_types([_get_ft(x) for x in tc.task.output_file_types])
+    input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
+    output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
 
     #
     task_type = validate_task_type(tc.task.task_type)
@@ -800,7 +758,6 @@ def tool_contract_to_meta_task_from_file(path):
     return tool_contract_to_meta_task(tc)
 
 
-
 def to_driver_manifest_d(static_meta_task, task):
     """
 
@@ -822,15 +779,45 @@ def to_driver_manifest_d(static_meta_task, task):
           "exe": static_meta_task.driver.driver_exe,
           "env": static_meta_task.driver.env}
 
-    m = {"_comments": "Driver Manifest",
+    m = {"_comments": "Driver Manifest from Static task {t}".format(t=static_meta_task.task_id),
          "task": _t,
          "driver": _d}
     return m
 
 
+def static_meta_task_to_resolved_tool_contract(static_meta_task, task):
+    """
+
+    Shim layer to converts a static metatask to ResolvedToolContract
+
+    :type static_meta_task: MetaStaticTask
+    :type task: MetaTask
+    :param static_meta_task:
+    :return: dict representation of driver manifest
+    """
+    driver = static_meta_task.driver
+
+    smt = static_meta_task
+
+    rtask = ResolvedToolContractTask(smt.task_id, smt.task_type,
+                                     task.input_files,
+                                     task.output_files,
+                                     task.resolved_options,
+                                     task.nproc, task.resources)
+
+    rtc = ResolvedToolContract(rtask, driver)
+    return rtc
+
+
 def write_driver_manifest(static_meta_task, task, driver_manifest_path):
+    # this will write both the "driver" and the resolved-tool-contract for the
+    # resolved-tool-contract task
 
     _d = to_driver_manifest_d(static_meta_task, task)
 
     with open(driver_manifest_path, 'w') as f:
         f.write(json.dumps(_d, indent=4, sort_keys=True))
+
+    rtc = static_meta_task_to_resolved_tool_contract(static_meta_task, task)
+    rtc_json_path = os.path.join(task.output_dir, RESOLVED_TOOL_CONTRACT_JSON)
+    write_resolved_tool_contract(rtc, rtc_json_path)

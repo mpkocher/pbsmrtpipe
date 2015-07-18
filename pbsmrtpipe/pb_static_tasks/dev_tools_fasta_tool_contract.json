@@ -1,0 +1,49 @@
+{
+    "version": "0.1.0", 
+    "driver": {
+        "exe": "python -m pbsmrtpipe.tools_dev.fasta --emit-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_fasta", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "Sentinel file to trigger start", 
+                "title": "Sentinel", 
+                "id": "txt", 
+                "file_type_id": "PacBio.FileTypes.txt"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbsmrtpipe.tool_options.dev_fasta.max_records"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbsmrtpipe.tool_options.dev_fasta.max_records": {
+                        "default": 1000, 
+                        "type": "integer", 
+                        "description": "Max Records", 
+                        "title": "Max Number of records to generate"
+                    }
+                }, 
+                "title": "JSON Schema for pbsmrtpipe.tool_options.dev_fasta.max_records"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "Filtered Fasta", 
+                "description": "Filtered Fasta by sequence length Fasta", 
+                "default_name": "filtered.fasta", 
+                "id": "fasta_out", 
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-17T22:24:08.213674"
+    }
+}

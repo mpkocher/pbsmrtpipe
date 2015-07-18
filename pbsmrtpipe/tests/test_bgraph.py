@@ -6,7 +6,7 @@ import logging
 import pbsmrtpipe.loader
 RTASKS = pbsmrtpipe.loader.load_all_installed_pb_tasks()
 
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.cluster as C
 import pbsmrtpipe.pb_io as IO
 

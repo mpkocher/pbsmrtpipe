@@ -9,452 +9,50 @@ import Queue
 import pprint
 import traceback
 import types
-import shutil
 import functools
-from collections import namedtuple
 import uuid
 from pbcore.io import DataSet
 
 import pbsmrtpipe
-from pbsmrtpipe import opts_graph as GX
+import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.exceptions import (PipelineRuntimeError,
                                    PipelineRuntimeKeyboardInterrupt)
 import pbsmrtpipe.pb_io as IO
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as B
+import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.cluster as C
-import pbsmrtpipe.mock as M
 import pbsmrtpipe.tools.runner as T
 import pbsmrtpipe.report_renderer as R
+import pbsmrtpipe.driver_utils as DU
+import pbsmrtpipe.services as WS
+from pbsmrtpipe import opts_graph as GX
 
 from pbsmrtpipe.report_renderer import AnalysisLink
-from pbsmrtpipe.bgraph import (TaskStates, DataStoreFile,
-                               TaskBindingNode,
-                               TaskChunkedBindingNode,
-                               TaskScatterBindingNode,
-                               EntryOutBindingFileNode)
-from pbsmrtpipe.models import (FileTypes, RunnableTask, TaskTypes, Pipeline,
-                               PipelineChunk, MetaStaticTask, MetaTask)
-from pbsmrtpipe.utils import setup_log
+from pbsmrtpipe.graph.models import (TaskStates,
+                                     TaskBindingNode,
+                                     TaskChunkedBindingNode,
+                                     EntryOutBindingFileNode)
+
+from pbsmrtpipe.models import (FileTypes, TaskTypes, Pipeline,
+                               MetaStaticTask, MetaTask,
+                               GlobalRegistry, TaskResult, DataStoreFile)
+from pbsmrtpipe.engine import TaskManifestWorker
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
-from pbcommand.models.report import Attribute, Report, Table, Column, Plot, PlotGroup
-
-
-import pbsmrtpipe.services as WS
-
-import pbsmrtpipe.constants as GlobalConstants
 
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
-# logging.basicConfig(level=logging.DEBUG)
-
-TaskResult = namedtuple('TaskResult', "task_id state error_message run_time_sec")
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Constants(object):
     SHUTDOWN = "SHUTDOWN"
 
 
-def _log_pbsmrptipe_header():
-    s = '''
-
-       _                        _         _
-      | |                      | |       (_)
- _ __ | |__  ___ _ __ ___  _ __| |_ _ __  _ _ __   ___
-| '_ \| '_ \/ __| '_ ` _ \| '__| __| '_ \| | '_ \ / _ \\
-| |_) | |_) \__ \ | | | | | |  | |_| |_) | | |_) |  __/
-| .__/|_.__/|___/_| |_| |_|_|   \__| .__/|_| .__/ \___|
-| |                                | |     | |
-|_|                                |_|     |_|
-
-'''
-    return s
-
-
-def _to_table(tid, bg, nodes):
-    """Create a table from File nodes or Entry nodes"""
-    columns = [Column('id', header="Id"),
-               Column('is_resolved', header='Is Resolved'),
-               Column('path', header="Path")]
-
-    table = Table(tid, columns=columns)
-    for node in nodes:
-        table.add_data_by_column_id('id', str(node))
-        table.add_data_by_column_id('is_resolved', bg.node[node]['is_resolved'])
-        try:
-            table.add_data_by_column_id('path', bg.node[node]['path'])
-        except KeyError as e:
-            slog.error("Failed to get path from {n}".format(n=repr(node)))
-            slog.error(e)
-            table.add_data_by_column_id('path', "NA")
-
-    return table
-
-
-def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, error_message=None):
-    """ High Level Report of the workflow state
-
-    Write the output of workflow datastore to pbreports report object
-
-    Workflow summary .dot/svg (collapsed workflow)
-    Workflow details .dot/svg (chunked workflow)
-
-    To add:
-    - Resolved WorkflowSettings (e.g., nproc, max_workers)
-    -
-
-    :type bg: BindingsGraph
-
-    """
-    emsg = "" if error_message is None else error_message
-
-    attributes = [Attribute('was_successful', was_successful, name="Was Successful"),
-                  Attribute('total_run_time_sec', int(run_time), name="Walltime (sec)"),
-                  Attribute('error_message', emsg, name="Error Message"),
-                  Attribute('job_id', job_id, name="Job Id"),
-                  Attribute('job_state', state, name="Job State"),
-                  Attribute('job_output_dir', job_output_dir, name="Job Output Directory"),
-                  Attribute('pbsmrtpipe_version', pbsmrtpipe.get_version(), name="pbsmrtpipe Version")]
-
-    columns = [Column('task_id', header='Task id'),
-               Column('was_successful', header='Was Successful'),
-               Column('state', header="Task State"),
-               Column('run_time_sec', header="Run Time (sec)"),
-               Column('nproc', header="# of procs")]
-
-    tasks_table = Table('tasks', columns=columns)
-    for tnode in bg.task_nodes():
-        tasks_table.add_data_by_column_id('task_id', str(tnode))
-        tasks_table.add_data_by_column_id('nproc', bg.node[tnode]['nproc'])
-        tasks_table.add_data_by_column_id('state', bg.node[tnode]['state'])
-        tasks_table.add_data_by_column_id('was_successful', bg.node[tnode]['state'] == TaskStates.SUCCESSFUL)
-        # rt_ = bg.node[tnode]['run_time']
-        # rtime = None if rt_ is None else int(rt_)
-        tasks_table.add_data_by_column_id('run_time_sec', bg.node[tnode]['run_time'])
-
-    ep_table = _to_table("entry_points", bg, bg.entry_binding_nodes())
-    fnodes_table = _to_table("file_node", bg, bg.file_nodes())
-
-    report = Report('pbsmrtpipe', tables=[tasks_table, ep_table, fnodes_table],
-                    attributes=attributes)
-    return report
-
-
-def _dict_to_report_table(table_id, key_attr, value_attr, d):
-    """
-    General {k->v} to create a pbreport Table
-
-    :param table_id: Table id
-    :param key_attr: Column id
-    :param value_attr: Column id
-    :param d: dict
-    :return:
-    """
-    columns = [Column(key_attr, header="Attribute"),
-               Column(value_attr, header="Value")]
-
-    table = Table(table_id, columns=columns)
-    for k, v in d.iteritems():
-        table.add_data_by_column_id(key_attr, k)
-        table.add_data_by_column_id(value_attr, v)
-
-    return table
-
-
-def _workflow_opts_to_table(workflow_opts):
-    """
-    :type workflow_opts: WorkflowLevelOptions
-    :param workflow_opts:
-    :return:
-    """
-    tid = "workflow_options"
-    wattr = "workflow_attribute"
-    wvalue = "workflow_value"
-    return _dict_to_report_table(tid, wattr, wvalue, workflow_opts.to_dict())
-
-
-def _task_opts_to_table(task_opts):
-    tattr = "task_attribute_id"
-    vattr = "task_value"
-    # FIXME this is not being generated correctly
-    return _dict_to_report_table("task_options", tattr, vattr, task_opts)
-
-
-def _to_workflow_settings_report(bg, workflow_opts, task_opts, state, was_successful):
-
-    tables = [_workflow_opts_to_table(workflow_opts), _task_opts_to_table(task_opts)]
-    report = Report("workflow_settings_report", tables=tables)
-    return report
-
-
-def _to_task_summary_report(bg):
-
-    cs = [Column("workflow_task_id", header="Task Id"),
-          Column("workflow_task_status", header="Status"),
-          Column("workflow_task_run_time", header="Task Runtime"),
-          Column('workflow_task_nproc', header="Number of Procs"),
-          Column("workflow_task_emsg", header="Error Message")]
-
-    t = Table("workflow_task_summary", title="Task Summary", columns=cs)
-    for tnode in bg.task_nodes():
-        if isinstance(tnode, TaskBindingNode):
-            t.add_data_by_column_id("workflow_task_id", tnode.idx)
-            t.add_data_by_column_id("workflow_task_status", bg.node[tnode]['state'])
-            t.add_data_by_column_id("workflow_task_run_time", bg.node[tnode]['run_time'])
-            t.add_data_by_column_id("workflow_task_nproc", bg.node[tnode]['nproc'])
-            t.add_data_by_column_id("workflow_task_emsg", bg.node[tnode]['error_message'])
-
-    return Report("workflow_task_summary", tables=[t])
-
-
-def _to_workflow_report(job_resources, bg, workflow_opts, task_opts, state, was_successful, plot_images):
-    """
-    Copy images to image local directory and return a pbreport Report
-
-    """
-    plot_groups = []
-    if plot_images:
-        plots = []
-        for i, plot_image in enumerate(plot_images):
-            html_image_abs = os.path.join(job_resources.images, os.path.basename(plot_image))
-            shutil.copy(plot_image, html_image_abs)
-            # Make the file path relative to images/my-image.png
-            html_image = os.path.join(os.path.basename(job_resources.images), os.path.basename(plot_image))
-            p = Plot("plot_{i}".format(i=i), html_image)
-            plots.append(p)
-
-        pg = PlotGroup("workflow_state_plots", plots=plots)
-        plot_groups.append(pg)
-
-    return Report("workflow_report", plotgroups=plot_groups)
-
-
-def datastore_to_report(ds):
-    """
-
-    :type ds: DataStore
-    :param ds:
-    :return:
-    """
-    attrs = [Attribute("ds_nfiles", len(ds.files), name="Number of files"),
-             Attribute("ds_version", ds.version, name="Datastore version"),
-             Attribute("ds_created_at", ds.created_at, name="Created At"),
-             Attribute("ds_updated_at", ds.updated_at, name="Updated At")]
-
-    columns_names = [("file_id", "File Id"),
-                     ("file_type_obj", "File Type"),
-                     ("path", "Path"),
-                     ("file_size", "Size"),
-                     ("created_at", "Created At"),
-                     ("modified_at", "Modified At")]
-
-    to_i = lambda s: "ds_" + s
-    columns = [Column(to_i(i), header=h) for i, h in columns_names]
-    t = Table("datastore", title="DataStore Summary", columns=columns)
-
-    def _to_relative_path(p):
-        return "/".join(p.split("/")[-3:])
-
-    for file_id, ds_file in ds.files.iteritems():
-        t.add_data_by_column_id(to_i("file_id"), ds_file.file_id)
-        t.add_data_by_column_id(to_i("file_type_obj"), ds_file.file_type_id)
-        t.add_data_by_column_id(to_i("path"), _to_relative_path(ds_file.path))
-        t.add_data_by_column_id(to_i("file_size"), ds_file.file_size)
-        t.add_data_by_column_id(to_i("created_at"), ds_file.created_at)
-        t.add_data_by_column_id(to_i("modified_at"), ds_file.modified_at)
-
-    return Report("datastore_report", tables=[t], attributes=attrs)
-
-
-def _get_images_in_dir(dir_name, formats=(".png", ".svg")):
-    # report plots only support
-    return [os.path.join(dir_name, i_) for i_ in os.listdir(dir_name) if any(i_.endswith(x) for x in formats)]
-
-
-def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg_, state_, was_successful_, run_time_sec):
-    """
-    Write the main workflow level report.
-
-    :type job_resources: JobResources
-    :type workflow_opts: WorkflowLevelOptions
-    :type bg_: BindingsGraph
-    :type was_successful_: bool
-    :type run_time_sec: float
-
-    :param job_id:
-    :param job_resources:
-    :param workflow_opts:
-    :param task_opts:
-    :param bg_:
-    :param state_:
-    :param was_successful_:
-    :param run_time_sec:
-    :return:
-    """
-    # workflow_json = os.path.join(job_resources.workflow, 'workflow.json')
-    # with open(workflow_json, 'w+') as f:
-    #     f.write(json.dumps(json_graph.node_link_data(bg_)))
-
-    report_path = os.path.join(job_resources.workflow, 'report-tasks.json')
-    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
-    report_.write_json(report_path)
-    R.write_report_with_html_extras(report_, os.path.join(job_resources.html, 'index.html'))
-
-    setting_report = _to_workflow_settings_report(bg_, workflow_opts, task_opts, state_, was_successful_)
-    R.write_report_to_html(setting_report, os.path.join(job_resources.html, 'settings.html'))
-
-    setting_report = _to_workflow_report(job_resources, bg_, workflow_opts, task_opts, state_, was_successful_, _get_images_in_dir(job_resources.workflow, formats=(".svg",)))
-    R.write_report_to_html(setting_report, os.path.join(job_resources.html, 'workflow.html'))
-
-
-def write_task_report(job_resources, task_id, path_to_report, report_images):
-    """
-    Copy image files to job html images dir, convert the task report to HTML
-
-    :type job_resources: JobResources
-
-    :param task_id:
-    :param job_resources:
-    :param path_to_report: abspath to the json pbreport
-    :return:
-    """
-    report_html = os.path.join(job_resources.html, "{t}.html".format(t=task_id))
-    task_image_dir = os.path.join(job_resources.images, task_id)
-    if not os.path.exists(task_image_dir):
-        os.mkdir(task_image_dir)
-
-    shutil.copy(path_to_report, report_html)
-    for image in report_images:
-        shutil.copy(image, os.path.join(task_image_dir, os.path.basename(image)))
-
-    log.debug("Completed writing {t} report".format(t=task_id))
-
-
-class TaskManifestWorker(multiprocessing.Process):
-
-    def __init__(self, q_out, event, sleep_time, run_manifest_func, task_id, manifest_path, group=None, name=None, target=None):
-        self.q_out = q_out
-        self.event = event
-        self.sleep_time = sleep_time
-        self.task_id = task_id
-        self.manifest_path = manifest_path
-
-        # runner func (path/to/manifest.json ->) (task_id, state, message, run_time)
-        self.runner_func = run_manifest_func
-        super(TaskManifestWorker, self).__init__(group=group, name=name, target=target)
-
-    def shutdown(self):
-        self.event.set()
-
-    def run(self):
-        log.info("Starting process:{p} {k} worker {i} task id {t}".format(k=self.__class__.__name__, i=self.name, t=self.task_id, p=self.pid))
-
-        try:
-            if os.path.exists(self.manifest_path):
-                log.debug("Running task {i} with func {f}".format(i=self.task_id, f=self.runner_func.__name__))
-                state, msg, run_time = self.runner_func(self.manifest_path)
-                self.q_out.put(TaskResult(self.task_id, state, msg, round(run_time, 2)))
-            else:
-                emsg = "Unable to find manifest {p}".format(p=self.manifest_path)
-                run_time = 1
-                self.q_out.put(TaskResult(self.task_id, "failed", emsg, round(run_time, 2)))
-        except Exception as ex:
-            traceback.print_exc(file=sys.stderr)
-            emsg = "Unhandled exception in Worker {n} running task {i}. Exception {e}".format(n=self.name, i=self.task_id, e=ex.message)
-            log.error(emsg)
-            self.q_out.put(TaskResult(self.task_id, "failed", emsg, 0.0))
-
-        log.info("exiting Worker {i} (pid {p}) {k}.run".format(k=self.__class__.__name__, i=self.name, p=self.pid))
-        return True
-
-
-def _job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_level_opts, ep_d):
-    """
-    Create job resource dirs and setup log handlers
-
-    :type job_root_dir: str
-    :type bg: BindingsGraph
-    :type task_opts: dict
-    :type workflow_level_opts: WorkflowLevelOptions
-    :type ep_d: dict
-    """
-
-    job_resources = B.to_job_resources_and_create_dirs(job_root_dir)
-
-    setup_log(log, level=logging.INFO, file_name=os.path.join(job_resources.logs, 'pbsmrtpipe.log'))
-    setup_log(log, level=logging.DEBUG, file_name=os.path.join(job_resources.logs, 'master.log'))
-
-    log.info("Starting pbsmrtpipe v{v}".format(v=pbsmrtpipe.get_version()))
-    log.info("\n" + _log_pbsmrptipe_header())
-
-    B.write_binding_graph_images(bg, job_resources.workflow)
-
-    B.write_entry_points_json(job_resources.entry_points_json, ep_d)
-
-    # Need to map entry points to a FileType
-    ds = B.write_and_initialize_data_store_json(job_resources.datastore_json, [])
-    slog.info("successfully initialized datastore.")
-
-    B.write_workflow_settings(workflow_level_opts, os.path.join(job_resources.workflow, 'options-workflow.json'))
-    log.info("Workflow Options:")
-    log.info(pprint.pformat(workflow_level_opts.to_dict(), indent=4))
-
-    task_opts_path = os.path.join(job_resources.workflow, 'options-task.json')
-    with open(task_opts_path, 'w') as f:
-        f.write(json.dumps(task_opts, sort_keys=True, indent=4))
-
-    env_path = os.path.join(job_resources.workflow, 'env.json')
-    IO.write_env_to_json(env_path)
-
-    try:
-        sa_system, sa_components = IO.get_smrtanalysis_system_and_components_from_env()
-        log.info(sa_system)
-        for c in sa_components:
-            log.info(c)
-    except Exception:
-        # black hole exception
-        log.warn("unable to determine SMRT Analysis version.")
-        pass
-
-    slog.info("completed setting up job directory resources and logs in {r}".format(r=job_root_dir))
-    return job_resources, ds
-
-
-def write_task_manifest(manifest_path, tid, task, resource_types, task_version, python_mode_str, cluster_renderer):
-    """
-
-    :type manifest_path: str
-    :type tid: str
-    :type task: Task
-    :type task_version: str
-    :type python_mode_str: str
-    :type cluster_renderer: ClusterTemplateRender | None
-
-    :return:
-    """
-    env = []
-    resources_list_d = [dict(resource_type=r, path=p) for r, p in zip(resource_types, task.resources)]
-
-    task_manifest = os.path.join(manifest_path)
-    with open(task_manifest, 'w+') as f:
-        # this version should be the global pbsmrtpipe version
-        # or the manifest file spec version?
-        m = B.to_manifest_d(tid,
-                            task,
-                            resources_list_d,
-                            env,
-                            cluster_renderer,
-                            python_mode_str,
-                            task_version)
-
-        f.write(json.dumps(m, sort_keys=True, indent=2))
-
-    log.debug("wrote task id {i} to {p}".format(i=tid, p=manifest_path))
-    return True
-
-
 def _init_bg(bg, ep_d):
+    """Resolving/Initializing BindingGraph with supplied EntryPoints"""
+
     # Help initialize graph/epoints
     B.resolve_entry_points(bg, ep_d)
     # Update Task-esque EntryBindingPoint
@@ -466,44 +64,6 @@ def _init_bg(bg, ep_d):
         B.resolve_successor_binding_file_path(bg)
 
     return bg
-
-
-def run_task_manifest(path):
-    output_dir = os.path.dirname(path)
-    stderr = os.path.join(output_dir, 'stderr')
-    stdout = os.path.join(output_dir, 'stdout')
-
-    try:
-        rt = RunnableTask.from_manifest_json(path)
-    except KeyError:
-        emsg = "Unable to deserialize RunnableTask from manifest {p}".format(p=path)
-        log.error(emsg)
-        raise
-
-    rcode, run_time = T.run_task(rt, output_dir, stdout, stderr, True)
-
-    state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
-    msg = "" if rcode == 0 else "Failed with exit code {r}".format(r=rcode)
-
-    return state, msg, run_time
-
-
-def run_task_manifest_on_cluster(path):
-    """
-    Run the Task on the queue (of possible)
-
-    :param path:
-    :return:
-    """
-    output_dir = os.path.dirname(path)
-    rt = RunnableTask.from_manifest_json(path)
-
-    rcode, run_time = T.run_task_on_cluster(rt, path, output_dir, True)
-
-    state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
-    msg = "{r} failed".format(r=rt) if rcode != 0 else ""
-
-    return state, msg, run_time
 
 
 def _get_scatterable_task_id(chunk_operators_d, task_id):
@@ -539,7 +99,7 @@ def _status(bg):
     return "Workflow status {n}/{t} completed/total tasks".format(t=ntasks, n=ncompleted_tasks)
 
 
-def _get_dataset_uuid_or_create(path):
+def _get_dataset_uuid_or_create_uuid(path):
     """
     Extract the uuid from the DataSet or assign a new UUID
 
@@ -563,8 +123,11 @@ def _get_dataset_uuid_or_create(path):
     return ds_id
 
 
-
 def _get_last_lines_of_stderr(n, stderr_path):
+    """Read in the last N-lines of the stderr from a task
+
+    This should be smarter to look for stacktraces and common errors.
+    """
     lines = []
     if os.path.exists(stderr_path):
         with open(stderr_path, 'r') as f:
@@ -605,14 +168,12 @@ def _are_workers_alive(workers):
     return all(w.is_alive() for w in workers.values())
 
 
-def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output_dir,
-                   registered_tasks_d, registered_file_types, cluster_renderer,
-                   task_manifest_runner_func, task_manifest_cluster_runner_func, workers, shutdown_event, service_uri_or_none):
+def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_dir,
+                   workers, shutdown_event, service_uri_or_none):
     """
     Core runner of a workflow.
 
     :type bg: BindingsGraph
-    :type cluster_renderer: ClusterTemplateRender | None
     :type workflow_opts: WorkflowLevelOptions
     :type output_dir: str
     :type service_uri_or_none: str | None
@@ -625,7 +186,7 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
     job_id = random.randint(100000, 999999)
     m_ = "Distributed" if workflow_opts.distributed_mode is not None else "Local"
     slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
-    log.info("exe'ing workflow Cluster renderer {c}".format(c=cluster_renderer))
+    log.info("exe'ing workflow Cluster renderer {c}".format(c=global_registry.cluster_renderer))
     slog.info("Service URI: {i} {t}".format(i=service_uri_or_none, t=type(service_uri_or_none)))
 
     started_at = time.time()
@@ -657,16 +218,16 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
         B.resolve_entry_point(bg, eid, path)
         B.resolve_successor_binding_file_path(bg)
 
-    B.label_chunkable_tasks(bg, chunk_operators_d)
+    B.label_chunkable_tasks(bg, global_registry.chunk_operators)
 
     slog.info("validating binding graph")
     B.validate_binding_graph_integrity(bg)
     slog.info("successfully validated binding graph.")
 
-    log.info(B.to_binding_graph_summary(bg))
+    log.info(BU.to_binding_graph_summary(bg))
 
     # file type id counter {str: int}
-    file_type_id_to_count = {file_type.file_type_id: 0 for _, file_type in registered_file_types.iteritems()}
+    file_type_id_to_count = {file_type.file_type_id: 0 for _, file_type in global_registry.file_types.iteritems()}
 
     # Create a closure to allow file types to assign unique id
     # this returns a func
@@ -676,12 +237,20 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
     worker_sleep_time = 1
 
-    # local factory funcs
+    # factories for getting a Worker instance
     def _to_w(wid, task_id, manifest_path_):
-        return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time, task_manifest_cluster_runner_func, task_id, manifest_path_, name=wid)
+        # the IO loading will forceful set this to None
+        # if the cluster manager not defined or cluster_mode is False
+        if global_registry.cluster_renderer is None:
+            r_func = T.run_task_manifest
+        else:
+            r_func = T.run_task_manifest_on_cluster
+        return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
+                                  r_func, task_id, manifest_path_, name=wid)
 
     def _to_local_w(wid, task_id, manifest_path_):
-        return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time, task_manifest_runner_func, task_id, manifest_path_, name=wid)
+        return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
+                                  T.run_task_manifest, task_id, manifest_path_, name=wid)
 
     max_total_nproc = workflow_opts.total_max_nproc
     max_nworkers = workflow_opts.max_nworkers
@@ -690,22 +259,23 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
     # Setup logger, job directory and initialize DS
     slog.info("creating job resources in {o}".format(o=output_dir))
-    job_resources, ds = _job_resource_create_and_setup_logs(output_dir, bg, task_opts, workflow_opts, ep_d)
+    job_resources, ds = DU.job_resource_create_and_setup_logs(log, output_dir, bg, task_opts, workflow_opts, ep_d)
     slog.info("successfully created job resources.")
 
     def write_report_(bg_, current_state_, was_successful_):
-        return write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg_, current_state_, was_successful_, _to_run_time())
+        return DU.write_main_workflow_report(job_id, job_resources, workflow_opts,
+                                          task_opts, bg_, current_state_, was_successful_, _to_run_time())
 
     def write_task_summary_report(bg_):
-        task_summary_report = _to_task_summary_report(bg_)
+        task_summary_report = DU.to_task_summary_report(bg_)
         p = os.path.join(job_resources.html, 'task_summary.html')
         R.write_report_to_html(task_summary_report, p)
 
     def is_task_id_scatterable(task_id_):
-        return _is_task_id_scatterable(chunk_operators_d, task_id_)
+        return _is_task_id_scatterable(global_registry.chunk_operators, task_id_)
 
     def get_scatter_task_id_from_task_id(task_id_):
-        return _get_scatterable_task_id(chunk_operators_d, task_id_)
+        return _get_scatterable_task_id(global_registry.chunk_operators, task_id_)
 
     def services_log_update_progress(source_id_, level_, message_):
         if service_uri_or_none is not None:
@@ -739,14 +309,15 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
 
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
+        BU.write_binding_graph_images(bg, job_resources.workflow)
 
         while True:
 
             # This will add new nodes to the graph if necessary
-            B.apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d)
-            B.write_binding_graph_images(bg, job_resources.workflow)
-            B.add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_d)
-            B.write_binding_graph_images(bg, job_resources.workflow)
+            B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks)
+            # B.write_binding_graph_images(bg, job_resources.workflow)
+            B.add_gather_to_completed_task_chunks(bg, global_registry.chunk_operators, global_registry.tasks)
+            #B.write_binding_graph_images(bg, job_resources.workflow)
 
             if not _are_workers_alive(workers):
                 for w_ in workers.values():
@@ -763,13 +334,13 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                         if not B.has_next_runnable_task(bg):
                             msg = "Unable to find runnable task or any tasks running and workflow is NOT completed."
                             log.error(msg)
-                            log.error(B.to_binding_graph_summary(bg))
+                            log.error(BU.to_binding_graph_summary(bg))
                             services_log_update_progress("pbsmrtpipe", WS.LogLevels.ERROR, msg)
                             raise PipelineRuntimeError(msg)
 
             time.sleep(sleep_time)
             # log.debug("Sleeping for {s}".format(s=sleep_time))
-            log.debug("\n" + B.to_binding_graph_summary(bg))
+            log.debug("\n" + BU.to_binding_graph_summary(bg))
             # B.to_binding_graph_task_summary(bg)
 
             write_report_(bg, TaskStates.RUNNING, is_completed)
@@ -819,7 +390,7 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                     # Update Analysis Reports and Register output files to Datastore
                     for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
                         source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
-                        ds_uuid = _get_dataset_uuid_or_create(path_)
+                        ds_uuid = _get_dataset_uuid_or_create_uuid(path_)
                         ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_)
                         ds.add(ds_file_)
                         ds.write_update_json(job_resources.datastore_json)
@@ -827,12 +398,13 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                         # Update Services
                         services_add_datastore_file(ds_file_)
 
-                        dsr = datastore_to_report(ds)
+                        dsr = DU.datastore_to_report(ds)
                         R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
                         if file_type_ == FileTypes.REPORT:
-                            write_task_report(job_resources, task_.task_id, path_, _get_images_in_dir(task_.output_dir))
+                            T.write_task_report(job_resources, task_.task_id, path_, DU._get_images_in_dir(task_.output_dir))
                             update_analysis_file_links(tnode_.idx, path_)
 
+                    BU.write_binding_graph_images(bg, job_resources.workflow)
                 else:
                     # Process Non-Successful Task Result
                     B.update_task_state(bg, tnode_, state_)
@@ -853,12 +425,12 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                     _terminate_worker(w_)
                     total_nproc -= task_.nproc
                     has_failed = True
+                    BU.write_binding_graph_images(bg, job_resources.workflow)
 
                 _update_msg = _status(bg)
                 log.info(_update_msg)
                 slog.info(_update_msg)
 
-                B.write_binding_graph_images(bg, job_resources.workflow)
                 s_ = TaskStates.FAILED if has_failed else TaskStates.RUNNING
 
                 write_report_(bg, s_, False)
@@ -897,9 +469,9 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                         was_chunked = bg.node[tnode]['was_chunked']
                         if not was_chunked:
                             log.debug("Resolved scatter task {i} from task {x}".format(i=scatterable_task_id, x=tnode.meta_task.task_id))
-                            B.add_scatter_task(bg, tnode, registered_tasks_d[scatterable_task_id])
+                            B.add_scatter_task(bg, tnode, global_registry.tasks[scatterable_task_id])
                             bg.node[tnode]['was_chunked'] = True
-                            B.write_binding_graph_images(bg, job_resources.workflow)
+                            BU.write_binding_graph_images(bg, job_resources.workflow)
 
 
                     # Update node to scattered and breakout of loop
@@ -939,8 +511,9 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                     driver_manifest_path = os.path.join(task_dir, GlobalConstants.DRIVER_MANIFEST_JSON)
                     IO.write_driver_manifest(tnode.meta_task, task, driver_manifest_path)
 
-                write_task_manifest(manifest_path, tid, task, tnode.meta_task.resource_types,
-                                    GlobalConstants.TASK_MANIFEST_VERSION, tnode.meta_task.__module__, cluster_renderer)
+                DU.write_task_manifest(manifest_path, tid, task, tnode.meta_task.resource_types,
+                                    GlobalConstants.TASK_MANIFEST_VERSION,
+                                    tnode.meta_task.__module__, global_registry.cluster_renderer)
 
                 if tnode.meta_task.task_type == TaskTypes.LOCAL or workflow_opts.distributed_mode is False:
                     to_worker_func = _to_local_w
@@ -960,6 +533,7 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
                 log.debug(msg_)
                 tid_to_tnode[tid] = tnode
                 services_log_update_progress("pbsmrtpipe::{i}".format(i=tnode.idx), WS.LogLevels.INFO, msg_)
+                #B.write_binding_graph_images(bg, job_resources.workflow)
 
             elif isinstance(tnode, EntryOutBindingFileNode):
                 # Handle EntryPoint types. This is not a particularly elegant design :(
@@ -983,10 +557,10 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
         # end of while loop
         _terminate_all_workers(workers.values(), shutdown_event)
 
-        B.write_binding_graph_images(bg, job_resources.workflow)
+        #B.write_binding_graph_images(bg, job_resources.workflow)
 
         if has_failed:
-            log.debug("\n" + B.to_binding_graph_summary(bg))
+            log.debug("\n" + BU.to_binding_graph_summary(bg))
 
         was_successful = B.was_workflow_successful(bg)
         s_ = TaskStates.SUCCESSFUL if was_successful else TaskStates.FAILED
@@ -995,14 +569,17 @@ def __exe_workflow(chunk_operators_d, ep_d, bg, task_opts, workflow_opts, output
     except PipelineRuntimeKeyboardInterrupt:
         write_report_(bg, TaskStates.KILLED, False)
         write_task_summary_report(bg)
+        BU.write_binding_graph_images(bg, job_resources.workflow)
         raise
     except Exception as e:
         # update workflow reports to failed
         write_report_(bg, TaskStates.FAILED, False)
         write_task_summary_report(bg)
         services_log_update_progress("pbsmrtpipe", WS.LogLevels.ERROR, "Error {e}".format(e=e))
+        BU.write_binding_graph_images(bg, job_resources.workflow)
         raise
 
+    BU.write_binding_graph_images(bg, job_resources.workflow)
     return True if was_successful else False
 
 
@@ -1024,7 +601,8 @@ def _validate_entry_points_or_raise(entry_points_d):
     return True
 
 
-def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
+def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline,
+                          entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
     """
     Load and resolve input IO layer
 
@@ -1036,6 +614,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     :returns: A tuple of Workflow Bindings, Workflow Level Options, Task Opts, ClusterRenderer)
     :rtype: (List[(str, str)], WorkflowLevelOpts, {TaskId:value}, ClusterRenderer)
     """
+
     # Load Presets and Workflow Options. Resolve and Merge
     # The Order of loading is
     # - rc, workflow.xml, then preset.xml
@@ -1108,7 +687,10 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
 
 def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
+    """Grungy loading of the IO and resolving values
 
+    Returns a tuple of (WorkflowLevelOptions, TaskOptions, ClusterRender)
+    """
     slog.info("validating entry points. {e}".format(e=entry_points_d))
     _validate_entry_points_or_raise(entry_points_d)
     slog.info("successfully validated {n} entry points".format(n=len(entry_points_d)))
@@ -1152,9 +734,7 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
     return workflow_level_opts, topts, cluster_render
 
 
-def exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
-                 registered_tasks_d, registered_file_types_d,
-                 cluster_render, task_runner_func, task_cluster_runner_func, service_uri):
+def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_opts, output_dir, service_uri):
     """This is the fundamental entry point to running a pbsmrtpipe workflow."""
 
     slog.info("Initializing Workflow")
@@ -1166,9 +746,9 @@ def exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_
     shutdown_event = manager.Event()
 
     try:
-        state = __exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts,
-                               output_dir, registered_tasks_d, registered_file_types_d, cluster_render,
-                               task_runner_func, task_cluster_runner_func, workers, shutdown_event, service_uri)
+        state = __exe_workflow(global_registry, entry_points_d, bg, task_opts,
+                               workflow_level_opts, output_dir,
+                               workers, shutdown_event, service_uri)
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
             emsg = "received SIGINT. Attempting to abort gracefully."
@@ -1235,15 +815,16 @@ def workflow_exception_exitcode_handler(func):
 
 
 @workflow_exception_exitcode_handler
-def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d, chunk_operators, workflow_template_xml, entry_points_d, output_dir, preset_xml, rc_preset_or_none, mock_mode, serivice_uri, force_distribute=None):
+def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d,
+                 chunk_operators, workflow_template_xml, entry_points_d,
+                 output_dir, preset_xml, rc_preset_or_none, service_uri, force_distribute=None):
     """
-
+    Entry point for running a pipeline
 
     :param workflow_template_xml: path to workflow xml
     :param entry_points_d:
     :param output_dir:
     :param preset_xml: path to preset xml (or None)
-    :param mock_mode:
     :return: exit code
 
     :type registered_tasks_d: dict[str, pbsmrtpipe.pb_tasks.core.MetaTask]
@@ -1251,39 +832,45 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     :type workflow_template_xml: str
     :type output_dir: str
     :type preset_xml: str | None
-    :type mock_mode: bool
-    :type serivice_uri: str | None
+    :type service_uri: str | None
     :type force_distribute: None | bool
 
     :rtype: int
     """
     log.debug(pprint.pformat(entry_points_d))
 
-    workflow_bindings, workflow_level_opts, task_opts, cluster_render = _load_io_for_workflow(registered_tasks_d, registered_pipelines_d, workflow_template_xml,
-                                                                                              entry_points_d, preset_xml, rc_preset_or_none, force_distribute=force_distribute)
+    workflow_bindings, workflow_level_opts, task_opts, cluster_render = _load_io_for_workflow(registered_tasks_d,
+                                                                                              registered_pipelines_d,
+                                                                                              workflow_template_xml,
+                                                                                              entry_points_d, preset_xml,
+                                                                                              rc_preset_or_none,
+                                                                                              force_distribute=force_distribute)
 
     slog.info("building graph")
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, workflow_bindings)
     slog.info("successfully loaded graph from bindings.")
-
-    if mock_mode:
-        # Just run everything locally
-        task_runner_func = M.mock_run_task_manifest
-        task_cluster_runner_func = M.mock_run_task_manifest
-    else:
-        task_runner_func = run_task_manifest
-        task_cluster_runner_func = run_task_manifest_on_cluster
 
     # Disabled chunk operators if necessary
     if workflow_level_opts.chunk_mode is False:
         slog.info("Chunk mode is False. Disabling {n} chunk operators.".format(n=len(chunk_operators)))
         chunk_operators = {}
 
-    return exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
-                        registered_tasks_d, registered_file_types_d, cluster_render, task_runner_func, task_cluster_runner_func, serivice_uri)
+    # Container to hold all the resources
+    global_registry = GlobalRegistry(registered_tasks_d,
+                                     registered_file_types_d,
+                                     chunk_operators,
+                                     cluster_render)
+
+    return exe_workflow(global_registry, entry_points_d, bg, task_opts,
+                        workflow_level_opts, output_dir, service_uri)
 
 
 def _task_to_entry_point_ids(meta_task):
+    """Generate entry points from a meta-task. $entry:e_0, $entry:e_1, ...
+
+    This is used to automatically create pipeline entry points from the
+    positional inputs of the task.
+    """
     def _to_e(i_):
         return "{e}:e_{i}".format(i=i_, e=GlobalConstants.ENTRY_PREFIX)
     return [_to_e(i) for i in xrange(len(meta_task.input_types))]
@@ -1309,7 +896,11 @@ def _task_to_binding_strings(meta_task):
 
 
 def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
+    """Validate the entry points are consistent with the MetaTask
 
+    :raises: KeyError
+    :rtype: bool
+    """
     entry_point_ids = _task_to_entry_point_ids(meta_task)
 
     zs = zip(entry_point_ids, meta_task.input_types)
@@ -1322,9 +913,11 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 
 
 @workflow_exception_exitcode_handler
-def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators, entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none, service_config, force_distribute=None):
+def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators,
+                    entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none,
+                    service_config, force_distribute=None):
     """
-    Run a task by id.
+    Entry Point for running a single task
 
     :param task_id:
     :param output_dir:
@@ -1338,10 +931,9 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
                        "'show-tasks' to get a list of registered tasks.".format(i=task_id))
 
     print entry_points_d
-    workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=force_distribute)
-
-    task_runner_func = run_task_manifest
-    task_cluster_runner_func = run_task_manifest_on_cluster
+    workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d,
+                                                                       preset_xml, rc_preset_or_none,
+                                                                       force_distribute=force_distribute)
 
     slog.info("building bindings graph")
     binding_str = _task_to_binding_strings(meta_task)
@@ -1349,9 +941,14 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, binding_str)
     slog.info("successfully   bindings graph for task {i}".format(i=task_id))
 
-    return exe_workflow(chunk_operators, entry_points_d, bg, task_opts, workflow_level_opts, output_dir,
-                        registered_tasks_d,
-                        registered_file_types_d, cluster_render, task_runner_func, task_cluster_runner_func, service_config)
+    # Container to hold all the resources
+    global_registry = GlobalRegistry(registered_tasks_d,
+                                     registered_file_types_d,
+                                     chunk_operators,
+                                     cluster_render)
+
+    return exe_workflow(global_registry, entry_points_d, bg, task_opts,
+                        workflow_level_opts, output_dir, service_config)
 
 
 

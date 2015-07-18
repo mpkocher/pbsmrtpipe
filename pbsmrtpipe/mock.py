@@ -8,7 +8,7 @@ import tempfile
 from pbcore.io import FastaRecord, FastqRecord, FastaWriter, FastqWriter
 
 import pbsmrtpipe.pb_io as IO
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as B
 
 from pbsmrtpipe.models import TaskStates, FileTypes
 
@@ -82,6 +82,7 @@ def write_fastx_records(fastx_writer_klass, records, path):
 
 def write_random_fasta_records(path, nrecords=100):
     return write_fastx_records(FastaWriter, to_fasta_records(nrecords), path)
+
 
 def write_random_fastq_records(path, nrecords=100):
     return write_fastx_records(FastqWriter, to_fastq_records(nrecords), path)

@@ -226,21 +226,6 @@ def register_pipeline(pipeline_id, display_name):
     return deco_wrapper
 
 
-def register_file_type(file_type):
-    """
-    Register a new file type. This can be accessed in the task python module
-
-    :param file_type:
-    :type file_type: FileType
-    :return:
-    """
-    if file_type.file_type_id in REGISTERED_FILE_TYPES:
-        raise ValueError("File {i} is already registered (f)".format(i=file_type.file_type_id, f=file_type))
-
-    REGISTERED_FILE_TYPES[file_type.file_type_id] = file_type
-    return True
-
-
 def to_list_if_necessary(tuple_or_s):
     if isinstance(tuple_or_s, tuple):
         return list(tuple_or_s)

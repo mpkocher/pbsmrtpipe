@@ -12,7 +12,7 @@ import pbsmrtpipe.loader
 
 REGISTERED_TASKS, REGISTERED_FILE_TYPES, REGISTERED_CHUNK_OPERATORS, REGISTERED_PIPELINES =  pbsmrtpipe.loader.load_all()
 
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.cluster as C
 import pbsmrtpipe.pb_io as IO
 

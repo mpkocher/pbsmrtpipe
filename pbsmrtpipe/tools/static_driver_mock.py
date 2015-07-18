@@ -2,14 +2,13 @@
 import os
 import sys
 import logging
-import json
-import functools
+
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
 from pbcommand.utils import setup_log
+from pbcommand.pb_io import load_resolved_tool_contract_from
 
-from pbsmrtpipe.cli_utils import main_runner_default, validate_file
+from pbsmrtpipe.cli_utils import validate_file
 
-import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.tools.utils as U
 import pbsmrtpipe.mock as M
 
@@ -19,37 +18,35 @@ slog = logging.getLogger('status.' + __name__)
 __version__ = '1.0'
 
 
-def run_driver(dm):
+def run_driver(rtc):
     """
-    :type dm: pbsmrtpipe.models.DriverManifest
-    :param dm:
-    :return:
+    :type rtc: pbcommand.models.ResolvedToolContract
+    :param rtc:
+    :return: Int return code
     """
-    log.info("Python Running MOCK driver {x}".format(x=dm))
-    for i, path in enumerate(dm.task['input_files']):
+    log.info("Python Running MOCK driver {x}".format(x=rtc))
+    for i, path in enumerate(rtc.task.input_files):
         if not os.path.exists(path):
             log.warn("Unable to find input {i} {p}".format(i=i, p=path))
 
     nrecords = 10
     # write mock files
-    for path in dm.task['output_files']:
+    for path in rtc.task.output_files:
         M.write_mock_file_by_type(path, nrecords)
 
     return 0
 
 
 def _args_run_driver(args):
-    path = args.driver_manifest_json
-
-    dm = IO.load_driver_manifest_from_file(path)
-
-    return run_driver(dm)
+    path = args.resolved_tool_contract
+    rtc = load_resolved_tool_contract_from(path)
+    return run_driver(rtc)
 
 
 def get_parser():
-    p = get_default_argparser(__version__, "Dispatch Driver for running Static Tasks")
+    p = get_default_argparser(__version__, "MOCK Dispatch Driver for running Running Resolved Tool contract")
     U.add_debug_option(p)
-    p.add_argument("driver_manifest_json", type=validate_file, help="Path to driver-manifest.json")
+    p.add_argument("resolved_tool_contract", type=validate_file, help="Path to resolved-tool-contract.json")
     return p
 
 

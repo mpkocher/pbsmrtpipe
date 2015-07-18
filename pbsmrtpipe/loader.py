@@ -65,10 +65,7 @@ def load_all_pb_tasks_from_python_module_name(name):
     return _REGISTERED_TASKS
 
 
-
 def _load_all_pb_static_tasks(registered_tasks_d, filter_filename_func, processing_func):
-
-    import pbsmrtpipe.pb_io as IO
 
     m = importlib.import_module("pbsmrtpipe.pb_static_tasks")
 
@@ -91,7 +88,7 @@ def _load_all_pb_static_tasks(registered_tasks_d, filter_filename_func, processi
     return _REGISTERED_STATIC_TASKS
 
 
-def load_all_pb_static_tasks():
+def load_all_pb_tool_contracts():
 
     import pbsmrtpipe.pb_io as IO
 
@@ -104,11 +101,9 @@ def load_all_pb_static_tasks():
     def filter_by(name, path):
         return path.endswith(".json") and name in path
 
-    filter_manifests = functools.partial(filter_by, "static_manifest")
     filter_contracts = functools.partial(filter_by, "tool_contract")
 
-    rtasks = _load_all_pb_static_tasks(_REGISTERED_STATIC_TASKS, filter_manifests, IO.load_static_meta_task_from_file)
-    rtasks = _load_all_pb_static_tasks(rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_pb_static_tasks(_REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
 
     return rtasks
 
@@ -146,8 +141,8 @@ def load_pipelines_from_python_module_name(name):
     global _REGISTERED_PIPELINES
 
     if _REGISTERED_PIPELINES is None:
-        import pbsmrtpipe.pb_pipelines_dev
-        import pbsmrtpipe.pb_pipelines_sa3
+        import pbsmrtpipe.pb_pipelines.pb_pipelines_dev
+        import pbsmrtpipe.pb_pipelines.pb_pipelines_sa3
         from pbsmrtpipe.models import REGISTERED_PIPELINES
         _REGISTERED_PIPELINES = REGISTERED_PIPELINES
 
@@ -174,7 +169,7 @@ def load_all():
     :note: This will only be loaded once and cached.
     """
     meta_tasks = load_all_installed_pb_tasks()
-    static_metatasks = load_all_pb_static_tasks()
+    static_metatasks = load_all_pb_tool_contracts()
     meta_tasks.update(static_metatasks)
     operators = load_all_installed_chunk_operators()
     pipelines = load_all_installed_pipelines()

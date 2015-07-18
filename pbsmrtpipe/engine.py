@@ -5,6 +5,7 @@ import time
 import logging
 import multiprocessing
 import subprocess
+import traceback
 import types
 import platform
 import tempfile
@@ -12,6 +13,7 @@ import shlex
 import signal
 
 from pbsmrtpipe.cluster import ClusterTemplateRender
+from pbsmrtpipe.models import TaskResult
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -369,3 +371,43 @@ class ProcessPoolManager(multiprocessing.Process):
         msg = "Exiting Pool.run()"
         print msg
         slog.info(msg)
+
+
+class TaskManifestWorker(multiprocessing.Process):
+    """This fundamental unit that runs a "Manifest" or Tool Contract (ToDo)"""
+
+    def __init__(self, q_out, event, sleep_time, run_manifest_func, task_id, manifest_path, group=None, name=None, target=None):
+        self.q_out = q_out
+        self.event = event
+        self.sleep_time = sleep_time
+        self.task_id = task_id
+        self.manifest_path = manifest_path
+
+        # runner func (path/to/manifest.json ->) (task_id, state, message, run_time)
+        self.runner_func = run_manifest_func
+
+        super(TaskManifestWorker, self).__init__(group=group, name=name, target=target)
+
+    def shutdown(self):
+        self.event.set()
+
+    def run(self):
+        log.info("Starting process:{p} {k} worker {i} task id {t}".format(k=self.__class__.__name__, i=self.name, t=self.task_id, p=self.pid))
+
+        try:
+            if os.path.exists(self.manifest_path):
+                log.debug("Running task {i} with func {f}".format(i=self.task_id, f=self.runner_func.__name__))
+                state, msg, run_time = self.runner_func(self.manifest_path)
+                self.q_out.put(TaskResult(self.task_id, state, msg, round(run_time, 2)))
+            else:
+                emsg = "Unable to find manifest {p}".format(p=self.manifest_path)
+                run_time = 1
+                self.q_out.put(TaskResult(self.task_id, "failed", emsg, round(run_time, 2)))
+        except Exception as ex:
+            traceback.print_exc(file=sys.stderr)
+            emsg = "Unhandled exception in Worker {n} running task {i}. Exception {e}".format(n=self.name, i=self.task_id, e=ex.message)
+            log.error(emsg)
+            self.q_out.put(TaskResult(self.task_id, "failed", emsg, 0.0))
+
+        log.info("exiting Worker {i} (pid {p}) {k}.run".format(k=self.__class__.__name__, i=self.name, p=self.pid))
+        return True

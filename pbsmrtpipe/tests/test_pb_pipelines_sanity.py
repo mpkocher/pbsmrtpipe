@@ -2,7 +2,7 @@ import unittest
 import logging
 
 import pbsmrtpipe.loader as L
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as BU
 
 log = logging.getLogger(__name__)
 
@@ -19,8 +19,8 @@ class TestPipelineSanity(unittest.TestCase):
             log.info(pipeline_id)
             log.debug(pipeline)
             try:
-                bg = B.binding_strs_to_binding_graph(rtasks, pipeline.all_bindings)
-                B.validate_binding_graph_integrity(bg)
+                bg = BU.binding_strs_to_binding_graph(rtasks, pipeline.all_bindings)
+                BU.validate_binding_graph_integrity(bg)
                 log.info("Pipeline {p} is valid.".format(p=pipeline_id))
             except Exception as e:
                 m = emsg + "Error " + e.message

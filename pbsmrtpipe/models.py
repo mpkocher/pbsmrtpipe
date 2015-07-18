@@ -12,7 +12,8 @@ import jsonschema
 from pbsmrtpipe.constants import (to_constant_ns,
                                   to_file_ns, to_workflow_option_ns,
                                   DATASTORE_VERSION, DRIVER_MANIFEST_JSON,
-                                  RX_CHUNK_KEY, to_ds_ns)
+                                  RX_CHUNK_KEY, to_ds_ns,
+                                  RESOLVED_TOOL_CONTRACT_JSON)
 from pbsmrtpipe.exceptions import (MalformedOperatorError, MalformedChunkKeyError)
 
 # legacy. imports into this module.
@@ -42,12 +43,52 @@ __all__ = ['Constants', 'TaskTypes', 'SymbolTypes',
            'Pipeline', "PipelineChunk", 'ChunkOperator']
 
 
+class GlobalRegistry(object):
+    """Global Registry of Immutable resources
+
+    All are dicts, except for cluster_render
+    """
+    def __init__(self, tasks, file_types, chunk_operators, cluster_renderer):
+        """
+
+        :param tasks:
+        :type tasks: dict[str, MetaTask]
+
+        :param file_types:
+        :type file_types: dict[str, FileType]
+
+        :param chunk_operators:
+        :type chunk_operators: dict[str,ChunkOperator]
+
+        :param cluster_renderer:
+        :type cluster_renderer:  ClusterTemplateRender | None
+
+        :return:
+        """
+        self.tasks = tasks
+        self.file_types = file_types
+        self.chunk_operators = chunk_operators
+        self.cluster_renderer = cluster_renderer
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  n=len(self.tasks),
+                  f=len(self.file_types),
+                  o=len(self.chunk_operators))
+        return "<{k} tasks:{n} file-types:{f} operators:{o}>".format(*_d)
+
+
 def datetime_to_string(dt):
     return dt.strftime('%Y-%m-%dT%H:%M:%S')
 
 
 class Constants(object):
     CHUNK_KEY_PREFIX = "$chunk."
+
+TaskResult = namedtuple('TaskResult', "task_id state error_message run_time_sec")
+
+_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
+JobResources = namedtuple("JobResources", _JOB_ATTRS)
 
 
 class TaskStates(object):
@@ -699,7 +740,7 @@ class MetaStaticTask(MetaTask):
                  nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
         """
 
-        :type driver: DriverExe
+        :type driver: ToolDriver
         :param task_id:
         :param task_type:
         :param input_types:
@@ -722,55 +763,4 @@ class MetaStaticTask(MetaTask):
 
     def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types):
         """ Write the driver.exe driver-manifest.json"""
-        return "{d} {m}".format(d=self.driver.driver_exe, m=DRIVER_MANIFEST_JSON)
-
-
-# this needs to be replace with pbcommand
-class DriverExe(object):
-    def __init__(self, driver_exe, env=None):
-        """
-
-        :param driver_exe: Path to the driver
-        :param env: path to env to be sourced before it's run?
-        :return:
-        """
-        self.driver_exe = driver_exe
-        self.env = env
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__, e=self.driver_exe)
-        return "<{k} driver:{e} >".format(**_d)
-
-
-class DriverTask(object):
-    def __init__(self, task_id, task_type, input_files, output_files, options, nproc, resources):
-        self.task_id = task_id
-        self.task_type = task_type
-        self.input_files = input_files
-        self.output_files = output_files
-        self.options = options
-        self.nproc = nproc
-        self.resources = resources
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__, i=self.task_id, t=self.task_type)
-        return "<{k} id:{i} >".format(**_d)
-
-
-class DriverManifest(object):
-    def __init__(self, task, driver):
-        """
-
-        :type task: DriverTask
-        :type driver: DriverExe
-
-        :param task:
-        :param driver:
-        :return:
-        """
-
-        # keep this a dicts for now
-        # this really isn't needed quite yet
-        # self.meta_task = meta_task
-        self.task = task
-        self.driver = driver
+        return "{d} {m}".format(d=self.driver.driver_exe, m=RESOLVED_TOOL_CONTRACT_JSON)

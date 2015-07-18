@@ -8,12 +8,12 @@ from nose.plugins.attrib import attr
 import time
 
 import pbsmrtpipe.driver as D
-import pbsmrtpipe.bgraph as B
+import pbsmrtpipe.graph.bgraph as B
 from pbsmrtpipe.decos import timeit
+from pbsmrtpipe.models import GlobalRegistry
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
 from base import HAS_CLUSTER_QSUB, SLOW_ATTR
 import base as TB
-
 
 log = logging.getLogger(__name__)
 
@@ -69,9 +69,9 @@ def _test_run_driver(chunk_operators, register_tasks_d, rfiles_d, ep_d, bg, job_
     started_at = time.time()
     service_uri = None
 
-    state = D.exe_workflow(chunk_operators, ep_d, bg, task_opts, workflow_level_options,
-                           job_output_dir, register_tasks_d, rfiles_d, cluster_renderer,
-                           D.run_task_manifest, D.run_task_manifest_on_cluster, service_uri)
+    global_registry = GlobalRegistry(register_tasks_d, rfiles_d, chunk_operators, cluster_renderer)
+    state = D.exe_workflow(global_registry, ep_d, bg, task_opts, workflow_level_options,
+                           job_output_dir, service_uri)
     run_time = time.time() - started_at
     log.debug("Completed running driver test in {s:.2} sec".format(s=run_time))
     return state

@@ -20,8 +20,7 @@ from xmlbuilder import XMLBuilder
 from pbsmrtpipe.exceptions import (TaskIdNotFound, MalformedBindingError,
                                    InvalidEntryPointError,
                                    MalformedBindingStrError)
-from pbcommand.models.report import Report, Attribute
-import pbsmrtpipe.external_tools
+
 from pbsmrtpipe.opts_graph import resolve_di
 from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
                                    BindingFileTypeIncompatiblyError)
@@ -30,74 +29,26 @@ from pbsmrtpipe.models import (FileType, TaskStates, ResourceTypes, DataStore,
                                MetaScatterTask, MetaGatherTask, FileTypes)
 
 import pbsmrtpipe.constants as GlobalConstants
+from pbsmrtpipe.pb_io import strip_entry_prefix
 from pbsmrtpipe.utils import validate_type_or_raise
+
+from pbsmrtpipe.graph.models import (TaskBindingNode,
+                                     ConstantsNodes,
+                                     BindingInFileNode,
+                                     BindingOutFileNode,
+                                     _TaskLike,
+                                     EntryPointNode,
+                                     EntryOutBindingFileNode,
+                                     TaskScatterBindingNode,
+                                     VALID_FILE_NODE_ClASSES,
+                                     VALID_TASK_NODE_CLASSES,
+                                     TaskChunkedBindingNode,
+                                     BindingChunkInFileNode,
+                                     BindingChunkOutFileNode,
+                                     TaskGatherBindingNode)
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger(GlobalConstants.SLOG_PREFIX + "__name__")
-
-
-class DotShapeConstants(object):
-    """Commonly used shapes so I don't have to keep looking this up"""
-    ELLIPSE = "ellipse"
-    RECTANGLE = "rectangle"
-    OCTAGON = "octagon"
-    TRIPLE_OCTAGON = 'tripleoctagon'
-    # Use for scatter task
-    TRIANGLE_UP = 'triangle'
-    # Use for gather
-    TRIANGLE_DOWN = 'invtriangle'
-
-    DIAMOND = 'diamond'
-    PARALLELOGRAM = 'parallelogram'
-
-
-class DotColorConstants(object):
-    """Colors so I don't have to keep looking this up
-
-    http://www.graphviz.org/doc/info/colors.html
-    """
-    AQUA = "aquamarine"
-    AQUA_DARK = 'aquamarine3'
-    CYAN = 'cyan'
-    RED = "red"
-    BLUE = 'blue'
-    ORANGE = 'orange'
-    WHITE = 'azure'
-    PURPLE = 'mediumpurple'
-    PURPLE_DARK = 'mediumpurple4'
-    GREY = 'grey'
-
-
-class DotStyleConstants(object):
-    DOTTED = 'dotted'
-    FILLED = 'filled'
-
-
-class Constants(object):
-    TASK_FAILED_COLOR = DotColorConstants.RED
-
-
-class ConstantsNodes(object):
-    FILE_ATTR_IS_RESOLVED = 'is_resolved'
-    FILE_ATTR_PATH = 'path'
-    FILE_ATTR_RESOLVED_AT = 'resolved_at'
-
-    TASK_ATTR_STATE = 'state'
-    TASK_ATTR_NPROC = 'nproc'
-    TASK_ATTR_ROPTS = 'ropts'
-    TASK_ATTR_CMDS = 'cmds'
-    TASK_ATTR_EMESSAGE = "error_message"
-    TASK_ATTR_RUN_TIME = 'run_time'
-    TASK_ATTR_UPDATED_AT = 'updated_at'
-    TASK_ATTR_CREATED_AT = 'created_at'
-
-    # On the chunk-able task, store metadata about the o
-    TASK_ATTR_IS_CHUNKABLE = 'is_chunkable'
-    # Was the chunked applied to the scattered chunk
-    TASK_ATTR_WAS_CHUNKED = 'was_chunked'
-    TASK_ATTR_COMPANION_CHUNK_TASK_ID = "companion_chunk_task_id"
-    TASK_ATTR_IS_CHUNK_RUNNING = 'is_chunk_scatter_running'
-    TASK_ATTR_OPERATOR_ID = 'operator_id'
 
 
 def _parse_task_from_binding_str(s):
@@ -153,280 +104,12 @@ def binding_str_to_task_id_and_instance_id(s):
     return task_id, instance_id, in_out_index
 
 
-class _NodeLike(object):
-    """Base Graph Node type"""
-    NODE_ATTRS = {}
-
-
-class _NodeEqualityMixin(object):
-
-    def __repr__(self):
-        return ''.join(['<', str(self), '>'])
-
-    def __str__(self):
-        return "{k}_{i}".format(k=self.__class__.__name__, i=self.idx)
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            if self.idx == other.idx:
-                return True
-        return False
-
-    def __ne__(self, other):
-        return not self == other
-
-
-class _DotAbleMixin(object):
-    DOT_SHAPE = DotShapeConstants.ELLIPSE
-    DOT_COLOR = DotColorConstants.WHITE
-
-
-class _FileLike(_NodeLike):
-    # Attributes initialized at the graph level
-    NODE_ATTRS = {ConstantsNodes.FILE_ATTR_IS_RESOLVED: False,
-                  ConstantsNodes.FILE_ATTR_PATH: None,
-                  ConstantsNodes.FILE_ATTR_RESOLVED_AT: None}
-
-
-class _TaskLike(_NodeLike):
-    # Attributes initialized at the graph level
-    NODE_ATTRS = {ConstantsNodes.TASK_ATTR_STATE: TaskStates.CREATED,
-                  ConstantsNodes.TASK_ATTR_ROPTS: {},
-                  ConstantsNodes.TASK_ATTR_NPROC: 1,
-                  ConstantsNodes.TASK_ATTR_CMDS: [],
-                  ConstantsNodes.TASK_ATTR_RUN_TIME: None,
-                  ConstantsNodes.TASK_ATTR_CREATED_AT: lambda : datetime.datetime.now(),
-                  ConstantsNodes.TASK_ATTR_UPDATED_AT: lambda : datetime.datetime.now(),
-                  ConstantsNodes.TASK_ATTR_EMESSAGE: None,
-                  ConstantsNodes.TASK_ATTR_IS_CHUNKABLE: False,
-                  ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING: False,
-                  ConstantsNodes.TASK_ATTR_WAS_CHUNKED: False}
-
-
-class _ChunkLike(object):
-    # Must have self.chunk_id
-    pass
-
-
-class EntryPointNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
-    # this is like a Task
-    # This abstraction needs to be deleted
-    NODE_ATTRS = {'is_resolved': False, 'path': None}
-
-    DOT_COLOR = DotColorConstants.PURPLE
-    DOT_SHAPE = DotShapeConstants.DIAMOND
-
-    def __init__(self, idx, file_klass):
-        """
-
-        :type idx: str
-        :type file_klass: FileType
-
-        :param idx:
-        :param file_klass:
-        :return:
-        """
-        self.idx = idx
-        # FileType instance
-        self.file_klass = file_klass
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__, i=self.idx, f=self.file_klass.file_type_id)
-        return "{k} {i} {f}".format(**_d)
-
-
-class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
-    """ Standard base Task Node """
-    DOT_COLOR = DotColorConstants.AQUA
-    DOT_SHAPE = DotShapeConstants.OCTAGON
-
-    def __init__(self, meta_task, instance_id):
-        """
-
-        :type meta_task: MetaTask
-        :type instance_id: int
-
-        :param meta_task:
-        :param instance_id:
-        """
-
-        self.meta_task = validate_type_or_raise(meta_task, (MetaTask, MetaStaticTask))
-        self.instance_id = validate_type_or_raise(instance_id, int)
-
-    @property
-    def url(self):
-        # for backwards compatible with the driver
-        return str(self)
-
-    @property
-    def idx(self):
-        return self.meta_task.task_id
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__, i=self.idx, n=self.instance_id)
-        return "{k} {i}-{n}".format(**_d)
-
-
-class TaskChunkedBindingNode(TaskBindingNode):
-    """Chunked "instances" of a Task node, must have chunk_id"""
-
-    DOT_SHAPE = DotShapeConstants.TRIPLE_OCTAGON
-    DOT_COLOR = DotColorConstants.AQUA_DARK
-
-    def __init__(self, meta_task, instance_id, chunk_id):
-        super(TaskChunkedBindingNode, self).__init__(meta_task, instance_id)
-        self.chunk_id = chunk_id
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__,
-                  i=self.idx, n=self.instance_id, c=self.chunk_id)
-        return "{k}-{c} {i}-{n}".format(**_d)
-
-
-class TaskScatterBindingNode(TaskBindingNode):
-    """Scattered Task that produces a chunk.json output file type
-
-    This will have a 'companion' task that shares the same input file type signature
-    """
-
-    DOT_SHAPE = DotShapeConstants.OCTAGON
-    DOT_COLOR = DotColorConstants.ORANGE
-
-    def __init__(self, scatter_meta_task, original_task_id, instance_id):
-        validate_type_or_raise(scatter_meta_task, MetaScatterTask)
-        super(TaskScatterBindingNode, self).__init__(scatter_meta_task, instance_id)
-        # Keep track of the original task that was chunked
-        self.original_task_id = original_task_id
-
-
-class TaskGatherBindingNode(TaskBindingNode):
-    """Gathered Task node. Consumes a gathered chunk.json and emits a single
-    file type
-    """
-    DOT_SHAPE = DotShapeConstants.OCTAGON
-    DOT_COLOR = DotColorConstants.GREY
-
-    def __init__(self, meta_task, instance_id, chunk_key):
-        super(TaskGatherBindingNode, self).__init__(meta_task, instance_id)
-        # Keep track of the chunk_key that was passed to the exe.
-        # Perhaps this should be in the meta task instance?
-        self.chunk_key = chunk_key
-
-
-class _BindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
-    # Grab from meta task
-    ATTR_NAME = "input_types"
-    # Used as a label in dot
-    DIRECTION = "IN"
-
-    DOT_COLOR = DotColorConstants.WHITE
-    DOT_SHAPE = DotShapeConstants.ELLIPSE
-
-    def __init__(self, meta_task, instance_id, index, file_type_instance):
-        """
-
-        :type meta_task: MetaTask
-        :type instance_id: int
-        :type index: int
-        :type file_type_instance: FileType
-        """
-
-        # Not sure this is a great idea
-        self.meta_task = validate_type_or_raise(meta_task, MetaTask)
-
-        # task index (int)
-        self.instance_id = validate_type_or_raise(instance_id, int)
-
-        # positional index of input/output
-        self.index = validate_type_or_raise(index, int)
-
-        # this is a little odd. The input/output type are not necessarily identical
-        self.file_klass = validate_type_or_raise(file_type_instance, FileType)
-
-    @property
-    def task_instance_id(self):
-        # this is the {file klass}-{Instance id}
-        types_ = getattr(self.meta_task, self.__class__.ATTR_NAME)
-        file_type = types_[self.index]
-        return "-".join([file_type.file_type_id, str(self.instance_id)])
-
-    @property
-    def idx(self):
-        # the fundamental id used in the graph
-        return "{n}.{i}".format(n=self.task_instance_id, i=self.index)
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__,
-                  d=self.__class__.DIRECTION,
-                  i=self.idx,
-                  f=self.file_klass.file_type_id,
-                  n=self.meta_task.task_id,
-                  m=self.instance_id)
-        return "{k} {n}-{m} {i}".format(**_d)
-
-
-class BindingInFileNode(_BindingFileNode):
-    DIRECTION = "in"
-    # Grab from meta task
-    ATTR_NAME = "input_types"
-
-    DOT_SHAPE = DotShapeConstants.ELLIPSE
-
-
-class BindingChunkInFileNode(BindingInFileNode):
-    def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id):
-        super(BindingChunkInFileNode, self).__init__(meta_task, instance_id, index, file_type_instance)
-        self.chunk_id = chunk_id
-
-
-class BindingOutFileNode(_BindingFileNode):
-    DIRECTION = "out"
-    ATTR_NAME = "output_types"
-
-    DOT_SHAPE = DotShapeConstants.OCTAGON
-
-
-class BindingChunkOutFileNode(BindingOutFileNode):
-    def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id):
-        super(BindingChunkOutFileNode, self).__init__(meta_task, instance_id, index, file_type_instance)
-        self.chunk_id = chunk_id
-
-
-class EntryOutBindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
-    DOT_SHAPE = DotShapeConstants.RECTANGLE
-    DOT_COLOR = DotColorConstants.WHITE
-
-    def __init__(self, entry_id, file_klass):
-        self.entry_id = _strip_entry_prefix(entry_id)
-        # FileType instance
-        self.file_klass = file_klass
-        self.instance_id = 0
-        self.index = 0
-        self.direction = 'out'
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__,
-                  i=self.entry_id,
-                  f=self.file_klass.file_type_id)
-        return "{k} {f} {i}".format(**_d)
-
-    @property
-    def idx(self):
-        _d = dict(n=self.entry_id, i=self.index)
-        return "{n}.{i}".format(**_d)
-
-
 class BindingsGraph(nx.DiGraph):
 
     # This is the new model. This will replace the Abstract Graph
-    VALID_FILE_NODE_ClASSES = (BindingInFileNode, BindingOutFileNode, EntryOutBindingFileNode)
-    VALID_TASK_NODE_CLASSES = (TaskBindingNode, EntryPointNode)
 
     def _validate_type(self, n):
-        _allowed_types = tuple(itertools.chain(self.__class__.VALID_TASK_NODE_CLASSES, self.__class__.VALID_FILE_NODE_ClASSES))
+        _allowed_types = tuple(itertools.chain(VALID_TASK_NODE_CLASSES, VALID_FILE_NODE_ClASSES))
 
         if not isinstance(n, _allowed_types):
             msg = "Got type {t} for {k}. Allowed types {a}.".format(a=_allowed_types, t=type(n), k=self.__class__.__name__)
@@ -459,10 +142,10 @@ class BindingsGraph(nx.DiGraph):
         """
         This always returns a t-sorted list of task nodes
         """
-        return self._get_sorted_nodes_by_klass(self.VALID_TASK_NODE_CLASSES)
+        return self._get_sorted_nodes_by_klass(VALID_TASK_NODE_CLASSES)
 
     def file_nodes(self, data=False):
-        return self._get_sorted_nodes_by_klass(self.VALID_FILE_NODE_ClASSES)
+        return self._get_sorted_nodes_by_klass(VALID_FILE_NODE_ClASSES)
 
     def entry_binding_nodes(self, data=False):
         # these are files-esque
@@ -473,6 +156,12 @@ class BindingsGraph(nx.DiGraph):
         # these are task-esque
         nodes = nx.topological_sort(self)
         return [n for n in nodes if isinstance(n, EntryPointNode)]
+
+    def get_tasks_by_state(self, state):
+        return get_tasks_by_state(self, state)
+
+    def is_workflow_complete(self):
+        return is_workflow_complete(self)
 
     def __repr__(self):
         d = dict(k=self.__class__.__name__,
@@ -810,7 +499,7 @@ def initialize_file_node_attrs(g):
     default_attrs = [('is_resolved', False), ('path', None)]
     for attr_name, value in default_attrs:
         for n in g.nodes():
-            if isinstance(n, g.VALID_FILE_NODE_ClASSES):
+            if isinstance(n, VALID_FILE_NODE_ClASSES):
                 g.node[n][attr_name] = value
 
 
@@ -899,7 +588,7 @@ def get_next_runnable_task(g):
                 # {node:is_resolved}
                 _ns = {}
                 for fnode in g.predecessors(tnode):
-                    if isinstance(fnode, BindingsGraph.VALID_FILE_NODE_ClASSES):
+                    if isinstance(fnode, VALID_FILE_NODE_ClASSES):
                         is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
                         _ns[fnode] = is_resolved
 
@@ -946,7 +635,7 @@ def has_next_runnable_task(g):
     for tnode in get_tasks_by_state(g, task_states):
         _ns = {}
         for fnode in g.predecessors(tnode):
-            if isinstance(fnode, BindingsGraph.VALID_FILE_NODE_ClASSES):
+            if isinstance(fnode, VALID_FILE_NODE_ClASSES):
                 is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
                 if is_resolved:
                     _ns[fnode] = is_resolved
@@ -979,7 +668,7 @@ def get_tasks_by_state(g, state_or_states):
 
     node_states = {}
     for n in g.nodes():
-        if isinstance(n, BindingsGraph.VALID_TASK_NODE_CLASSES):
+        if isinstance(n, VALID_TASK_NODE_CLASSES):
             state = g.node[n]['state']
             if state in states:
                 node_states[n] = state
@@ -1033,7 +722,7 @@ def update_task_state_to_success(g, tnode, run_time):
 
 def update_file_state_to_resolved(g, file_node, path):
     # this should do a node type check
-    if not isinstance(file_node, BindingsGraph.VALID_FILE_NODE_ClASSES):
+    if not isinstance(file_node, VALID_FILE_NODE_ClASSES):
         raise TypeError("Unable to update state on {f}".format(f=file_node))
 
     if g.node[file_node][ConstantsNodes.FILE_ATTR_PATH] is None:
@@ -1096,12 +785,6 @@ def resolve_successor_binding_file_path(g):
     return True
 
 
-def _strip_entry_prefix(b):
-    if b.startswith(GlobalConstants.ENTRY_PREFIX):
-        return b.split(GlobalConstants.ENTRY_PREFIX)[1]
-    return b
-
-
 def resolve_entry_point(g, entry_id, path):
     """
     Update the path and state of path of an entry point based on entry_id.
@@ -1109,7 +792,7 @@ def resolve_entry_point(g, entry_id, path):
     An EntryPoint Node is like a task.
     """
     # FIXME
-    eid = _strip_entry_prefix(entry_id)
+    eid = strip_entry_prefix(entry_id)
 
     eps = g.entry_point_nodes()
 
@@ -1143,7 +826,7 @@ def resolve_entry_point(g, entry_id, path):
 def resolve_entry_points(g, ep_d):
     for entry_id, path in ep_d.iteritems():
         # Allowing a bit of slop here. The "$entry:X" can be optionally given
-        eid = _strip_entry_prefix(entry_id)
+        eid = strip_entry_prefix(entry_id)
         resolve_entry_point(g, eid, path)
         resolve_successor_binding_file_path(g)
 
@@ -1632,379 +1315,3 @@ def to_resolve_files(file_type_id_to_count):
     def f2(task_dir, input_files, output_types, output_files_names, mutable_files):
         return resolve_io_files(file_type_id_to_count, task_dir, input_files, output_types, output_files_names, mutable_files)
     return f2
-
-
-def to_binding_graph_summary(bg):
-    """
-    General func for getting a summary of BindingGraph instance
-    """
-
-    header = "Binding Graph Status Summary"
-    _n = 80
-    sp = "-" * _n
-    ssp = "*" * _n
-    outs = []
-    _add = outs.append
-    _add_sp = functools.partial(_add, sp)
-    _add_ssp = functools.partial(_add, ssp)
-
-    _add_ssp()
-    _add(header)
-    _add_sp()
-    _add("Workflow complete? {c}".format(c=is_workflow_complete(bg)))
-
-    tn_states = {s: len(get_tasks_by_state(bg, s)) for s in TaskStates.ALL_STATES()}
-    tn_s = " ".join([":".join([k, str(v)]) for k, v in tn_states.iteritems()])
-
-    _add_sp()
-    _add("Task Summary {n} tasks ({s})".format(n=len(bg.task_nodes()), s=str(tn_s)))
-    _add_sp()
-
-    sorted_nodes = nx.topological_sort(bg)
-
-    _add(" ".join(["resolved inputs".ljust(20), "resolved outputs".ljust(20), "state".ljust(12), "NodeType".ljust(30), "N inputs".ljust(12), "N outputs".ljust(12), "run time".ljust(12), "Id".ljust(60), ]))
-    _add_sp()
-    for tnode in sorted_nodes:
-        if isinstance(tnode, BindingsGraph.VALID_TASK_NODE_CLASSES):
-            state = bg.node[tnode]['state']
-            _is_resolved = lambda it: all(bg.node[n][ConstantsNodes.FILE_ATTR_IS_RESOLVED] for n in it)
-            inputs_resolved = _is_resolved(bg.predecessors(tnode))
-            outputs_resolved = _is_resolved(bg.successors(tnode))
-            ninputs = len(bg.predecessors(tnode))
-            noutputs = len(bg.successors(tnode))
-
-            run_time = bg.node[tnode]['run_time']
-
-            s = str(inputs_resolved).ljust(20), str(outputs_resolved).ljust(20), state.ljust(12), tnode.__class__.__name__.ljust(30), str(ninputs).ljust(12), str(noutputs).ljust(12), str(run_time).ljust(12), str(tnode).ljust(60)
-            _add(" ".join(s))
-
-    # File-esque summary
-    def _to_summary(fnode_):
-        # print type(fnode_), fnode_
-        s = bg.node[fnode_][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
-        p = bg.node[fnode_][ConstantsNodes.FILE_ATTR_PATH]
-        if p is None:
-            ppath = str(None)
-        else:
-            ppath = '... ' + str(p)[-35:]
-        _add(" ".join([str(s).ljust(10), fnode.__class__.__name__.ljust(18), ppath.ljust(40), str(fnode)]))
-
-    _add("")
-    _add_sp()
-    _add("File Summary ({n}) files".format(n=len(bg.file_nodes())))
-    _add_sp()
-    _add(" ".join(["resolved".ljust(10), "NodeType".ljust(18), "Path".ljust(40), "Id"]))
-    _add_sp()
-
-    for fnode in sorted_nodes:
-        if isinstance(fnode, BindingsGraph.VALID_FILE_NODE_ClASSES):
-            _to_summary(fnode)
-
-    _add("")
-    _add_sp()
-    _add("Entry Point Node Summary ({n})".format(n=len(bg.entry_point_nodes())))
-    _add_sp()
-    _add(" ".join(["resolved".ljust(10), "NodeType".ljust(18), "Path".ljust(40), "Id"]))
-    _add_sp()
-
-    for x in bg.entry_point_nodes():
-        _to_summary(x)
-
-    _add_sp()
-
-    return "\n".join(outs)
-
-
-def to_binding_graph_task_summary(bg):
-    """
-
-    :type bg: BindingsGraph
-    :param bg:
-    :return:
-    """
-    def _to_p(p_or_none):
-        if p_or_none is None:
-            return None
-        else:
-            return '... ' + str(p_or_none)[-35:]
-
-    for x, tnode in enumerate(bg.task_nodes()):
-        print "Task {x} ".format(x=x), bg.node[tnode]['state'], tnode
-        inodes = bg.predecessors(tnode)
-        print "Inputs:"
-        for i in inodes:
-            print "Path ", _to_p(bg.node[i]['path']), bg.node[i][ConstantsNodes.FILE_ATTR_IS_RESOLVED], i
-
-        print "Outputs:"
-        onodes = bg.successors(tnode)
-        for i in onodes:
-            print "Path ", _to_p(bg.node[i]['path']), bg.node[i][ConstantsNodes.FILE_ATTR_IS_RESOLVED], i
-
-        task = bg.node[tnode].get('task', None)
-        if task is not None:
-            for i, output in enumerate(task.output_files):
-                print "Output ", i, output
-
-        print ""
-
-    return "Summary"
-
-
-
-_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
-JobResources = namedtuple("JobResources", _JOB_ATTRS)
-
-
-def to_job_resources_and_create_dirs(root_job_dir):
-    """
-    Create the necessary job directories.
-
-
-    :rtype: JobResources
-    """
-    if not os.path.exists(root_job_dir):
-        os.mkdir(root_job_dir)
-
-    def _to_make_dir(*args):
-        p = os.path.join(*args)
-        if not os.path.exists(p):
-            os.mkdir(p)
-        return p
-
-    f = _to_make_dir
-
-    attr_values = [root_job_dir,
-                   f(root_job_dir, 'workflow'),
-                   f(root_job_dir, 'html'),
-                   f(root_job_dir, 'logs'),
-                   f(root_job_dir, 'tasks'),
-                   f(root_job_dir, 'html', 'css'),
-                   f(root_job_dir, 'html', 'js'),
-                   f(root_job_dir, 'html', 'images'),
-                   os.path.join(root_job_dir, 'workflow', 'datastore.json'),
-                   os.path.join(root_job_dir, 'workflow', 'entry-points.json')]
-
-    return JobResources(*attr_values)
-
-
-def write_entry_points_json(file_name, ep_d):
-    with open(file_name, 'w') as f:
-        f.write(json.dumps(ep_d))
-
-
-def write_and_initialize_data_store_json(file_name, ds_files):
-    ds = DataStore(ds_files)
-    ds.write_json(file_name)
-    return ds
-
-
-def write_workflow_settings(workflow_options, file_name):
-    """
-
-    :type workflow_options: WorkflowLevelOptions
-
-    :param workflow_options:
-    :param file_name:
-    :return:
-    """
-    # temp version of this.
-    with open(file_name, 'w') as f:
-        f.write(json.dumps(workflow_options.to_dict(), sort_keys=True, indent=4))
-
-    return True
-
-
-def to_task_report(host, task_id, run_time_sec, exit_code, error_message, warning_message):
-    def to_a(idx, value):
-        return Attribute(idx, value)
-
-    datum = [('host', host),
-             ('task_id', task_id),
-             ('run_time', run_time_sec),
-             ('exit_code', exit_code),
-             ('error_msg', error_message),
-             ('warning_msg', warning_message)]
-
-    attributes = [to_a(i, v) for i, v in datum]
-    r = Report("workflow_task", attributes=attributes)
-    return r
-
-
-def write_task_report(r, file_name):
-    with open(file_name, 'w') as w:
-        s = json.dumps(r.to_dict(), sort_keys=True, indent=4)
-        w.write(s)
-
-    return True
-
-
-def write_mock_task_report(task_dir):
-    """
-    Write a mock task report
-
-    A task-report.json has metadata about the task status
-    """
-    task_id = os.path.basename(task_dir)
-    r = to_task_report(platform.node(), task_dir, random.randint(1, 4000), 0, "", "")
-    x = os.path.join(task_dir, 'task-report.json')
-    write_task_report(r, x)
-    return True
-
-
-def _to_tmp_file(suffix):
-    # to do. Make this into a context manager
-    t = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
-    t.close()
-    return t.name
-
-
-def write_binding_graph_images(g, root_dir):
-
-    dot_file = os.path.join(root_dir, 'workflow.dot')
-    s = binding_graph_to_dot(g)
-    with open(dot_file, 'w') as f:
-        f.write(s)
-
-    formats = ('png', 'svg')
-    for f in formats:
-        p = os.path.join(root_dir, '.'.join(['workflow', f]))
-        pbsmrtpipe.external_tools.dot_to_image(f, dot_file, p)
-
-    workflow_json = os.path.join(root_dir, 'workflow-graph.json')
-    write_bindings_graph_to_json(g, workflow_json)
-
-
-def binding_graph_to_dot(g):
-    """
-    Custom generation of dot file format
-
-    :rtype: str
-    """
-
-    outs = ["strict digraph G {"]
-    _add = outs.append
-
-    def _to_s(n):
-        return "".join(['"', str(n), '"'])
-
-    def _to_l(n):
-        return n + " ;"
-
-    def _to_attr_s(d):
-        # Convert to a dot-friendly format
-        # [ style=filled shape=rectangle fillcolor=grey]
-        vs = " ".join(['='.join([k, v]) for k, v in d.iteritems()])
-        attrs_str = " ".join(['[', vs, ']'])
-        return attrs_str
-
-    def _get_attr_or_default(g_, n_, attr_name_, default_value):
-        try:
-            return g_.node[n_][attr_name_]
-        except KeyError:
-            return default_value
-
-    def _node_to_view_d(g_, n_):
-        _d = {}
-        _d['fillcolor'] = n_.DOT_COLOR
-        _d['color'] = n_.DOT_COLOR
-        _d['style'] = DotStyleConstants.FILLED
-        _d['shape'] = n_.DOT_SHAPE
-        return _d
-
-    def _node_to_dot(g_, n_):
-        s = _to_s(n_)
-        _d = _node_to_view_d(g_, n_)
-        attrs_str = _to_attr_s(_d)
-        return ' '.join([s, attrs_str])
-
-    def _task_node_to_dot(g_, n_):
-        _d = _node_to_view_d(g_, n_)
-        state = g_.node[n_]['state']
-        state_color = DotColorConstants.RED if state == TaskStates.FAILED else node.DOT_COLOR
-        _d['fillcolor'] = state_color
-        _d['color'] = state_color
-
-        # Chunk Operator Id
-        operator_id = _get_attr_or_default(g_, n_, 'operator_id', None)
-        if operator_id is not None:
-            _d['operator_id'] = operator_id.replace('.', '_')
-
-        attrs_str = _to_attr_s(_d)
-        return ' '.join([_to_s(n_), attrs_str])
-
-    def _binding_file_to_dot(g_, n_):
-        s = _to_s(n_)
-        _d = _node_to_view_d(g_, n_)
-        is_resolved = g_.node[n_][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
-        if not is_resolved:
-            _d['style'] = DotStyleConstants.DOTTED
-        attrs_str = _to_attr_s(_d)
-        return ' '.join([s, attrs_str])
-
-    # write the node metadata
-    for node in g.nodes():
-        funcs = {TaskBindingNode: _task_node_to_dot,
-                 TaskChunkedBindingNode: _task_node_to_dot,
-                 TaskScatterBindingNode: _task_node_to_dot,
-                 EntryOutBindingFileNode: _node_to_dot,
-                 BindingInFileNode: _binding_file_to_dot,
-                 BindingChunkInFileNode: _binding_file_to_dot,
-                 BindingOutFileNode: _binding_file_to_dot,
-                 BindingChunkOutFileNode: _binding_file_to_dot,
-                 EntryPointNode: _node_to_dot}
-
-        f = funcs.get(node.__class__, _node_to_dot)
-        x = f(g, node)
-        _add(_to_l(x))
-
-    for i, f in g.edges():
-        s = ' -> ' .join([_to_s(i), _to_s(f)])
-        _add(_to_l(s))
-
-    _add("}")
-    return "\n".join(outs)
-
-
-def bindings_graph_to_dict(bg):
-
-    _d = dict(_comment="Updated at {x}".format(x=datetime.datetime.now()))
-
-    def _to_a(n, name):
-        return bg.node[n][name]
-
-    def _to_d(n_):
-        _x = {a: _to_a(n_, a) for a in n_.NODE_ATTRS.keys()}
-        _x['klass'] = n_.__class__.__name__
-        _x['node_id'] = n.idx
-        return _x
-
-    nodes = []
-    edges = set([])
-
-    for n in bg.nodes():
-        nodes.append(_to_d(n))
-
-    _d['nodes'] = nodes
-    _d['nnodes'] = len(nodes)
-    _d['edges'] = edges
-    _d['nedges'] = len(edges)
-
-    return _d
-
-
-class DateTimeEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime.datetime):
-            return o.isoformat()
-
-
-def write_bindings_graph_to_json(bg, path):
-
-    d = bindings_graph_to_dict(bg)
-
-    with open(path, 'w+') as w:
-        w.write(json.dumps(d, indent=4, sort_keys=True, cls=DateTimeEncoder))
-
-
-
-
