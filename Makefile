@@ -41,7 +41,7 @@ test-tasks:
 test-loader:
 	python -c "import pbsmrtpipe.loader as L; L.load_all()"
 
-test-load-contracts:
+test-contracts:
 	python -c "import pbsmrtpipe.loader as L; L.load_all_pb_tool_contracts()"
 
 test-suite: test-tasks test-pipelines test-unit test-dev

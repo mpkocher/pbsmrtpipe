@@ -5,3 +5,4 @@ notebooks/.ipynb_checkpoints
 sync_over_site_packages.sh
 sync_to_cluster.sh
 notebooks
+testkit-data/*/job_output
