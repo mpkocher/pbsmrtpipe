@@ -1,6 +1,7 @@
 """Process Engine for running jobs"""
 import os
 import sys
+import threading
 import time
 import logging
 import multiprocessing
@@ -11,6 +12,7 @@ import platform
 import tempfile
 import shlex
 import signal
+import Queue
 
 from pbsmrtpipe.cluster import ClusterTemplateRender
 from pbsmrtpipe.models import TaskResult
@@ -67,6 +69,103 @@ def backticks(cmd, merge_stderr=True):
         sys.stderr.write(msg)
 
     return errCode, output, errorMessage, run_time
+
+
+class AsynchronousFileReader(threading.Thread):
+
+    """
+    Helper class to implement asynchronous reading of a file
+    in a separate thread. Pushes read lines on a queue to
+    be consumed in another thread.
+    """
+
+    def __init__(self, fd, queue):
+        assert isinstance(queue, Queue.Queue)
+        assert callable(fd.readline)
+        threading.Thread.__init__(self)
+        self._fd = fd
+        self._queue = queue
+
+    def run(self):
+        """The body of the tread: read lines and put them on the queue."""
+        for line in iter(self._fd.readline, ''):
+            self._queue.put(line)
+
+    def eof(self):
+        """Check whether there is no more content to expect."""
+        return not self.is_alive() and self._queue.empty()
+
+
+def run_command_async(command, file_stdout=None, file_stderr=None):
+    """
+    Async pulling of the stdout, stderr from the subprocess without deadlocking.
+
+    Modified from: http://stefaanlippens.net/python-asynchronous-subprocess-pipe-reading
+    """
+
+    # Launch the command as subprocess.
+    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+
+    # wait till the process has been loaded and stdout and stderr have been 'created'
+    time.sleep(10)
+
+    # Launch the asynchronous readers of the process' stdout and stderr.
+    stdout_queue = Queue.Queue()
+    stdout_reader = AsynchronousFileReader(process.stdout, stdout_queue)
+    stdout_reader.start()
+    stderr_queue = Queue.Queue()
+    stderr_reader = AsynchronousFileReader(process.stderr, stderr_queue)
+    stderr_reader.start()
+
+    # store the stdout and stderr
+    stdouts = []
+    stderrs = []
+
+    started_at = time.time()
+
+    # Check the queues if we received some output (until there is nothing
+    # more to get).
+    process.poll()
+    while not stdout_reader.eof() or not stderr_reader.eof() or process.returncode is None:
+        # Show what we received from standard output.
+        while not stdout_queue.empty():
+            line = stdout_queue.get()
+            if line:
+                slog.info(line.strip())
+                stdouts.append(line.strip())
+
+        # Show what we received from standard error.
+        while not stderr_queue.empty():
+            line = stderr_queue.get()
+            if line:
+                slog.error(line.strip())
+                stderrs.append(line.strip())
+
+        # Sleep a bit before asking the readers again.
+        time.sleep(2)
+        process.poll()
+
+    # Let's be tidy and join the threads we've started.
+    stdout_reader.join()
+    stderr_reader.join()
+
+    # Close subprocess' file descriptors.
+    process.stdout.close()
+    process.stderr.close()
+
+    def _write_to_fh_or_file(fh_or_file, contents):
+        if hasattr(fh_or_file, 'write'):
+            fh_or_file.write(contents)
+        else:
+            with open(fh_or_file, 'w') as w:
+                w.write(contents)
+
+    _write_to_fh_or_file(file_stderr, "\n".join(stderrs))
+    _write_to_fh_or_file(file_stdout, "\n".join(stdouts))
+
+    run_time = time.time() - started_at
+    return process.returncode, "\n".join(stdouts), "\n".join(stderrs), run_time
 
 
 def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
