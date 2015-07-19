@@ -1,0 +1,44 @@
+{
+    "version": "0.1", 
+    "driver": {
+        "exe": "python -m pbreports.report.sat --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.sat_report", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "AlignmentSet XML or aligned .bam file", 
+                "title": "AlignmentSet", 
+                "id": "alignment_file", 
+                "file_type_id": "PacBio.FileTypes.AlignmentSet"
+            }, 
+            {
+                "description": "The variants report - i.e., variants_report.json", 
+                "title": "Variant report JSON", 
+                "id": "var_rpt", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }, 
+            {
+                "description": "The mapping stats report - i.e., mapping_stats_report.json", 
+                "title": "Mapping stats JSON", 
+                "id": "mapping_stats_rpt", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "JSON report", 
+                "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
+                "default_name": "report.json", 
+                "id": "report", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-18T15:31:23.667185"
+    }
+}

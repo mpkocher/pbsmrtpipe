@@ -119,7 +119,11 @@ def get_dev_local_pipeline_chunk():
 
     b1 = [("pbsmrtpipe.pipelines.dev_03:pbsmrtpipe.tasks.dev_hello_garfield:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
 
-    return b1
+    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fasta:0", "pbsmrtpipe.tasks.dev_filter_fasta:0")]
+
+    b3 = [("pbsmrtpipe.tasks.dev_filter_fasta:0", "pbsmrtpipe.tasks.dev_tc_fasta_report:0")]
+
+    return b1 + b2 + b3
 
 
 @register_pipeline(to_pipeline_ns("dev_dist"), "Dev Hello Distributed Workflow Pipeline")

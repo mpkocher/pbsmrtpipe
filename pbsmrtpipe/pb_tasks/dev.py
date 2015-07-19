@@ -345,7 +345,7 @@ class DevTxtToFastaTask(MetaTaskBase):
 
 class FilterFastaTask(MetaTaskBase):
     """Filter a Fasta file by length of the sequence"""
-    TASK_ID = "pbsmrtpipe.tasks.dev_filter_fasta"
+    TASK_ID = "pbsmrtpipe.tasks.dev_py_filter_fasta"
     NAME = "Filter Fasta"
     VERSION = "0.1.0"
 

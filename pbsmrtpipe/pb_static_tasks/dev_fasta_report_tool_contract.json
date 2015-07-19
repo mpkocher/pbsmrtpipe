@@ -1,0 +1,32 @@
+{
+    "version": "0.1.0", 
+    "driver": {
+        "exe": "python -m pbsmrtpipe.tools_dev.fasta_report --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_tc_fasta_report", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "Pac Bio Fasta format", 
+                "title": "Fasta In", 
+                "id": "fasta_in", 
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "Report", 
+                "description": "PacBio ReportFiltered Fasta by sequence length Fasta", 
+                "default_name": "fasta_report.json", 
+                "id": "rpt_out", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-18T19:10:33.775646"
+    }
+}

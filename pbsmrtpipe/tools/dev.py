@@ -134,17 +134,7 @@ def _args_run_dataset_report(args):
     return subread_dataset_report(args.subread_ds, args.json_report)
 
 
-def _reference_dataset_plot_group(reference_ds, output_dir):
-    """
-    Histogram plot of sequence lengths
-
-    :param reference_ds:
-    :type reference_ds: ReferenceSet
-    :param output_dir:
-    :return:
-    """
-    fasta_file = reference_ds.toExternalFiles()[0]
-
+def fasta_to_plot_group(fasta_file, output_dir):
     lengths = []
     with FastaReader(fasta_file) as f:
         for record in f:
@@ -166,6 +156,35 @@ def _reference_dataset_plot_group(reference_ds, output_dir):
     return pg
 
 
+def try_fasta_to_plot_group(fasta_file, output_json):
+    output_dir = os.path.dirname(output_json)
+    try:
+        plot_group = fasta_to_plot_group(fasta_file, output_dir)
+        plot_groups = [plot_group]
+    except Exception:
+        # matplotlib is not installed
+        plot_groups = []
+    return plot_groups
+
+
+def fasta_to_report(fasta_file, output_json):
+
+    nrecords = 0
+    with FastaReader(fasta_file) as r:
+        for _ in r:
+            nrecords += 1
+
+    attr = Attribute("num_records", nrecords, "Number of Records")
+    plot_groups = try_fasta_to_plot_group(fasta_file, output_json)
+    return Report("fasta_report", attributes=[attr], plotgroups=plot_groups)
+
+
+def run_fasta_report(fasta_file, output_json):
+    report = fasta_to_report(fasta_file, output_json)
+    report.write_json(output_json)
+    return 0
+
+
 def run_reference_dataset_report(reference_ds, output_json):
     """
 
@@ -177,15 +196,10 @@ def run_reference_dataset_report(reference_ds, output_json):
     """
     attributes = _dataset_to_attribute_reports(reference_ds)
 
-    output_dir = os.path.dirname(output_json)
-    # write pngs to output_dir
-    try:
-        plot_group = _reference_dataset_plot_group(reference_ds, output_dir)
-        plot_groups = [plot_group]
-    except Exception:
-        # matplotlib is not installed
-        plot_groups = []
+    fasta_file = reference_ds.toExternalFiles()[0]
 
+    output_dir = os.path.dirname(output_json)
+    plot_groups = try_fasta_to_plot_group(fasta_file, output_dir)
     report = Report("ds_reference_report",
                     attributes=attributes,
                     plotgroups=plot_groups,

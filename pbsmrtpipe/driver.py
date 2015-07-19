@@ -43,7 +43,7 @@ from pbsmrtpipe.pb_io import WorkflowLevelOptions
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 
 class Constants(object):
