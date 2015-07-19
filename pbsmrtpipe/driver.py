@@ -184,30 +184,20 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     The function is doing way too much. This is really terrible.
     """
     job_id = random.randint(100000, 999999)
+    started_at = time.time()
+
     m_ = "Distributed" if workflow_opts.distributed_mode is not None else "Local"
+
     slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
     log.info("exe'ing workflow Cluster renderer {c}".format(c=global_registry.cluster_renderer))
     slog.info("Service URI: {i} {t}".format(i=service_uri_or_none, t=type(service_uri_or_none)))
 
-    started_at = time.time()
+    # Setup logger, job directory and initialize DS
+    slog.info("creating job resources in {o}".format(o=output_dir))
+    job_resources, ds = DU.job_resource_create_and_setup_logs(log, output_dir, bg, task_opts, workflow_opts, ep_d)
+    slog.info("successfully created job resources.")
 
-    # To store all the reports that are displayed in the analysis.html
-    # {id:task-id, report_path:path/to/report.json}
-    analysis_file_links = []
-
-    def write_analysis_report(analysis_file_links_):
-        analysis_report_html = os.path.join(job_resources.html, 'analysis.html')
-        R.write_analysis_link_report(analysis_file_links_, analysis_report_html)
-
-    def update_analysis_file_links(task_id_, report_path_):
-        analysis_link = AnalysisLink(task_id_, report_path_)
-        log.info("updating report analysis file links {a}".format(a=analysis_link))
-        analysis_file_links.append(analysis_link)
-        write_analysis_report(analysis_file_links)
-
-    def _to_run_time():
-        return time.time() - started_at
-
+    # Some Pre-flight checks
     # Help initialize graph/epoints
     B.resolve_entry_points(bg, ep_d)
     # Update Task-esque EntryBindingPoint
@@ -233,9 +223,42 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # this returns a func
     to_resolve_files_func = B.to_resolve_files(file_type_id_to_count)
 
+    # Local vars
+    max_total_nproc = workflow_opts.total_max_nproc
+    max_nworkers = workflow_opts.max_nworkers
+    max_nproc = workflow_opts.max_nproc
+    max_nchunks = workflow_opts.max_nchunks
+
     q_out = multiprocessing.Queue()
 
     worker_sleep_time = 1
+    # To store all the reports that are displayed in the analysis.html
+    # {id:task-id, report_path:path/to/report.json}
+    analysis_file_links = []
+
+    # Flag for pipeline execution failure
+    has_failed = False
+    # Time to sleep between each step the execution loop
+    # after the first 1 minute of exe, update the sleep time to 2 sec
+    sleep_time = 1
+    # Running total of current number of slots/cpu's used
+    total_nproc = 0
+
+    # Define a bunch of util funcs to try to make the main driver while loop
+    # more understandable. Not the greatest model.
+
+    def _to_run_time():
+        return time.time() - started_at
+
+    def write_analysis_report(analysis_file_links_):
+        analysis_report_html = os.path.join(job_resources.html, 'analysis.html')
+        R.write_analysis_link_report(analysis_file_links_, analysis_report_html)
+
+    def update_analysis_file_links(task_id_, report_path_):
+        analysis_link = AnalysisLink(task_id_, report_path_)
+        log.info("updating report analysis file links {a}".format(a=analysis_link))
+        analysis_file_links.append(analysis_link)
+        write_analysis_report(analysis_file_links)
 
     # factories for getting a Worker instance
     def _to_w(wid, task_id, manifest_path_):
@@ -252,16 +275,15 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
                                   T.run_task_manifest, task_id, manifest_path_, name=wid)
 
-    max_total_nproc = workflow_opts.total_max_nproc
-    max_nworkers = workflow_opts.max_nworkers
-    max_nproc = workflow_opts.max_nproc
-    max_nchunks = workflow_opts.max_nchunks
+    def _determine_worker_type(task_type):
+        # resolve the specific worker type
+        if task_type == TaskTypes.LOCAL or workflow_opts.distributed_mode is False:
+            return _to_local_w
+        else:
+            return _to_w
 
-    # Setup logger, job directory and initialize DS
-    slog.info("creating job resources in {o}".format(o=output_dir))
-    job_resources, ds = DU.job_resource_create_and_setup_logs(log, output_dir, bg, task_opts, workflow_opts, ep_d)
-    slog.info("successfully created job resources.")
-
+    # Define a bunch of util funcs to try to make the main driver while loop
+    # more understandable. Not the greatest model.
     def write_report_(bg_, current_state_, was_successful_):
         return DU.write_main_workflow_report(job_id, job_resources, workflow_opts,
                                           task_opts, bg_, current_state_, was_successful_, _to_run_time())
@@ -283,20 +305,43 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             WS.log_pbsmrtpipe_progress(total_log_uri, message_, level_, source_id_, ignore_errors=True)
 
     def services_add_datastore_file(datastore_file_):
-       if service_uri_or_none is not None:
+        if service_uri_or_none is not None:
             total_ds_uri = "{u}/datastore".format(u=service_uri_or_none)
             WS.add_datastore_file(total_ds_uri, datastore_file_, ignore_errors=True)
 
-    has_failed = False
-    sleep_time = 1
-    # Running total of current number of slots/cpu's used
-    total_nproc = 0
+    def _update_analysis_reports_and_datastore(tnode_, task_):
+        for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
+            source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
+            ds_uuid = _get_dataset_uuid_or_create_uuid(path_)
+            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_)
+            ds.add(ds_file_)
+            ds.write_update_json(job_resources.datastore_json)
+
+            # Update Services
+            services_add_datastore_file(ds_file_)
+
+            dsr = DU.datastore_to_report(ds)
+            R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
+            if file_type_ == FileTypes.REPORT:
+                T.write_task_report(job_resources, task_.task_id, path_, DU._get_images_in_dir(task_.output_dir))
+                update_analysis_file_links(tnode_.idx, path_)
+
+    def _log_task_failure_and_call_services(path_to_stderr, task_id_):
+        """log the error messages extracted from stderr"""
+        lines = _get_last_lines_of_stderr(20, path_to_stderr)
+        for line_ in lines:
+            log.error(line_)
+            # these already have newlines
+            sys.stderr.write(line_)
+            sys.stderr.write("\n")
+        services_log_update_progress("pbsmrtpipe::{i}".format(i=task_id_), WS.LogLevels.ERROR, "\n".join(lines))
 
     def has_available_slots(n):
         if max_total_nproc is None:
             return True
         return total_nproc + n <= max_total_nproc
 
+    # Misc setup
     write_report_(bg, TaskStates.CREATED, False)
     # write empty analysis reports
     write_analysis_report(analysis_file_links)
@@ -310,6 +355,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
         BU.write_binding_graph_images(bg, job_resources.workflow)
+
+        # After the initial startup, bump up the time to reduce resource usage
+        # (since multiple instances will be launched from the services)
+        if _to_run_time() > 300:
+            sleep_time = 5
 
         while True:
 
@@ -372,7 +422,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 if state_ == TaskStates.SUCCESSFUL:
                     msg_ = "Task was successful {r}".format(r=result)
                     slog.info(msg_)
-                    services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.INFO, msg_)
 
                     is_valid_or_emsg = B.validate_outputs_and_update_task_to_success(bg, tnode_, run_time_, bg.node[tnode_]['task'].output_files)
 
@@ -381,50 +430,37 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                         B.update_task_state_to_failed(bg, tnode_, result.run_time_sec, result.error_message)
                         raise PipelineRuntimeError(is_valid_or_emsg)
 
+                    services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.INFO, msg_)
                     B.update_task_output_file_nodes(bg, tnode_, tnode_to_task[tnode_])
                     B.resolve_successor_binding_file_path(bg)
+
                     total_nproc -= task_.nproc
                     w_ = workers.pop(tid_)
                     _terminate_worker(w_)
 
                     # Update Analysis Reports and Register output files to Datastore
-                    for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
-                        source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
-                        ds_uuid = _get_dataset_uuid_or_create_uuid(path_)
-                        ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_)
-                        ds.add(ds_file_)
-                        ds.write_update_json(job_resources.datastore_json)
-
-                        # Update Services
-                        services_add_datastore_file(ds_file_)
-
-                        dsr = DU.datastore_to_report(ds)
-                        R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
-                        if file_type_ == FileTypes.REPORT:
-                            T.write_task_report(job_resources, task_.task_id, path_, DU._get_images_in_dir(task_.output_dir))
-                            update_analysis_file_links(tnode_.idx, path_)
+                    _update_analysis_reports_and_datastore(tnode_, task_)
 
                     BU.write_binding_graph_images(bg, job_resources.workflow)
                 else:
                     # Process Non-Successful Task Result
                     B.update_task_state(bg, tnode_, state_)
-                    slog.error("Task was not successful {r}".format(r=result))
+                    msg_ = "Task was not successful {r}".format(r=result)
+                    slog.error(msg_)
                     log.error(msg_ + "\n")
                     sys.stderr.write(msg_ + "\n")
+
                     stderr_ = os.path.join(task_.output_dir, "stderr")
-                    task_error_lines = _get_last_lines_of_stderr(20, stderr_)
-                    for line_ in task_error_lines:
-                        log.error(line_)
-                        # these already have newlines
-                        sys.stderr.write(line_)
-                        sys.stderr.write("\n")
-                    services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.ERROR, "\n".join(task_error_lines))
+
+                    _log_task_failure_and_call_services(stderr_, tid_)
 
                     # let the remaining running jobs continue
                     w_ = workers.pop(tid_)
                     _terminate_worker(w_)
+
                     total_nproc -= task_.nproc
                     has_failed = True
+
                     BU.write_binding_graph_images(bg, job_resources.workflow)
 
                 _update_msg = _status(bg)
@@ -454,6 +490,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             if tnode is None:
                 continue
             elif isinstance(tnode, TaskBindingNode):
+                # Found a Runnable Task
 
                 def _to_base(task_id_):
                     # FIXME need to handle task namespaces
@@ -505,9 +542,14 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
 
+                # Write "manifest" of the task to run, this included the Task id,
+                # and cluster template.
+                # this is similar to the Resolved Tool Contract
                 manifest_path = os.path.join(task_dir, GlobalConstants.TASK_MANIFEST_JSON)
                 if isinstance(tnode.meta_task, MetaStaticTask):
-                    # write driver manifest
+                    # write driver manifest, which calls the resolved-tool-contract.json
+                    # there's too many layers of indirection here. Partly due to the pre-tool-contract era
+                    # python defined tasks.
                     driver_manifest_path = os.path.join(task_dir, GlobalConstants.DRIVER_MANIFEST_JSON)
                     IO.write_driver_manifest(tnode.meta_task, task, driver_manifest_path)
 
@@ -515,12 +557,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                                     GlobalConstants.TASK_MANIFEST_VERSION,
                                     tnode.meta_task.__module__, global_registry.cluster_renderer)
 
-                if tnode.meta_task.task_type == TaskTypes.LOCAL or workflow_opts.distributed_mode is False:
-                    to_worker_func = _to_local_w
-                else:
-                    to_worker_func = _to_w
-
-                w = to_worker_func("worker-task-{i}".format(i=tid), tid, manifest_path)
+                # Create an instance of Worker
+                worker_type = _determine_worker_type(tnode.meta_task.task_type)
+                w = worker_type("worker-task-{i}".format(i=tid), tid, manifest_path)
 
                 workers[tid] = w
                 w.start()
@@ -547,7 +586,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     B.update_file_state_to_resolved(bg, fnode, file_path)
                     mock_file_index += 1
             else:
-                raise TypeError("Unsupported type {t} of '{x}'".format(t=type(tnode), x=tnode))
+                raise TypeError("Unsupported node type {t} of '{x}'".format(t=type(tnode), x=tnode))
 
             # Update state of any files
             B.resolve_successor_binding_file_path(bg)
