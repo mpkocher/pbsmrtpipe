@@ -451,9 +451,6 @@ class DataStoreFile(object):
         to_k = lambda x: to_a(d[x])
         return DataStoreFile(to_k('uniqueId'), to_k('sourceId'), to_k('fileTypeId'), to_k('path'))
 
-_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
-JobResources = namedtuple("JobResources", _JOB_ATTRS)
-
 
 class DataStore(object):
     version = DATASTORE_VERSION

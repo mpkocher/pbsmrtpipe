@@ -1130,7 +1130,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                             output_chunk_key, _, _ = gs[output_node.index]
                             gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node]['path']
 
-                comment = "Gathered pipeline chunks {t}".format(t=node)
+                comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
                 gathered_json = os.path.join(os.getcwd(), "gathered-pipeline.chunks.json")
                 IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
 
@@ -1140,6 +1140,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                     g_meta_task = registered_tasks_d[gchunk.gather_task_id]
                     g_node = TaskGatherBindingNode(g_meta_task, gi, gchunk.chunk_key)
                     #import ipdb; ipdb.set_trace()
+
                     # Both In/Out Gather Binding Types only have one input and
                     # one output
                     # this is still using the mixed form of [(FileType, label, desc), ]

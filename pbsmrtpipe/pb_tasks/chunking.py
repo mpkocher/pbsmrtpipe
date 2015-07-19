@@ -85,7 +85,7 @@ class GatherRegionFofn(MetaGatherTaskBase):
 
 def _gather_fastx(fasta_or_fastq, chunk_id, input_file, output_file):
     _d = dict(x=fasta_or_fastq, c=chunk_id, i=input_file, o=output_file)
-    return 'pbtools-gather {x} --debug --chunk-id="{c}" {i} {o}'.format(**_d)
+    return 'pbtools-gather {x} --debug --chunk-key="{c}" {i} --output={o}'.format(**_d)
 
 
 class GatherFastaTask(MetaGatherTaskBase):
@@ -105,6 +105,7 @@ class GatherFastaTask(MetaGatherTaskBase):
 
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # having the chunk key hard coded here is a problem.
         return _gather_fastx('fasta', 'fasta_id', input_files[0], output_files[0])
 
 

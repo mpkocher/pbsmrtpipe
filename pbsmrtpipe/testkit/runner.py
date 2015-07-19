@@ -11,7 +11,7 @@ from pbcommand.cli import pacbio_args_runner, get_default_argparser
 # the pbcommand version raise OSError for some reason
 from pbsmrtpipe.cli_utils import validate_file
 
-from pbsmrtpipe.engine import run_command
+from pbsmrtpipe.engine import run_command, run_command_async
 from pbsmrtpipe.cli import (add_log_file_options, add_log_level_option,
                             LOG_LEVELS)
 from pbsmrtpipe.constants import SLOG_PREFIX
@@ -140,7 +140,8 @@ def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.
 
     with open(stdout, 'w') as stdout_fh:
         with open(stderr, 'w') as stderr_fh:
-            rcode, stdout, stderr, run_time = run_command(cmd, stdout_fh, stderr_fh)
+
+            rcode, stdout, stderr, run_time = run_command_async(cmd, stdout_fh, stderr_fh)
 
             rmessage = "was successful" if rcode == 0 else " failed"
             msg = "pbsmrtpipe command {m} ({s:.2f} sec) exit code {e}.'".format(e=rcode, s=run_time, m=rmessage)

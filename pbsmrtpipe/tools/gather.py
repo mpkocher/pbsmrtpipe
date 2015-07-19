@@ -26,13 +26,15 @@ def _validate_chunk_json_file(path):
 
 def __gather_fastx(fastx_reader, fastx_writer, fastx_files, output_file):
 
+    n = 0
     with fastx_writer(output_file) as writer:
         for fastx_file in fastx_files:
             with fastx_reader(fastx_file) as reader:
                 for record in reader:
+                    n += 1
                     writer.writeRecord(record)
 
-    log.info("Completed gathering {n} files to {f}".format(n=len(fastx_files), f=output_file))
+    log.info("Completed gathering {n} files (with {x} records) to {f}".format(n=len(fastx_files), f=output_file, x=n))
 
 
 gather_fasta = functools.partial(__gather_fastx, FastaReader, FastaWriter)
