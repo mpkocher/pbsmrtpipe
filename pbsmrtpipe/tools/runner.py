@@ -390,7 +390,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     task_report_path = os.path.join(output_dir, 'task-report.json')
     msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task_id)
     log.info(msg)
-    B.write_task_report(r, task_report_path)
+    r.write_json(task_report_path)
 
     return rcode, run_time
 
