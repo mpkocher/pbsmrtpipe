@@ -5,8 +5,8 @@
     "exe": "ipdSummary.py --resolved-tool-contract",
     "env": {}
   },
+  "tool_contract_id": "kineticsTools.ipdSummary",
   "tool_contract": {
-    "tool_contract_id": "kineticsTools.ipdSummary",
     "input_types": [
       {
         "description": "BAM or Alignment DataSet",
@@ -90,14 +90,14 @@
         "description": "Output GFF file containing basemods",
         "default_name": "basemods.gff",
         "id": "gff",
-        "file_type_id": "PacBio.FileTypes.GFF"
+        "file_type_id": "PacBio.FileTypes.gff"
       },
       {
         "title": "CSV file",
         "description": "Output CSV file containing per-nucleotide data",
         "default_name": "basemods.csv",
         "id": "csv",
-        "file_type_id": "PacBio.FileTypes.CSV"
+        "file_type_id": "PacBio.FileTypes.csv"
       }
     ]
   }
