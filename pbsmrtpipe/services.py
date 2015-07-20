@@ -8,6 +8,7 @@ from collections import namedtuple
 
 from pbcore.io import DataSetMetaTypes
 import requests
+import time
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +39,42 @@ LogMessage = namedtuple("LogMessage", "sourceId level message")
 
 PbsmrtpipeLogResource = LogResource(SERVICE_LOGGER_RESOURCE_ID, "Pbsmrtpipe",
                                     "Secondary Analysis Pbsmrtpipe Job logger")
+
+
+class JobExeError(ValueError):
+    """Service Job Failure"""
+    pass
+
+# "Job" is the raw output from the jobs/1234
+JobResult = namedtuple("JobResult", "job run_time errors")
+
+
+class ServiceEntryPoint(object):
+    """Entry Points to initialize Pipelines"""
+    def __init__(self, entry_id, dataset_type, path_or_uri):
+        self.entry_id = entry_id
+        self.dataset_type = dataset_type
+        # int (only supported), UUID or path to XML dataset will be added
+        self._resource = path_or_uri
+
+    @property
+    def resource(self):
+        return self._resource
+
+    def __repr__(self):
+        return "<{k} {e} {d} {r} >".format(k=self.__class__.__name__, e=self.entry_id, r=self._resource, d=self.dataset_type)
+
+
+class JobStates(object):
+    RUNNING = "RUNNING"
+    CREATED = "CREATED"
+    FAILED = "FAILED"
+    SUCCESSFUL = "SUCCESSFUL"
+
+    ALL = (RUNNING, CREATED, FAILED)
+
+    # End points
+    ALL_COMPLETED = (FAILED, SUCCESSFUL)
 
 
 class JobTypes(object):
@@ -165,6 +202,52 @@ class ServiceAccessLayer(object):
         _d = dict(message=message, level=level, sourceId=source_id)
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{t}/{i}/log".format(t=job_type_id, i=job_id)), _d)
 
+    def get_pipeline_template_by_id(self, pipeline_template_id):
+        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/pipeline-templates/{i}".format(i=pipeline_template_id)))
+
+    def create_by_pipeline_template_id(self, name, pipeline_template_id, epoints):
+        """Runs a pbsmrtpipe pipeline by pipeline template id"""
+        # sanity checking to see if pipeline is valid
+        _ = self.get_pipeline_template_by_id(pipeline_template_id)
+
+        seps = [dict(entryId=e.entry_id, fileTypeId=e.dataset_type, datasetId=e.resource) for e in epoints]
+
+        def _to_o(opt_id, opt_value):
+            return dict(optionId=opt_id, value=opt_value)
+        task_options = [_to_o("option_01", "value_01")]
+        workflow_options = [_to_o("woption_01", "value_01")]
+        d = dict(name=name, pipelineId=pipeline_template_id, entryPoints=seps, taskOptions=task_options, workflowOptions=workflow_options)
+        return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{p}".format(p=JobTypes.PB_PIPE)), d)
+
+    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=600):
+        """Blocks and runs a job with a timeout"""
+
+        job = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
+        job_id = job['id']
+
+        def _to_ascii(v):
+            return v.encode('ascii', 'ignore')
+
+        state = _to_ascii(job['state'])
+
+        job_result = JobResult(job, 0, "")
+        started_at = time.time()
+        # in seconds
+        sleep_time = 2
+        while True:
+            run_time = time.time() - started_at
+            if state in JobStates.ALL_COMPLETED:
+                break
+            log.debug("Running pipeline {n} state: {s} runtime:{r:.2f} sec".format(n=name, s=state, r=run_time))
+
+            time.sleep(sleep_time)
+            job = self.get_job_by_id(job_id)
+            state = _to_ascii(job['state'])
+            job_result = JobResult(job, run_time, "")
+            if run_time > time_out:
+                raise JobExeError("Exceeded runtime {r} of {t}".format(r=run_time, t=time_out))
+
+        return job_result
 
 
 def log_pbsmrtpipe_progress(total_url, message, level, source_id, ignore_errors=True):
