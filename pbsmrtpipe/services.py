@@ -148,6 +148,34 @@ def _import_dataset_by_type(dataset_type_id):
     return wrapper
 
 
+def _block_for_job_to_complete(sal, job_id, time_out=600):
+    def _to_ascii(v):
+        return v.encode('ascii', 'ignore')
+
+    job = sal.get_job_by_id(job_id)
+    state = _to_ascii(job['state'])
+    name = _to_ascii(job['name'])
+
+    job_result = JobResult(job, 0, "")
+    started_at = time.time()
+    # in seconds
+    sleep_time = 2
+    while True:
+        run_time = time.time() - started_at
+        if state in JobStates.ALL_COMPLETED:
+            break
+        log.debug("Running pipeline {n} state: {s} runtime:{r:.2f} sec".format(n=name, s=state, r=run_time))
+        time.sleep(sleep_time)
+        job = sal.get_job_by_id(job_id)
+        state = _to_ascii(job['state'])
+        job_result = JobResult(job, run_time, "")
+        if time_out is not None:
+            if run_time > time_out:
+                raise JobExeError("Exceeded runtime {r} of {t}".format(r=run_time, t=time_out))
+
+    return job_result
+
+
 class ServiceAccessLayer(object):
     """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
     def __init__(self, base_url, port):
@@ -184,14 +212,34 @@ class ServiceAccessLayer(object):
         # This returns a job resource
         return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
 
+    def run_import_dataset_by_type(self, dataset_type, path_to_xml):
+        job = self._import_dataset(dataset_type, path_to_xml)
+        job_id = job['id']
+        return _block_for_job_to_complete(self, job_id)
+
+    def _run_import_and_block(self, func, path, time_out=None):
+        # func while be self.import_dataset_X
+        job = func(self, path)
+        job_id = job['id']
+        return _block_for_job_to_complete(self, job_id, time_out=time_out)
+
     def import_dataset_subread(self, path):
         return self._import_dataset(DataSetMetaTypes.SUBREAD, path)
+
+    def run_import_dataset_subread(self, path, time_out=60):
+        return self._run_import_and_block(self.import_dataset_subread, path, time_out=time_out)
 
     def import_dataset_hdfsubread(self, path):
         return self._import_dataset(DataSetMetaTypes.HDF_SUBREAD, path)
 
+    def run_import_dataset_hdfsubread(self, path, time_out=60):
+        return self._run_import_and_block(self.import_dataset_hdfsubread, path, time_out=time_out)
+
     def import_dataset_reference(self, path):
         return self._import_dataset(DataSetMetaTypes.REFERENCE, path)
+
+    def run_import_dataset_reference(self, path, time_out=60):
+        return self._run_import_and_block(self.import_dataset_reference, path, time_out=time_out)
 
     def create_logger_resource(self, idx, name, description):
         _d = dict(id=idx, name=name, description=description)
@@ -225,29 +273,8 @@ class ServiceAccessLayer(object):
         job = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
         job_id = job['id']
 
-        def _to_ascii(v):
-            return v.encode('ascii', 'ignore')
+        return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
-        state = _to_ascii(job['state'])
-
-        job_result = JobResult(job, 0, "")
-        started_at = time.time()
-        # in seconds
-        sleep_time = 2
-        while True:
-            run_time = time.time() - started_at
-            if state in JobStates.ALL_COMPLETED:
-                break
-            log.debug("Running pipeline {n} state: {s} runtime:{r:.2f} sec".format(n=name, s=state, r=run_time))
-
-            time.sleep(sleep_time)
-            job = self.get_job_by_id(job_id)
-            state = _to_ascii(job['state'])
-            job_result = JobResult(job, run_time, "")
-            if run_time > time_out:
-                raise JobExeError("Exceeded runtime {r} of {t}".format(r=run_time, t=time_out))
-
-        return job_result
 
 
 def log_pbsmrtpipe_progress(total_url, message, level, source_id, ignore_errors=True):
