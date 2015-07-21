@@ -92,15 +92,22 @@ JobResources = namedtuple("JobResources", _JOB_ATTRS)
 
 
 class TaskStates(object):
+    # Task Has been created
     CREATED = 'created'
+    # Options have been resolved
     READY = 'ready'
+    # Task was submitted to the computing resources
     SUBMITTED = 'submitted'
+    # Task Is running. Need to clarify what 'running' means in the
+    # cluster env. It could still be waiting in the queue
     RUNNING = 'running'
     SUCCESSFUL = 'successful'
     FAILED = 'failed'
     # Killed by sigint from the user
     KILLED = 'killed'
     # Not sure this is the best way to handle this
+    # Scattered means the chunking has been applied and the new
+    # chunked tasks were created.
     SCATTERED = 'scattered'
 
     @classmethod
@@ -110,7 +117,15 @@ class TaskStates(object):
 
     @classmethod
     def COMPLETED_STATES(cls):
-        return cls.SUCCESSFUL, cls.FAILED, cls.KILLED
+        return cls.SUCCESSFUL, cls.FAILED, cls.KILLED, cls.SCATTERED
+
+    @classmethod
+    def RUNNABLE_STATES(cls):
+        return cls.CREATED, cls.READY
+
+    @classmethod
+    def FAILURE_STATES(cls):
+        return cls.FAILED, cls.KILLED
 
 
 class JsonSchemaOption(object):

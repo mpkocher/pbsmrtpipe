@@ -199,14 +199,16 @@ class TaskChunkedBindingNode(TaskBindingNode):
     DOT_SHAPE = DotShapeConstants.TRIPLE_OCTAGON
     DOT_COLOR = DotColorConstants.AQUA_DARK
 
-    def __init__(self, meta_task, instance_id, chunk_id):
+    def __init__(self, meta_task, instance_id, chunk_id, chunk_group_id):
         super(TaskChunkedBindingNode, self).__init__(meta_task, instance_id)
         self.chunk_id = chunk_id
+        # str(uuid)
+        self.chunk_group_id = chunk_group_id
 
     def __str__(self):
         _d = dict(k=self.__class__.__name__,
-                  i=self.idx, n=self.instance_id, c=self.chunk_id)
-        return "{k}-{c} {i}-{n}".format(**_d)
+                  i=self.idx, n=self.instance_id, c=self.chunk_id, u=self.chunk_group_id)
+        return "{k}-{c} {i}-{n} group {u}".format(**_d)
 
 
 class TaskScatterBindingNode(TaskBindingNode):
@@ -218,11 +220,12 @@ class TaskScatterBindingNode(TaskBindingNode):
     DOT_SHAPE = DotShapeConstants.OCTAGON
     DOT_COLOR = DotColorConstants.ORANGE
 
-    def __init__(self, scatter_meta_task, original_task_id, instance_id):
+    def __init__(self, scatter_meta_task, original_task_id, instance_id, chunk_group_id):
         validate_type_or_raise(scatter_meta_task, MetaScatterTask)
         super(TaskScatterBindingNode, self).__init__(scatter_meta_task, instance_id)
         # Keep track of the original task that was chunked
         self.original_task_id = original_task_id
+        self.chunk_group_id = chunk_group_id
 
 
 class TaskGatherBindingNode(TaskBindingNode):
@@ -300,9 +303,14 @@ class BindingInFileNode(_BindingFileNode):
 
 
 class BindingChunkInFileNode(BindingInFileNode):
-    def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id):
+    """Chunked file type that belongs to a Chunked Group
+
+    This should always be generated from a Chunk.json
+    """
+    def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id, chunk_group_id):
         super(BindingChunkInFileNode, self).__init__(meta_task, instance_id, index, file_type_instance)
         self.chunk_id = chunk_id
+        self.chunk_group_id = chunk_group_id
 
 
 class BindingOutFileNode(_BindingFileNode):
@@ -313,9 +321,10 @@ class BindingOutFileNode(_BindingFileNode):
 
 
 class BindingChunkOutFileNode(BindingOutFileNode):
-    def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id):
+    def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id, chunk_group_id):
         super(BindingChunkOutFileNode, self).__init__(meta_task, instance_id, index, file_type_instance)
         self.chunk_id = chunk_id
+        self.chunk_group_id = chunk_group_id
 
 
 class EntryOutBindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):

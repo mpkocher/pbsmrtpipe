@@ -8,7 +8,7 @@
             <value>False</value>
         </option>
         <option id="pbsmrtpipe.options.chunk_mode">
-            <value>False</value>
+            <value>True</value>
         </option>
          <!-- This will be disabled -->
         <option id="pbsmrtpipe.options.cluster_manager" >

@@ -88,4 +88,5 @@ class WorkflowError(WorkflowBaseException):
 
 
 class TaskExecutionError(WorkflowBaseException):
+    """Task failed during pipeline running"""
     pass
