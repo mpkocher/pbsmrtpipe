@@ -208,6 +208,12 @@ class ServiceAccessLayer(object):
         _d = dict(t=job_type, i=job_id,r=resource_type_id)
         return _process_rget(_null_func)(_to_url(self.uri,"/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
 
+    def get_job_datastore(self, job_type, job_id):
+        return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.DATASTORE)
+
+    def get_job_report_records(self, job_type, job_id):
+        return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.REPORTS)
+
     def _import_dataset(self, dataset_type, path):
         # This returns a job resource
         return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
@@ -274,7 +280,6 @@ class ServiceAccessLayer(object):
         job_id = job['id']
 
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
-
 
 
 def log_pbsmrtpipe_progress(total_url, message, level, source_id, ignore_errors=True):
