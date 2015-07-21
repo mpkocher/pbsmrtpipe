@@ -1,0 +1,94 @@
+{
+    "version": "2.2", 
+    "driver": {
+        "exe": "ipdSummary.py --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "kineticsTools.ipdSummary", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "BAM or Alignment DataSet", 
+                "title": "Alignment DataSet", 
+                "id": "infile", 
+                "file_type_id": "PacBio.FileTypes.AlignmentSet"
+            }, 
+            {
+                "description": "Fasta or Reference DataSet", 
+                "title": "Reference DataSet", 
+                "id": "reference", 
+                "file_type_id": "PacBio.FileTypes.ReferenceSet"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.distributed_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "kinetics_tools.task_options.pvalue"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "kinetics_tools.task_options.pvalue": {
+                        "default": 0.01, 
+                        "type": "number", 
+                        "description": "P-value cutoff", 
+                        "title": "P-value"
+                    }
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.pvalue"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "kinetics_tools.task_options.max_length"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "kinetics_tools.task_options.max_length": {
+                        "default": 3000000000000, 
+                        "type": "integer", 
+                        "description": "Maximum number of bases to process per contig", 
+                        "title": "Max sequence length"
+                    }
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.max_length"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "kinetics_tools.task_options.identify"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "kinetics_tools.task_options.identify": {
+                        "default": null, 
+                        "type": "string", 
+                        "description": "Specific modifications to identify (comma-separated list", 
+                        "title": "Identify basemods"
+                    }
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.identify"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "GFF file", 
+                "description": "GFF file of modified bases", 
+                "default_name": "basemods.gff", 
+                "id": "gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "title": "CSV file", 
+                "description": "CSV file of per-nucleotide information", 
+                "default_name": "basemods.csv", 
+                "id": "csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-20T20:15:03.272109"
+    }
+}
