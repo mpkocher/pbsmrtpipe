@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 def _add_run_random_fasta_file(p):
     U.add_debug_option(p)
-    p.add_argument('--max-records', type=int, default=1000, help="Max number of Fasta record to write.")
+    p.add_argument('--max-records', type=int, default=25000, help="Max number of Fasta record to write.")
     U.add_fasta_output(p)
     return p
 
