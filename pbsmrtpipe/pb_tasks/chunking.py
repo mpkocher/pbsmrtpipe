@@ -109,6 +109,31 @@ class GatherFastaTask(MetaGatherTaskBase):
         return _gather_fastx('fasta', 'fasta_id', input_files[0], output_files[0])
 
 
+class GatherFilterFastaTask(MetaGatherTaskBase):
+    """Gather Fasta Files"""
+    TASK_ID = "pbsmrtpipe.tasks.gather_filtered_fasta"
+    NAME = "Gather Filtered Fasta"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
+    OUTPUT_TYPES = [(FileTypes.FASTA, "fasta", "Gathered Fasta")]
+    OUTPUT_FILE_NAMES = [("gathered", "fasta")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # FIXME.
+        # having the chunk key hard coded here is a problem. This will be fixed
+        # in subsequent versions. The chunk key will be passed to to_cmd func
+        # and general GatherFasta will be used.
+        chunk_key = 'filtered_fasta_id'
+        return _gather_fastx('fasta', chunk_key, input_files[0], output_files[0])
+
+
 class GatherFastqTask(MetaGatherTaskBase):
     """Gather Fastq Files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_fastq"
