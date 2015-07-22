@@ -12,6 +12,7 @@ python -m pbcommand.cli.examples.dev_txt_app --emit-tool-contract > $TC_DIR/dev_
 
 python -m pbreports.report.sat --emit-tool-contract > $TC_DIR/pbreports_report_sat_tool_contract.json
 python -m pbreports.report.mapping_stats --emit-tool-contract > $TC_DIR/mapping_stats_tool_contract.json
+python -m pbreports.report.variants --emit-tool-contract > $TC_DIR/pbreports_report_variants_tool_contract.json
 
 ipdSummary.py --emit-tool-contract > $TC_DIR/kinetics_tools_ipdsummary_tool_contract.json
 variantCaller --emit-tool-contract > $TC_DIR/genomic_consensus_variantcaller_tool_contract.json
