@@ -1,0 +1,55 @@
+{
+    "version": "0.1", 
+    "driver": {
+        "exe": "motifMaker.py --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "motif_maker", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "GFF file containing modified bases", 
+                "title": "GFF file", 
+                "id": "gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "Fasta reference sequence", 
+                "title": "Fasta file", 
+                "id": "reference", 
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.distributed_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "motif_maker.task_options.min_score"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "motif_maker.task_options.min_score": {
+                        "default": 30.0, 
+                        "type": "number", 
+                        "description": "Minimum Qmod score to use in motif finding", 
+                        "title": "Minimum Qmod score"
+                    }
+                }, 
+                "title": "JSON Schema for motif_maker.task_options.min_score"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "CSV file", 
+                "description": "CSV file of motifs", 
+                "default_name": "motifs.csv", 
+                "id": "csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-22T06:59:07.134324"
+    }
+}

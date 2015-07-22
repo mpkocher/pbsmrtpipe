@@ -1,0 +1,133 @@
+{
+    "version": "1.1.0", 
+    "driver": {
+        "exe": "variantCaller --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "genomic_consensus.tasks.variantcaller", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "BAM or Alignment DataSet", 
+                "title": "Alignment DataSet", 
+                "id": "infile", 
+                "file_type_id": "PacBio.FileTypes.AlignmentSet"
+            }, 
+            {
+                "description": "Fasta or Reference DataSet", 
+                "title": "Reference DataSet", 
+                "id": "reference", 
+                "file_type_id": "PacBio.FileTypes.ReferenceSet"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.distributed_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.algorithm"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.algorithm": {
+                        "default": "quiver", 
+                        "type": "string", 
+                        "description": "Algorithm name", 
+                        "title": "Algorithm"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.algorithm"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.min_confidence"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.min_confidence": {
+                        "default": 40, 
+                        "type": "integer", 
+                        "description": "The minimum confidence for a variant call to be output to variants.gff", 
+                        "title": "Minimum confidence"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.min_confidence"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.min_coverage"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.min_coverage": {
+                        "default": 5, 
+                        "type": "integer", 
+                        "description": "The minimum site coverage that must be achieved for variant calls and consensus to be calculated for a site.", 
+                        "title": "Minimum coverage"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.min_coverage"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.diploid"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.diploid": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Enable detection of heterozygous variants (experimental)", 
+                        "title": "Diploid mode (experimental)"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.diploid"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.parameter_spec"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.parameter_spec": {
+                        "default": "auto", 
+                        "type": "string", 
+                        "description": "Parameter spec", 
+                        "title": "Parameter spec"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.parameter_spec"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "Consensus GFF", 
+                "description": "Consensus GFF", 
+                "default_name": "variants.gff", 
+                "id": "variants", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "title": "Consensus Fasta", 
+                "description": "Consensus sequence in Fasta format", 
+                "default_name": "consensus.fasta", 
+                "id": "consensus", 
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            }, 
+            {
+                "title": "Consensus fastq", 
+                "description": "Consensus fastq", 
+                "default_name": "consensus.fastq", 
+                "id": "consensus_fastq", 
+                "file_type_id": "PacBio.FileTypes.Fastq"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-22T06:59:06.934060"
+    }
+}
