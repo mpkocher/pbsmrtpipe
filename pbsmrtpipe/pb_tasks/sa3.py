@@ -1,7 +1,8 @@
 import logging
 import os
 
-from pbsmrtpipe.core import MetaTaskBase, MetaScatterTaskBase
+from pbsmrtpipe.core import (MetaTaskBase, MetaScatterTaskBase,
+                             MetaGatherTaskBase)
 from pbsmrtpipe.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 #import _mapping_opts as AOPTS
 import pbsmrtpipe.schema_opt_utils as OP
@@ -59,6 +60,114 @@ class ConvertH5SubreadsToBamDataSetTask(MetaTaskBase):
         # FIXME when derek updates the interface
         cmds.append("x=$(ls -1t *.dataset.xml | head -n 1) && cp $x {o}".format(o=output_files[0]))
         return cmds
+
+
+class H5SubreadSetScatter(MetaScatterTaskBase):
+    """
+    Scatter an HDF5SubreadSet.
+    """
+    TASK_ID = "pbsmrtpipe.tasks.h5_subreadset_scatter"
+    NAME = "H5 SubreadSet scatter"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.DS_SUBREADS_H5, "h5_subreads", "H5 Subread DataSet")]
+
+    OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
+                     'Generic Chunked JSON HdfSubreadSet')]
+
+    OUTPUT_FILE_NAMES = [('hdfsubreadset_chunked', 'json'),]
+
+    NPROC = 1
+    SCHEMA_OPTIONS = {}
+    RESOURCE_TYPES = None
+    NCHUNKS = SymbolTypes.MAX_NCHUNKS
+    # Keys that are expected to be written to the chunk.json file
+    CHUNK_KEYS = ('$chunk.hdf5subreadset_id', )
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
+        exe = "pbtools-chunker hdfsubreadset"
+        _d = dict(e=exe,
+                  i=input_files[0],
+                  o=output_files[0],
+                  n=nchunks)
+        return "{e} --debug --max-total-chunks {n} {i} {o}".format(**_d)
+
+
+class GatherGFFTask(MetaGatherTaskBase):
+    """Gather GFF Files"""
+    TASK_ID = "pbsmrtpipe.tasks.gather_gff"
+    NAME = "Gather GFF"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
+    # TODO: change this when quiver outputs xmls
+    OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Gathered GFF")]
+    OUTPUT_FILE_NAMES = [("gathered", "gff")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # having the chunk key hard coded here is a problem.
+        return ('pbtools-gather {t} --debug --chunk-key="{c}" {i} '
+                '--output={o}'.format(t='gff', c='gff_id', i=input_files[0],
+                                      o=output_files[0]))
+        #return 'touch {o}'.format(o=output_files[0])
+
+
+def _gather_dataset(ds_type, chunk_id, input_file, output_file):
+    _d = dict(x=ds_type, c=chunk_id, i=input_file, o=output_file)
+    return 'pbtools-gather {x} --debug --chunk-key="{c}" {i} --output={o}'.format(**_d)
+
+
+class GatherContigSetTask(MetaGatherTaskBase):
+    """Gather ContigSet Files"""
+    TASK_ID = "pbsmrtpipe.tasks.gather_contigset"
+    NAME = "Gather ContigSet"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
+    # TODO: change this when quiver outputs xmls
+    OUTPUT_TYPES = [(FileTypes.FASTA, "fasta", "Gathered Fasta")]
+    OUTPUT_FILE_NAMES = [("gathered", "xml")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # having the chunk key hard coded here is a problem.
+        return _gather_dataset('contigset', 'fasta_id', input_files[0], output_files[0])
+
+
+class GatherSubreadSetTask(MetaGatherTaskBase):
+    """Gather SubreadSet Files"""
+    TASK_ID = "pbsmrtpipe.tasks.gather_subreadset"
+    NAME = "Gather SubreadSet"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
+    # TODO: change this when quiver outputs xmls
+    OUTPUT_TYPES = [(FileTypes.DS_BAM, "ds_bam", "Gathered AlignmentSets")]
+    OUTPUT_FILE_NAMES = [("gathered", "xml")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # having the chunk key hard coded here is a problem.
+        return _gather_dataset('subreadset', 'subreadset_id', input_files[0], output_files[0])
 
 
 class AlignDataSetTask(MetaTaskBase):
@@ -150,7 +259,6 @@ def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
     return c.format(**_d)
 
 
-
 class DataSetCallVariants(MetaTaskBase):
     """BAM interface to quiver. The contig 'ids' (using the pbcore 'id' format)
     are passed in via a FOFN
@@ -164,8 +272,9 @@ class DataSetCallVariants(MetaTaskBase):
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
                    (FileTypes.DS_BAM, "bam", "DataSet BAM Alignment")]
 
+    #TODO change/add fasta/xml output once quiver outputs contigsets
     OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Consensus GFF"),
-                    (FileTypes.FASTA, "fasta", "Consensus Fasta"),
+                    (FileTypes.FASTA, "fasta", "Consensus ContigSet"),
                     (FileTypes.FASTQ, "fastq", "Consensus Fastq")]
 
     OUTPUT_FILE_NAMES = [('variants', 'gff'),
@@ -273,6 +382,7 @@ class SummarizeConsensus(MetaTaskBase):
         _d = dict(e=exe, g=input_files[0], f=input_files[1], t=output_files[0])
         cmds.append(cmd.format(**_d))
         return cmds
+
 
 class AlignmentSetScatterContigs(MetaScatterTaskBase):
     """AlignmentSet scattering by Contigs

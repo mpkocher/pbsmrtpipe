@@ -18,8 +18,8 @@
                 <chunk-key>$chunk.gff_id</chunk-key>
                 <task-output>pbsmrtpipe.tasks.ds_call_variants:0</task-output>
             </chunk>
-             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_fasta</gather-task-id>
+            <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_id</chunk-key>
                 <task-output>pbsmrtpipe.tasks.ds_call_variants:1</task-output>
             </chunk>

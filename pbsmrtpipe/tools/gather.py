@@ -7,6 +7,8 @@ from pbcommand.cli import get_default_argparser
 
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
+from pbcore.io.GffIO import GffReader, GffWriter
+from pbcore.io import SubreadSet, ContigSet
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -39,6 +41,7 @@ def __gather_fastx(fastx_reader, fastx_writer, fastx_files, output_file):
 
 gather_fasta = functools.partial(__gather_fastx, FastaReader, FastaWriter)
 gather_fastq = functools.partial(__gather_fastx, FastqReader, FastqWriter)
+gather_gff = functools.partial(__gather_fastx, GffReader, GffWriter)
 
 
 def _read_header(csv_file):
@@ -147,6 +150,43 @@ def gather_fofn(input_files, output_file, skip_empty=True):
     return output_file
 
 
+def gather_contigset(input_files, output_file, new_resource_file=None,
+                     skip_empty=True):
+    """
+    :param input_files: List of file paths
+    :param output_file: File Path
+    :param new_resource_file: the path of the file to which the other contig
+                              files are consolidated
+    :param skip_empty: Ignore empty files (doesn't do much yet)
+
+    :return: Output file
+
+    :rtype: str
+    """
+    tbr = ContigSet(*input_files)
+    if not new_resource_file:
+        if output_file.endswith('xml'):
+            new_resource_file = output_file[:-3] + 'fasta'
+    tbr.consolidate(new_resource_file)
+    tbr.write(output_file)
+    return output_file
+
+
+def gather_subreadset(input_files, output_file, skip_empty=True):
+    """
+    :param input_files: List of file paths
+    :param output_file: File Path
+    :param skip_empty: Ignore empty files (doesn't do much yet)
+
+    :return: Output file
+
+    :rtype: str
+    """
+    tbr = SubreadSet(*input_files)
+    tbr.write(output_file)
+    return output_file
+
+
 def __add_chunk_key_option(default_chunk_key):
     def _add_chunk_key_option(p):
         p.add_argument('--chunk-key', type=str, default=default_chunk_key,
@@ -157,7 +197,11 @@ def __add_chunk_key_option(default_chunk_key):
 add_chunk_key_csv = __add_chunk_key_option('$chunk.csv_id')
 add_chunk_key_fasta = __add_chunk_key_option('$chunk.fasta_id')
 add_chunk_key_fastq = __add_chunk_key_option('$chunk.fastq_id')
+add_chunk_key_gff = __add_chunk_key_option('$chunk.gff_id')
 add_chunk_key_fofn = __add_chunk_key_option('$chunk.fofn_id')
+add_chunk_key_subreadset = __add_chunk_key_option('$chunk.subreadset_id')
+# TODO: change this to contigset_id once quiver emits contigsets
+add_chunk_key_contigset = __add_chunk_key_option('$chunk.fasta_id')
 
 
 def __gather_options(output_file_message, input_files_message, input_validate_func, add_chunk_key_func_):
@@ -181,7 +225,16 @@ def __add_gather_options(output_file_msg, input_file_msg, chunk_key_func):
 _gather_csv_options = __add_gather_options("Output CSV file", "input CSV file", add_chunk_key_csv)
 _gather_fastq_options = __add_gather_options("Output Fastq file", "Chunk input JSON file", add_chunk_key_fastq)
 _gather_fasta_options = __add_gather_options("Output Fasta file", "Chunk input JSON file", add_chunk_key_fasta)
+_gather_gff_options = __add_gather_options("Output Fasta file",
+                                           "Chunk input JSON file",
+                                           add_chunk_key_gff)
 _gather_fofn_options = __add_gather_options("Output Fofn file", "Chunk input JSON file", add_chunk_key_fofn)
+_gather_subreadset_options = __add_gather_options("Output SubreadSet XML file",
+                                                  "Chunk input JSON file",
+                                                  add_chunk_key_subreadset)
+_gather_contigset_options = __add_gather_options("Output ContigSet XML file",
+                                                  "Chunk input JSON file",
+                                                  add_chunk_key_contigset)
 
 
 def __args_gather_runner(func, args):
@@ -199,8 +252,13 @@ def __args_gather_runner(func, args):
     return 0
 
 _args_gather_fasta = functools.partial(__args_gather_runner, gather_fasta)
+_args_gather_gff = functools.partial(__args_gather_runner, gather_gff)
 _args_gather_fastq = functools.partial(__args_gather_runner, gather_fastq)
 _args_gather_fofn = functools.partial(__args_gather_runner, gather_fofn)
+_args_gather_subreadset = functools.partial(__args_gather_runner,
+                                            gather_subreadset)
+_args_gather_contigset = functools.partial(__args_gather_runner,
+                                            gather_contigset)
 _args_gather_csv = functools.partial(__args_gather_runner, gather_csv)
 
 
@@ -224,6 +282,18 @@ def get_parser():
     builder('fasta', "Merge Fasta files into a single file.", _gather_fasta_options, _args_gather_fasta)
 
     builder('fofn', "Merge FOFNs into a single file.", _gather_fofn_options, _args_gather_fofn)
+
+    #Gff
+    builder('gff', "Merge Fasta files into a single file.",
+            _gather_gff_options, _args_gather_gff)
+
+    # SubreadSet
+    builder('subreadset', "Merge SubreadSet XMLs into a single file.",
+            _gather_subreadset_options, _args_gather_subreadset)
+
+    # ContigSet
+    builder('contigset', "Merge ContigSet XMLs into a single file.",
+            _gather_contigset_options, _args_gather_contigset)
 
     return p
 

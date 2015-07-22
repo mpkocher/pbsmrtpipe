@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<chunk-operator id="pbsmrtpipe.operators.chunk_h5_subreads_to_subread">
+
+    <task-id>pbsmrtpipe.tasks.h5_subreads_to_subread</task-id>
+
+    <scatter>
+        <scatter-task-id>pbsmrtpipe.tasks.h5_subreadset_scatter</scatter-task-id>
+        <chunks>
+            <chunk out="$chunk.hdfsubreadset_id" in="pbsmrtpipe.tasks.h5_subreads_to_subread:0"/>
+        </chunks>
+    </scatter>
+    <!-- Define the Gather Mechanism -->
+    <gather>
+        <chunks>
+            <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_subreadset</gather-task-id>
+                <chunk-key>$chunk.subreadset_id</chunk-key>
+                <task-output>pbsmrtpipe.tasks.h5_subreads_to_subread:0</task-output>
+            </chunk>
+        </chunks>
+    </gather>
+</chunk-operator>

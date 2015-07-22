@@ -5,7 +5,7 @@ import datetime
 import csv
 
 from pbcore.io import (FastaWriter, FastaReader, FastqReader, FastqWriter,
-                       AlignmentSet)
+                       AlignmentSet, HdfSubreadSet)
 from pbsmrtpipe.legacy.input_xml import fofn_to_report
 
 from pbsmrtpipe.models import PipelineChunk
@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 
 class Constants(object):
+    CHUNK_KEY_HDFSET = "$chunk.hdfsubreadset_id"
     CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
     CHUNK_KEY_FASTA = "$chunk.fasta_id"
     CHUNK_KEY_FASTQ = "$chunk.fastq_id"
@@ -227,6 +228,33 @@ def to_chunked_alignmentset_files(alignmentset_path, reference_path,
         dset.write(chunk_path)
         d[chunk_key] = os.path.abspath(chunk_path)
         d['$chunk.reference_id'] = reference_path
+        c = PipelineChunk(chunk_id, **d)
+        yield c
+
+
+def write_hdfsubreadset_chunks_to_file(chunk_file, hdfsubreadset_path,
+                                       max_total_chunks, dir_name,
+                                       chunk_base_name, chunk_ext):
+    chunks = list(to_chunked_hdfsubreadset_files(hdfsubreadset_path,
+                                                 max_total_chunks,
+                                                 Constants.CHUNK_KEY_HDFSET,
+                                                 dir_name, chunk_base_name,
+                                                 chunk_ext))
+    write_chunks_to_json(chunks, chunk_file)
+    return 0
+
+
+def to_chunked_hdfsubreadset_files(hdfsubreadset_path, max_total_nchunks,
+                                   chunk_key, dir_name, base_name, ext):
+    dset = HdfSubreadSet(hdfsubreadset_path)
+    dset_chunks = dset.split(chunks=max_total_nchunks, ignoreSubDatasets=True)
+    d = {}
+    for i, dset in enumerate(dset_chunks):
+        chunk_id = '_'.join([base_name, str(i)])
+        chunk_name = '.'.join([chunk_id, ext])
+        chunk_path = os.path.join(dir_name, chunk_name)
+        dset.write(chunk_path)
+        d[chunk_key] = os.path.abspath(chunk_path)
         c = PipelineChunk(chunk_id, **d)
         yield c
 
