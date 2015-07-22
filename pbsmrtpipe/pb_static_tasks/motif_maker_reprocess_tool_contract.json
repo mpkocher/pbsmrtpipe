@@ -1,10 +1,10 @@
 {
     "version": "0.1", 
     "driver": {
-        "exe": "motifMaker.py --resolved-tool-contract ", 
+        "exe": "motifMaker_reprocess.py --resolved-tool-contract ", 
         "env": {}
     }, 
-    "tool_contract_id": "motif_maker", 
+    "tool_contract_id": "motif_maker_reprocess", 
     "tool_contract": {
         "input_types": [
             {
@@ -12,6 +12,12 @@
                 "title": "GFF file", 
                 "id": "gff", 
                 "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "CSV file of motifs", 
+                "title": "CSV file", 
+                "id": "motifs_csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
             }, 
             {
                 "description": "Fasta reference sequence", 
@@ -27,29 +33,29 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "motif_maker.task_options.min_score"
+                    "motif_maker_reprocess.task_options.min_fraction"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "motif_maker.task_options.min_score": {
+                    "motif_maker_reprocess.task_options.min_fraction": {
                         "default": 30.0, 
                         "type": "number", 
-                        "description": "Minimum Qmod score to use in motif finding", 
-                        "title": "Minimum Qmod score"
+                        "description": "Minimum methylated fraction", 
+                        "title": "Minimum methylated fraction"
                     }
                 }, 
-                "title": "JSON Schema for motif_maker.task_options.min_score"
+                "title": "JSON Schema for motif_maker_reprocess.task_options.min_fraction"
             }
         ], 
         "output_types": [
             {
-                "title": "CSV file", 
-                "description": "CSV file of motifs", 
-                "default_name": "motifs.csv", 
-                "id": "csv", 
-                "file_type_id": "PacBio.FileTypes.csv"
+                "title": "GFF file", 
+                "description": "GFF file of modified bases in motifs only", 
+                "default_name": "motifs.gff", 
+                "id": "gff_out", 
+                "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T06:59:07.134324"
+        "_comment": "Created by v0.1.0 at 2015-07-22T09:00:50.353080"
     }
 }
