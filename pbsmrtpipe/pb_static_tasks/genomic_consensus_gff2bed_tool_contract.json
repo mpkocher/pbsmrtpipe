@@ -1,0 +1,97 @@
+{
+    "version": "3.0", 
+    "driver": {
+        "exe": "gffToBed --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "genomic_consensus.tasks.gff2bed", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "GFF file", 
+                "title": "GFF file", 
+                "id": "gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.distributed_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.gff2bed_purpose"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.gff2bed_purpose": {
+                        "default": null, 
+                        "type": "string", 
+                        "description": "Run mode ('variants' or 'coverage')", 
+                        "title": "Purpose"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.gff2bed_purpose"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.track_name"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.track_name": {
+                        "default": null, 
+                        "type": "string", 
+                        "description": "track name to display in header", 
+                        "title": "Track name"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.track_name"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.track_description"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.track_description": {
+                        "default": null, 
+                        "type": "string", 
+                        "description": "track description to display in header", 
+                        "title": "Track description"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.track_description"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "genomic_consensus.task_options.use_score"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "genomic_consensus.task_options.use_score": {
+                        "default": 0, 
+                        "type": "integer", 
+                        "description": "whether or not to use score for feature display", 
+                        "title": "Use score"
+                    }
+                }, 
+                "title": "JSON Schema for genomic_consensus.task_options.use_score"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "BED file", 
+                "description": "BED file", 
+                "default_name": "output.bed", 
+                "id": "bed", 
+                "file_type_id": "PacBio.FileTypes.bed"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-23T08:35:01.089767"
+    }
+}

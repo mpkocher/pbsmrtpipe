@@ -13,3 +13,5 @@ ipdSummary.py --emit-tool-contract > $TC_DIR/kinetics_tools_ipdsummary_tool_cont
 variantCaller --emit-tool-contract > $TC_DIR/genomic_consensus_variantcaller_tool_contract.json
 motifMaker_find.py --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contract.json
 motifMaker_reprocess.py --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
+gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.json
+gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
