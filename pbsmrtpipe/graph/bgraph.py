@@ -1288,17 +1288,18 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                 # Finally remap the outputs of the original unchunked task to
                 # the outputs of the gathered chunks and delete the original task node
                 # for origin_out_node in bg.successors()
-                # original_unchunked_tnode = get_companion_unscattered_task_node(bg, chunk_group_id)
-                #
+
+                original_unchunked_tnode = get_companion_unscattered_task_node(bg, chunk_group_id)
                 # # {Positional-index: OutFileNode}
-                # g_lookup = {x[-1][-1]: x[1] for x in g_out_gchunk_fnodes}
-                #
-                # for original_out_file in bg.successors(original_unchunked_tnode):
-                #     new_mapped_input_node = g_lookup[original_out_file.index]
-                #     for mapped_in_node in bg.successors(original_out_file):
-                #         slog.info(("Mapping ", new_mapped_input_node, mapped_in_node))
-                #         # delete the old edge, add the new
-                #         #bg.add_edge(new_mapped_input_node, mapped_in_node)
+                g_lookup = {x[-1][-1]: x[1] for x in g_out_gchunk_fnodes}
+
+                for original_out_file in bg.successors(original_unchunked_tnode):
+                    new_mapped_input_node = g_lookup[original_out_file.index]
+                    for mapped_in_node in bg.successors(original_out_file):
+                        slog.info(("Mapping ", new_mapped_input_node, mapped_in_node))
+                        bg.add_edge(new_mapped_input_node, mapped_in_node)
+                        # delete edge to old
+                        bg.remove_edge(original_out_file, mapped_in_node)
 
                 # update chunked task properties
                 attrs = [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, True),
