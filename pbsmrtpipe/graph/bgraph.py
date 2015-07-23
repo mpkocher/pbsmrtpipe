@@ -603,23 +603,21 @@ def get_next_runnable_task(g):
     for tnode in g.all_task_type_nodes():
         if isinstance(tnode, TaskBindingNode):
             state = g.node[tnode][ConstantsNodes.TASK_ATTR_STATE]
-            # Skip chunk-able tasks. Chunkable tasks will run
-            is_chunkable = g.node[tnode][ConstantsNodes.TASK_ATTR_IS_CHUNKABLE]
-            is_chunkable = False
-
-            if not is_chunkable:
-                # FIXME
-                if state in TaskStates.RUNNABLE_STATES():
+            if state == TaskStates.SCATTERED:
+                # these tasks are labeled as on-hold and will be deleted
+                # once the gather step is successful
+                continue
+            elif state in TaskStates.RUNNABLE_STATES():
                     # look if inputs are resolved.
-                    # {node:is_resolved}
-                    _ns = {}
-                    for fnode in g.predecessors(tnode):
-                        if isinstance(fnode, VALID_FILE_NODE_CLASSES):
-                            is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
-                            _ns[fnode] = is_resolved
+                # {node:is_resolved}
+                _ns = {}
+                for fnode in g.predecessors(tnode):
+                    if isinstance(fnode, VALID_FILE_NODE_CLASSES):
+                        is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
+                        _ns[fnode] = is_resolved
 
-                    if all(_ns.values()):
-                        return tnode
+                if all(_ns.values()):
+                    return tnode
             else:
                 log.debug("Skipping chunkable tasks {n}".format(n=tnode))
 
@@ -1114,20 +1112,19 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d):
 
     # Add chunkabled tasks if necessary
     for tnode_ in bg.nodes():
-        if isinstance(tnode_, TaskScatterBindingNode):
-            if bg.node[tnode_][ConstantsNodes.TASK_ATTR_STATE] == TaskStates.SUCCESSFUL:
-                was_chunked = bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED]
+        if bg.node[tnode_][ConstantsNodes.TASK_ATTR_STATE] == TaskStates.SUCCESSFUL:
+            was_chunked = bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED]
 
-                # Companion Chunked Task was successful and created chunk.json
-                if not was_chunked:
-                    pipeline_chunks = IO.load_pipeline_chunks_from_json(bg.node[tnode_]['task'].output_files[0])
-                    chunk_operator = _get_chunk_operator_by_scatter_task_id(bg.node[tnode_]['task'].task_id, chunk_operators_d)
-                    chunked_nodes = add_chunkable_task_nodes_to_bgraph(bg, tnode_, pipeline_chunks, chunk_operator, registered_tasks_d)
-                    bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
-                    slog.info("Successfully applying chunked operator to {x}".format(x=tnode_))
-                    slog.info(chunked_nodes)
-                else:
-                    log.debug("Skipping {t}. Node was already chunked".format(t=tnode_))
+            # Companion Chunked Task was successful and created chunk.json
+            if not was_chunked:
+                pipeline_chunks = IO.load_pipeline_chunks_from_json(bg.node[tnode_]['task'].output_files[0])
+                chunk_operator = _get_chunk_operator_by_scatter_task_id(bg.node[tnode_]['task'].task_id, chunk_operators_d)
+                chunked_nodes = add_chunkable_task_nodes_to_bgraph(bg, tnode_, pipeline_chunks, chunk_operator, registered_tasks_d)
+                bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
+                slog.info("Successfully applying chunked operator to {x}".format(x=tnode_))
+                slog.info(chunked_nodes)
+            else:
+                log.debug("Skipping {t}. Node was already chunked".format(t=tnode_))
 
     return bg
 
@@ -1300,6 +1297,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                         bg.add_edge(new_mapped_input_node, mapped_in_node)
                         # delete edge to old
                         bg.remove_edge(original_out_file, mapped_in_node)
+                        # TODO. Should also delete the original unchunked task
 
                 # update chunked task properties
                 attrs = [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, True),

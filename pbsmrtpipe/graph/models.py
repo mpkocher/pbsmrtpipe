@@ -74,6 +74,8 @@ class ConstantsNodes(object):
     TASK_ATTR_WAS_CHUNKED = 'was_chunked'
     # Was the Gather'ing process applied to the
     TASK_ATTR_WAS_GATHERED = "was_gathered"
+    # Label scatterable TaskBindingNode
+    TASK_ATTR_IS_SCATTERABLE = "is_scatterable"
 
     TASK_ATTR_COMPANION_CHUNK_TASK_ID = "companion_chunk_task_id"
     # Chunk operator
@@ -127,7 +129,6 @@ class _TaskLike(_NodeLike):
     IS_CHUNKABLE => the chunk operator has found a companion scatter task for the original task
     IS_CHUNK_RUNNING => the companion scatter task is running
     WAS_CHUNKED => the scatter/chunking process has been applied to the task
-
     scatter/chunking are sloppy equivalents
     All of the chunked
     """
@@ -144,7 +145,7 @@ class _TaskLike(_NodeLike):
                   ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID: None,
                   ConstantsNodes.TASK_ATTR_OPERATOR_ID: None,
                   ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID: None,
-                  ConstantsNodes.TASK_ATTR_WAS_GATHERED: False
+                  ConstantsNodes.TASK_ATTR_WAS_GATHERED: False,
                   }
 
 
