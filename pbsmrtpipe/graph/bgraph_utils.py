@@ -20,7 +20,7 @@ from pbsmrtpipe.graph.models import (ConstantsNodes,
                                      BindingChunkInFileNode, BindingInFileNode,
                                      BindingOutFileNode, EntryPointNode,
                                      BindingChunkOutFileNode,
-                                     VALID_FILE_NODE_ClASSES,
+                                     VALID_FILE_NODE_CLASSES,
                                      VALID_TASK_NODE_CLASSES)
 log = logging.getLogger(__name__)
 
@@ -236,7 +236,7 @@ def to_binding_graph_summary(bg):
     _add_sp()
 
     for fnode in sorted_nodes:
-        if isinstance(fnode, VALID_FILE_NODE_ClASSES):
+        if isinstance(fnode, VALID_FILE_NODE_CLASSES):
             _to_summary(fnode)
 
     _add("")
@@ -267,7 +267,7 @@ def to_binding_graph_task_summary(bg):
         else:
             return '... ' + str(p_or_none)[-35:]
 
-    for x, tnode in enumerate(bg.task_nodes()):
+    for x, tnode in enumerate(bg.all_task_type_nodes()):
         print "Task {x} ".format(x=x), bg.node[tnode]['state'], tnode
         inodes = bg.predecessors(tnode)
         print "Inputs:"

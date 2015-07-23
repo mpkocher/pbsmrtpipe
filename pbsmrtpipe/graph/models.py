@@ -67,13 +67,19 @@ class ConstantsNodes(object):
     TASK_ATTR_UPDATED_AT = 'updated_at'
     TASK_ATTR_CREATED_AT = 'created_at'
 
-    # On the chunk-able task, store metadata about the o
+    # label for identifiying tasks that have a companion chunk task
+    # defined by the chunk operator
     TASK_ATTR_IS_CHUNKABLE = 'is_chunkable'
     # Was the chunked applied to the scattered chunk
     TASK_ATTR_WAS_CHUNKED = 'was_chunked'
+    # Was the Gather'ing process applied to the
+    TASK_ATTR_WAS_GATHERED = "was_gathered"
+
     TASK_ATTR_COMPANION_CHUNK_TASK_ID = "companion_chunk_task_id"
-    TASK_ATTR_IS_CHUNK_RUNNING = 'is_chunk_scatter_running'
+    # Chunk operator
     TASK_ATTR_OPERATOR_ID = 'operator_id'
+    # Chunk Group, applies to
+    TASK_ATTR_CHUNK_GROUP_ID = "chunk_group_id"
 
 
 class _NodeLike(object):
@@ -115,7 +121,16 @@ class _FileLike(_NodeLike):
 
 
 class _TaskLike(_NodeLike):
-    # Attributes initialized at the graph level
+    """Attributes initialized at the graph level
+
+
+    IS_CHUNKABLE => the chunk operator has found a companion scatter task for the original task
+    IS_CHUNK_RUNNING => the companion scatter task is running
+    WAS_CHUNKED => the scatter/chunking process has been applied to the task
+
+    scatter/chunking are sloppy equivalents
+    All of the chunked
+    """
     NODE_ATTRS = {ConstantsNodes.TASK_ATTR_STATE: TaskStates.CREATED,
                   ConstantsNodes.TASK_ATTR_ROPTS: {},
                   ConstantsNodes.TASK_ATTR_NPROC: 1,
@@ -125,8 +140,12 @@ class _TaskLike(_NodeLike):
                   ConstantsNodes.TASK_ATTR_UPDATED_AT: lambda : datetime.datetime.now(),
                   ConstantsNodes.TASK_ATTR_EMESSAGE: None,
                   ConstantsNodes.TASK_ATTR_IS_CHUNKABLE: False,
-                  ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING: False,
-                  ConstantsNodes.TASK_ATTR_WAS_CHUNKED: False}
+                  ConstantsNodes.TASK_ATTR_WAS_CHUNKED: False,
+                  ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID: None,
+                  ConstantsNodes.TASK_ATTR_OPERATOR_ID: None,
+                  ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID: None,
+                  ConstantsNodes.TASK_ATTR_WAS_GATHERED: False
+                  }
 
 
 class _ChunkLike(object):
@@ -137,7 +156,9 @@ class _ChunkLike(object):
 class EntryPointNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
     # this is like a Task
     # This abstraction needs to be deleted
-    NODE_ATTRS = {'is_resolved': False, 'path': None}
+    NODE_ATTRS = {ConstantsNodes.FILE_ATTR_IS_RESOLVED: False,
+                  ConstantsNodes.FILE_ATTR_PATH: None,
+                  ConstantsNodes.TASK_ATTR_RUN_TIME: 1}
 
     DOT_COLOR = DotColorConstants.PURPLE
     DOT_SHAPE = DotShapeConstants.DIAMOND
@@ -351,5 +372,7 @@ class EntryOutBindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
         return "{n}.{i}".format(**_d)
 
 
-VALID_FILE_NODE_ClASSES = (BindingInFileNode, BindingOutFileNode, EntryOutBindingFileNode)
+VALID_FILE_NODE_CLASSES = (BindingInFileNode, BindingOutFileNode, EntryOutBindingFileNode)
 VALID_TASK_NODE_CLASSES = (TaskBindingNode, EntryPointNode)
+# FIXME
+VALID_ALL_TASK_NODE_CLASSES = (TaskBindingNode, EntryPointNode, TaskChunkedBindingNode, TaskGatherBindingNode, TaskScatterBindingNode)

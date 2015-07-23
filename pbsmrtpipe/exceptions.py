@@ -90,3 +90,22 @@ class WorkflowError(WorkflowBaseException):
 class TaskExecutionError(WorkflowBaseException):
     """Task failed during pipeline running"""
     pass
+
+
+class BaseChunkError(WorkflowBaseException):
+    pass
+
+
+class ChunkScatteringError(BaseChunkError):
+    """Unable to create or process output of scattered Task"""
+    pass
+
+
+class ChunkGatheringError(BaseException):
+    """Failed to Gather Chunked tasks outputs"""
+    pass
+
+
+class TaskChunkingError(BaseChunkError):
+    """General error for creating chunked task instances"""
+    pass

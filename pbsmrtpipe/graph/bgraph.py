@@ -21,14 +21,13 @@ from xmlbuilder import XMLBuilder
 from pbsmrtpipe.exceptions import (TaskIdNotFound, MalformedBindingError,
                                    InvalidEntryPointError,
                                    MalformedBindingStrError,
-                                   TaskExecutionError)
+                                   TaskExecutionError, ChunkGatheringError,
+                                   TaskChunkingError)
 
 from pbsmrtpipe.opts_graph import resolve_di
 from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
                                    BindingFileTypeIncompatiblyError)
-from pbsmrtpipe.models import (FileType, TaskStates, ResourceTypes, DataStore,
-                               DataStoreFile, MetaTask, MetaStaticTask,
-                               MetaScatterTask, MetaGatherTask, FileTypes)
+from pbsmrtpipe.models import (TaskStates, ResourceTypes, MetaScatterTask)
 
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.pb_io import strip_entry_prefix
@@ -42,16 +41,17 @@ from pbsmrtpipe.graph.models import (TaskBindingNode,
                                      EntryPointNode,
                                      EntryOutBindingFileNode,
                                      TaskScatterBindingNode,
-                                     VALID_FILE_NODE_ClASSES,
+                                     VALID_FILE_NODE_CLASSES,
                                      VALID_TASK_NODE_CLASSES,
                                      TaskChunkedBindingNode,
                                      BindingChunkInFileNode,
                                      BindingChunkOutFileNode,
-                                     TaskGatherBindingNode)
+                                     TaskGatherBindingNode,
+                                     VALID_ALL_TASK_NODE_CLASSES)
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger(GlobalConstants.SLOG_PREFIX + "__name__")
-#logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
 
 
 def _parse_task_from_binding_str(s):
@@ -112,7 +112,7 @@ class BindingsGraph(nx.DiGraph):
     # This is the new model. This will replace the Abstract Graph
 
     def _validate_type(self, n):
-        _allowed_types = tuple(itertools.chain(VALID_TASK_NODE_CLASSES, VALID_FILE_NODE_ClASSES))
+        _allowed_types = tuple(itertools.chain(VALID_TASK_NODE_CLASSES, VALID_FILE_NODE_CLASSES))
 
         if not isinstance(n, _allowed_types):
             msg = "Got type {t} for {k}. Allowed types {a}.".format(a=_allowed_types, t=type(n), k=self.__class__.__name__)
@@ -145,10 +145,24 @@ class BindingsGraph(nx.DiGraph):
         """
         This always returns a t-sorted list of task nodes
         """
+        # FIXME this only returns non-chunked tasks types
         return self._get_sorted_nodes_by_klass(VALID_TASK_NODE_CLASSES)
 
+    def all_task_type_nodes(self):
+        """Returns Task of very type"""
+        return self._get_sorted_nodes_by_klass(_TaskLike)
+
+    def chunked_task_nodes(self):
+        return self._get_nodes_by_klasses((TaskChunkedBindingNode, ))
+
+    def scattered_task_nodes(self):
+        return self._get_nodes_by_klasses((TaskScatterBindingNode, ))
+
+    def gathered_task_nodes(self):
+        return self._get_nodes_by_klasses((TaskGatherBindingNode, ))
+
     def file_nodes(self, data=False):
-        return self._get_sorted_nodes_by_klass(VALID_FILE_NODE_ClASSES)
+        return self._get_sorted_nodes_by_klass(VALID_FILE_NODE_CLASSES)
 
     def entry_binding_nodes(self, data=False):
         # these are files-esque
@@ -164,12 +178,12 @@ class BindingsGraph(nx.DiGraph):
         return get_tasks_by_state(self, state)
 
     def is_workflow_complete(self):
-        return is_workflow_complete(self)
+        return _is_workflow_complete(self)
 
     def __repr__(self):
         d = dict(k=self.__class__.__name__,
                  n=len(self.nodes()),
-                 t=len(self.task_nodes()),
+                 t=len(self.all_task_type_nodes()),
                  f=len(self.file_nodes()),
                  e=len(self.edges()),
                  p=len(self.entry_point_nodes()))
@@ -245,6 +259,10 @@ def validate_compatible_binding_file_types(bg):
 
 
 def add_node_by_type(g, node):
+    """
+    Adds a node to the graph and initializes the node "properties" defined
+    in NODE_ATTRS class var of the node type.
+    """
     kw = {}
     for k, v in node.NODE_ATTRS.iteritems():
         value = v() if isinstance(v, types.FunctionType) else v
@@ -499,10 +517,11 @@ def initialize_file_node_attrs(g):
     Add is_resolved and path to file nodes
 
     """
-    default_attrs = [('is_resolved', False), ('path', None)]
+    default_attrs = [(ConstantsNodes.FILE_ATTR_IS_RESOLVED, False),
+                     (ConstantsNodes.FILE_ATTR_PATH, None)]
     for attr_name, value in default_attrs:
         for n in g.nodes():
-            if isinstance(n, VALID_FILE_NODE_ClASSES):
+            if isinstance(n, VALID_FILE_NODE_CLASSES):
                 g.node[n][attr_name] = value
 
 
@@ -514,11 +533,10 @@ def initialize_task_node_attrs(g):
                      (ConstantsNodes.TASK_ATTR_CMDS, []),
                      (ConstantsNodes.TASK_ATTR_RUN_TIME, None),
                      (ConstantsNodes.TASK_ATTR_EMESSAGE, None),
-                     (ConstantsNodes.TASK_ATTR_IS_CHUNKABLE, False),
-                     (ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING, False)]
+                     (ConstantsNodes.TASK_ATTR_IS_CHUNKABLE, False)]
 
     for attr_name, value in default_attrs:
-        for n in g.task_nodes():
+        for n in g.all_task_type_nodes():
             g.node[n][attr_name] = value
 
 
@@ -534,7 +552,7 @@ def get_node_attributes(g, name):
     return values
 
 
-def is_workflow_complete(g):
+def _is_workflow_complete(g):
     """
     For the workflow to be complete, the task states must all be completed
     and all the files are resolved
@@ -544,7 +562,7 @@ def is_workflow_complete(g):
     :rtype: bool
     """
 
-    for task_node in g.task_nodes():
+    for task_node in g.all_task_type_nodes():
         states = get_node_attributes(g, ConstantsNodes.TASK_ATTR_STATE)
         state = states[task_node]
         if state not in TaskStates.COMPLETED_STATES():
@@ -573,21 +591,22 @@ def was_task_successful_with_resolve_outputs(bg, task_like_node):
 
 
 def was_workflow_successful(bg):
-    return all(was_task_successful(bg, t) for t in bg.task_nodes())
+    return all(was_task_successful(bg, t) for t in bg.all_task_type_nodes())
 
 
 def get_next_runnable_task(g):
 
-    if is_workflow_complete(g):
+    if g.is_workflow_complete():
         return None
 
     # this should probably do a top sort, then return
-    for tnode in g.task_nodes():
+    for tnode in g.all_task_type_nodes():
         if isinstance(tnode, TaskBindingNode):
             state = g.node[tnode][ConstantsNodes.TASK_ATTR_STATE]
             # Skip chunk-able tasks. Chunkable tasks will run
             is_chunkable = g.node[tnode][ConstantsNodes.TASK_ATTR_IS_CHUNKABLE]
             is_chunkable = False
+
             if not is_chunkable:
                 # FIXME
                 if state in TaskStates.RUNNABLE_STATES():
@@ -595,7 +614,7 @@ def get_next_runnable_task(g):
                     # {node:is_resolved}
                     _ns = {}
                     for fnode in g.predecessors(tnode):
-                        if isinstance(fnode, VALID_FILE_NODE_ClASSES):
+                        if isinstance(fnode, VALID_FILE_NODE_CLASSES):
                             is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
                             _ns[fnode] = is_resolved
 
@@ -610,15 +629,15 @@ def get_next_runnable_task(g):
 
 def has_task_in_states(g, task_states):
     # All tasks are running or completed
-    return any((g.node[t][ConstantsNodes.TASK_ATTR_STATE] not in task_states for t in g.task_nodes()))
+    return any((g.node[t][ConstantsNodes.TASK_ATTR_STATE] not in task_states for t in g.all_task_type_nodes()))
 
 
 def are_all_tasks_running(g):
-    return all((g.node[t][ConstantsNodes.TASK_ATTR_STATE] not in TaskStates.RUNNABLE_STATES() for t in g.task_nodes()))
+    return all((g.node[t][ConstantsNodes.TASK_ATTR_STATE] not in TaskStates.RUNNABLE_STATES() for t in g.all_task_type_nodes()))
 
 
 def has_running_task(g):
-    return any(g.node[x][ConstantsNodes.TASK_ATTR_STATE] == TaskStates.RUNNING for x in g.task_nodes())
+    return any(g.node[x][ConstantsNodes.TASK_ATTR_STATE] == TaskStates.RUNNING for x in g.all_task_type_nodes())
 
 
 def has_next_runnable_task(g):
@@ -631,17 +650,17 @@ def has_next_runnable_task(g):
     :rtype: Boolean
     """
 
-    if is_workflow_complete(g):
+    if g.is_workflow_complete():
         return False
 
     # All tasks are running or completed
-    if all((g.node[t][ConstantsNodes.TASK_ATTR_STATE] not in TaskStates.RUNNABLE_STATES() for t in g.task_nodes())):
+    if all((g.node[t][ConstantsNodes.TASK_ATTR_STATE] not in TaskStates.RUNNABLE_STATES() for t in g.all_task_type_nodes())):
         return False
 
     for tnode in get_tasks_by_state(g, TaskStates.RUNNABLE_STATES()):
         _ns = {}
         for fnode in g.predecessors(tnode):
-            if isinstance(fnode, VALID_FILE_NODE_ClASSES):
+            if isinstance(fnode, VALID_FILE_NODE_CLASSES):
                 is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
                 if is_resolved:
                     _ns[fnode] = is_resolved
@@ -666,6 +685,17 @@ def get_task_input_files(g, tnode):
     return [p for _, p in sorted(files)]
 
 
+def get_task_output_files(g, tnode):
+
+    # [(index, path)]
+    files = []
+    for fnode in g.successors(tnode):
+        path = g.node[fnode][ConstantsNodes.FILE_ATTR_PATH]
+        files.append((fnode.index, path))
+
+    return [p for _, p in sorted(files)]
+
+
 def get_tasks_by_state(g, state_or_states):
     if isinstance(state_or_states, (list, type)):
         states = state_or_states
@@ -674,7 +704,7 @@ def get_tasks_by_state(g, state_or_states):
 
     node_states = {}
     for n in g.nodes():
-        if isinstance(n, VALID_TASK_NODE_CLASSES):
+        if isinstance(n, VALID_ALL_TASK_NODE_CLASSES):
             state = g.node[n][ConstantsNodes.TASK_ATTR_STATE]
             if state in states:
                 node_states[n] = state
@@ -728,7 +758,7 @@ def update_task_state_to_success(g, tnode, run_time):
 
 def update_file_state_to_resolved(g, file_node, path):
     # this should do a node type check
-    if not isinstance(file_node, VALID_FILE_NODE_ClASSES):
+    if not isinstance(file_node, VALID_FILE_NODE_CLASSES):
         raise TypeError("Unable to update state on {f}".format(f=file_node))
 
     if g.node[file_node][ConstantsNodes.FILE_ATTR_PATH] is None:
@@ -809,9 +839,9 @@ def resolve_entry_point(g, entry_id, path):
     if eid not in ep_ids:
         raise InvalidEntryPointError("Unable to resolve required entry point id '{i}'. Valid entry point ids {e}".format(i=eid, e=ep_ids))
 
+    attrs_t = [('style', 'solid'), ('path', path), ('is_resolved', True)]
     for ep_node in eps:
         if ep_node.idx == eid:
-            attrs_t = [('style', 'solid'), ('path', path), ('is_resolved', True)]
             update_or_set_node_attrs(g, attrs_t, [ep_node])
 
             # It's like a task
@@ -878,17 +908,32 @@ def add_scatter_task(g, scatterable_task_node, scatter_meta_task):
 
     # TODO FIXME This id needs to be generated in a centralized source.
     # This is used as the instance id in the output instance-id
-    instance_id = 141
-    chunk_group_id = uuid.uuid4()
-    scatter_task_node = TaskScatterBindingNode(scatter_meta_task, scatterable_task_node.idx, instance_id, str(chunk_group_id))
+    instance_id = random.randint(100, 200)
+
+    chunk_group_id = g.node[scatterable_task_node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID]
+    if chunk_group_id is None:
+        raise ValueError("Invalid chunk group id for node {n}".format(n=scatterable_task_node))
+
+    # this will generate the chunk.json file
+    scatter_task_node = TaskScatterBindingNode(scatter_meta_task, scatterable_task_node.idx, instance_id, chunk_group_id)
 
     slog.debug("Adding scattered task {t} to graph.".format(t=scatter_task_node))
     add_node_by_type(g, scatter_task_node)
 
-    # Re-map the inputs of the chunkable task to the inputs of the scatter task
+    # Create new InFile nodes for the Scattered Task and Re-map the inputs
+    # of the original task to the inputs of the scatter task
     # note, this does not create new File Binding nodes.
+    # Hack till a better file type resolver is in place
+    offset = 100
     for input_node in g.predecessors(scatterable_task_node):
         slog.info(("Adding edge ", input_node, scatter_task_node))
+        c_in_node = BindingInFileNode(input_node.meta_task, input_node.instance_id + offset, input_node.index, input_node.file_klass)
+        add_node_by_type(g, c_in_node)
+        g.add_edge(c_in_node, scatter_task_node)
+        # duplicate input bindings from
+        for i_node in g.predecessors(input_node):
+            g.add_edge(i_node, c_in_node)
+
         g.add_edge(input_node, scatter_task_node)
 
     # Add the Chunk.json Output file to the Graph
@@ -898,6 +943,10 @@ def add_scatter_task(g, scatterable_task_node, scatter_meta_task):
         add_node_by_type(g, out_file_node)
         g.add_edge(scatter_task_node, out_file_node)
 
+    # update the scatter task-node
+    attrs = [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, False),
+             (ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID, chunk_group_id)]
+    update_or_set_node_attrs(g, attrs, [scatter_task_node])
     return g
 
 
@@ -906,11 +955,9 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
 
     Add N TaskChunkedBindingNode(s) to graph and maps the inputs from PipelineChunks
 
-    :param bg:
-    :param scatter_task_node:
-    :param pipeline_chunks:
-    :param chunk_operator:
-    :param registered_tasks_d:
+
+    This must update the scattered-task to WAS_CHUNKED = True at the end
+    so the process is only applied once.
 
     :type bg: BindingsGraph
     :type scatter_task_node: TaskScatterBindingNode
@@ -919,8 +966,10 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
 
     :return:
     """
-
     validate_type_or_raise(scatter_task_node, TaskScatterBindingNode)
+
+    if bg.node[scatter_task_node][ConstantsNodes.TASK_ATTR_WAS_CHUNKED]:
+        return []
 
     _to_i = lambda x: int(x.split(":")[-1])
     # {chunk_key -> task in index}
@@ -929,6 +978,8 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
     scatter_meta_task = registered_tasks_d[chunk_operator.scatter.task_id]
     slog.debug("Chunking by meta task {m}".format(m=scatter_meta_task))
 
+    # look table for re-mapping the output of the gathered tasks to the inputs
+    # of the original unchunked task
     gather_tuple = [(g.chunk_key, g.gather_task_id, _to_i(g.task_input)) for g in chunk_operator.gather.chunks]
 
     # Chunked file from the scatter task, Scattered Task should have
@@ -937,10 +988,11 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
 
     chunk_group_id = scatter_task_node.chunk_group_id
 
+    slog.debug("Starting to chunk task-id {i} with chunk-group {g}".format(i=scatter_meta_task.task_id, g=chunk_group_id))
+
     chunked_task_nodes = []
     for i, pipeline_chunk in enumerate(pipeline_chunks):
 
-        # task_instance_id = get_next_task_instance_id(bg, (TaskBindingNode, TaskChunkedBindingNode), scatter_meta_task.task_id)
         task_instance_id = i + 10
 
         chunked_task_node = TaskChunkedBindingNode(scatter_meta_task, task_instance_id, pipeline_chunk.chunk_id, str(chunk_group_id))
@@ -979,39 +1031,60 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
             bg.add_edge(chunked_task_node, out_node)
             out_nodes.append(out_node)
 
+    # If NO chunked tasks were added, there was a serious problem
+    if not chunked_task_nodes:
+        raise TaskChunkingError("Starting to chunk task-id {i} with chunk-group {g}".format(i=scatter_meta_task.task_id, g=chunk_group_id))
+
+    update_or_set_node_attrs(bg, [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, True)], [scatter_task_node])
+
     # log.debug(to_binding_graph_summary(bg))
-    slog.info("Added {n} chunked tasks from {x}".format(n=len(chunked_task_nodes), x=scatter_task_node))
+    slog.info("Chunked Tasks added {n} from task-id {i}".format(n=len(chunked_task_nodes), i=scatter_meta_task.task_id))
     return chunked_task_nodes
 
 
-def label_chunkable_tasks(g, operators):
+def label_chunkable_tasks(g, operators_d):
     """
-    Adds is_chunkable to Task nodes that have a companion Chunkable task in Chunk Operators
+    Adds is_chunkable to Task nodes that have a companion Chunkable task in
+    Chunk Operators
 
-    :type operators: dict[str, pbsmrtpipe.models.ChunkOperator]
+    :type operators_d: dict[str, pbsmrtpipe.models.ChunkOperator]
     :type g: BindingsGraph
 
-    :param g:
-    :param operators:
     :return:
     """
     # scatterable-task -> operator id
-    chunkable_task_ids = {op.scatter.task_id: op_id for op_id, op in operators.iteritems()}
+    chunkable_task_ids = {op.scatter.task_id: op for op_id, op in operators_d.iteritems()}
 
     found_chunkable_task = False
 
     for task_node in g.task_nodes():
         if isinstance(task_node, TaskBindingNode):
+
             task_id = task_node.meta_task.task_id
 
             if task_id in chunkable_task_ids.keys():
-                slog.info("Found chunkable task '{i}'".format(i=task_id))
+                operator = chunkable_task_ids[task_id]
+                scatter_task_id = operator.scatter.scatter_task_id
+
+                # This Id should be used for ChunkTaskBinding Nodes
+                chunk_group_id = uuid.uuid4()
+
+                slog.info("Found chunkable task '{i}' assigning chunk-group {s}".format(i=task_id, s=str(chunk_group_id)))
+
+                # Setting the is-chunkable is trigger that a chunk/scatter task
+                # can be created
                 g.node[task_node][ConstantsNodes.TASK_ATTR_IS_CHUNKABLE] = True
-                g.node[task_node][ConstantsNodes.TASK_ATTR_OPERATOR_ID] = chunkable_task_ids[task_id]
+                # Set the operator id
+                g.node[task_node][ConstantsNodes.TASK_ATTR_OPERATOR_ID] = operator.idx
+                # Keep track of the original task_id for book-keeping
+                g.node[task_node][ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID] = scatter_task_id
+                # This is not great. In the TaskChunkedBindingNode this is a attribute of the node
+                g.node[task_node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID] = str(chunk_group_id)
+
                 found_chunkable_task = True
 
     if not found_chunkable_task:
-        slog.warn("Unable to find any chunkable tasks from {n} chunk operators.".format(n=len(operators)))
+        slog.warn("Unable to find any chunkable tasks from {n} chunk operators.".format(n=len(operators_d)))
 
     return g
 
@@ -1059,8 +1132,22 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d):
     return bg
 
 
+def get_companion_unscattered_task_node(bg, chunk_group_id):
+    for tnode in bg.task_nodes():
+        if tnode.__class__ == TaskBindingNode:
+            if bg.node[tnode][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID] == chunk_group_id:
+                    return tnode
+    return KeyError("Unable to find scattred companion task for chunk-group {g}".format(g=chunk_group_id))
+
+
 def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_d):
-    """Create the gathered.chunk.json
+    """Create the gathered.chunk.json by gathering the Chunked Task Instances.
+
+    1. Find all scattered task nodes
+    2. Find all the chunked tasks by chunk-group-id
+    3. Load operator
+    4. load pipeline chunks from JSON
+    5. load
 
     gather tasks to chunked instances of tasks nodes if the all the chunked tasks are
     completed and were successful
@@ -1070,117 +1157,164 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
     import pbsmrtpipe.pb_io as IO
 
-    for node in bg.nodes():
-        if isinstance(node, TaskScatterBindingNode):
-            # The Task was already scattered and Chunk.json file is being
-            # generated
-            if bg.node[node][ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING] is True:
-                # wait till the task completes or fails to generate Chunk.json
-                continue
+    for node in bg.scattered_task_nodes():
+        # skip if not already gathered
+        _was_gathered = bg.node[node][ConstantsNodes.TASK_ATTR_WAS_GATHERED]
+        if _was_gathered:
+            log.info("Skipping {n} was-gathered? {g}".format(n=node, g=_was_gathered))
+            continue
 
-            # look for a completed Chunk.json file
-            if bg.node[node][ConstantsNodes.TASK_ATTR_STATE] != TaskStates.SUCCESSFUL:
-                continue
+        # The Task was already scattered and Chunk.json file is being
+        # generated
+        _state = bg.node[node][ConstantsNodes.TASK_ATTR_STATE]
+        slog.info("Scattered task {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
+        # look for a completed Chunk.json file
+        if _state in TaskStates.FAILURE_STATES():
+            raise TaskExecutionError("Scattered task {n} failed.".format(i=node))
+        elif _state != TaskStates.SUCCESSFUL:
+            # wait till it's finished to process.
+            continue
+        else:
+            # everything was good
+            pass
 
-            chunk_operator = _get_chunk_operator_by_scatter_task_id(node.meta_task.task_id, chunk_operators_d)
-            # used with the chunk operator to find the gather task(s)
-            original_task_id = node.original_task_id
-            # original meta task
-            original_task = registered_tasks_d[original_task_id]
+        # Get Chunk group id
+        chunk_group_id = bg.node[node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID]
+        slog.info("Scattered task was successful. {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
 
-            _to_i = lambda x: int(x.split(":")[-1])
+        chunk_operator = _get_chunk_operator_by_scatter_task_id(node.meta_task.task_id, chunk_operators_d)
+        # used with the chunk operator to find the gather task(s)
+        original_task_id = node.original_task_id
+        # original meta task
+        original_task = registered_tasks_d[original_task_id]
 
-            # {index -> (chunk_key, gather task id, X)}
-            gs = {_to_i(g.task_input): (g.chunk_key, g.gather_task_id, g.task_input) for g in chunk_operator.gather.chunks}
+        _to_i = lambda x: int(x.split(":")[-1])
 
-            # Get all the output chunk.json files. This should only find one
-            chunk_file_node = bg.successors(node)[0]
-            # load pipeline chunks generated from the task
-            scattered_chunked_json_path = bg.node[chunk_file_node][ConstantsNodes.FILE_ATTR_PATH]
+        # {index -> (chunk_key, gather task id, X)}
+        gs = {_to_i(g.task_input): (g.chunk_key, g.gather_task_id, g.task_input) for g in chunk_operator.gather.chunks}
 
-            if scattered_chunked_json_path is None:
-                # this should raise. The task was successful, the
-                # chunk.json file should be present
-                log.error("Unable to find output chunked file from task {t}".format(t=node))
-                continue
+        # Get all the output chunk.json files. This should only find one
+        chunk_file_node = bg.successors(node)[0]
+        # load pipeline chunks generated from the task
+        scattered_chunked_json_path = bg.node[chunk_file_node][ConstantsNodes.FILE_ATTR_PATH]
 
-            scattered_pipeline_chunks = IO.load_pipeline_chunks_from_json(scattered_chunked_json_path)
-            slog.info("Loaded {n} pipeline scattered chunks from {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path))
-            pipeline_chunks_d = {c.chunk_id: c for c in scattered_pipeline_chunks}
+        if scattered_chunked_json_path is None:
+            # this should raise. The task was successful, thee
+            # chunk.json file should be present
+            raise ChunkGatheringError("Unable to find output chunked JSON file from task {t}".format(t=chunk_file_node))
 
-            def _filter_chunks_by_group(cnode, chunk_group_id_):
-                return isinstance(cnode, TaskChunkedBindingNode) and cnode.chunk_group_id == chunk_group_id_
+        scattered_pipeline_chunks = IO.load_pipeline_chunks_from_json(scattered_chunked_json_path)
+        slog.info("Loaded {n} pipeline scattered chunks from {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path))
 
-            #import ipdb; ipdb.set_trace()
-            # Look for all TaskChunkedBindingNodes with the same chunk group
-            chunked_task_states = [(chunk_node_, bg.node[chunk_node_][ConstantsNodes.TASK_ATTR_STATE]) for chunk_node_ in bg.task_nodes() if _filter_chunks_by_group(chunk_node_, node.chunk_group_id)]
+        pipeline_chunks_d = {c.chunk_id: c for c in scattered_pipeline_chunks}
 
-            # Check for failure in chunked tasks
-            if any(s in TaskStates.FAILURE_STATES() for s, c in chunked_task_states):
-                raise TaskExecutionError("Chunked task failure. {c}".format(c=chunked_task_states))
+        def _filter_chunks_by_group(cnode, chunk_group_id_):
+            return isinstance(cnode, TaskChunkedBindingNode) and cnode.chunk_group_id == chunk_group_id_
 
-            if all(s == TaskStates.SUCCESSFUL for cnode, s in chunked_task_states):
-                # Check if all chunked tasks were complete and output files resolved
-                if all(was_task_successful_with_resolve_outputs(bg, cnode) for cnode, s in chunked_task_states):
-                    gathered_pipeline_chunks_d = copy.deepcopy(pipeline_chunks_d)
+        # Look for all TaskChunkedBindingNodes with the same chunk group
+        chunked_task_states = [(chunk_node_, bg.node[chunk_node_][ConstantsNodes.TASK_ATTR_STATE]) for chunk_node_ in bg.chunked_task_nodes() if _filter_chunks_by_group(chunk_node_, node.chunk_group_id)]
 
-                    # Found completed chunked files. Now:
-                    # 1. create Gathered JSON File and GatheredFileNode
-                    # 2. Create Gather tasks
-                    # 3. Map output of first chunked task to input of Gathered File Node (this is a hack)
+        # Check for failure in chunked tasks
+        if any(s in TaskStates.FAILURE_STATES() for s, c in chunked_task_states):
+            raise TaskExecutionError("Chunked task failure. {c}".format(c=chunked_task_states))
 
-                    # bind the first output of the first chunked task. this is a hack to get around the degree constraints
+        if not chunked_task_states:
+            raise ChunkGatheringError("No chunked tasks found for {t} chunk-group {g}".format(t=node, g=chunk_group_id))
 
-                    all_chunked_out_files_nodes = []
+        if all(s == TaskStates.SUCCESSFUL for cnode, s in chunked_task_states):
+            # Check if all chunked tasks were complete and output files resolved
+            if all(was_task_successful_with_resolve_outputs(bg, cnode) for cnode, s in chunked_task_states):
 
-                    for chunked_task_node, state_ in chunked_task_states:
-                        log.debug(("Chunked task node", chunked_task_node, type(chunked_task_node), len(chunked_task_states)))
-                        chunk_id = chunked_task_node.chunk_id
-                        for output_node in bg.successors(chunked_task_node):
-                            all_chunked_out_files_nodes.append(output_node)
+                slog.info("Starting chunking gathering process for task {n} chunk-group {g}".format(n=node, g=chunk_group_id))
+                gathered_pipeline_chunks_d = copy.deepcopy(pipeline_chunks_d)
 
-                            # map to $chunk_key
-                            output_chunk_key, _, _ = gs[output_node.index]
-                            log.debug(("Outputs of chunked task ", output_node, chunk_id, output_chunk_key))
-                            gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
+                # Found completed chunked files. Now:
+                # 1. create Gathered JSON File and GatheredFileNode
+                # 2. Create Gather tasks
+                # 3. Map output of first chunked task to input of Gathered File Node (this is a hack)
 
-                    comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
-                    gathered_json = os.path.join(os.getcwd(), "gathered-pipeline.chunks.json")
-                    IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
+                # bind the first output of the first chunked task. this is a hack to get around the degree constraints
 
-                    # Create New Gathered InFile Node
-                    # Create all Gathered Tasks
-                    for gi, gchunk in enumerate(chunk_operator.gather.chunks):
-                        g_meta_task = registered_tasks_d[gchunk.gather_task_id]
-                        g_node = TaskGatherBindingNode(g_meta_task, gi, gchunk.chunk_key)
+                all_chunked_out_files_nodes = []
 
-                        # Both In/Out Gather Binding Types only have one input and
-                        # one output
-                        # this is still using the mixed form of [(FileType, label, desc), ]
-                        g_in_file = BindingInFileNode(g_meta_task, gi, 0, g_meta_task.input_types[0])
-                        g_out_file = BindingOutFileNode(g_meta_task, gi, 0, g_meta_task.output_types[0])
+                for chunked_task_node, state_ in chunked_task_states:
+                    log.debug(("Chunked task node", chunked_task_node, type(chunked_task_node), len(chunked_task_states)))
+                    chunk_id = chunked_task_node.chunk_id
+                    for output_node in bg.successors(chunked_task_node):
+                        all_chunked_out_files_nodes.append(output_node)
 
-                        add_node_by_type(bg, g_node)
-                        add_node_by_type(bg, g_in_file)
-                        # update the state, path of the resolved gathered file
-                        update_file_state_to_resolved(bg, g_in_file, gathered_json)
-                        add_node_by_type(bg, g_out_file)
-                        bg.add_edge(g_in_file, g_node)
-                        bg.add_edge(g_node, g_out_file)
-                        if all_chunked_out_files_nodes:
-                            for out_node in all_chunked_out_files_nodes:
-                                bg.add_edge(out_node, g_in_file)
+                        # map to $chunk_key
+                        output_chunk_key, _, _ = gs[output_node.index]
+                        log.debug(("Outputs of chunked task ", output_node, chunk_id, output_chunk_key))
+                        gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
 
-                    # Finally remap the outputs of the original unchunked task to the outputs of the gathered
-                    # chunks and delete the original task node from the graph
+                comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
+                gathered_json = os.path.join(os.getcwd(), "gathered-pipeline.chunks.json")
+                IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
 
-                    # update chunked task to was
-                    update_or_set_node_attrs(bg, [(ConstantsNodes.TASK_ATTR_IS_CHUNK_RUNNING, True)], [node])
-                    log.debug("Updated chunked task is_running {t}".format(t=node))
-                else:
-                    log.warn("Chunked tasks not complete, or failed. {s}".format(s=chunked_task_states))
+                # Create New Gathered InFile Node
+                # Create all Gathered Tasks
+                # This will map the output gchunk.gather_task_id -> outs of
+                # the original unchunked tasks (that shouldn't have run)
+                # list of [(GatherChunk, out-file-node), ...]
+                g_out_gchunk_fnodes = []
+                for gi, gchunk in enumerate(chunk_operator.gather.chunks):
+
+                    g_meta_task = registered_tasks_d[gchunk.gather_task_id]
+                    g_node = TaskGatherBindingNode(g_meta_task, gi, gchunk.chunk_key)
+
+                    # Both In/Out Gather Binding Types only have one input and
+                    # one output
+                    # this is still using the mixed form of [(FileType, label, desc), ]
+                    g_in_file = BindingInFileNode(g_meta_task, gi, 0, g_meta_task.input_types[0])
+                    g_out_file = BindingOutFileNode(g_meta_task, gi, 0, g_meta_task.output_types[0])
+
+                    add_node_by_type(bg, g_node)
+                    add_node_by_type(bg, g_in_file)
+
+                    # update the state, path of the resolved gathered file
+                    update_file_state_to_resolved(bg, g_in_file, gathered_json)
+
+                    add_node_by_type(bg, g_out_file)
+
+                    bg.add_edge(g_in_file, g_node)
+                    bg.add_edge(g_node, g_out_file)
+                    if all_chunked_out_files_nodes:
+                        for out_node in all_chunked_out_files_nodes:
+                            bg.add_edge(out_node, g_in_file)
+
+                    g_out_gchunk_fnodes.append((gchunk, g_out_file, binding_str_to_task_id_and_instance_id(gchunk.task_input)))
+
+                # Finally remap the outputs of the original unchunked task to
+                # the outputs of the gathered chunks and delete the original task node
+                # for origin_out_node in bg.successors()
+                # original_unchunked_tnode = get_companion_unscattered_task_node(bg, chunk_group_id)
+                #
+                # # {Positional-index: OutFileNode}
+                # g_lookup = {x[-1][-1]: x[1] for x in g_out_gchunk_fnodes}
+                #
+                # for original_out_file in bg.successors(original_unchunked_tnode):
+                #     new_mapped_input_node = g_lookup[original_out_file.index]
+                #     for mapped_in_node in bg.successors(original_out_file):
+                #         slog.info(("Mapping ", new_mapped_input_node, mapped_in_node))
+                #         # delete the old edge, add the new
+                #         #bg.add_edge(new_mapped_input_node, mapped_in_node)
+
+                # update chunked task properties
+                attrs = [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, True),
+                         (ConstantsNodes.TASK_ATTR_WAS_GATHERED, True),
+                         (ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID, chunk_group_id),
+                         (ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID, original_task.task_id),
+                         (ConstantsNodes.TASK_ATTR_OPERATOR_ID, chunk_operator.idx)]
+
+                update_or_set_node_attrs(bg, attrs, [node])
+                log.debug("Updated chunked task is_running {t}".format(t=node))
+
+                slog.info("complete chunking task {n} chunk-group {g}".format(n=node, g=chunk_group_id))
             else:
-                log.debug("Chunked tasks not completed, or succesful {s}".format(s=chunked_task_states))
+                log.warn("Chunked tasks for {n} group: {g}".format(n=node, g=chunk_group_id))
+        else:
+            log.warn("Chunked tasks for {n} group: {g}".format(n=node, g=chunk_group_id))
 
     return bg
 

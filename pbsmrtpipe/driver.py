@@ -16,7 +16,8 @@ from pbcore.io import DataSet
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.exceptions import (PipelineRuntimeError,
-                                   PipelineRuntimeKeyboardInterrupt)
+                                   PipelineRuntimeKeyboardInterrupt,
+                                   WorkflowBaseException)
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
@@ -94,7 +95,7 @@ def _status(bg):
     :param bg:
     :return:
     """
-    ntasks = len(bg.task_nodes())
+    ntasks = len(bg.all_task_type_nodes())
     ncompleted_tasks = len(B.get_tasks_by_state(bg, TaskStates.SUCCESSFUL))
     return "Workflow status {n}/{t} completed/total tasks".format(t=ntasks, n=ncompleted_tasks)
 
@@ -208,15 +209,22 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         B.resolve_entry_point(bg, eid, path)
         B.resolve_successor_binding_file_path(bg)
 
+    # Mark Chunkable tasks
     B.label_chunkable_tasks(bg, global_registry.chunk_operators)
 
     slog.info("validating binding graph")
+    # Check the degree of the nodes
     B.validate_binding_graph_integrity(bg)
     slog.info("successfully validated binding graph.")
 
-    log.info(BU.to_binding_graph_summary(bg))
+    # Add scattered
+    # This will add new nodes to the graph if necessary
+    B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks)
 
-    # file type id counter {str: int}
+    #log.info(BU.to_binding_graph_summary(bg))
+
+    # "global" file type id counter {str: int} that will be
+    # used to generate ids
     file_type_id_to_count = {file_type.file_type_id: 0 for _, file_type in global_registry.file_types.iteritems()}
 
     # Create a closure to allow file types to assign unique id
@@ -260,7 +268,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         analysis_file_links.append(analysis_link)
         write_analysis_report(analysis_file_links)
 
-    # factories for getting a Worker instance
+    # utils for getting the running func and worker type
     def _to_w(wid, task_id, manifest_path_):
         # the IO loading will forceful set this to None
         # if the cluster manager not defined or cluster_mode is False
@@ -275,6 +283,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
                                   T.run_task_manifest, task_id, manifest_path_, name=wid)
 
+    # factories for getting a Worker instance
     def _determine_worker_type(task_type):
         # resolve the specific worker type
         if task_type == TaskTypes.LOCAL or workflow_opts.distributed_mode is False:
@@ -346,7 +355,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # write empty analysis reports
     write_analysis_report(analysis_file_links)
 
-    # For bookkeeping
+    # For book-keeping
     # task id -> tnode
     tid_to_tnode = {}
     # tnode -> Task instance
@@ -366,8 +375,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             # This will add new nodes to the graph if necessary
             B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks)
             # B.write_binding_graph_images(bg, job_resources.workflow)
+            # If a TaskScatteredBindingNode is completed successfully and
+            # output chunk.json is resolved, read in the file and
+            # generate the new chunked tasks. This mutates the graph
+            # significantly.
             B.add_gather_to_completed_task_chunks(bg, global_registry.chunk_operators, global_registry.tasks)
-            #B.write_binding_graph_images(bg, job_resources.workflow)
 
             if not _are_workers_alive(workers):
                 for w_ in workers.values():
@@ -375,12 +387,12 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                         log.warn("Worker {i} (pid {p}) is not alive. Worker exit code {e}.".format(i=w_.name, p=w_.pid, e=w_.exitcode))
 
             # Check if Any tasks are running or that there still runnable tasks
-            is_completed = B.is_workflow_complete(bg)
+            is_completed = bg.is_workflow_complete()
             has_task_running = B.has_running_task(bg)
 
             if not is_completed:
                 if not has_task_running:
-                    if not B.has_task_in_states(bg, (TaskStates.CREATED, TaskStates.READY)):
+                    if not B.has_task_in_states(bg, TaskStates.RUNNABLE_STATES()):
                         if not B.has_next_runnable_task(bg):
                             msg = "Unable to find runnable task or any tasks running and workflow is NOT completed."
                             log.error(msg)
@@ -389,10 +401,14 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                             raise PipelineRuntimeError(msg)
 
             time.sleep(sleep_time)
-            # log.debug("Sleeping for {s}".format(s=sleep_time))
-            log.debug("\n" + BU.to_binding_graph_summary(bg))
-            # B.to_binding_graph_task_summary(bg)
 
+            # log.debug("Sleeping for {s}".format(s=sleep_time))
+            #log.debug("\n" + BU.to_binding_graph_summary(bg))
+            #BU.to_binding_graph_task_summary(bg)
+
+            # This should only be triggered after events. The main reason
+            # to keep updating it was the html report is up to date with the
+            # runtime
             write_report_(bg, TaskStates.RUNNING, is_completed)
 
             if is_completed:
@@ -609,7 +625,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         write_report_(bg, TaskStates.KILLED, False)
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
-        raise
+        was_successful = False
+
     except Exception as e:
         # update workflow reports to failed
         write_report_(bg, TaskStates.FAILED, False)
@@ -618,7 +635,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         BU.write_binding_graph_images(bg, job_resources.workflow)
         raise
 
-    BU.write_binding_graph_images(bg, job_resources.workflow)
+    finally:
+        write_task_summary_report(bg)
+        BU.write_binding_graph_images(bg, job_resources.workflow)
+
     return True if was_successful else False
 
 
@@ -784,6 +804,7 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
     manager = multiprocessing.Manager()
     shutdown_event = manager.Event()
 
+    state = False
     try:
         state = __exe_workflow(global_registry, entry_points_d, bg, task_opts,
                                workflow_level_opts, output_dir,
@@ -797,9 +818,10 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
         slog.error(emsg)
         sys.stderr.write(emsg + "\n")
         state = False
+
+    finally:
         _terminate_all_workers(workers.values(), shutdown_event)
         _write_final_results_message(state)
-        raise
 
     return state
 
@@ -817,6 +839,7 @@ def workflow_exception_exitcode_handler(func):
     def _wrapper(*args, **kwargs):
         started_at = time.time()
 
+        state = False
         try:
             state = func(*args, **kwargs)
         except Exception as e:
@@ -836,17 +859,18 @@ def workflow_exception_exitcode_handler(func):
             slog.exception(value_)
             slog.exception("\n")
             slog.exception(traceback_)
-
             state = False
 
-        run_time = time.time() - started_at
-        run_time_min = run_time / 60.0
-        _m = "was Successful" if state else "Failed"
-        msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min)".format(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min)
+        finally:
+            print "Shutting down."
+            run_time = time.time() - started_at
+            run_time_min = run_time / 60.0
+            _m = "was Successful" if state else "Failed"
+            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min)".format(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min)
 
-        slog.info(msg)
-        log.info(msg)
-        sys.stdout.write(msg + "\n")
+            slog.info(msg)
+            log.info(msg)
+            sys.stdout.write(msg + "\n")
 
         return 0 if state else -1
 
@@ -969,7 +993,6 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
         raise KeyError("Unable to find task id '{i}' in registered tasks. Use "
                        "'show-tasks' to get a list of registered tasks.".format(i=task_id))
 
-    print entry_points_d
     workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d,
                                                                        preset_xml, rc_preset_or_none,
                                                                        force_distribute=force_distribute)

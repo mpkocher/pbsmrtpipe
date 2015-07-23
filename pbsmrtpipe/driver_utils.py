@@ -12,7 +12,8 @@ import pbsmrtpipe.report_renderer as R
 import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
-from pbsmrtpipe.graph.models import TaskBindingNode
+from pbsmrtpipe.graph.models import TaskBindingNode, \
+    VALID_ALL_TASK_NODE_CLASSES
 from pbsmrtpipe.models import TaskStates, DataStore, JobResources
 from pbsmrtpipe.utils import setup_log
 
@@ -72,7 +73,7 @@ def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, erro
                Column('nproc', header="# of procs")]
 
     tasks_table = Table('tasks', columns=columns)
-    for tnode in bg.task_nodes():
+    for tnode in bg.all_task_type_nodes():
         tasks_table.add_data_by_column_id('task_id', str(tnode))
         tasks_table.add_data_by_column_id('nproc', bg.node[tnode]['nproc'])
         tasks_table.add_data_by_column_id('state', bg.node[tnode]['state'])
@@ -145,8 +146,8 @@ def to_task_summary_report(bg):
           Column("workflow_task_emsg", header="Error Message")]
 
     t = Table("workflow_task_summary", title="Task Summary", columns=cs)
-    for tnode in bg.task_nodes():
-        if isinstance(tnode, TaskBindingNode):
+    for tnode in bg.all_task_type_nodes():
+        if isinstance(tnode, VALID_ALL_TASK_NODE_CLASSES):
             t.add_data_by_column_id("workflow_task_id", tnode.idx)
             t.add_data_by_column_id("workflow_task_status", bg.node[tnode]['state'])
             t.add_data_by_column_id("workflow_task_run_time", bg.node[tnode]['run_time'])

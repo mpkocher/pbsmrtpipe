@@ -18,7 +18,7 @@ from pbsmrtpipe.exceptions import (MalformedOperatorError, MalformedChunkKeyErro
 
 # legacy. imports into this module.
 from pbcommand.models import FileTypes, SymbolTypes, TaskTypes, ResourceTypes
-from pbcommand.models.common import REGISTERED_FILE_TYPES, FileType
+from pbcommand.models.common import FileType, REGISTERED_FILE_TYPES
 
 
 log = logging.getLogger(__name__)
@@ -126,25 +126,6 @@ class TaskStates(object):
     @classmethod
     def FAILURE_STATES(cls):
         return cls.FAILED, cls.KILLED
-
-
-class JsonSchemaOption(object):
-    def __init__(self, schema):
-        _ = jsonschema.Draft4Validator(schema)
-        self.schema = schema
-
-    @property
-    def option_id(self):
-        return self.schema['properties'].keys()[0]
-
-    @property
-    def default_value(self):
-        return self.schema['properties'][self.option_id]['default']
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__, i=self.option_id,
-                  d=self.default_value)
-        return "<{k} id:{i} default:{d} >".format(**_d)
 
 
 class MetaTask(object):
@@ -303,11 +284,13 @@ class MetaScatterTask(MetaTask):
 
 
 class MetaGatherTask(MetaTask):
+    # FIXME. This needs to override the to_cmd so the chunk_key can be passed in
+    # This will make the {Fasta|Fastq|Gff}Gather generic.
     pass
 
 
 class Task(object):
-
+    # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
     def __init__(self, task_id, task_type, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
         self.task_id = task_id
         # List of strings
@@ -560,8 +543,6 @@ class Pipeline(object):
         print "[Parents]", self.parent_pipeline_ids
 
 
-
-
 ScatterChunk = namedtuple("ScatterChunk", "chunk_key task_input")
 # task id to scatter, scatter task id
 Scatter = namedtuple("Scatter", "task_id scatter_task_id chunks")
@@ -775,4 +756,5 @@ class MetaStaticTask(MetaTask):
 
     def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types):
         """ Write the driver.exe driver-manifest.json"""
+        # FIXME. This is hard-coding the path to the resolved-tool-contract.json file
         return "{d} {m}".format(d=self.driver.driver_exe, m=RESOLVED_TOOL_CONTRACT_JSON)
