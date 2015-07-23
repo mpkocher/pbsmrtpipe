@@ -1,0 +1,71 @@
+{
+    "version": "0.1", 
+    "driver": {
+        "exe": "python -m pbreports.report.top_variants --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.top_variants", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "variants.gff (can be gzip'ed)", 
+                "title": "GFF file", 
+                "id": "gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "ReferenceSet or FASTA", 
+                "title": "Reference dataset", 
+                "id": "reference", 
+                "file_type_id": "PacBio.FileTypes.ReferenceSet"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbreports.tasks.how_many"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbreports.tasks.how_many": {
+                        "default": 100, 
+                        "type": "integer", 
+                        "description": "number of top variants to show (default=100)", 
+                        "title": "Number of variants"
+                    }
+                }, 
+                "title": "JSON Schema for pbreports.tasks.how_many"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbreports.tasks.batch_sort_size"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbreports.tasks.batch_sort_size": {
+                        "default": 10000, 
+                        "type": "integer", 
+                        "description": "Intermediate sort size parameter (default=10000)", 
+                        "title": "Batch sort size"
+                    }
+                }, 
+                "title": "JSON Schema for pbreports.tasks.batch_sort_size"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "JSON report", 
+                "description": "JSON report", 
+                "default_name": "report.json", 
+                "id": "report", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-23T11:06:02.716535"
+    }
+}
