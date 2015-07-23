@@ -1111,7 +1111,7 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d):
     import pbsmrtpipe.pb_io as IO
 
     # Add chunkabled tasks if necessary
-    for tnode_ in bg.nodes():
+    for tnode_ in bg.scattered_task_nodes():
         if bg.node[tnode_][ConstantsNodes.TASK_ATTR_STATE] == TaskStates.SUCCESSFUL:
             was_chunked = bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED]
 

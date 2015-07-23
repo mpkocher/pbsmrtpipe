@@ -815,7 +815,7 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
         else:
             emsg = "Unexpected exception. shutting down."
 
-        slog.error(emsg)
+        slog.error(emsg, exc_info=True)
         sys.stderr.write(emsg + "\n")
         state = False
 
