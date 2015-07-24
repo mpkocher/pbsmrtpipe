@@ -168,8 +168,8 @@ def rs_modification_and_motif_analysis_1():
     _add = bs.append
 
     # Find Motifs. AlignmentSet, ReferenceSet
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'kinetic_tools.tasks.motif_maker_find:0'))
-    _add((Constants.ENTRY_DS_REF, 'kinetic_tools.tasks.motif_maker_find:1'))
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0'))
+    _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.find_motifs:1'))
 
     # Make Motifs. This is not working
     # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'kinetic_tools.tasks.motif_maker_reprocess:0'))
