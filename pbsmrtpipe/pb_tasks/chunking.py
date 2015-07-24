@@ -89,7 +89,7 @@ def _gather_fastx(fasta_or_fastq, chunk_id, input_file, output_file):
 
 
 class GatherFastaTask(MetaGatherTaskBase):
-    """Gather Fasta Files"""
+    """Gather Fasta Files using chunk-key=fasta_id"""
     TASK_ID = "pbsmrtpipe.tasks.gather_fasta"
     NAME = "Gather Fasta"
     VERSION = "0.1.0"
@@ -110,7 +110,7 @@ class GatherFastaTask(MetaGatherTaskBase):
 
 
 class GatherFilterFastaTask(MetaGatherTaskBase):
-    """Gather Fasta Files"""
+    """Gather Fasta Files using chunk-key=filtered_fasta_id"""
     TASK_ID = "pbsmrtpipe.tasks.gather_filtered_fasta"
     NAME = "Gather Filtered Fasta"
     VERSION = "0.1.0"
@@ -155,7 +155,7 @@ class GatherFastqTask(MetaGatherTaskBase):
 
 
 class GatherGffTask(MetaGatherTaskBase):
-    """Gather Fastq Files"""
+    """Gather Gff Files using chunk-key=gff_id"""
     TASK_ID = "pbsmrtpipe.tasks.gather_gff"
     NAME = "Gather Gff"
     VERSION = "0.1.0"
