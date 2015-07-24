@@ -8,7 +8,7 @@ from pbcommand.cli import get_default_argparser
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
 from pbcore.io.GffIO import GffReader, GffWriter
-from pbcore.io import SubreadSet, ContigSet
+from pbcore.io import SubreadSet, ContigSet, AlignmentSet
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -187,6 +187,21 @@ def gather_subreadset(input_files, output_file, skip_empty=True):
     return output_file
 
 
+def gather_alignmentset(input_files, output_file, skip_empty=True):
+    """
+    :param input_files: List of file paths
+    :param output_file: File Path
+    :param skip_empty: Ignore empty files (doesn't do much yet)
+
+    :return: Output file
+
+    :rtype: str
+    """
+    tbr = AlignmentSet(*input_files)
+    tbr.write(output_file)
+    return output_file
+
+
 def __add_chunk_key_option(default_chunk_key):
     def _add_chunk_key_option(p):
         p.add_argument('--chunk-key', type=str, default=default_chunk_key,
@@ -200,6 +215,7 @@ add_chunk_key_fastq = __add_chunk_key_option('$chunk.fastq_id')
 add_chunk_key_gff = __add_chunk_key_option('$chunk.gff_id')
 add_chunk_key_fofn = __add_chunk_key_option('$chunk.fofn_id')
 add_chunk_key_subreadset = __add_chunk_key_option('$chunk.subreadset_id')
+add_chunk_key_alignmentset = __add_chunk_key_option('$chunk.alignmentset_id')
 # TODO: change this to contigset_id once quiver emits contigsets
 add_chunk_key_contigset = __add_chunk_key_option('$chunk.fasta_id')
 
@@ -232,6 +248,9 @@ _gather_fofn_options = __add_gather_options("Output Fofn file", "Chunk input JSO
 _gather_subreadset_options = __add_gather_options("Output SubreadSet XML file",
                                                   "Chunk input JSON file",
                                                   add_chunk_key_subreadset)
+_gather_alignmentset_options = __add_gather_options("Output AlignmentSet XML file",
+                                                  "Chunk input JSON file",
+                                                  add_chunk_key_alignmentset)
 _gather_contigset_options = __add_gather_options("Output ContigSet XML file",
                                                   "Chunk input JSON file",
                                                   add_chunk_key_contigset)
@@ -257,6 +276,8 @@ _args_gather_fastq = functools.partial(__args_gather_runner, gather_fastq)
 _args_gather_fofn = functools.partial(__args_gather_runner, gather_fofn)
 _args_gather_subreadset = functools.partial(__args_gather_runner,
                                             gather_subreadset)
+_args_gather_alignmentset = functools.partial(__args_gather_runner,
+                                              gather_alignmentset)
 _args_gather_contigset = functools.partial(__args_gather_runner,
                                             gather_contigset)
 _args_gather_csv = functools.partial(__args_gather_runner, gather_csv)
@@ -290,6 +311,10 @@ def get_parser():
     # SubreadSet
     builder('subreadset', "Merge SubreadSet XMLs into a single file.",
             _gather_subreadset_options, _args_gather_subreadset)
+
+    # AlignmentSet
+    builder('alignmentset', "Merge AlignmentSet XMLs into a single file.",
+            _gather_alignmentset_options, _args_gather_alignmentset)
 
     # ContigSet
     builder('contigset', "Merge ContigSet XMLs into a single file.",

@@ -46,7 +46,9 @@ class Constants(object):
     FOFN_ATTRIBUTE_ID = "fofn_nchunks"
 
     CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
+    CHUNK_KEY_SUBSET = "$chunk.subreadset_id"
     CHUNK_KEY_HDFSET = "$chunk.hdfsubreadset_id"
+    CHUNK_KEY_REFSET = "$chunk.referenceset_id"
     CHUNK_KEY_FOFN = "$chunk.fofn_id"
     CHUNK_KEY_MOVIE_FOFN = "$chunk.movie_id"
     CHUNK_KEY_RGN_FOFN = "$chunk.rgn_id"
@@ -124,6 +126,8 @@ add_input_alignmentset_option = _add_input_file_option(
     'alignmentset', validate_file, "Path to AlignmentSet XML file")
 add_input_hdfsubreadset_option = _add_input_file_option(
     'hdfsubreadset', validate_file, "Path to HdfSubreadSet XML file")
+add_input_subreadset_option = _add_input_file_option(
+    'subreadset', validate_file, "Path to SubreadSet XML file")
 add_input_csv_option = _add_input_file_option('csv', validate_file, help="Path to CSV")
 add_output_chunk_json_report_option = _add_input_file_option('chunk_report_json', str, help="Path to chunked JSON output")
 
@@ -339,9 +343,23 @@ def _add_chunk_hdfsubreadset_options(p):
     return p
 
 
+def _add_chunk_subreadset_options(p):
+    add_input_subreadset_option(p)
+    _add_common_chunk_options(p)
+    return p
+
+
 def _args_run_chunk_hdfsubreadset(args):
     return CU.write_hdfsubreadset_chunks_to_file(args.chunk_report_json,
                                                 args.hdfsubreadset,
+                                                args.max_total_chunks,
+                                                args.output_dir,
+                                                "chunk_hdfsubreadset", 'xml')
+
+
+def _args_run_chunk_subreadset(args):
+    return CU.write_subreadset_chunks_to_file(args.chunk_report_json,
+                                                args.subreadset,
                                                 args.max_total_chunks,
                                                 args.output_dir,
                                                 "chunk_hdfsubreadset", 'xml')
@@ -399,6 +417,10 @@ def get_parser():
     builder("hdfsubreadset",
             "Create a chunk.json from an HdfSubreadSet XML file",
             _add_chunk_hdfsubreadset_options, _args_run_chunk_hdfsubreadset)
+
+    builder("subreadset",
+            "Create a chunk.json from an SubreadSet XML file",
+            _add_chunk_subreadset_options, _args_run_chunk_subreadset)
 
     builder("csv", "Create a chunk.json CSV from a CSV file", _add_chunk_csv_options, _args_run_chunk_csv)
 

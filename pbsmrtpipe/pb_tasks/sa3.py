@@ -158,7 +158,7 @@ class GatherSubreadSetTask(MetaGatherTaskBase):
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     # TODO: change this when quiver outputs xmls
-    OUTPUT_TYPES = [(FileTypes.DS_BAM, "ds_bam", "Gathered AlignmentSets")]
+    OUTPUT_TYPES = [(FileTypes.DS_BAM, "ds_bam", "Gathered SubreadSets")]
     OUTPUT_FILE_NAMES = [("gathered", "xml")]
 
     SCHEMA_OPTIONS = {}
@@ -168,6 +168,26 @@ class GatherSubreadSetTask(MetaGatherTaskBase):
     def to_cmd(input_files, output_files, ropts, nproc, resources):
         # having the chunk key hard coded here is a problem.
         return _gather_dataset('subreadset', 'subreadset_id', input_files[0], output_files[0])
+
+class GatherAlignmentSetTask(MetaGatherTaskBase):
+    """Gather AlignmentSet Files"""
+    TASK_ID = "pbsmrtpipe.tasks.gather_alignmentset"
+    NAME = "Gather AlignmentSet"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
+    OUTPUT_TYPES = [(FileTypes.DS_BAM, "ds_bam", "Gathered AlignmentSets")]
+    OUTPUT_FILE_NAMES = [("gathered", "xml")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # having the chunk key hard coded here is a problem.
+        return _gather_dataset('alignmentset', 'alignmentset_id', input_files[0], output_files[0])
 
 
 class AlignDataSetTask(MetaTaskBase):
@@ -180,7 +200,7 @@ class AlignDataSetTask(MetaTaskBase):
 
     TASK_TYPE = TaskTypes.DISTRIBUTED
 
-    INPUT_TYPES = [(FileTypes.DS_SUBREADS, "rs_movie_metadata", "A RS Movie metadata.xml"),
+    INPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds_subreads", "Subread DataSet"),
                    (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]
     OUTPUT_TYPES = [(FileTypes.DS_BAM, "align_ds", "Alignment DataSet")]
     OUTPUT_FILE_NAMES = [("file", "alignment_set.xml")]
@@ -395,7 +415,7 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
 
     TASK_TYPE = TaskTypes.LOCAL
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
-                   (FileTypes.DS_BAM, "subread_ds", "Pacbio DataSet SubreadSet")]
+                   (FileTypes.DS_BAM, "alignment_ds", "Pacbio DataSet AlignmentSet")]
 
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
                      'Generic Chunked JSON AlignmentSet')]
@@ -412,7 +432,7 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
         exe = "pbtools-chunker alignmentset"
-        chunk_key = "alignmentset"
+        chunk_key = "alignmentset_id"
         mode = "alignmentset"
         _d = dict(e=exe,
                   i=input_files[1],
@@ -420,6 +440,41 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
                   o=output_files[0],
                   n=nchunks)
         return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
+
+class SubreadSetScatter(MetaScatterTaskBase):
+    """
+    Scatter a subreadset to create an Aligned DataSet by calling pbalign/blasr
+    """
+    TASK_ID = "pbsmrtpipe.tasks.subreadset_align_scatter"
+    NAME = "Scatter Subreadset DataSet"
+    VERSION = "0.1.0"
+
+    TASK_TYPE = TaskTypes.LOCAL
+
+    INPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds_subreads", "Subread DataSet"),
+                   (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]
+    OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
+                     'Generic Chunked JSON SubreadSet')]
+    OUTPUT_FILE_NAMES = [('subreadset_chunked', 'json'),]
+
+    NPROC = 1
+    SCHEMA_OPTIONS = {}
+    RESOURCE_TYPES = None
+    NCHUNKS = SymbolTypes.MAX_NCHUNKS
+    CHUNK_KEYS = ('$chunk.subreadset_id', )
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
+        exe = "pbtools-chunker"
+        chunk_key = "subreadset_id"
+        mode = "subreadset"
+        _d = dict(e=exe,
+                  m=mode,
+                  i=input_files[1],
+                  r=input_files[0],
+                  o=output_files[0],
+                  n=nchunks)
+        return "{e} {m} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
 
 
 class TopVariantsReport(MetaTaskBase):
