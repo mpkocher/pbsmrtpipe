@@ -755,6 +755,12 @@ class MetaStaticTask(MetaTask):
         self.driver = driver
 
     def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types):
-        """ Write the driver.exe driver-manifest.json"""
-        # FIXME. This is hard-coding the path to the resolved-tool-contract.json file
-        return "{d} {m}".format(d=self.driver.driver_exe, m=RESOLVED_TOOL_CONTRACT_JSON)
+        """ Write the driver.exe driver-manifest.json
+
+        For TC/RTC era this is an extra layer that should go away.
+        """
+        # get the job dir from the resolved value of the first output file,
+        # this should probably be accessed via ResourceType.JobDir
+        output_dir = os.path.dirname(output_files[0])
+        p = os.path.join(output_dir, RESOLVED_TOOL_CONTRACT_JSON)
+        return "{d} {m}".format(d=self.driver.driver_exe, m=p)
