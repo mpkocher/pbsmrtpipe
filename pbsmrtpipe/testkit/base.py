@@ -150,5 +150,5 @@ def monkey_patch(cls):
     if hasattr(cls, Constants.DATASTORE_FILE_VALIDATORS):
         _bolt_on_datastore_validators(cls, Constants.DATASTORE_FILE_VALIDATORS)
 
-    log.info("Completed monkey_patch on {c}".format(c=cls.__name__))
+    log.debug("Completed monkey_patch on {c}".format(c=cls.__name__))
     return cls
