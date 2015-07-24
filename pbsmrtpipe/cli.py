@@ -413,7 +413,7 @@ def add_show_template_details_parser_options(p):
 def add_task_parser_options(p):
     funcs = [TU.add_debug_option,  _add_task_id_option, _add_entry_point_option, _add_output_dir_option,
              _add_preset_xml_option, _add_rc_preset_xml_option,
-             TU.add_force_distribute_option]
+             _add_webservice_config]
     f = compose(*funcs)
     return f(p)
 
@@ -430,8 +430,10 @@ def _args_task_runner(args):
     # FIXME. This needs to only be over written if it's provided
     force_distribute = None
 
-    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators, ee_pd, args.task_id, args.output_dir,
-                             args.preset_xml, args.preset_rc_xml, args.service_uri, force_distribute=force_distribute)
+    return D.run_single_task(registered_file_types, registered_tasks, chunk_operators,
+                             ee_pd, args.task_id, args.output_dir,
+                             args.preset_xml, args.preset_rc_xml, args.service_uri,
+                             force_distribute=force_distribute)
 
 
 def _args_run_show_workflow_level_options(args):

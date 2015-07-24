@@ -935,7 +935,7 @@ def _task_to_entry_point_ids(meta_task):
     positional inputs of the task.
     """
     def _to_e(i_):
-        return "{e}:e_{i}".format(i=i_, e=GlobalConstants.ENTRY_PREFIX)
+        return "{e}e_{i}".format(i=i_, e=GlobalConstants.ENTRY_PREFIX)
     return [_to_e(i) for i in xrange(len(meta_task.input_types))]
 
 
@@ -987,6 +987,7 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
     :return:
     """
 
+    print entry_points_d
     meta_task = registered_tasks_d.get(task_id, None)
 
     if meta_task is None:
