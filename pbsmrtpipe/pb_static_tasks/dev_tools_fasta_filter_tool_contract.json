@@ -21,18 +21,18 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "pbsmrtpipe.tool_options.dev_fasta.min_length"
+                    "pbsmrtpipe.task_options.dev_fasta_min_length"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "pbsmrtpipe.tool_options.dev_fasta.min_length": {
+                    "pbsmrtpipe.task_options.dev_fasta_min_length": {
                         "default": 50, 
                         "type": "integer", 
                         "description": "Minimum Sequence Length to filter", 
                         "title": "Min Sequence Length"
                     }
                 }, 
-                "title": "JSON Schema for pbsmrtpipe.tool_options.dev_fasta.min_length"
+                "title": "JSON Schema for pbsmrtpipe.task_options.dev_fasta_min_length"
             }
         ], 
         "output_types": [
@@ -44,6 +44,6 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T10:41:56.205115"
+        "_comment": "Created by v0.1.0 at 2015-07-24T10:30:15.073503"
     }
 }

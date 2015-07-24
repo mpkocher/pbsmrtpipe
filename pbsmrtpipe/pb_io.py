@@ -9,6 +9,7 @@ import json
 import warnings
 
 import jsonschema
+from pbcommand.cli.resolver import ToolContractError
 from pbcommand.models import (ToolDriver, ResolvedToolContract,
                               ResolvedToolContractTask)
 
@@ -723,10 +724,11 @@ def tool_contract_to_meta_task(tc):
     def _get_ft(x_):
         return REGISTERED_FILE_TYPES[x_]
 
-    # Completely ignore options for now
-    schema_opts = {}
+    schema_option_d = {opt['required'][0]: opt for opt in tc.task.options}
+    # Completely ignore these for now
     mutable_files = []
     output_file_names = []
+
     driver = ToolDriver(tc.driver.driver_exe)
 
     # resolve strings to FileType instances
@@ -740,7 +742,7 @@ def tool_contract_to_meta_task(tc):
                                task_type,
                                input_types,
                                output_types,
-                               schema_opts,
+                               schema_option_d,
                                tc.task.nproc,
                                tc.task.resources,
                                output_file_names,
@@ -785,7 +787,34 @@ def to_driver_manifest_d(static_meta_task, task):
     return m
 
 
-def static_meta_task_to_resolved_tool_contract(static_meta_task, task):
+def _resolve_options(tool_contract, tool_options):
+    resolved_options = {}
+
+    # These probably exist somewhere else, feel free to replace:
+    type_map = {'integer': int,
+                'object': object,
+                'boolean': bool,
+                'number': (int, float),
+                'string': basestring}
+
+    # Get and Validate resolved value.
+    # TODO. None support should be removed.
+    for option in tool_contract:
+        for optid in option['required']:
+            exp_type = option['properties'][optid]['type']
+            value = tool_options.get(optid, option['properties'][optid]['default'])
+
+            if (not isinstance(value, type_map[exp_type]) and value is not None):
+                raise ToolContractError("Incompatible option types. Supplied "
+                                        "{i}. Expected {t}".format(
+                                            i=type(value),
+                                            t=exp_type))
+            resolved_options[optid] = value
+
+    return resolved_options
+
+
+def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options):
     """
 
     Shim layer to converts a static metatask to ResolvedToolContract
@@ -799,17 +828,22 @@ def static_meta_task_to_resolved_tool_contract(static_meta_task, task):
 
     smt = static_meta_task
 
+    # stored as {opt-id:schema}
+    schema_opts = static_meta_task.option_schemas.values()
+
+    resolved_opts = _resolve_options(schema_opts, task_options)
+
     rtask = ResolvedToolContractTask(smt.task_id, smt.task_type,
                                      task.input_files,
                                      task.output_files,
-                                     task.resolved_options,
+                                     resolved_opts,
                                      task.nproc, task.resources)
 
     rtc = ResolvedToolContract(rtask, driver)
     return rtc
 
 
-def write_driver_manifest(static_meta_task, task, driver_manifest_path):
+def write_driver_manifest(static_meta_task, task, task_options, driver_manifest_path):
     # this will write both the "driver" and the resolved-tool-contract for the
     # resolved-tool-contract task
 
@@ -818,6 +852,6 @@ def write_driver_manifest(static_meta_task, task, driver_manifest_path):
     with open(driver_manifest_path, 'w') as f:
         f.write(json.dumps(_d, indent=4, sort_keys=True))
 
-    rtc = static_meta_task_to_resolved_tool_contract(static_meta_task, task)
+    rtc = static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options)
     rtc_json_path = os.path.join(task.output_dir, RESOLVED_TOOL_CONTRACT_JSON)
     write_resolved_tool_contract(rtc, rtc_json_path)

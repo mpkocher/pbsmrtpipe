@@ -37,8 +37,8 @@
 
     <!-- Default Task specific Options -->
     <task-options>
-        <option id="pbsmrtpipe.task_options.dev.hello_message">
-            <value>My Custom Preset Message</value>
+        <option id="pbsmrtpipe.task_options.dev_fasta_min_length">
+            <value>77</value>
         </option>
     </task-options>
 

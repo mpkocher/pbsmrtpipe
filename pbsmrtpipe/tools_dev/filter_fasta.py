@@ -25,7 +25,7 @@ def get_contract_parser():
 
     p.add_input_file_type(FileTypes.FASTA, "fasta_in", "Fasta In", "Pac Bio Fasta format")
     p.add_output_file_type(FileTypes.FASTA, "fasta_out", "Filtered Fasta", "Filtered Fasta by sequence length Fasta", "filtered.fasta")
-    p.add_int("pbsmrtpipe.tool_options.dev_fasta.min_length", "min_length", 50, "Min Sequence Length", "Minimum Sequence Length to filter")
+    p.add_int("pbsmrtpipe.task_options.dev_fasta_min_length", "min_length", 50, "Min Sequence Length", "Minimum Sequence Length to filter")
     return p
 
 
