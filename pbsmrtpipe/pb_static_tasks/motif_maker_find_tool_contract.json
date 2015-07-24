@@ -4,7 +4,7 @@
         "exe": "motifMaker_find.py --resolved-tool-contract ", 
         "env": {}
     }, 
-    "tool_contract_id": "motif_maker_find", 
+    "tool_contract_id": "kinetic_tools.tasks.motif_maker_find",
     "tool_contract": {
         "input_types": [
             {
@@ -17,7 +17,7 @@
                 "description": "Fasta reference sequence", 
                 "title": "Fasta file", 
                 "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.Fasta"
+                "file_type_id": "PacBio.FileTypes.ReferenceSet"
             }
         ], 
         "task_type": "pbsmrtpipe.constants.distributed_task", 

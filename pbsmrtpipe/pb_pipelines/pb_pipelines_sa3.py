@@ -25,7 +25,6 @@ class Constants(object):
     ENTRY_DS_SUBREAD = to_entry("eid_subread")
 
 
-
 @register_pipeline(to_pipeline_ns("sa3_fetch"), "RS Movie to Subread DataSet")
 def sa3_fetch():
     """
@@ -91,7 +90,7 @@ def ds_align():
     b3 = [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.align_ds:0"),
           (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.align_ds:1")]
 
-    b4 = [("pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.mapping_ds_report:0")]
+    b4 = [("pbsmrtpipe.tasks.align_ds:0", "pbreports.tasks.mapping_stats:0")]
 
     return b3 + b4
 
@@ -115,3 +114,84 @@ def ds_resequencing():
     #       ("pbsmrtpipe.tasks.call_variants_with_fastx:0", "pbsmrtpipe.tasks.variants_report:2")]
 
     return b1
+
+
+@register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SA3 SubreadSet Resequencing With GC Extras and Reports")
+def ds_fat_resequencing():
+    """DS RS + GC extras and Reports"""
+
+    # Summarize Coverage
+    b2 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "pbreports.tasks.summarize_coverage:0"),
+          (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage:1")]
+
+    # Consensus Reports - variants
+    b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
+          ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.variants_report:1"),
+          ("pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.variants_report:2")]
+
+    # Consensus Reports - top variants
+    b4 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.top_variants:0"),
+          (Constants.ENTRY_DS_REF, "pbreports.tasks.top_variants:1")]
+
+    # Consensus Reports - minor top variants
+    # b5 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
+    #      ("pbsmrtpipe.tasks.call_variants_with_fastx:0", "pbsmrtpipe.tasks.variants_report:2")]
+
+    return b2 + b3 + b4
+
+
+@register_pipeline(to_pipeline_ns("ds_modification_detection"), 'SA3 Modification Detection')
+def rs_modification_detection_1():
+    """RS Modification Detection"""
+
+    bs = []
+    _add = bs.append
+
+    # AlignmentSet, ReferenceSet
+    _add(("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "kinetics_tools.tasks.ipd_summary:0"))
+    _add((Constants.ENTRY_DS_REF, 'kinetics_tools.tasks.ipd_summary:1'))
+
+    # The Report isn't Ported to TCI yet?
+    # _add(('kinetics_tools.tasks.ipd_summary:1', 'pbsmrtpipe.tasks.modification_report:0'))
+
+    return bs
+
+
+@register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis')
+def rs_modification_and_motif_analysis_1():
+    """Pacbio Official Modification and Motif Analysis Pipeline
+
+
+    The motif finder contract id needs to have the correct form.
+    """
+    bs = []
+    _add = bs.append
+
+    # Find Motifs. AlignmentSet, ReferenceSet
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'kinetic_tools.tasks.motif_maker_find:0'))
+    _add((Constants.ENTRY_DS_REF, 'kinetic_tools.tasks.motif_maker_find:1'))
+
+    # Make Motifs. This is not working
+    # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'kinetic_tools.tasks.motif_maker_reprocess:0'))
+    # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'kinetic_tools.tasks.motif_maker_reprocess:1'))
+    # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetic_tools.tasks.motif_maker_find:0', 'kinetic_tools.tasks.motif_maker_reprocess:2'))
+    # _add((Constants.ENTRY_DS_REF, 'kinetic_tools.tasks.motif_maker_reprocess:3'))
+
+    # MK Note. Pat did something odd here that I can't remember the specifics
+    # Are the Reports using TCI yet?
+    # _add(('pbsmrtpipe.tasks.make_motif_gff:0', 'pbsmrtpipe.tasks.motif_report:0'))
+    # _add(('kinetic_tools.tasks.motif_maker_find:0', 'pbsmrtpipe.tasks.motif_report:1'))
+
+    return bs
+
+
+@register_pipeline(to_pipeline_ns("sa3_sat"), 'SA3 Site Acceptance Test')
+def rs_site_acceptance_test_1():
+    """Site Acceptance Test"""
+
+    # AlignmentSet, GFF, mapping Report
+    x = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "pbreports.tasks.sat_report:0"),
+         ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.mapping_stats:0", "pbreports.tasks.sat_report:1"),
+         ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.variants_report:0", "pbreports.tasks.sat_report:2")]
+
+    return x
