@@ -395,12 +395,12 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
 
     TASK_TYPE = TaskTypes.LOCAL
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
-                   (FileTypes.DS_BAM, "bam", "DataSet BAM Alignment")]
+                   (FileTypes.DS_BAM, "subread_ds", "Pacbio DataSet SubreadSet")]
 
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
                      'Generic Chunked JSON AlignmentSet')]
 
-    OUTPUT_FILE_NAMES = [('alignmentset_chunked', 'json'),]
+    OUTPUT_FILE_NAMES = [('alignmentset_chunked', 'json'), ]
 
     NPROC = 1
     SCHEMA_OPTIONS = {}
