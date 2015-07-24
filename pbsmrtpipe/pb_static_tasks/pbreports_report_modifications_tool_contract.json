@@ -1,0 +1,65 @@
+{
+    "version": "2.1", 
+    "driver": {
+        "exe": "python -m pbreports.report.modifications --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.modifications_report", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "CSV file of base modifications", 
+                "title": "CSV file", 
+                "id": "csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbreports.task_options.dpi"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbreports.task_options.dpi": {
+                        "default": 60, 
+                        "type": "integer", 
+                        "description": "Dots per inch for plot files", 
+                        "title": "DPI"
+                    }
+                }, 
+                "title": "JSON Schema for pbreports.task_options.dpi"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbreports.task_options.dumpdata"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbreports.task_options.dumpdata": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Dump CSV file of plot data", 
+                        "title": "Dump .csv"
+                    }
+                }, 
+                "title": "JSON Schema for pbreports.task_options.dumpdata"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "JSON report", 
+                "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
+                "default_name": "report.json", 
+                "id": "report", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:02.163919"
+    }
+}

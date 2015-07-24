@@ -1,7 +1,7 @@
 {
     "version": "2.2", 
     "driver": {
-        "exe": "ipdSummary.py --resolved-tool-contract ", 
+        "exe": "python -m kineticsTools.ipdSummary --resolved-tool-contract", 
         "env": {}
     }, 
     "tool_contract_id": "kinetics_tools.tasks.ipd_summary", 
@@ -22,7 +22,7 @@
         ], 
         "task_type": "pbsmrtpipe.constants.distributed_task", 
         "resource_types": [], 
-        "nproc": 1, 
+        "nproc": "$max_nproc", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -89,6 +89,6 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T10:41:59.876468"
+        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:03.749601"
     }
 }

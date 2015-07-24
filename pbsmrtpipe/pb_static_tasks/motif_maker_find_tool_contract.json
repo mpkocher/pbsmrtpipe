@@ -1,10 +1,10 @@
 {
     "version": "0.1", 
     "driver": {
-        "exe": "motifMaker_find.py --resolved-tool-contract ", 
+        "exe": "motifMaker_find --resolved-tool-contract ", 
         "env": {}
     }, 
-    "tool_contract_id": "kinetic_tools.tasks.motif_maker_find",
+    "tool_contract_id": "motif_maker.tasks.find_motifs", 
     "tool_contract": {
         "input_types": [
             {
@@ -17,7 +17,7 @@
                 "description": "Fasta reference sequence", 
                 "title": "Fasta file", 
                 "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
+                "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
         "task_type": "pbsmrtpipe.constants.distributed_task", 
@@ -27,18 +27,18 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "motif_maker_find.task_options.min_score"
+                    "motif_maker.tasks.find_motifs.task_options.min_score"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "motif_maker_find.task_options.min_score": {
+                    "motif_maker.tasks.find_motifs.task_options.min_score": {
                         "default": 30.0, 
                         "type": "number", 
                         "description": "Minimum Qmod score to use in motif finding", 
                         "title": "Minimum Qmod score"
                     }
                 }, 
-                "title": "JSON Schema for motif_maker_find.task_options.min_score"
+                "title": "JSON Schema for motif_maker.tasks.find_motifs.task_options.min_score"
             }
         ], 
         "output_types": [
@@ -50,6 +50,6 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T10:42:00.754809"
+        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:04.211682"
     }
 }

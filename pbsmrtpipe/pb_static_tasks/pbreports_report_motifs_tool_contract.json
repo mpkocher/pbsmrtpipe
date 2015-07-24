@@ -1,0 +1,38 @@
+{
+    "version": "2.0", 
+    "driver": {
+        "exe": "python -m pbreports.report.motifs --resolve-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.motifs_report", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "Path to motifs.gff.gz", 
+                "title": "GFF file", 
+                "id": "gff_file", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "Path to Motif summary CSV", 
+                "title": "CSV file", 
+                "id": "motif_summary_csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "JSON report", 
+                "description": "Path of output JSON report", 
+                "default_name": "motifs_report.json", 
+                "id": "report_json", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:02.836525"
+    }
+}

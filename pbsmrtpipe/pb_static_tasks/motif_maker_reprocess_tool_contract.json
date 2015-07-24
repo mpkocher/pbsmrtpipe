@@ -1,10 +1,10 @@
 {
     "version": "0.1", 
     "driver": {
-        "exe": "motifMaker_reprocess.py --resolved-tool-contract ", 
+        "exe": "motifMaker_reprocess --resolved-tool-contract ", 
         "env": {}
     }, 
-    "tool_contract_id": "kinetic_tools.tasks.motif_maker_reprocess",
+    "tool_contract_id": "motif_maker.tasks.reprocess", 
     "tool_contract": {
         "input_types": [
             {
@@ -23,7 +23,7 @@
                 "description": "Fasta reference sequence", 
                 "title": "Fasta file", 
                 "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
+                "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
         "task_type": "pbsmrtpipe.constants.distributed_task", 
@@ -33,18 +33,18 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "motif_maker_reprocess.task_options.min_fraction"
+                    "motif_maker.tasks.reprocess.task_options.min_fraction"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "motif_maker_reprocess.task_options.min_fraction": {
+                    "motif_maker.tasks.reprocess.task_options.min_fraction": {
                         "default": 30.0, 
                         "type": "number", 
                         "description": "Minimum methylated fraction", 
                         "title": "Minimum methylated fraction"
                     }
                 }, 
-                "title": "JSON Schema for motif_maker_reprocess.task_options.min_fraction"
+                "title": "JSON Schema for motif_maker.tasks.reprocess.task_options.min_fraction"
             }
         ], 
         "output_types": [
@@ -56,6 +56,6 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T10:42:00.970125"
+        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:04.608097"
     }
 }
