@@ -470,8 +470,8 @@ class SubreadSetScatter(MetaScatterTaskBase):
         mode = "subreadset"
         _d = dict(e=exe,
                   m=mode,
-                  i=input_files[1],
-                  r=input_files[0],
+                  i=input_files[0],
+                  r=input_files[1],
                   o=output_files[0],
                   n=nchunks)
         return "{e} {m} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)

@@ -7,7 +7,7 @@
         <scatter-task-id>pbsmrtpipe.tasks.subreadset_align_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.subreadset_id" in="pbsmrtpipe.tasks.align_ds:0"/>
-            <chunk out="$chunk.referenceset_id" in="pbsmrtpipe.tasks.align_ds:1"/>
+            <chunk out="$chunk.reference_id" in="pbsmrtpipe.tasks.align_ds:1"/>
         </chunks>
     </scatter>
     <!-- Define the Gather Mechanism -->

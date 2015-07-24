@@ -48,7 +48,7 @@ class Constants(object):
     CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
     CHUNK_KEY_SUBSET = "$chunk.subreadset_id"
     CHUNK_KEY_HDFSET = "$chunk.hdfsubreadset_id"
-    CHUNK_KEY_REFSET = "$chunk.referenceset_id"
+    CHUNK_KEY_REFSET = "$chunk.reference_id"
     CHUNK_KEY_FOFN = "$chunk.fofn_id"
     CHUNK_KEY_MOVIE_FOFN = "$chunk.movie_id"
     CHUNK_KEY_RGN_FOFN = "$chunk.rgn_id"
@@ -337,6 +337,15 @@ def _args_run_chunk_alignmentset(args):
                                                 "chunk_alignmentset", 'xml')
 
 
+def _args_run_chunk_subreadset(args):
+    return CU.write_subreadset_chunks_to_file(args.chunk_report_json,
+                                                args.subreadset,
+                                                args.fasta,
+                                                args.max_total_chunks,
+                                                args.output_dir,
+                                                "chunk_hdfsubreadset", 'xml')
+
+
 def _add_chunk_hdfsubreadset_options(p):
     add_input_hdfsubreadset_option(p)
     _add_common_chunk_options(p)
@@ -345,6 +354,7 @@ def _add_chunk_hdfsubreadset_options(p):
 
 def _add_chunk_subreadset_options(p):
     add_input_subreadset_option(p)
+    add_input_fasta_reference_option(p)
     _add_common_chunk_options(p)
     return p
 
@@ -352,14 +362,6 @@ def _add_chunk_subreadset_options(p):
 def _args_run_chunk_hdfsubreadset(args):
     return CU.write_hdfsubreadset_chunks_to_file(args.chunk_report_json,
                                                 args.hdfsubreadset,
-                                                args.max_total_chunks,
-                                                args.output_dir,
-                                                "chunk_hdfsubreadset", 'xml')
-
-
-def _args_run_chunk_subreadset(args):
-    return CU.write_subreadset_chunks_to_file(args.chunk_report_json,
-                                                args.subreadset,
                                                 args.max_total_chunks,
                                                 args.output_dir,
                                                 "chunk_hdfsubreadset", 'xml')
