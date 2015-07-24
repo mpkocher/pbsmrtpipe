@@ -343,7 +343,7 @@ def _args_run_chunk_subreadset(args):
                                                 args.fasta,
                                                 args.max_total_chunks,
                                                 args.output_dir,
-                                                "chunk_hdfsubreadset", 'xml')
+                                                "chunk_subreadset", 'xml')
 
 
 def _add_chunk_hdfsubreadset_options(p):
