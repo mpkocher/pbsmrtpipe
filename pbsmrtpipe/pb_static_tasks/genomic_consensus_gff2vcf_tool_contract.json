@@ -17,24 +17,7 @@
         "task_type": "pbsmrtpipe.constants.distributed_task", 
         "resource_types": [], 
         "nproc": 1, 
-        "schema_options": [
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "required": [
-                    "genomic_consensus.task_options.global_reference"
-                ], 
-                "type": "object", 
-                "properties": {
-                    "genomic_consensus.task_options.global_reference": {
-                        "default": null, 
-                        "type": "string", 
-                        "description": "Name of global reference to put in Meta field", 
-                        "title": "Global reference name"
-                    }
-                }, 
-                "title": "JSON Schema for genomic_consensus.task_options.global_reference"
-            }
-        ], 
+        "schema_options": [], 
         "output_types": [
             {
                 "title": "VCF file", 
@@ -44,6 +27,6 @@
                 "file_type_id": "PacBio.FileTypes.vcf"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-23T08:35:03.940590"
+        "_comment": "Created by v0.1.0 at 2015-07-24T17:23:23.124080"
     }
 }

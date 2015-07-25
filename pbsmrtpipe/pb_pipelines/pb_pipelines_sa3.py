@@ -151,8 +151,7 @@ def rs_modification_detection_1():
     _add(("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "kinetics_tools.tasks.ipd_summary:0"))
     _add((Constants.ENTRY_DS_REF, 'kinetics_tools.tasks.ipd_summary:1'))
 
-    # The Report isn't Ported to TCI yet?
-    # _add(('kinetics_tools.tasks.ipd_summary:1', 'pbsmrtpipe.tasks.modification_report:0'))
+    _add(('kinetics_tools.tasks.ipd_summary:1', 'pbreports.tasks.modifications_report:0'))
 
     return bs
 
@@ -168,19 +167,19 @@ def rs_modification_and_motif_analysis_1():
     _add = bs.append
 
     # Find Motifs. AlignmentSet, ReferenceSet
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0'))
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0')) # basemods GFF
     _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.find_motifs:1'))
 
-    # Make Motifs. This is not working
-    # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'kinetic_tools.tasks.motif_maker_reprocess:0'))
-    # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'kinetic_tools.tasks.motif_maker_reprocess:1'))
-    # _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetic_tools.tasks.motif_maker_find:0', 'kinetic_tools.tasks.motif_maker_reprocess:2'))
-    # _add((Constants.ENTRY_DS_REF, 'kinetic_tools.tasks.motif_maker_reprocess:3'))
+    # Make Motifs GFF: ipdSummary GFF, ipdSummary CSV, MotifMaker CSV, REF
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.reprocess:0')) # GFF
+    # XXX this is not currently used
+    #_add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'motif_maker.tasks.reprocess:1')) # CSV
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1')) # motifs CSV
+    _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.reprocess:2'))
 
     # MK Note. Pat did something odd here that I can't remember the specifics
-    # Are the Reports using TCI yet?
-    # _add(('pbsmrtpipe.tasks.make_motif_gff:0', 'pbsmrtpipe.tasks.motif_report:0'))
-    # _add(('kinetic_tools.tasks.motif_maker_find:0', 'pbsmrtpipe.tasks.motif_report:1'))
+    _add(('motif_maker.tasks.reprocess:0', 'pbreports.tasks.motifs_report:0'))
+    _add(('motif_maker.tasks.find_motifs:0', 'pbreports.tasks.motifs_report:1'))
 
     return bs
 

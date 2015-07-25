@@ -27,18 +27,18 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "motif_maker.tasks.find_motifs.task_options.min_score"
+                    "motif_maker.task_options.min_score"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "motif_maker.tasks.find_motifs.task_options.min_score": {
+                    "motif_maker.task_options.min_score": {
                         "default": 30.0, 
                         "type": "number", 
                         "description": "Minimum Qmod score to use in motif finding", 
                         "title": "Minimum Qmod score"
                     }
                 }, 
-                "title": "JSON Schema for motif_maker.tasks.find_motifs.task_options.min_score"
+                "title": "JSON Schema for motif_maker.task_options.min_score"
             }
         ], 
         "output_types": [
@@ -50,6 +50,6 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:04.211682"
+        "_comment": "Created by v0.1.0 at 2015-07-24T17:30:11.445289"
     }
 }

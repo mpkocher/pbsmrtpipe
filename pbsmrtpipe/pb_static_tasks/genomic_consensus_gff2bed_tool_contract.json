@@ -26,7 +26,7 @@
                 "type": "object", 
                 "properties": {
                     "genomic_consensus.task_options.gff2bed_purpose": {
-                        "default": null, 
+                        "default": "", 
                         "type": "string", 
                         "description": "Run mode ('variants' or 'coverage')", 
                         "title": "Purpose"
@@ -42,7 +42,7 @@
                 "type": "object", 
                 "properties": {
                     "genomic_consensus.task_options.track_name": {
-                        "default": null, 
+                        "default": "variants", 
                         "type": "string", 
                         "description": "track name to display in header", 
                         "title": "Track name"
@@ -58,7 +58,7 @@
                 "type": "object", 
                 "properties": {
                     "genomic_consensus.task_options.track_description": {
-                        "default": null, 
+                        "default": "PacBio: snps, insertions, and deletions derived from consensus calls against reference", 
                         "type": "string", 
                         "description": "track description to display in header", 
                         "title": "Track description"
@@ -92,6 +92,6 @@
                 "file_type_id": "PacBio.FileTypes.bed"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-23T08:35:01.089767"
+        "_comment": "Created by v0.1.0 at 2015-07-24T17:23:20.392537"
     }
 }

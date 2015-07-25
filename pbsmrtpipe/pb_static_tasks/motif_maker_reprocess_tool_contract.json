@@ -33,18 +33,18 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "motif_maker.tasks.reprocess.task_options.min_fraction"
+                    "motif_maker.task_options.min_fraction"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "motif_maker.tasks.reprocess.task_options.min_fraction": {
+                    "motif_maker.task_options.min_fraction": {
                         "default": 30.0, 
                         "type": "number", 
                         "description": "Minimum methylated fraction", 
                         "title": "Minimum methylated fraction"
                     }
                 }, 
-                "title": "JSON Schema for motif_maker.tasks.reprocess.task_options.min_fraction"
+                "title": "JSON Schema for motif_maker.task_options.min_fraction"
             }
         ], 
         "output_types": [
@@ -56,6 +56,6 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:04.608097"
+        "_comment": "Created by v0.1.0 at 2015-07-24T17:30:15.823322"
     }
 }

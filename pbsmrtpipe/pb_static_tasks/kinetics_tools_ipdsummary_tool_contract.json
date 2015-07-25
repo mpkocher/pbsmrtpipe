@@ -64,13 +64,29 @@
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.identify": {
-                        "default": null, 
+                        "default": "", 
                         "type": "string", 
                         "description": "Specific modifications to identify (comma-separated list", 
                         "title": "Identify basemods"
                     }
                 }, 
                 "title": "JSON Schema for kinetics_tools.task_options.identify"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "kinetics_tools.task_options.compute_methyl_fraction"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "kinetics_tools.task_options.compute_methyl_fraction": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Compute methyl fraction", 
+                        "title": "Compute methyl fraction"
+                    }
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.compute_methyl_fraction"
             }
         ], 
         "output_types": [
@@ -89,6 +105,6 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:03.749601"
+        "_comment": "Created by v0.1.0 at 2015-07-24T17:12:32.179982"
     }
 }
