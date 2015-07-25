@@ -170,7 +170,7 @@ class XunitTestCase(object):
 
     def to_dict(self):
         was_successful = self.result == 'success'
-        d = dict(classname = self.classname, name=self.name,
+        d = dict(classname=self.classname, name=self.name,
                  text=self.text, etype=self.etype,
                  result=self.result,
                  message=self.message, run_time=self.run_time,

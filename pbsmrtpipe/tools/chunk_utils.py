@@ -44,7 +44,7 @@ def _to_grouped_items_by_max_total_chunks(items, max_total_chunks):
         if i != max_total_chunks - 1:
             cs = items[i * n: (i + 1) * n]
         else:
-            cs = items[i * n: ]
+            cs = items[i * n:]
         grouped_items.append(cs)
 
     return grouped_items
@@ -62,7 +62,7 @@ def _to_grouped_items_by_max_size_per_item(items, max_chunks_per_item):
     else:
         n = int(math.ceil(float(nitems) / max_chunks_per_item))
         for i in xrange(n):
-            if i != max_chunks_per_item -1:
+            if i != max_chunks_per_item - 1:
                 cs = items[i * n:n * (i + 1)]
             else:
                 cs = items[i * n:]
@@ -231,6 +231,7 @@ def to_chunked_alignmentset_files(alignmentset_path, reference_path,
         d['$chunk.reference_id'] = reference_path
         c = PipelineChunk(chunk_id, **d)
         yield c
+
 
 def write_subreadset_chunks_to_file(chunk_file, subreadset_path,
                                     reference_path,

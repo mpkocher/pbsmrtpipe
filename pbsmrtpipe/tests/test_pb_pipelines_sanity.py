@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class TestPipelineSanity(unittest.TestCase):
+
     def test_all_sane(self):
         """Test that all pipelines are well defined"""
         errors = []

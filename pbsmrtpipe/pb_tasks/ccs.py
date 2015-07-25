@@ -52,7 +52,7 @@ class ReadsOfInsertTask(MetaTaskBase):
     INPUT_TYPES = [(FileTypes.MOVIE_FOFN, 'movie_fofn', "Movie FOFN")]
     OUTPUT_TYPES = [(FileTypes.FOFN, "ccs_fofn", 'CCS FOFN'),
                     (FileTypes.FASTA, "ccs_fasta", 'CCS Fasta'),
-                     (FileTypes.FASTQ, 'ccs_fastq', 'CCS Fastq')]
+                    (FileTypes.FASTQ, 'ccs_fastq', 'CCS Fastq')]
     OUTPUT_FILE_NAMES = [("ccs", "fofn"), ('ccs', 'fasta'), ('css', 'fastq')]
 
     SCHEMA_OPTIONS = _to_roi_options()
@@ -138,6 +138,7 @@ def _to_minor_variants_opts():
 
 
 class CallMinorVariants(MetaTaskBase):
+
     """
     Performs minor variant calling from a cmp.h5 generated from a user-
     provided reference.

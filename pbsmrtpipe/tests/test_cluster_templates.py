@@ -9,6 +9,7 @@ import pbsmrtpipe.cluster as C
 
 
 class TestInstalledClusterTemplates(unittest.TestCase):
+
     def test_sanity(self):
         cluster_renders = C.load_installed_cluster_templates()
         log.debug(pprint.pformat(cluster_renders))

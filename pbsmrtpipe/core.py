@@ -631,6 +631,7 @@ def _metaklass_to_metatask(klass, cls, name, parents, dct, validate_input_types_
 
 
 class _MetaKlassTask(type):
+
     def __new__(cls, name, parents, dct):
 
         if name is not 'MetaTaskBase':
@@ -672,6 +673,7 @@ class MetaTaskBase(object):
 
 
 class _MetaScatterKlassTask(type):
+
     def __new__(cls, name, parents, dct):
 
         def _to_v(attr_name):
@@ -703,10 +705,11 @@ class _MetaScatterKlassTask(type):
 
 
 class MetaScatterTaskBase(object):
+
     """This is the new model that all python defined tasks should use"""
     __metaclass__ = _MetaScatterKlassTask
 
-     # this is really just for autocomplete to work
+    # this is really just for autocomplete to work
     TASK_ID = None
     NAME = None
     VERSION = None
@@ -727,6 +730,7 @@ class MetaScatterTaskBase(object):
 
 
 class _MetaGatherKlassTask(type):
+
     def __new__(cls, name, parents, dct):
 
         def _to_v(attr_name):
@@ -756,6 +760,7 @@ class _MetaGatherKlassTask(type):
 
 
 class MetaGatherTaskBase(object):
+
     """This is the new model that all python defined tasks should use"""
     __metaclass__ = _MetaGatherKlassTask
 

@@ -14,6 +14,7 @@ def _get_opts():
 
 
 class DevSimpleHelloWorldTask(MetaTaskBase):
+
     """My long Task Description goes here
 
     This task cats the output of input file into the output file.

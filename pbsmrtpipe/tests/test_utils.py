@@ -10,6 +10,7 @@ from base import TEST_DATA_DIR, SIV_TEST_DATA_DIR
 
 log = logging.getLogger(__name__)
 
+
 @unittest.skipIf(not os.path.exists(SIV_TEST_DATA_DIR), "Unable to find test {s}".format(s=SIV_TEST_DATA_DIR))
 class TestUtils(unittest.TestCase):
 

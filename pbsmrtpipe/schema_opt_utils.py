@@ -69,7 +69,7 @@ def to_option_schema(option_id, dtype_or_dtypes, display_name, description, defa
          'properties': {option_id: {'description': description,
                                     'title': display_name,
                                     'type': dtype_or_dtypes}}
-    }
+         }
 
     d['required'] = [option_id]
     d['properties'][option_id]['default'] = default_value

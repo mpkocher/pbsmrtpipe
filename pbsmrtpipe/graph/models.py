@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 
 class DotShapeConstants(object):
+
     """Commonly used shapes so I don't have to keep looking this up"""
     ELLIPSE = "ellipse"
     RECTANGLE = "rectangle"
@@ -28,6 +29,7 @@ class DotShapeConstants(object):
 
 
 class DotColorConstants(object):
+
     """Colors so I don't have to keep looking this up
 
     http://www.graphviz.org/doc/info/colors.html
@@ -85,6 +87,7 @@ class ConstantsNodes(object):
 
 
 class _NodeLike(object):
+
     """Base Graph Node type"""
     NODE_ATTRS = {}
 
@@ -123,6 +126,7 @@ class _FileLike(_NodeLike):
 
 
 class _TaskLike(_NodeLike):
+
     """Attributes initialized at the graph level
 
 
@@ -137,8 +141,8 @@ class _TaskLike(_NodeLike):
                   ConstantsNodes.TASK_ATTR_NPROC: 1,
                   ConstantsNodes.TASK_ATTR_CMDS: [],
                   ConstantsNodes.TASK_ATTR_RUN_TIME: None,
-                  ConstantsNodes.TASK_ATTR_CREATED_AT: lambda : datetime.datetime.now(),
-                  ConstantsNodes.TASK_ATTR_UPDATED_AT: lambda : datetime.datetime.now(),
+                  ConstantsNodes.TASK_ATTR_CREATED_AT: lambda: datetime.datetime.now(),
+                  ConstantsNodes.TASK_ATTR_UPDATED_AT: lambda: datetime.datetime.now(),
                   ConstantsNodes.TASK_ATTR_EMESSAGE: None,
                   ConstantsNodes.TASK_ATTR_IS_CHUNKABLE: False,
                   ConstantsNodes.TASK_ATTR_WAS_CHUNKED: False,
@@ -184,6 +188,7 @@ class EntryPointNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
 
 
 class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
+
     """ Standard base Task Node """
     DOT_COLOR = DotColorConstants.AQUA
     DOT_SHAPE = DotShapeConstants.OCTAGON
@@ -216,6 +221,7 @@ class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
 
 
 class TaskChunkedBindingNode(TaskBindingNode):
+
     """Chunked "instances" of a Task node, must have chunk_id"""
 
     DOT_SHAPE = DotShapeConstants.TRIPLE_OCTAGON
@@ -234,6 +240,7 @@ class TaskChunkedBindingNode(TaskBindingNode):
 
 
 class TaskScatterBindingNode(TaskBindingNode):
+
     """Scattered Task that produces a chunk.json output file type
 
     This will have a 'companion' task that shares the same input file type signature
@@ -251,6 +258,7 @@ class TaskScatterBindingNode(TaskBindingNode):
 
 
 class TaskGatherBindingNode(TaskBindingNode):
+
     """Gathered Task node. Consumes a gathered chunk.json and emits a single
     file type
     """
@@ -325,10 +333,12 @@ class BindingInFileNode(_BindingFileNode):
 
 
 class BindingChunkInFileNode(BindingInFileNode):
+
     """Chunked file type that belongs to a Chunked Group
 
     This should always be generated from a Chunk.json
     """
+
     def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id, chunk_group_id):
         super(BindingChunkInFileNode, self).__init__(meta_task, instance_id, index, file_type_instance)
         self.chunk_id = chunk_id
@@ -343,6 +353,7 @@ class BindingOutFileNode(_BindingFileNode):
 
 
 class BindingChunkOutFileNode(BindingOutFileNode):
+
     def __init__(self, meta_task, instance_id, index, file_type_instance, chunk_id, chunk_group_id):
         super(BindingChunkOutFileNode, self).__init__(meta_task, instance_id, index, file_type_instance)
         self.chunk_id = chunk_id

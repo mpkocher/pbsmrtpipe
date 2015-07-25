@@ -213,7 +213,7 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
     run_time = run_time
     returncode = process.returncode
     log.info("returncode is {r} in {s:.2f} sec.".format(r=process.returncode,
-                                                         s=run_time))
+                                                        s=run_time))
 
     stdout, stderr = "", ""
     return returncode, stdout, stderr, run_time
@@ -234,6 +234,7 @@ def get_results_from_queue(queue):
 
 class EngineTask(object):
     # container object
+
     def __init__(self, task_id, script_path, stdout, stderr, nproc, sleep_time=1):
         self.task_id = task_id
         self.script_path = script_path
@@ -251,7 +252,7 @@ class EngineWorker(multiprocessing.Process):
 
     def __init__(self, out_q, shutdown_event, task_job_id, script_path, stdout, stderr, nproc, sleep_time=1):
         self.task_job_id = task_job_id
-        #manifest path
+        # manifest path
         self.script_path = script_path
         # queue stdout/stderr abspath
         self.stderr = stderr
@@ -473,6 +474,7 @@ class ProcessPoolManager(multiprocessing.Process):
 
 
 class TaskManifestWorker(multiprocessing.Process):
+
     """This fundamental unit that runs a "Manifest" or Tool Contract (ToDo)"""
 
     def __init__(self, q_out, event, sleep_time, run_manifest_func, task_id, manifest_path, group=None, name=None, target=None):

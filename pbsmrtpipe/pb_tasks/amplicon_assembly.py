@@ -95,7 +95,6 @@ def _to_cmd(input_files, output_files, ropts, nproc, resources):
     no_phasing = _get_opt_true_opt(ropts, 'amplicon_assembly.no_phasing', '--noPhasing')
     force_parallel = _get_opt_true_opt(ropts, 'amplicon_assembly.force_parallelization', '--useTheForce')
 
-
     exe = "ConsensusTools AmpliconAnalysis"
     _d = dict(e=exe, i=ignore_ends, r=max_reads,
               l=min_length, s=min_readscore,
@@ -119,11 +118,11 @@ class AmpliconAssemblyTask(MetaTaskBase):
     TASK_TYPE = TaskTypes.DISTRIBUTED
     INPUT_TYPES = [(FileTypes.MOVIE_FOFN, 'movie_fofn', 'Movie Fofn')]
     OUTPUT_TYPES = [(FileTypes.FASTA, 'fasta', 'Assembly Fasta'),
-                     (FileTypes.FASTQ, 'fastq', 'Assembly Fastq'),
-                     (FileTypes.CSV, 'csv', 'Assembly CSV'),
-                     (FileTypes.CSV, 'summary_csv', 'Assembly summary CSV'),
-                     (FileTypes.CSV, 'zmw_summary_csv', 'ZMW Assembly Summary CSV')]
-     # Note AA is hardcoded to write these file names
+                    (FileTypes.FASTQ, 'fastq', 'Assembly Fastq'),
+                    (FileTypes.CSV, 'csv', 'Assembly CSV'),
+                    (FileTypes.CSV, 'summary_csv', 'Assembly summary CSV'),
+                    (FileTypes.CSV, 'zmw_summary_csv', 'ZMW Assembly Summary CSV')]
+    # Note AA is hardcoded to write these file names
     OUTPUT_FILE_NAMES = [('amplicon_analysis', 'fasta'),
                          ('amplicon_analysis', 'fastq'),
                          ('amplicon_analysis', 'csv'),
@@ -152,10 +151,10 @@ class AmpliconAssemblyBarcode(MetaTaskBase):
     INPUT_TYPES = [(FileTypes.MOVIE_FOFN, 'movie_fofn', 'Movie FOFN'),
                    (FileTypes.FOFN, 'fofn', 'PacBio FOFN Barcode')]
     OUTPUT_TYPES = [(FileTypes.FASTA, 'fasta', 'Assembly Fasta'),
-                     (FileTypes.FASTQ, 'fastq', 'Assembly Fastq'),
-                     (FileTypes.CSV, 'csv', 'Assembly CSV'),
-                     (FileTypes.CSV, 'summary_csv', 'Assembly summary CSV'),
-                     (FileTypes.CSV, 'zmw_summary_csv', 'ZMW Assembly Summary CSV')]
+                    (FileTypes.FASTQ, 'fastq', 'Assembly Fastq'),
+                    (FileTypes.CSV, 'csv', 'Assembly CSV'),
+                    (FileTypes.CSV, 'summary_csv', 'Assembly summary CSV'),
+                    (FileTypes.CSV, 'zmw_summary_csv', 'ZMW Assembly Summary CSV')]
     # Note AA is hardcoded to write these file names
     OUTPUT_FILE_NAMES = [('amplicon_analysis', 'fasta'),
                          ('amplicon_analysis', 'fastq'),

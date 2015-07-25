@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 
 @monkey_patch
 class TestDataStore(TestBase):
+
     """
     Test to see of the core job directory structure and files exist
     """
@@ -29,6 +30,7 @@ class TestDataStore(TestBase):
 
 @monkey_patch
 class TestDataStoreFiles(TestBase):
+
     """
     Load Files by type in datastore and validate them using pbvalidate
     """

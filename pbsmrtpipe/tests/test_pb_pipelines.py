@@ -10,7 +10,7 @@ import pbsmrtpipe.mock as M
 
 import pbsmrtpipe.loader
 
-REGISTERED_TASKS, REGISTERED_FILE_TYPES, REGISTERED_CHUNK_OPERATORS, REGISTERED_PIPELINES =  pbsmrtpipe.loader.load_all()
+REGISTERED_TASKS, REGISTERED_FILE_TYPES, REGISTERED_CHUNK_OPERATORS, REGISTERED_PIPELINES = pbsmrtpipe.loader.load_all()
 
 import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.cluster as C
@@ -100,11 +100,11 @@ class _TestBase(unittest.TestCase):
     def test_mock_runner(self):
         B.resolve_entry_points(self.bgraph, self.EPOINTS_D)
         state = M.mock_workflow_runner(self.bgraph, {},
-                                     self.output_dir,
-                                     self.workflow_options,
-                                     self.TASK_OPTIONS,
-                                     REGISTERED_FILE_TYPES,
-                                     self.cluster_engine, self.envs)
+                                       self.output_dir,
+                                       self.workflow_options,
+                                       self.TASK_OPTIONS,
+                                       REGISTERED_FILE_TYPES,
+                                       self.cluster_engine, self.envs)
 
         _ = B.get_tasks_by_state(self.bgraph, B.TaskStates.SUCCESSFUL)
 

@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class TestVersion(unittest.TestCase):
+
     def test_version(self):
         # this is just for logging purposes.
         log.info("Running pbsmrtpipe version {x}".format(x=pbsmrtpipe.get_version()))

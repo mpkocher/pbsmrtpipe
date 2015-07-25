@@ -125,7 +125,7 @@ class FilterTask(MetaTaskBase):
 
 
 def get_subread_opts():
-     # Add Global/Shared option
+    # Add Global/Shared option
     use_subreads_id = OP.to_opt_id('use_subreads')
     x = GLOBAL_TASK_OPTIONS[use_subreads_id]
     return {use_subreads_id: x}
@@ -159,7 +159,7 @@ class FilterSubreads(MetaTaskBase):
             p_opts.append(" -noSplitSubreads ")
 
         cmds = []
-        _d=dict(e="pls2fasta", i=input_files[0], o=output_files[0], p=" ".join(p_opts))
+        _d = dict(e="pls2fasta", i=input_files[0], o=output_files[0], p=" ".join(p_opts))
 
         # usage: pls2fasta in.bax.h5 out.fasta [options]
         cmd_str = "{e} {i} {o} {p}"
@@ -186,7 +186,6 @@ class FilterSubreadSummary(MetaTaskBase):
     SCHEMA_OPTIONS = {}
     NPROC = 1
     RESOURCE_TYPES = None
-
 
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):

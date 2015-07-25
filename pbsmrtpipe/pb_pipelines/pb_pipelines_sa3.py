@@ -69,8 +69,8 @@ def sa3_resequencing():
 
     # Quiver
     b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx:0"),
-         ("pbsmrtpipe.pipelines.sa3_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:1"),
-         ("pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:2")]
+          ("pbsmrtpipe.pipelines.sa3_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:1"),
+          ("pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:2")]
 
     return b0 + b1
 
@@ -100,7 +100,7 @@ def ds_resequencing():
 
     # Call consensus
     b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0"),
-         ("pbsmrtpipe.pipelines.sa3_ds_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:1")]
+          ("pbsmrtpipe.pipelines.sa3_ds_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:1")]
 
     # Consensus Report
     # b3 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
@@ -167,14 +167,14 @@ def rs_modification_and_motif_analysis_1():
     _add = bs.append
 
     # Find Motifs. AlignmentSet, ReferenceSet
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0')) # basemods GFF
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0'))  # basemods GFF
     _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.find_motifs:1'))
 
     # Make Motifs GFF: ipdSummary GFF, ipdSummary CSV, MotifMaker CSV, REF
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.reprocess:0')) # GFF
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.reprocess:0'))  # GFF
     # XXX this is not currently used
     #_add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'motif_maker.tasks.reprocess:1')) # CSV
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1')) # motifs CSV
+    _add(('pbsmrtpipe.pipelines.ds_modification_detection:motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1'))  # motifs CSV
     _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.reprocess:2'))
 
     # MK Note. Pat did something odd here that I can't remember the specifics

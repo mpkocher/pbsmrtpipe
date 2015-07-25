@@ -29,6 +29,7 @@ def _to_reference_converter_opts():
 
 
 class FastaReferenceInfoConverter(MetaTaskBase):
+
     """Convert a FASTA file to a Pacbio reference. Using the reference.info.xml"""
     TASK_ID = 'pbsmrtpipe.tasks.reference_converter'
     NAME = "Reference Converter"

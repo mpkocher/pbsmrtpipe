@@ -25,6 +25,7 @@ def _add_output_file_option(p):
     p.add_argument('--output-file', required=True, type=str, help="Path of output html")
     return p
 
+
 def _add_ccs_js_extras_option(p):
     _d = "Write styled CSS and JS dirs/files"
     p.add_argument('--with-extras', action='store_true', help=_d)
@@ -59,4 +60,3 @@ def main(argv=None):
     argv_ = sys.argv if argv is None else argv
     parser = get_parser()
     return pacbio_args_runner(argv_[1:], parser, _args_to_render_report, log, setup_log)
-

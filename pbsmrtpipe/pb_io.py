@@ -33,7 +33,6 @@ from pbsmrtpipe.constants import SEYMOUR_HOME
 import pbsmrtpipe.constants as GlobalConstants
 
 
-
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
@@ -42,6 +41,7 @@ BuilderRecord = namedtuple("BuilderRecord", ['bindings', 'task_options', 'workfl
 
 
 class PresetRecord(object):
+
     def __init__(self, task_options, workflow_options):
         # this is a list of tuples (task_id, value)
         self.task_options = task_options

@@ -103,7 +103,7 @@ def main_runner(argv, parser, exe_runner_func, setup_log_func, alog):
     """
     started_at = time.time()
     args = parser.parse_args(argv)
-    #log.debug(args)
+    # log.debug(args)
 
     # setup log
     if hasattr(args, 'debug'):

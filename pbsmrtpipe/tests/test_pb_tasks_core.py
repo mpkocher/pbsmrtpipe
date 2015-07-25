@@ -31,5 +31,3 @@ class TestLoading(unittest.TestCase):
     def test_file_type_eq(self):
         f = FileType(to_file_ns('Fasta'), "file", "fasta", 'text/plain')
         self.assertEqual(id(f), id(FileTypes.FASTA))
-
-

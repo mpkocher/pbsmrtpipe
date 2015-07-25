@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class DataStoreFileValidator(object):
+
     def __init__(self, file_type_id, func, **kwargs):
         self.file_type_id = file_type_id
         # Func must have signature of (path, **kwargs) => True|False\Raise exception

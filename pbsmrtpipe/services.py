@@ -42,6 +42,7 @@ PbsmrtpipeLogResource = LogResource(SERVICE_LOGGER_RESOURCE_ID, "Pbsmrtpipe",
 
 
 class JobExeError(ValueError):
+
     """Service Job Failure"""
     pass
 
@@ -50,7 +51,9 @@ JobResult = namedtuple("JobResult", "job run_time errors")
 
 
 class ServiceEntryPoint(object):
+
     """Entry Points to initialize Pipelines"""
+
     def __init__(self, entry_id, dataset_type, path_or_uri):
         self.entry_id = entry_id
         self.dataset_type = dataset_type
@@ -177,7 +180,9 @@ def _block_for_job_to_complete(sal, job_id, time_out=600):
 
 
 class ServiceAccessLayer(object):
+
     """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
+
     def __init__(self, base_url, port):
         self.base_url = base_url
         self.port = port
@@ -205,8 +210,8 @@ class ServiceAccessLayer(object):
 
     def _get_job_resource_type(self, job_type, job_id, resource_type_id):
         # grab the datastore or the reports
-        _d = dict(t=job_type, i=job_id,r=resource_type_id)
-        return _process_rget(_null_func)(_to_url(self.uri,"/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
+        _d = dict(t=job_type, i=job_id, r=resource_type_id)
+        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
 
     def get_job_datastore(self, job_type, job_id):
         return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.DATASTORE)
@@ -312,4 +317,3 @@ def add_datastore_file(total_url, datastore_file, ignore_errors=True):
             log.warn("Failed Request to {u} data: {d}. {e}".format(u=total_url, d=_d, e=e))
     else:
         return func(total_url, _d)
-

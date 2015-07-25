@@ -43,6 +43,7 @@ def _write_dummy_file_from_name(task_dir, name):
 
 
 class _TaskTestBase(unittest.TestCase):
+
     """
     The name must be prepended with _ so that nose doesn't run it
     """

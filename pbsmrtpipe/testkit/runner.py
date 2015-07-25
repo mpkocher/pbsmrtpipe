@@ -210,6 +210,3 @@ def get_parser():
 def main(argv=sys.argv):
     parser = get_parser()
     return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_log)
-
-
-

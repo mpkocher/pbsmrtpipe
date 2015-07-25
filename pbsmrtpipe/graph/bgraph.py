@@ -51,7 +51,7 @@ from pbsmrtpipe.graph.models import (TaskBindingNode,
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger(GlobalConstants.SLOG_PREFIX + "__name__")
-#logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 
 def _parse_task_from_binding_str(s):
@@ -1133,7 +1133,7 @@ def get_companion_unscattered_task_node(bg, chunk_group_id):
     for tnode in bg.task_nodes():
         if tnode.__class__ == TaskBindingNode:
             if bg.node[tnode][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID] == chunk_group_id:
-                    return tnode
+                return tnode
     return KeyError("Unable to find scattred companion task for chunk-group {g}".format(g=chunk_group_id))
 
 

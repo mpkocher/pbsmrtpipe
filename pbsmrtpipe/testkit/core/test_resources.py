@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 @monkey_patch
 class TestCoreResources(TestBase):
+
     """
     Test to see of the core job directory structure and files exist
     """

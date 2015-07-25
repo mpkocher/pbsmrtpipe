@@ -27,7 +27,6 @@ def _load_env_preset(env_var):
         return IO.parse_pipeline_preset_xml(path)
 
 
-
 class Constants(object):
     SEQ = ('A', 'C', 'G', 'T')
 
@@ -142,6 +141,7 @@ def write_mock_file_by_type(path, nrecords):
     func = _d.get(ext, write_generic_txt_file)
     func(path, nrecords)
     return 0
+
 
 def _mock_task_exe_runner(task_dir, output_files):
 

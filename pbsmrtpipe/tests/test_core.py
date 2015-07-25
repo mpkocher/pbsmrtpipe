@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class _MyTask(MetaTaskBase):
+
     """My Task Does A, then B and is awesome"""
     TASK_ID = "pbsmrtpipe.tasks.my_task_01"
     NAME = "My Awesome Task Display Name"
@@ -39,6 +40,7 @@ class _MyTask(MetaTaskBase):
 
 
 class MyTest(unittest.TestCase):
+
     def test_sanity(self):
         log.info(_MyTask)
         self.assertTrue(True)

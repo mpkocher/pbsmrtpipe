@@ -45,8 +45,8 @@ class TestBindingFormat(unittest.TestCase):
 class TestConvertBindingStrToXml(unittest.TestCase):
 
     bs = [('entry:e_01', 'pbsmrtpipe.tasks.my_task:0'),
-        ('entry:e_02', 'pbsmrtpipe.tasks.my_task2:0'),
-        ('pbsmrtpipe.tasks.my_task:0', 'pbsmrtpipe.tasks.my_task2:1')]
+          ('entry:e_02', 'pbsmrtpipe.tasks.my_task2:0'),
+          ('pbsmrtpipe.tasks.my_task:0', 'pbsmrtpipe.tasks.my_task2:1')]
 
     def test_to_xml(self):
         xml = B.binding_strs_to_xml(self.bs)

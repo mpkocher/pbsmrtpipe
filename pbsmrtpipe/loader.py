@@ -176,6 +176,3 @@ def load_all():
 
     from pbsmrtpipe.core import REGISTERED_FILE_TYPES
     return meta_tasks, REGISTERED_FILE_TYPES, operators, pipelines
-
-
-

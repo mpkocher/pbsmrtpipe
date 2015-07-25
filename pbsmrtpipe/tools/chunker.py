@@ -339,11 +339,11 @@ def _args_run_chunk_alignmentset(args):
 
 def _args_run_chunk_subreadset(args):
     return CU.write_subreadset_chunks_to_file(args.chunk_report_json,
-                                                args.subreadset,
-                                                args.fasta,
-                                                args.max_total_chunks,
-                                                args.output_dir,
-                                                "chunk_subreadset", 'xml')
+                                              args.subreadset,
+                                              args.fasta,
+                                              args.max_total_chunks,
+                                              args.output_dir,
+                                              "chunk_subreadset", 'xml')
 
 
 def _add_chunk_hdfsubreadset_options(p):
@@ -361,10 +361,10 @@ def _add_chunk_subreadset_options(p):
 
 def _args_run_chunk_hdfsubreadset(args):
     return CU.write_hdfsubreadset_chunks_to_file(args.chunk_report_json,
-                                                args.hdfsubreadset,
-                                                args.max_total_chunks,
-                                                args.output_dir,
-                                                "chunk_hdfsubreadset", 'xml')
+                                                 args.hdfsubreadset,
+                                                 args.max_total_chunks,
+                                                 args.output_dir,
+                                                 "chunk_hdfsubreadset", 'xml')
 
 
 def _add_chunk_csv_options(p):

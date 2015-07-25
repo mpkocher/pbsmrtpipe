@@ -90,6 +90,3 @@ def parse_cfg_file(path):
                         test_cases.append(x)
 
     return test_cases
-
-
-

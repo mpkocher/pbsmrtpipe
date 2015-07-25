@@ -223,8 +223,8 @@ add_chunk_key_contigset = __add_chunk_key_option('$chunk.fasta_id')
 def __gather_options(output_file_message, input_files_message, input_validate_func, add_chunk_key_func_):
     def _f(p):
         p.add_argument('chunk_json',
-                   type=input_validate_func,
-                   help=input_files_message)
+                       type=input_validate_func,
+                       help=input_files_message)
         p.add_argument('-o', '--output', type=str, help=output_file_message)
         return add_chunk_key_func_(p)
     return _f
@@ -249,11 +249,11 @@ _gather_subreadset_options = __add_gather_options("Output SubreadSet XML file",
                                                   "Chunk input JSON file",
                                                   add_chunk_key_subreadset)
 _gather_alignmentset_options = __add_gather_options("Output AlignmentSet XML file",
-                                                  "Chunk input JSON file",
-                                                  add_chunk_key_alignmentset)
+                                                    "Chunk input JSON file",
+                                                    add_chunk_key_alignmentset)
 _gather_contigset_options = __add_gather_options("Output ContigSet XML file",
-                                                  "Chunk input JSON file",
-                                                  add_chunk_key_contigset)
+                                                 "Chunk input JSON file",
+                                                 add_chunk_key_contigset)
 
 
 def __args_gather_runner(func, args):
@@ -279,7 +279,7 @@ _args_gather_subreadset = functools.partial(__args_gather_runner,
 _args_gather_alignmentset = functools.partial(__args_gather_runner,
                                               gather_alignmentset)
 _args_gather_contigset = functools.partial(__args_gather_runner,
-                                            gather_contigset)
+                                           gather_contigset)
 _args_gather_csv = functools.partial(__args_gather_runner, gather_csv)
 
 
@@ -304,7 +304,7 @@ def get_parser():
 
     builder('fofn', "Merge FOFNs into a single file.", _gather_fofn_options, _args_gather_fofn)
 
-    #Gff
+    # Gff
     builder('gff', "Merge Fasta files into a single file.",
             _gather_gff_options, _args_gather_gff)
 

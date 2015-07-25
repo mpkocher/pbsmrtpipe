@@ -99,6 +99,7 @@ def _run_driver_from_job_config(job_config):
     state = _test_run_driver(chunk_operators, rtasks, rfiles, ep_d, bgraph_, job_output_dir, tmp_dir, job_config.task_opts, job_config.cluster_renderer)
     return state
 
+
 @attr(SLOW_ATTR)
 class LocalHelloDevTest(unittest.TestCase):
     JOB_CONFIG = JobConfig('job_dev_test', {},
@@ -111,6 +112,7 @@ class LocalHelloDevTest(unittest.TestCase):
     def test_run_driver(self):
         state = _run_driver_from_job_config(self.JOB_CONFIG)
         self.assertTrue(state, "Job {n} failed".format(n=self.JOB_CONFIG.job_name))
+
 
 @attr(SLOW_ATTR)
 @unittest.skipIf(not HAS_CLUSTER_QSUB, "No qsub exe found.")

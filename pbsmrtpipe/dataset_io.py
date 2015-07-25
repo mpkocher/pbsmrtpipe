@@ -37,7 +37,7 @@ REGISTERED_METADATA_RESOLVER = {}
 def register_metadata_resolver(*file_type_or_types):
 
     if not isinstance(file_type_or_types, (list, tuple)):
-            file_type_or_types = [file_type_or_types]
+        file_type_or_types = [file_type_or_types]
 
     def _wrapper(func):
 
@@ -102,5 +102,3 @@ def f(path):
     nrecords = reference_entry.reference_info.reference.num_contigs
     total = sum(c.length for c in reference_entry.reference_info.contigs)
     return DatasetMetadata(nrecords, total)
-
-

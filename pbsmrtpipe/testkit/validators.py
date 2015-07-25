@@ -467,13 +467,17 @@ class Hdf5Validator(ValidatorBase):
     def validate_file(self, path):
         return _validate_hdf5(path, self.required_groups, self.required_dset_basenames)
 
+
 class BtiValidator(ValidatorBase):
+
     """Validator for bamtools index (BTI) files."""
 
     def validate_file(self, path):
         return _validate_bti(path)
 
+
 class BaiValidator(ValidatorBase):
+
     """Validator for samtools index (BAI) files."""
 
     def validate_file(self, path):

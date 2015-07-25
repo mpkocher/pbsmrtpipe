@@ -44,10 +44,12 @@ __all__ = ['Constants', 'TaskTypes', 'SymbolTypes',
 
 
 class GlobalRegistry(object):
+
     """Global Registry of Immutable resources
 
     All are dicts, except for cluster_render
     """
+
     def __init__(self, tasks, file_types, chunk_operators, cluster_renderer):
         """
 
@@ -291,6 +293,7 @@ class MetaGatherTask(MetaTask):
 
 class Task(object):
     # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
+
     def __init__(self, task_id, task_type, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
         self.task_id = task_id
         # List of strings
@@ -353,7 +356,9 @@ class GatherTask(Task):
 
 
 class RunnableTask(object):
+
     """Container for task-manifest.json"""
+
     def __init__(self, task_id, task_type, input_files, output_files, ropts, nproc, resources, cmds, cluster, envs):
         self.task_id = task_id
         self.task_type = task_type
@@ -385,7 +390,6 @@ class RunnableTask(object):
 
         return RunnableTask.from_d(d)
 
-
     @staticmethod
     def from_d(d):
 
@@ -412,6 +416,7 @@ class RunnableTask(object):
 
 
 class DataStoreFile(object):
+
     def __init__(self, uuid, file_id, type_id, path):
         # adding this for consistency. In the scala code, the unique id must be
         # a uuid format
@@ -503,6 +508,7 @@ class DataStore(object):
 
 
 class Pipeline(object):
+
     def __init__(self, idx, display_name, description, bindings, entry_bindings, parent_pipeline_ids=None):
         self.idx = idx
         self.display_name = display_name
@@ -687,6 +693,7 @@ def _is_chunk_key(k):
 
 
 class PipelineChunk(object):
+
     def __init__(self, chunk_id, **kwargs):
         """
 
@@ -729,6 +736,7 @@ class PipelineChunk(object):
 
 
 class MetaStaticTask(MetaTask):
+
     def __init__(self, task_id, task_type, input_types, output_types, options_schema,
                  nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
         """

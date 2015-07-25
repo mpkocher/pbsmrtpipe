@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 
 class ConvertRsMovieMetaDataTask(MetaTaskBase):
+
     """
     Convert an RS Movie Metadata XML file to a Hdf5 Subread Dataset XML
     """
@@ -35,6 +36,7 @@ class ConvertRsMovieMetaDataTask(MetaTaskBase):
 
 
 class ConvertH5SubreadsToBamDataSetTask(MetaTaskBase):
+
     """
     Convert a Hdf5 Dataset to an Unaligned Bam DataSet XML
     """
@@ -63,6 +65,7 @@ class ConvertH5SubreadsToBamDataSetTask(MetaTaskBase):
 
 
 class H5SubreadSetScatter(MetaScatterTaskBase):
+
     """
     Scatter an HDF5SubreadSet.
     """
@@ -77,7 +80,7 @@ class H5SubreadSetScatter(MetaScatterTaskBase):
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
                      'Generic Chunked JSON HdfSubreadSet')]
 
-    OUTPUT_FILE_NAMES = [('hdfsubreadset_chunked', 'json'),]
+    OUTPUT_FILE_NAMES = [('hdfsubreadset_chunked', 'json'), ]
 
     NPROC = 1
     SCHEMA_OPTIONS = {}
@@ -97,6 +100,7 @@ class H5SubreadSetScatter(MetaScatterTaskBase):
 
 
 class GatherGFFTask(MetaGatherTaskBase):
+
     """Gather GFF Files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_gff"
     NAME = "Gather GFF"
@@ -118,7 +122,7 @@ class GatherGFFTask(MetaGatherTaskBase):
         return ('pbtools-gather {t} --debug --chunk-key="{c}" {i} '
                 '--output={o}'.format(t='gff', c='gff_id', i=input_files[0],
                                       o=output_files[0]))
-        #return 'touch {o}'.format(o=output_files[0])
+        # return 'touch {o}'.format(o=output_files[0])
 
 
 def _gather_dataset(ds_type, chunk_id, input_file, output_file):
@@ -127,6 +131,7 @@ def _gather_dataset(ds_type, chunk_id, input_file, output_file):
 
 
 class GatherContigSetTask(MetaGatherTaskBase):
+
     """Gather ContigSet Files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_contigset"
     NAME = "Gather ContigSet"
@@ -149,6 +154,7 @@ class GatherContigSetTask(MetaGatherTaskBase):
 
 
 class GatherSubreadSetTask(MetaGatherTaskBase):
+
     """Gather SubreadSet Files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_subreadset"
     NAME = "Gather SubreadSet"
@@ -169,7 +175,9 @@ class GatherSubreadSetTask(MetaGatherTaskBase):
         # having the chunk key hard coded here is a problem.
         return _gather_dataset('subreadset', 'subreadset_id', input_files[0], output_files[0])
 
+
 class GatherAlignmentSetTask(MetaGatherTaskBase):
+
     """Gather AlignmentSet Files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_alignmentset"
     NAME = "Gather AlignmentSet"
@@ -191,6 +199,7 @@ class GatherAlignmentSetTask(MetaGatherTaskBase):
 
 
 class AlignDataSetTask(MetaTaskBase):
+
     """
     Create an Aligned DataSet by calling pbalign/blasr
     """
@@ -219,6 +228,7 @@ class AlignDataSetTask(MetaTaskBase):
 
 
 class MappingReportTask(MetaTaskBase):
+
     """
     Create a Alignment Report from a Alignment DataSet
     """
@@ -280,6 +290,7 @@ def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
 
 
 class DataSetCallVariants(MetaTaskBase):
+
     """BAM interface to quiver. The contig 'ids' (using the pbcore 'id' format)
     are passed in via a FOFN
     """
@@ -292,7 +303,7 @@ class DataSetCallVariants(MetaTaskBase):
     INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
                    (FileTypes.DS_BAM, "bam", "DataSet BAM Alignment")]
 
-    #TODO change/add fasta/xml output once quiver outputs contigsets
+    # TODO change/add fasta/xml output once quiver outputs contigsets
     OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Consensus GFF"),
                     (FileTypes.FASTA, "fasta", "Consensus ContigSet"),
                     (FileTypes.FASTQ, "fastq", "Consensus Fastq")]
@@ -311,6 +322,7 @@ class DataSetCallVariants(MetaTaskBase):
 
 
 class GffToVcf(MetaTaskBase):
+
     """Utility for converting variant GFF3 files to 1000 Genomes VCF"""
     TASK_ID = "pbsmrtpipe.tasks.ds_gff_to_vcf"
     NAME = "GFF to VCF"
@@ -334,6 +346,7 @@ class GffToVcf(MetaTaskBase):
 
 
 class GffToBed(MetaTaskBase):
+
     """Utility for converting GFF3 to BED format. Currently supports regional coverage or variant .bed output"""
     TASK_ID = "pbsmrtpipe.tasks.consensus_gff_to_bed2"
     NAME = "GFF to Bed"
@@ -360,6 +373,7 @@ class GffToBed(MetaTaskBase):
 
 
 class SummarizeConsensus(MetaTaskBase):
+
     """ Enrich Alignment Summary"""
     TASK_ID = "pbsmrtpipe.tasks.enrich_summarize_consensus2"
     NAME = "Enrich Alignment Summarize Consensus"
@@ -405,6 +419,7 @@ class SummarizeConsensus(MetaTaskBase):
 
 
 class AlignmentSetScatterContigs(MetaScatterTaskBase):
+
     """AlignmentSet scattering by Contigs
     """
     # MK. Inheritance is specifically not allowed
@@ -441,7 +456,9 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
                   n=nchunks)
         return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
 
+
 class SubreadSetScatter(MetaScatterTaskBase):
+
     """
     Scatter a subreadset to create an Aligned DataSet by calling pbalign/blasr
     """
@@ -455,7 +472,7 @@ class SubreadSetScatter(MetaScatterTaskBase):
                    (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
                      'Generic Chunked JSON SubreadSet')]
-    OUTPUT_FILE_NAMES = [('subreadset_chunked', 'json'),]
+    OUTPUT_FILE_NAMES = [('subreadset_chunked', 'json'), ]
 
     NPROC = 1
     SCHEMA_OPTIONS = {}
@@ -478,12 +495,13 @@ class SubreadSetScatter(MetaScatterTaskBase):
 
 
 class TopVariantsReport(MetaTaskBase):
+
     """Consensus Reports to compute Top Variants"""
     TASK_ID = 'pbsmrtpipe.tasks.ds_top_variants_report'
     NAME = "Top Variants Report"
     VERSION = "0.1.0"
 
-    TASK_TYPE =  TaskTypes.DISTRIBUTED
+    TASK_TYPE = TaskTypes.DISTRIBUTED
 
     INPUT_TYPES = [(FileTypes.DS_REF, "ds_ref", "PacBio ReferenceSet XML"),
                    (FileTypes.GFF, 'gff', "GFF Alignment Summary")]
@@ -508,6 +526,7 @@ class TopVariantsReport(MetaTaskBase):
 
 
 class VariantsReport(MetaTaskBase):
+
     """Consensus Variants Reports"""
     TASK_ID = 'pbsmrtpipe.tasks.ds_variants_report'
     NAME = "Variants Report"

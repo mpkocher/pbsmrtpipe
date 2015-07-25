@@ -19,5 +19,3 @@ class TestExternalToolsSanity(unittest.TestCase):
             was_successful = was_backticks_successful(cmd)
             emsg = "Command '{e}' was not successful".format(e=cmd)
             self.assertTrue(was_successful, emsg)
-
-

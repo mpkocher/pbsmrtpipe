@@ -18,6 +18,7 @@ class Constants(object):
 
 
 class ReferenceToMetadataReport(MetaTaskBase):
+
     """Task to create a JSON Metadata Report from a Reference Repo Fasta file
 
     This should be replaced by the reference Dataset.XML
@@ -261,4 +262,3 @@ class GffToBed(MetaTaskBase):
 def _to_bridge_opts():
     opt_id = OP.to_opt_id("bridge_mapper.min_affix_length")
     return {opt_id: OP.to_option_schema(opt_id, ("number", "null"), "Min Affix Length", "Bridge Mapper Minimum Affix Length", None)}
-

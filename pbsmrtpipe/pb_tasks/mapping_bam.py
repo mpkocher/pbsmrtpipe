@@ -49,7 +49,6 @@ class BamAlign(MetaTaskBase):
     SCHEMA_OPTIONS = AOP.to_bam_blasr_opts()
     RESOURCE_TYPES = None
 
-
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):
         """Blasr alignment tasks. Calls blasr directly rather than going through
@@ -74,7 +73,7 @@ class BamAlign(MetaTaskBase):
             align_opts += " -placeRepeatsRandomly"
 
         if to_o("max_error") >= 0.0:
-            align_opts += " -minPctIdentity {m}".format(m= 100.0 - to_o("max_error"))
+            align_opts += " -minPctIdentity {m}".format(m=100.0 - to_o("max_error"))
 
         # if self.reference.info.hasIndexFile('sawriter'):
         #     align_opts += " -sa {sa}".format(
@@ -105,6 +104,7 @@ class BamAlign(MetaTaskBase):
 
 
 class BamLoadChemistry(MetaTaskBase):
+
     """
     Add chemistry information required by Quiver to the BAM file.
     Happens in two steps, first a header-only file is created, then
@@ -159,6 +159,7 @@ class BamLoadChemistry(MetaTaskBase):
 
 
 class BamToByMovieFofn(MetaTaskBase):
+
     """
     Create a fofn of the BAM files that are organized by movie. This
     fofn file will be used by bamtools merge to create BAM files
@@ -251,6 +252,7 @@ class ToContigBamFofn(MetaTaskBase):
 
 
 class CreateBamIndex(MetaTaskBase):
+
     """Create a companion BAI file
 
     This treats the BAM file as a mutable file

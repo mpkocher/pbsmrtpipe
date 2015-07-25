@@ -44,7 +44,7 @@ from pbsmrtpipe.pb_io import WorkflowLevelOptions
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
-#logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 
 class Constants(object):
@@ -221,7 +221,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # This will add new nodes to the graph if necessary
     B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks)
 
-    #log.info(BU.to_binding_graph_summary(bg))
+    # log.info(BU.to_binding_graph_summary(bg))
 
     # "global" file type id counter {str: int} that will be
     # used to generate ids
@@ -295,7 +295,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # more understandable. Not the greatest model.
     def write_report_(bg_, current_state_, was_successful_):
         return DU.write_main_workflow_report(job_id, job_resources, workflow_opts,
-                                          task_opts, bg_, current_state_, was_successful_, _to_run_time())
+                                             task_opts, bg_, current_state_, was_successful_, _to_run_time())
 
     def write_task_summary_report(bg_):
         task_summary_report = DU.to_task_summary_report(bg_)
@@ -404,7 +404,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
             # log.debug("Sleeping for {s}".format(s=sleep_time))
             #log.debug("\n" + BU.to_binding_graph_summary(bg))
-            #BU.to_binding_graph_task_summary(bg)
+            # BU.to_binding_graph_task_summary(bg)
 
             # This should only be triggered after events. The main reason
             # to keep updating it was the html report is up to date with the
@@ -526,7 +526,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                             bg.node[tnode]['was_chunked'] = True
                             BU.write_binding_graph_images(bg, job_resources.workflow)
 
-
                     # Update node to scattered and breakout of loop
                     # let's just run the task for now
                     # B.update_task_state(bg, tnode, TaskStates.SCATTERED)
@@ -570,8 +569,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     IO.write_driver_manifest(tnode.meta_task, task, task_opts, driver_manifest_path)
 
                 DU.write_task_manifest(manifest_path, tid, task, tnode.meta_task.resource_types,
-                                    GlobalConstants.TASK_MANIFEST_VERSION,
-                                    tnode.meta_task.__module__, global_registry.cluster_renderer)
+                                       GlobalConstants.TASK_MANIFEST_VERSION,
+                                       tnode.meta_task.__module__, global_registry.cluster_renderer)
 
                 # Create an instance of Worker
                 worker_type = _determine_worker_type(tnode.meta_task.task_type)
@@ -1012,6 +1011,3 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
 
     return exe_workflow(global_registry, entry_points_d, bg, task_opts,
                         workflow_level_opts, output_dir, service_config)
-
-
-

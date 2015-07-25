@@ -80,7 +80,7 @@ def reference_to_report(reference_entry):
              ('version', reference_entry.reference_info.version, "Version"),
              ('max_contig_length', reference_entry.reference_info.reference.max_contig_length, "Max Contig Length")]
 
-    _to_i = lambda x : "ref_index_type_" + x
+    _to_i = lambda x: "ref_index_type_" + x
 
     for reference_index_type_id in ConstantsReferenceIndexTypes.ALL():
         idx_value = get_reference_entry_index_type(reference_entry, reference_index_type_id)
@@ -125,6 +125,8 @@ reference_entry_to_contig_headers = functools.partial(_reference_entry_to_contig
 reference_entry_to_contig_idx = functools.partial(_reference_entry_to_contig_attr_with_tranform, 'header', lambda x: x.split(" ")[0])
 
 # This is taken from pbsystem.io.Reference
+
+
 def _check_exists(path):
     """
     Raises an IOError if path does not exist

@@ -12,6 +12,7 @@ def _scatter_filter_nchunks(max_chunks, nfofn):
 
 
 class FilterScatterTask(MetaScatterTaskBase):
+
     """Filter Scatter FOFN files"""
     TASK_ID = "pbsmrtpipe.tasks.filter_scatter"
     NAME = "Scatter Movie FOFN"
@@ -39,6 +40,7 @@ class FilterScatterTask(MetaScatterTaskBase):
 
 
 class GatherCSV(MetaGatherTaskBase):
+
     """Gather for non-empty CSV files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_csv"
     NAME = "Gather CSV"
@@ -61,6 +63,7 @@ class GatherCSV(MetaGatherTaskBase):
 
 
 class GatherRegionFofn(MetaGatherTaskBase):
+
     """Gather FOFN """
     TASK_ID = "pbsmrtpipe.tasks.gather_fofn"
     NAME = "Gather REGION FOFN"
@@ -89,6 +92,7 @@ def _gather_fastx(fasta_or_fastq, chunk_id, input_file, output_file):
 
 
 class GatherFastaTask(MetaGatherTaskBase):
+
     """Gather Fasta Files using chunk-key=fasta_id"""
     TASK_ID = "pbsmrtpipe.tasks.gather_fasta"
     NAME = "Gather Fasta"
@@ -110,6 +114,7 @@ class GatherFastaTask(MetaGatherTaskBase):
 
 
 class GatherFilterFastaTask(MetaGatherTaskBase):
+
     """Gather Fasta Files using chunk-key=filtered_fasta_id"""
     TASK_ID = "pbsmrtpipe.tasks.gather_filtered_fasta"
     NAME = "Gather Filtered Fasta"
@@ -135,6 +140,7 @@ class GatherFilterFastaTask(MetaGatherTaskBase):
 
 
 class GatherFastqTask(MetaGatherTaskBase):
+
     """Gather Fastq Files"""
     TASK_ID = "pbsmrtpipe.tasks.gather_fastq"
     NAME = "Gather Fastq"
@@ -155,6 +161,7 @@ class GatherFastqTask(MetaGatherTaskBase):
 
 
 class GatherGffTask(MetaGatherTaskBase):
+
     """Gather Gff Files using chunk-key=gff_id"""
     TASK_ID = "pbsmrtpipe.tasks.gather_gff"
     NAME = "Gather Gff"

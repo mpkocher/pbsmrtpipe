@@ -110,7 +110,7 @@ def _create_tmp_file_resource(path):
 
 
 def _create_tmp_dir_resource(path):
-     if not os.path.exists(path):
+    if not os.path.exists(path):
         os.makedirs(path)
         log.debug("Created resource {r} {p}".format(r=ResourceTypes.TMP_DIR, p=path))
 
@@ -171,7 +171,7 @@ def cleanup_resources(runnable_task):
         try:
             cleanup_resource(rtype, path)
         except Exception as e:
-            log.error("Error cleanup resource {r} -> {p}".format(r=rtype,p=path))
+            log.error("Error cleanup resource {r} -> {p}".format(r=rtype, p=path))
 
     return True
 
@@ -239,7 +239,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                     sys.stderr.write(err_msg + "\n")
                     break
                 else:
-                    stdout_fh.write("completed running cmd {i} of {n}. exit code {x} in {s:.2f} sec on host {h}\n".format(x=rcode, s=run_time, h=host, i=i+1, n=ncmds))
+                    stdout_fh.write("completed running cmd {i} of {n}. exit code {x} in {s:.2f} sec on host {h}\n".format(x=rcode, s=run_time, h=host, i=i + 1, n=ncmds))
 
             smsg_ = "completed running commands. Exit code {i}".format(i=rcode)
             log.debug(smsg_)
@@ -505,4 +505,3 @@ def main(argv=None):
     parser = get_main_parser()
 
     return main_runner_default(argv_[1:], parser, log)
-

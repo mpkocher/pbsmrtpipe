@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 
 class WriteReferenceContigChunk(MetaTaskBase):
+
     """
     Write Contig Headers to Chunk ids to Fofn and generate a CHUNK JSON File.
 
@@ -53,6 +54,7 @@ class WriteReferenceContigChunk(MetaTaskBase):
 
 
 class WriteReferenceIdxContigChunk(MetaTaskBase):
+
     """
     Write Contig Headers to Chunk ids to Fofn and generate a CHUNK JSON File.
 
@@ -145,6 +147,7 @@ def _to_consensus_cmd(input_files, output_files, ropts, nproc, resources):
 
 
 class CallVariants(MetaTaskBase):
+
     """Compute the Consensus"""
     TASK_ID = "pbsmrtpipe.tasks.call_variants_with_fastx"
     NAME = "Call Variants"
@@ -171,6 +174,7 @@ class CallVariants(MetaTaskBase):
 
 
 class BamCallVariants(MetaTaskBase):
+
     """BAM interface to quiver. The contig 'ids' (using the pbcore 'id' format)
     are passed in via a FOFN
     """
@@ -250,6 +254,7 @@ class GffToBed(MetaTaskBase):
 
 
 class SummarizeConsensus(MetaTaskBase):
+
     """ Enrich Alignment Summary"""
     TASK_ID = "pbsmrtpipe.tasks.enrich_summarize_consensus"
     NAME = "Enrich Alignment Summarize Consensus"
@@ -299,7 +304,7 @@ class TopVariantsReport(MetaTaskBase):
     NAME = "Top Variants Report"
     VERSION = "1.0.0"
 
-    TASK_TYPE =  TaskTypes.DISTRIBUTED
+    TASK_TYPE = TaskTypes.DISTRIBUTED
 
     INPUT_TYPES = [(FileTypes.FASTA, "fasta", "PacBio Reference File"),
                    (FileTypes.GFF, 'gff', "GFF Alignment Summary")]

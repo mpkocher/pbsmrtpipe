@@ -322,8 +322,8 @@ def _args_run_pipeline(args):
 
     registered_tasks_d, registered_files_d, chunk_operators, pipelines_d = __dynamically_load_all()
 
-    #FIXME. Only override if value was provided.
-    #args.force_distribute
+    # FIXME. Only override if value was provided.
+    # args.force_distribute
     force_distribute = None
 
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
@@ -411,7 +411,7 @@ def add_show_template_details_parser_options(p):
 
 
 def add_task_parser_options(p):
-    funcs = [TU.add_debug_option,  _add_task_id_option, _add_entry_point_option, _add_output_dir_option,
+    funcs = [TU.add_debug_option, _add_task_id_option, _add_entry_point_option, _add_output_dir_option,
              _add_preset_xml_option, _add_rc_preset_xml_option,
              _add_webservice_config]
     f = compose(*funcs)

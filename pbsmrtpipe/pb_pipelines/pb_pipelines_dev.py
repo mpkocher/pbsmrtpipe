@@ -37,7 +37,6 @@ def f():
     return b
 
 
-
 @register_pipeline("pbsmrtpipe.pipelines.dev_02", "Example Dev 02 pipeline")
 def f():
     # Reuse existing pipeline and reference a specific task output
@@ -90,7 +89,7 @@ def f():
 
     b3 = [("$entry:e_txt3", "pbsmrtpipe.pipelines.dev_03:$entry:e_txt2")]
 
-    return b1 + b2+ b3
+    return b1 + b2 + b3
 
 
 @register_pipeline(to_pipeline_ns("dev_local_chunk"), "Dev Local Hello Chunkable Pipeline")

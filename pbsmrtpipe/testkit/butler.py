@@ -20,11 +20,12 @@ class TestkitCfgParserError(ValueError):
 
 
 class Constants(object):
+
     """Allowed values in cfg file."""
     CFG_TASK = 'pbsmrtpipe:task'
     CFG_WORKFLOW = 'pbsmrtpipe:pipeline'
 
-    CFG_JOB_ID ="id"
+    CFG_JOB_ID = "id"
 
     CFG_ENTRY_POINTS = 'entry_points'
 
@@ -66,6 +67,7 @@ class Butler(object):
 
 
 class ButlerWorkflow(Butler):
+
     def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=False):
         super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute)
         self.workflow_xml = workflow_xml
@@ -76,6 +78,7 @@ class ButlerWorkflow(Butler):
 
 
 class ButlerTask(Butler):
+
     def __init__(self, job_id, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=False):
         super(ButlerTask, self).__init__(job_id, output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute)
         self.task_id = task_id

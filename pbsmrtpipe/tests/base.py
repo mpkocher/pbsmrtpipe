@@ -111,4 +111,3 @@ class TestDirBase(unittest.TestCase):
                     if not _is_local_dev_mk():
                         _log.debug("removing temp dir {d}".format(d=cls.temp_dir))
                         shutil.rmtree(cls.temp_dir)
-

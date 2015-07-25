@@ -16,6 +16,7 @@ def _get_opts():
 
 
 class MyDevHelloTask(MetaTaskBase):
+
     """A Long Description of My Task Goes here.
 
     This is development task that cats the input into the output file.
@@ -42,6 +43,7 @@ class MyDevHelloTask(MetaTaskBase):
 
 
 class DevSubreadDataSet(MetaTaskBase):
+
     """Hello world PacBio Subread DataSet Report"""
     TASK_ID = "pbsmrtpipe.tasks.dev_subread_report"
     NAME = "Dev Subread Report"
@@ -86,6 +88,7 @@ class DevHelloWorlder(MetaTaskBase):
 
 
 class DevHelloGarfield(MetaTaskBase):
+
     """I hate Mondays"""
     TASK_ID = 'pbsmrtpipe.tasks.dev_hello_garfield'
     NAME = "Dev Hello Garfield"
@@ -113,6 +116,7 @@ class DevHelloGarfield(MetaTaskBase):
 
 
 class DevHelloLasagna(MetaTaskBase):
+
     """I Create Lasagna"""
     TASK_ID = 'pbsmrtpipe.tasks.dev_hello_lasagna'
     NAME = "Dev Hello Lasagna"
@@ -143,6 +147,7 @@ def _di_example_nproc(max_nproc, report_value):
 
 
 class DevDependencyInjectExample(MetaTaskBase):
+
     """
     Simple Example of using the Dependency Injection model to
     dynamically pass data into the task
@@ -231,6 +236,7 @@ def _scatter_fofn_to_cmd(input_files, output_files, ropts, nproc, resources, nch
 
 
 class DevFofnExampleTask(MetaTaskBase):
+
     """Echo's a msg to a txt file"""
     TASK_ID = "pbsmrtpipe.tasks.dev_fofn_example"
     NAME = "Generic Scatter FOFN"
@@ -256,6 +262,7 @@ class DevFofnExampleTask(MetaTaskBase):
 
 
 class DevFofnScatterTask(MetaScatterTaskBase):
+
     """Statically scatter a fofn to create a chunk.json file"""
     TASK_ID = "pbsmrtpipe.tasks.dev_fofn_scatter"
     NAME = "Scatter FOFN DI example"
@@ -282,7 +289,7 @@ class DevFofnScatterTask(MetaScatterTaskBase):
 
 
 def _simple_nchunks_di(max_nchunks, nfofn_records):
-     return min(max_nchunks, nfofn_records)
+    return min(max_nchunks, nfofn_records)
 
 
 class DevFofnScatterDependencyInjectionTask(MetaScatterTaskBase):
@@ -322,6 +329,7 @@ class DevFofnScatterDependencyInjectionTask(MetaScatterTaskBase):
 
 
 class DevTxtToFastaTask(MetaTaskBase):
+
     """Generate a random fasta file"""
     TASK_ID = "pbsmrtpipe.tasks.dev_txt_to_fasta"
     NAME = "TXT to Fasta"
@@ -344,6 +352,7 @@ class DevTxtToFastaTask(MetaTaskBase):
 
 
 class FilterFastaTask(MetaTaskBase):
+
     """Filter a Fasta file by length of the sequence"""
     TASK_ID = "pbsmrtpipe.tasks.dev_py_filter_fasta"
     NAME = "Filter Fasta"
@@ -370,6 +379,7 @@ def _nchunks_fasta(max_nchunks, nfasta_records):
 
 
 class ScatterFilterFastaTask(MetaScatterTaskBase):
+
     """Scatter a filter tasks into a chunks.json file"""
     TASK_ID = "pbsmrtpipe.tasks.dev_scatter_filter_fasta"
     NAME = "Scatter Filter FASTA file"

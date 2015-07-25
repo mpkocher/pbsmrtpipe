@@ -16,6 +16,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
+
 @unittest.skipIf(not HAS_PBREPORTS, "Pbreports is not installed.")
 class TestRenderReportIndex(_TestBase):
 
@@ -31,6 +32,7 @@ class TestRenderReportIndex(_TestBase):
 
 @unittest.skipIf(not HAS_PBREPORTS, "Pbreports is not installed.")
 class TestCliReportRender(_TestBase):
+
     def test_01(self):
         name = "filter_reports_filter_stats.json"
         f = os.path.join(TEST_DATA_DIR, name)

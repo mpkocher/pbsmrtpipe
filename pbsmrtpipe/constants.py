@@ -97,4 +97,3 @@ to_task_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TAS
 to_task_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TASK_PREFIX)
 to_workflow_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_OPTS_PREFIX)
 to_pipeline_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_PIPELINES)
-

@@ -77,7 +77,7 @@ def _to_sam_read_groups():
 
 def _to_raw_blasr_opts():
     oid = OP.to_opt_id("raw_blasr_opts")
-    return OP.to_option_schema(oid,["string", "null"], "Raw BLASR options", "Raw BLASR options string", None)
+    return OP.to_option_schema(oid, ["string", "null"], "Raw BLASR options", "Raw BLASR options string", None)
 
 
 def _to_d(schema):

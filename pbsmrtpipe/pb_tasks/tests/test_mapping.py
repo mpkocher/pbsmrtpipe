@@ -32,7 +32,6 @@ class TestAlignTaskCustomOptions(TestAlignTaskDefaultOptions):
                     OP.to_opt_id('pbalign_opts'): ' --minAccuracy=0.75 --minLength=50 '}
 
 
-
 class TestAlignBamDefaults(_TaskTestBase):
     TASK_ID = "pbsmrtpipe.tasks.bam_align"
     INPUT_FILE_NAMES = ["movie.fofn", "rgn.fofn", "reference.fasta", "reference_report.json"]

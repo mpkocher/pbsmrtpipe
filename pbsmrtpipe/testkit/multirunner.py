@@ -150,4 +150,3 @@ def main(argv=None):
     argv_ = sys.argv if argv is None else argv
     parser = get_parser()
     return pacbio_args_runner(argv_[1:], parser, _args_run_multi_testkit_cfg, log, setup_log)
-

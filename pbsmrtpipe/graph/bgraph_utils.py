@@ -53,6 +53,7 @@ def bindings_graph_to_dict(bg):
 
 
 class DateTimeEncoder(json.JSONEncoder):
+
     def default(self, o):
         if isinstance(o, datetime.datetime):
             return o.isoformat()

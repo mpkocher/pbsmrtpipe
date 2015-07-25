@@ -124,4 +124,3 @@ class TestLoadOperators(unittest.TestCase):
         rtasks, rfile_types, chunk_operators, pipelines = L.load_all()
 
         self.assertTrue(len(chunk_operators) > 0)
-
