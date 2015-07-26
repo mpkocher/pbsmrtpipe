@@ -1,0 +1,38 @@
+{
+    "version": "1.0", 
+    "driver": {
+        "exe": "python -m kineticsTools.summarizeModifications --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "kinetics_tools.tasks.summarize_modifications", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "Base modification GFF file", 
+                "title": "GFF file", 
+                "id": "modifications", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "Alignment summary GFF", 
+                "title": "GFF file", 
+                "id": "alignmentSummary", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "GFF file", 
+                "description": "Modified alignment summary file", 
+                "default_name": "alignment_summary_with_basemods.gff", 
+                "id": "gff_out", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }
+        ], 
+        "_comment": "Created by v0.1.0 at 2015-07-25T17:46:24.943544"
+    }
+}

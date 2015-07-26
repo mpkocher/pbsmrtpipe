@@ -14,6 +14,7 @@ python -m pbreports.report.summarize_coverage.summarize_coverage --emit-tool-con
 
 pbalign --emit-tool-contract > $TC_DIR/pbalign_tool_contract.json
 python -m kineticsTools.ipdSummary --emit-tool-contract > $TC_DIR/kinetics_tools_ipdsummary_tool_contract.json
+python -m kineticsTools.summarizeModifications --emit-tool-contract > $TC_DIR/kinetics_tools_summarize_modifications_tool_contract.json
 variantCaller --emit-tool-contract > $TC_DIR/genomic_consensus_variantcaller_tool_contract.json
 motifMaker_find --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contract.json
 motifMaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
