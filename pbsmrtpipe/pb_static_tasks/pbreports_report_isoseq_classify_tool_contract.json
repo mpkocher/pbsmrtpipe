@@ -1,0 +1,38 @@
+{
+    "version": "0.1.0.132615", 
+    "driver": {
+        "exe": "python -m pbreports.report.isoseq_classify --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.isoseq_classify", 
+    "tool_contract": {
+        "input_types": [
+            {
+                "description": "Reads in FASTA format, usually are full-length, non-chimeric, primer-trimmed reads produced by IsoSeq classify.", 
+                "title": "Fasta reads", 
+                "id": "inReadsFN", 
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            }, 
+            {
+                "description": "A summary produced by IsoSeq Classify, e.g. classify_summary.txt", 
+                "title": "Summary file", 
+                "id": "inSummaryFN", 
+                "file_type_id": "PacBio.FileTypes.txt"
+            }
+        ], 
+        "task_type": "pbsmrtpipe.constants.local_task", 
+        "resource_types": [], 
+        "nproc": 1, 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "JSON file", 
+                "description": "Path to write report JSON output", 
+                "default_name": "isoseq_classify_report.json", 
+                "id": "outJson", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "_comment": "Created by v0.1.1 at 2015-07-27T10:18:38.163194"
+    }
+}

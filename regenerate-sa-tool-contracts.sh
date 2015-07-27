@@ -11,6 +11,8 @@ python -m pbreports.report.top_variants --emit-tool-contract > $TC_DIR/pbreports
 python -m pbreports.report.modifications --emit-tool-contract > $TC_DIR/pbreports_report_modifications_tool_contract.json
 python -m pbreports.report.motifs --emit-tool-contract > $TC_DIR/pbreports_report_motifs_tool_contract.json
 python -m pbreports.report.summarize_coverage.summarize_coverage --emit-tool-contract > $TC_DIR/pbreports_report_summarize_coverage_tool_contract.json
+python -m pbreports.report.isoseq_classify --emit-tool-contract > $TC_DIR/pbreports_report_isoseq_classify_tool_contract.json
+python -m pbreports.report.isoseq_cluster --emit-tool-contract > $TC_DIR/pbreports_report_isoseq_cluster_tool_contract.json
 
 pbalign --emit-tool-contract > $TC_DIR/pbalign_tool_contract.json
 python -m kineticsTools.ipdSummary --emit-tool-contract > $TC_DIR/kinetics_tools_ipdsummary_tool_contract.json
@@ -20,3 +22,4 @@ motifMaker_find --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contract.js
 motifMaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
 gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.json
 gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
+
