@@ -8,6 +8,7 @@ import importlib
 import logging
 import sys
 import functools
+from pbsmrtpipe.exceptions import MalformedChunkOperatorError
 
 import pbsmrtpipe.models as M
 
@@ -162,17 +163,33 @@ def load_all_registered_file_types():
     return _REGISTERED_FILE_TYPES
 
 
+def load_all_task_types():
+    """Load python defined and TCI tasks"""
+    meta_tasks = load_all_installed_pb_tasks()
+    static_metatasks = load_all_pb_tool_contracts()
+    meta_tasks.update(static_metatasks)
+    return meta_tasks
+
+
 def load_all():
     """
     Load all resources and return a tuple of (MetaTasks, FileTypes, ChunkOperators, Pipelines)
 
     :note: This will only be loaded once and cached.
     """
-    meta_tasks = load_all_installed_pb_tasks()
-    static_metatasks = load_all_pb_tool_contracts()
-    meta_tasks.update(static_metatasks)
+    meta_tasks = load_all_task_types()
     operators = load_all_installed_chunk_operators()
     pipelines = load_all_installed_pipelines()
 
     from pbsmrtpipe.core import REGISTERED_FILE_TYPES
     return meta_tasks, REGISTERED_FILE_TYPES, operators, pipelines
+
+
+def load_and_validate_chunk_operators():
+    from .models import validate_operator
+
+    rtasks = load_all_task_types()
+    chunk_operators = load_all_installed_chunk_operators()
+    for operator_id, chunk_operator in chunk_operators.iteritems():
+        # this will raise if invalide
+        validate_operator(chunk_operator, rtasks)

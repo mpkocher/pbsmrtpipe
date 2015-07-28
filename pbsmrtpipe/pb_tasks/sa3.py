@@ -461,6 +461,8 @@ class SubreadSetScatter(MetaScatterTaskBase):
 
     """
     Scatter a subreadset to create an Aligned DataSet by calling pbalign/blasr
+
+    Write a subreadset_id and reference_id to chunk.json
     """
     TASK_ID = "pbsmrtpipe.tasks.subreadset_align_scatter"
     NAME = "Scatter Subreadset DataSet"
@@ -478,7 +480,7 @@ class SubreadSetScatter(MetaScatterTaskBase):
     SCHEMA_OPTIONS = {}
     RESOURCE_TYPES = None
     NCHUNKS = SymbolTypes.MAX_NCHUNKS
-    CHUNK_KEYS = ('$chunk.subreadset_id', )
+    CHUNK_KEYS = ('$chunk.subreadset_id', "$chunk.reference_id")
 
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):

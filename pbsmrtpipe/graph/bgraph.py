@@ -976,10 +976,6 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
     scatter_meta_task = registered_tasks_d[chunk_operator.scatter.task_id]
     slog.debug("Chunking by meta task {m}".format(m=scatter_meta_task))
 
-    # look table for re-mapping the output of the gathered tasks to the inputs
-    # of the original unchunked task
-    gather_tuple = [(g.chunk_key, g.gather_task_id, _to_i(g.task_input)) for g in chunk_operator.gather.chunks]
-
     # Chunked file from the scatter task, Scattered Task should have
     # only one output of type FileTypes.CHUNK
     chunk_file_node = bg.successors(scatter_task_node)[0]
@@ -1236,6 +1232,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
                 for chunked_task_node, state_ in chunked_task_states:
                     log.debug(("Chunked task node", chunked_task_node, type(chunked_task_node), len(chunked_task_states)))
+
                     chunk_id = chunked_task_node.chunk_id
                     for output_node in bg.successors(chunked_task_node):
                         all_chunked_out_files_nodes.append(output_node)
@@ -1245,8 +1242,12 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                         log.debug(("Outputs of chunked task ", output_node, chunk_id, output_chunk_key))
                         gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
 
+                def _to_base(task_id_):
+                    # FIXME. Centralize this
+                    return GlobalConstants.RX_TASK_ID.match(task_id_).groups()[1]
+
                 comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
-                gathered_json = os.path.join(os.getcwd(), "gathered-pipeline.chunks.json")
+                gathered_json = os.path.join(os.getcwd(), "{t}-gathered-pipeline.chunks.json".format(t=_to_base(node.meta_task.task_id)))
                 IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
 
                 # Create New Gathered InFile Node

@@ -30,7 +30,7 @@ test-dev:
 	cd testkit-data && fab cleaner && pbtestkit-multirunner --debug --nworkers 8 dev.fofn
 
 test-unit:
-	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/*.py pbsmrtpipe/tests/test_*.py
+	nosetests --verbose --with-xunit --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/*.py pbsmrtpipe/tests/test_*.py
 
 test-pipelines:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/tests/test_pb_pipelines_sanity.py
@@ -44,7 +44,10 @@ test-loader:
 test-contracts:
 	python -c "import pbsmrtpipe.loader as L; L.load_all_pb_tool_contracts()"
 
-test-suite: test-tasks test-pipelines test-unit test-contracts test-loader test-dev
+test-chunk-operators:
+	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
+
+test-suite: test-tasks test-pipelines test-chunk-operators test-unit test-contracts test-loader test-dev
 
 test-clean-suite: install test-suite
 

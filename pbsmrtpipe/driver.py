@@ -17,7 +17,8 @@ import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.exceptions import (PipelineRuntimeError,
                                    PipelineRuntimeKeyboardInterrupt,
-                                   WorkflowBaseException)
+                                   WorkflowBaseException,
+                                   MalformedChunkOperatorError)
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
@@ -36,7 +37,8 @@ from pbsmrtpipe.graph.models import (TaskStates,
 
 from pbsmrtpipe.models import (FileTypes, TaskTypes, Pipeline,
                                MetaStaticTask, MetaTask,
-                               GlobalRegistry, TaskResult, DataStoreFile)
+                               GlobalRegistry, TaskResult, DataStoreFile,
+                               validate_operator)
 from pbsmrtpipe.engine import TaskManifestWorker
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
 
@@ -339,7 +341,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         """log the error messages extracted from stderr"""
         lines = _get_last_lines_of_stderr(20, path_to_stderr)
         for line_ in lines:
-            log.error(line_)
+            log.error(line_.strip())
             # these already have newlines
             sys.stderr.write(line_)
             sys.stderr.write("\n")
@@ -643,12 +645,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
 def _write_final_results_message(state):
     if state is True:
-        msg = "Successfully completed workflow."
+        msg = " Successfully completed workflow."
+        sys.stdout.write(msg + "\n")
     else:
-        msg = "Failed to run workflow."
+        msg = " Failed to run workflow."
         sys.stderr.write(msg + "\n")
-
-    sys.stdout.write(msg + "\n")
 
 
 def _validate_entry_points_or_raise(entry_points_d):
@@ -912,15 +913,23 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, workflow_bindings)
     slog.info("successfully loaded graph from bindings.")
 
+    valid_chunk_operators = {}
     # Disabled chunk operators if necessary
     if workflow_level_opts.chunk_mode is False:
         slog.info("Chunk mode is False. Disabling {n} chunk operators.".format(n=len(chunk_operators)))
-        chunk_operators = {}
+    else:
+        # Validate chunk operators, or skip if malformed.
+        for chunk_operator_id, chunk_operator in chunk_operators.iteritems():
+            try:
+                validate_operator(chunk_operator, registered_tasks_d)
+                valid_chunk_operators[chunk_operator_id] = chunk_operator
+            except MalformedChunkOperatorError as e:
+                log.warn("Invalid chunk operator {i}. {m}".format(i=chunk_operator_id, m=e.message))
 
     # Container to hold all the resources
     global_registry = GlobalRegistry(registered_tasks_d,
                                      registered_file_types_d,
-                                     chunk_operators,
+                                     valid_chunk_operators,
                                      cluster_render)
 
     return exe_workflow(global_registry, entry_points_d, bg, task_opts,
@@ -1001,10 +1010,12 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
     binding_str = _task_to_binding_strings(meta_task)
 
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, binding_str)
-    slog.info("successfully   bindings graph for task {i}".format(i=task_id))
+    slog.info("successfully bindings graph for task {i}".format(i=task_id))
 
+    # Validate chunk operators
+    valid_chunk_operators = {k: v for k, v in chunk_operators.iteritems() if validate_operator(v, registered_tasks_d)}
     # Container to hold all the resources
-    global_registry = GlobalRegistry(registered_tasks_d,
+    global_registry = GlobalRegistry(valid_chunk_operators,
                                      registered_file_types_d,
                                      chunk_operators,
                                      cluster_render)

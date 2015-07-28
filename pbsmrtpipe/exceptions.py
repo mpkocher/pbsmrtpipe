@@ -78,7 +78,7 @@ class MalformedPipelineError(ValueError):
     pass
 
 
-class MalformedOperatorError(ValueError):
+class MalformedChunkOperatorError(ValueError):
 
     """Invalid Chunk Operator Definition"""
     pass

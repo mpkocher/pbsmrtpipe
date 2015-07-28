@@ -14,7 +14,7 @@ from pbsmrtpipe.constants import (to_constant_ns,
                                   DATASTORE_VERSION, DRIVER_MANIFEST_JSON,
                                   RX_CHUNK_KEY, to_ds_ns,
                                   RESOLVED_TOOL_CONTRACT_JSON)
-from pbsmrtpipe.exceptions import (MalformedOperatorError, MalformedChunkKeyError)
+from pbsmrtpipe.exceptions import (MalformedChunkOperatorError, MalformedChunkKeyError)
 
 # legacy. imports into this module.
 from pbcommand.models import FileTypes, SymbolTypes, TaskTypes, ResourceTypes
@@ -571,7 +571,7 @@ def validate_operator(op, registered_tasks):
     """
 
     def _raise_msg(m):
-        MalformedOperatorError("Operator {o} malformed. {m}".format(o=op.idx, m=m))
+        MalformedChunkOperatorError("Operator {o} malformed. {m}".format(o=op.idx, m=m))
 
     def _get_task_or_raise(task_id_):
         if task_id_ not in registered_tasks:
