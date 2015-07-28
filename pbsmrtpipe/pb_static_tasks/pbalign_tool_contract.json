@@ -11,7 +11,7 @@
                 "description": "SubreadSet or unaligned .bam", 
                 "title": "Subread DataSet", 
                 "id": "subreads", 
-                "file_type_id": "PacBio.DataSet.HdfSubreadSet"
+                "file_type_id": "PacBio.DataSet.SubreadSet"
             }, 
             {
                 "description": "Reference DataSet or FASTA file", 
@@ -32,13 +32,61 @@
                 "type": "object", 
                 "properties": {
                     "pbalign.task_options.algorithm_options": {
-                        "default": null, 
+                        "default": "", 
                         "type": "string", 
                         "description": "List of space-separated arguments passed to BLASR (etc.)", 
                         "title": "Algorithm options"
                     }
                 }, 
                 "title": "JSON Schema for pbalign.task_options.algorithm_options"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbalign.task_options.min_accuracy"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbalign.task_options.min_accuracy": {
+                        "default": 70.0, 
+                        "type": "number", 
+                        "description": "Minimum required alignment accuracy (percent)", 
+                        "title": "Min. accuracy"
+                    }
+                }, 
+                "title": "JSON Schema for pbalign.task_options.min_accuracy"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbalign.task_options.min_length"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbalign.task_options.min_length": {
+                        "default": 50, 
+                        "type": "integer", 
+                        "description": "Minimum required alignment length", 
+                        "title": "Min. length"
+                    }
+                }, 
+                "title": "JSON Schema for pbalign.task_options.min_length"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbalign.task_options.concordant"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbalign.task_options.concordant": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Map subreads of a ZMW to the same genomic location", 
+                        "title": "Concordant alignment"
+                    }
+                }, 
+                "title": "JSON Schema for pbalign.task_options.concordant"
             }
         ], 
         "output_types": [
@@ -47,9 +95,9 @@
                 "description": "BAM file of aligned reads", 
                 "default_name": "aligned.subreads.bam", 
                 "id": "bam", 
-                "file_type_id": "PacBio.FileTypes.bam"
+                "file_type_id": "PacBio.FileTypes.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T19:17:34.335491"
+        "_comment": "Created by v0.1.1 at 2015-07-28T15:48:21.555436"
     }
 }
