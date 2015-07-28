@@ -63,8 +63,9 @@ def sa3_align():
 def sa3_resequencing():
 
     # Quiver
-    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:0"),
-          ("pbsmrtpipe.pipelines.sa3_align:pbalign.tasks.pbalign:0", "genomic_consensus.tasks.variantcaller:1")]
+    b1 = [
+        ("pbsmrtpipe.pipelines.sa3_align:pbalign.tasks.pbalign:0", "genomic_consensus.tasks.variantcaller:0"),
+        (Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:1")]
 
     return b1
 
@@ -84,6 +85,7 @@ def ds_align():
     b3 = [(Constants.ENTRY_DS_SUBREAD, "pbalign.tasks.pbalign:0"),
           (Constants.ENTRY_DS_REF, "pbalign.tasks.pbalign:1")]
 
+    # Mapping Report
     b4 = [("pbalign.tasks.pbalign:0", "pbreports.tasks.mapping_stats:0")]
 
     return b3 + b4
@@ -93,8 +95,8 @@ def ds_align():
 def ds_genomic_consenus():
     """Run Genomic Consensus"""
     # Call consensus
-    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:0"),
-          (Constants.ENTRY_BAM_ALIGNMENT, "genomic_consensus.tasks.variantcaller:1")]
+    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:1"),
+          (Constants.ENTRY_BAM_ALIGNMENT, "genomic_consensus.tasks.variantcaller:0")]
 
     # Need to have a better model to avoid copy any paste. This is defined in the
     # fat resquencing pipeline.
@@ -117,9 +119,10 @@ def ds_genomic_consenus():
 @register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing")
 def ds_resequencing():
 
-    # Call consensus
-    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:0"),
-          ("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", "genomic_consensus.tasks.variantcaller:1")]
+    # Quiver
+    b1 = [
+        ("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", "genomic_consensus.tasks.variantcaller:0"),
+        (Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:1")]
 
     # Consensus Report
     # b3 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
