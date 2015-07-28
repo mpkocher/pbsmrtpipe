@@ -95,6 +95,31 @@ def ds_align():
     return b3 + b4
 
 
+@register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "SA3 Genomic Consensus")
+def ds_genomic_consenus():
+    """Run Genomic Consensus"""
+    # Call consensus
+    b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0"),
+          (Constants.ENTRY_BAM_ALIGNMENT, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:1")]
+
+    # Need to have a better model to avoid copy any paste. This is defined in the
+    # fat resquencing pipeline.
+    # Summarize Coverage
+    b2 = [(Constants.ENTRY_BAM_ALIGNMENT, "pbreports.tasks.summarize_coverage:0"),
+          (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage:1")]
+
+    # Consensus Reports - variants
+    b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
+          ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.variants_report:1"),
+          ("pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.variants_report:2")]
+
+    # Consensus Reports - top variants
+    b4 = [("pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.top_variants:0"),
+          (Constants.ENTRY_DS_REF, "pbreports.tasks.top_variants:1")]
+
+    return b1 + b2 + b3 + b4
+
+
 @register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing")
 def ds_resequencing():
 
