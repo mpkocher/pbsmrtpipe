@@ -27,34 +27,34 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "pbreports.tasks.how_many"
+                    "pbreports.task_options.how_many"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "pbreports.tasks.how_many": {
+                    "pbreports.task_options.how_many": {
                         "default": 100, 
                         "type": "integer", 
                         "description": "number of top variants to show (default=100)", 
                         "title": "Number of variants"
                     }
                 }, 
-                "title": "JSON Schema for pbreports.tasks.how_many"
+                "title": "JSON Schema for pbreports.task_options.how_many"
             }, 
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "pbreports.tasks.batch_sort_size"
+                    "pbreports.task_options.batch_sort_size"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "pbreports.tasks.batch_sort_size": {
+                    "pbreports.task_options.batch_sort_size": {
                         "default": 10000, 
                         "type": "integer", 
                         "description": "Intermediate sort size parameter (default=10000)", 
                         "title": "Batch sort size"
                     }
                 }, 
-                "title": "JSON Schema for pbreports.tasks.batch_sort_size"
+                "title": "JSON Schema for pbreports.task_options.batch_sort_size"
             }
         ], 
         "output_types": [
@@ -63,9 +63,9 @@
                 "description": "JSON report", 
                 "default_name": "report.json", 
                 "id": "report", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-23T11:06:02.716535"
+        "_comment": "Created by v0.1.1 at 2015-07-28T13:58:06.396266"
     }
 }

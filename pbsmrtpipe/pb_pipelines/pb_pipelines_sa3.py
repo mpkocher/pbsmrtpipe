@@ -146,20 +146,24 @@ def ds_fat_resequencing():
     b2 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", "pbreports.tasks.summarize_coverage:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage:1")]
 
+    # Enrich Alignment Summary Gff
+    b3 = [("pbreports.tasks.summarize_coverage:0", "genomic_consensus.tasks.summarize_consensus:0"),
+          ("pbsmrtpipe.pipelines.sa3_ds_resequencing:genomic_consensus.tasks.variantcaller:0", "genomic_consensus.tasks.summarize_consensus:1")]
+
     # Consensus Reports - variants
-    b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
-          ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.variants_report:1"),
-          ("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.variants_report:2")]
+    b4 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
+          ("genomic_consensus.tasks.summarize_consensus:0", "pbreports.tasks.variants_report:1"),
+          ("pbsmrtpipe.pipelines.sa3_ds_resequencing:genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.variants_report:2")]
 
     # Consensus Reports - top variants
-    b4 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
+    b5 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.top_variants:1")]
 
     # Consensus Reports - minor top variants
-    # b5 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
+    # b6 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
     #      ("pbsmrtpipe.tasks.call_variants_with_fastx:0", "pbsmrtpipe.tasks.variants_report:2")]
 
-    return b2 + b3 + b4
+    return b2 + b3 + b4 + b5
 
 
 @register_pipeline(to_pipeline_ns("ds_modification_detection"), 'SA3 Modification Detection')
