@@ -51,10 +51,10 @@ def sa3_align():
     b2 = [("pbsmrtpipe.tasks.rs_movie_to_hdf5_dataset:0", "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
 
     # Call blasr/pbalign
-    b3 = [("pbsmrtpipe.tasks.h5_subreads_to_subread:0", "pbsmrtpipe.tasks.align_ds:0"),
-          (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.align_ds:1")]
+    b3 = [("pbsmrtpipe.tasks.h5_subreads_to_subread:0", "pbalign.tasks.pbalign:0"),
+          (Constants.ENTRY_DS_REF, "pbalign.tasks.pbalign:1")]
 
-    b4 = [("pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.mapping_ds_report:0")]
+    b4 = [("pbalign.tasks.pbalign:0", "pbreports.tasks.mapping_stats:0")]
 
     return b1 + b2 + b3 + b4
 
@@ -62,17 +62,11 @@ def sa3_align():
 @register_pipeline(to_pipeline_ns("sa3_resequencing"), "SA3 RS movie Resequencing")
 def sa3_resequencing():
 
-    # Generate FASTA metadata report and write contig headers FOFN
-    b0 = [(Constants.ENTRY_DS_REF, 'pbsmrtpipe.tasks.ref_to_report:0'),
-          (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0"),
-          ('pbsmrtpipe.tasks.ref_to_report:0', 'pbsmrtpipe.tasks.write_reference_contig_idx_chunks:1')]
-
     # Quiver
-    b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx:0"),
-          ("pbsmrtpipe.pipelines.sa3_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:1"),
-          ("pbsmrtpipe.tasks.write_reference_contig_idx_chunks:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx:2")]
+    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:0"),
+          ("pbsmrtpipe.pipelines.sa3_align:pbalign.tasks.pbalign:0", "genomic_consensus.tasks.variantcaller:1")]
 
-    return b0 + b1
+    return b1
 
 
 @register_pipeline(to_pipeline_ns("sa3_hdfsubread_to_subread"), "Convert Hdf SubreadSet to SubreadSet")
@@ -87,10 +81,10 @@ def hdf_subread_converter():
 def ds_align():
 
     # Call blasr/pbalign
-    b3 = [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.align_ds:0"),
-          (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.align_ds:1")]
+    b3 = [(Constants.ENTRY_DS_SUBREAD, "pbalign.tasks.pbalign:0"),
+          (Constants.ENTRY_DS_REF, "pbalign.tasks.pbalign:1")]
 
-    b4 = [("pbsmrtpipe.tasks.align_ds:0", "pbreports.tasks.mapping_stats:0")]
+    b4 = [("pbalign.tasks.pbalign:0", "pbreports.tasks.mapping_stats:0")]
 
     return b3 + b4
 
@@ -99,8 +93,8 @@ def ds_align():
 def ds_genomic_consenus():
     """Run Genomic Consensus"""
     # Call consensus
-    b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0"),
-          (Constants.ENTRY_BAM_ALIGNMENT, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:1")]
+    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:0"),
+          (Constants.ENTRY_BAM_ALIGNMENT, "genomic_consensus.tasks.variantcaller:1")]
 
     # Need to have a better model to avoid copy any paste. This is defined in the
     # fat resquencing pipeline.
@@ -111,10 +105,10 @@ def ds_genomic_consenus():
     # Consensus Reports - variants
     b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
           ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.variants_report:1"),
-          ("pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.variants_report:2")]
+          ("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.variants_report:2")]
 
     # Consensus Reports - top variants
-    b4 = [("pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.top_variants:0"),
+    b4 = [("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.top_variants:1")]
 
     return b1 + b2 + b3 + b4
@@ -124,8 +118,8 @@ def ds_genomic_consenus():
 def ds_resequencing():
 
     # Call consensus
-    b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0"),
-          ("pbsmrtpipe.pipelines.sa3_ds_align:pbsmrtpipe.tasks.align_ds:0", "pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:1")]
+    b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:0"),
+          ("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", "genomic_consensus.tasks.variantcaller:1")]
 
     # Consensus Report
     # b3 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.ds_variants_report:0"),
@@ -146,16 +140,16 @@ def ds_fat_resequencing():
     """DS RS + GC extras and Reports"""
 
     # Summarize Coverage
-    b2 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "pbreports.tasks.summarize_coverage:0"),
+    b2 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", "pbreports.tasks.summarize_coverage:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage:1")]
 
     # Consensus Reports - variants
     b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
           ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.variants_report:1"),
-          ("pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.variants_report:2")]
+          ("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.variants_report:2")]
 
     # Consensus Reports - top variants
-    b4 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds:0", "pbreports.tasks.top_variants:0"),
+    b4 = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.top_variants:1")]
 
     # Consensus Reports - minor top variants
@@ -173,7 +167,7 @@ def rs_modification_detection_1():
     _add = bs.append
 
     # AlignmentSet, ReferenceSet
-    _add(("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "kinetics_tools.tasks.ipd_summary:0"))
+    _add(("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", "kinetics_tools.tasks.ipd_summary:0"))
     _add((Constants.ENTRY_DS_REF, 'kinetics_tools.tasks.ipd_summary:1'))
 
     _add(('kinetics_tools.tasks.ipd_summary:1', 'pbreports.tasks.modifications_report:0'))
@@ -214,7 +208,7 @@ def rs_site_acceptance_test_1():
     """Site Acceptance Test"""
 
     # AlignmentSet, GFF, mapping Report
-    x = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbsmrtpipe.tasks.align_ds:0", "pbreports.tasks.sat_report:0"),
+    x = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", "pbreports.tasks.sat_report:0"),
          ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.mapping_stats:0", "pbreports.tasks.sat_report:1"),
          ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.variants_report:0", "pbreports.tasks.sat_report:2")]
 
