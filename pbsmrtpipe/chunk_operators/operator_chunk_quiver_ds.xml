@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <chunk-operator id="pbsmrtpipe.operators.chunk_bam_call_variants_with_fastx_ds">
 
-    <task-id>pbsmrtpipe.tasks.bam_call_variants_with_fastx_ds</task-id>
+    <task-id>genomic_consensus.tasks.variantcaller</task-id>
 
     <scatter>
         <scatter-task-id>pbsmrtpipe.tasks.alignment_contig_scatter</scatter-task-id>
@@ -16,17 +16,17 @@
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_gff</gather-task-id>
                 <chunk-key>$chunk.gff_id</chunk-key>
-                <task-output>pbsmrtpipe.tasks.ds_call_variants:0</task-output>
+                <task-output>genomic_consensus.tasks.variantcaller:0</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_id</chunk-key>
-                <task-output>pbsmrtpipe.tasks.ds_call_variants:1</task-output>
+                <task-output>genomic_consensus.tasks.variantcaller:1</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_fastq</gather-task-id>
                 <chunk-key>$chunk.fastq_id</chunk-key>
-                <task-output>pbsmrtpipe.tasks.ds_call_variants:2</task-output>
+                <task-output>genomic_consensus.tasks.variantcaller:2</task-output>
             </chunk>
         </chunks>
     </gather>
