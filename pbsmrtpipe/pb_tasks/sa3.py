@@ -1,13 +1,8 @@
 import logging
-import os
 
 from pbsmrtpipe.core import (MetaTaskBase, MetaScatterTaskBase,
                              MetaGatherTaskBase)
-from pbsmrtpipe.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
-#import _mapping_opts as AOPTS
-import pbsmrtpipe.schema_opt_utils as OP
-from pbsmrtpipe.pb_tasks.genomic_consensus import _to_call_variants_opts_schema
-
+from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 log = logging.getLogger(__name__)
 
 
@@ -141,8 +136,8 @@ class GatherContigSetTask(MetaGatherTaskBase):
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     # TODO: change this when quiver outputs xmls
-    OUTPUT_TYPES = [(FileTypes.FASTA, "fasta", "Gathered Fasta")]
-    OUTPUT_FILE_NAMES = [("gathered", "xml")]
+    OUTPUT_TYPES = [(FileTypes.DS_CONTIG, "contigset", "Gathered ContigSet")]
+    OUTPUT_FILE_NAMES = [("gathered_contigset", "xml")]
 
     SCHEMA_OPTIONS = {}
     NPROC = 1
