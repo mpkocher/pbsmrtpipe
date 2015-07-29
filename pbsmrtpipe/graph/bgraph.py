@@ -1140,10 +1140,10 @@ def get_companion_unscattered_task_node(bg, chunk_group_id):
         if tnode.__class__ == TaskBindingNode:
             if bg.node[tnode][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID] == chunk_group_id:
                 return tnode
-    return KeyError("Unable to find scattred companion task for chunk-group {g}".format(g=chunk_group_id))
+    return KeyError("Unable to find scattered companion task for chunk-group {g}".format(g=chunk_group_id))
 
 
-def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_d):
+def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_d, tasks_root_dir):
     """Create the gathered.chunk.json by gathering the Chunked Task Instances.
 
     1. Find all scattered task nodes
@@ -1225,7 +1225,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
             raise ChunkGatheringError("No chunked tasks found for {t} chunk-group {g}".format(t=node, g=chunk_group_id))
 
         if all(s == TaskStates.SUCCESSFUL for cnode, s in chunked_task_states):
-            # Check if all chunked tasks were complete and output files resolved
+            # Check if all chunked tasks have completed and output files have been resolved
             if all(was_task_successful_with_resolve_outputs(bg, cnode) for cnode, s in chunked_task_states):
 
                 slog.info("Starting chunking gathering process for task {n} chunk-group {g}".format(n=node, g=chunk_group_id))
@@ -1257,7 +1257,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                     return GlobalConstants.RX_TASK_ID.match(task_id_).groups()[1]
 
                 comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
-                gathered_json = os.path.join(os.getcwd(), "{t}-gathered-pipeline.chunks.json".format(t=_to_base(node.meta_task.task_id)))
+                gathered_json = os.path.join(tasks_root_dir, "{t}-gathered-pipeline.chunks.json".format(t=_to_base(node.meta_task.task_id)))
                 IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
 
                 # Create New Gathered InFile Node

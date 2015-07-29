@@ -385,7 +385,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             # output chunk.json is resolved, read in the file and
             # generate the new chunked tasks. This mutates the graph
             # significantly.
-            B.add_gather_to_completed_task_chunks(bg, global_registry.chunk_operators, global_registry.tasks)
+            B.add_gather_to_completed_task_chunks(bg, global_registry.chunk_operators, global_registry.tasks, job_resources.tasks)
 
             if not _are_workers_alive(workers):
                 for tix_, w_ in workers.iteritems():
