@@ -209,8 +209,8 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
     VERSION = "0.1.0"
 
     TASK_TYPE = TaskTypes.LOCAL
-    INPUT_TYPES = [(FileTypes.DS_REF, "ref_ds", "Reference DataSet file"),
-                   (FileTypes.DS_BAM, "alignment_ds", "Pacbio DataSet AlignmentSet")]
+    INPUT_TYPES = [(FileTypes.DS_BAM, "alignment_ds", "Pacbio DataSet AlignmentSet"),
+                   (FileTypes.DS_REF, "ref_ds", "Reference DataSet file")]
 
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
                      'Generic Chunked JSON AlignmentSet')]
@@ -230,8 +230,8 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
         chunk_key = "alignmentset_id"
         mode = "alignmentset"
         _d = dict(e=exe,
-                  i=input_files[1],
-                  r=input_files[0],
+                  i=input_files[0],
+                  r=input_files[1],
                   o=output_files[0],
                   n=nchunks)
         return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
