@@ -13,7 +13,7 @@ from pbsmrtpipe.cli_utils import validate_file
 
 from pbsmrtpipe.engine import run_command, run_command_async
 from pbsmrtpipe.cli import (add_log_file_options, add_log_level_option,
-                            LOG_LEVELS)
+                            LOG_LEVELS, resolve_dist_chunk_overrides)
 from pbsmrtpipe.constants import SLOG_PREFIX
 from pbsmrtpipe.utils import compose
 import pbsmrtpipe.testkit.butler as B
@@ -86,7 +86,10 @@ def run_butler_tests(test_cases, output_dir, output_xml, job_id):
     return 0 if result.wasSuccessful() else 1
 
 
-def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.DEBUG, force_distribute=False):
+def run_butler(butler, test_cases, output_xml, log_file=None,
+               log_level=logging.DEBUG,
+               force_distribute=None,
+               force_chunk=None):
     """
     Run a Butler instance.
 
@@ -98,8 +101,10 @@ def run_butler(butler, test_cases, output_xml, log_file=None, log_level=logging.
     """
     started_at = time.time()
 
-    if force_distribute:
+    if isinstance(force_distribute, bool):
         butler.force_distribute = force_distribute
+    if isinstance(force_chunk, bool):
+        butler.force_chunk = force_chunk
 
     cmd = butler.to_cmd()
 
@@ -173,10 +178,15 @@ def _args_run_butler(args):
 
     output_xml = os.path.join(butler.output_dir, 'testkit_xunit.xml')
 
+    force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
+
     if args.only_tests:
         return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
     else:
-        rcode = run_butler(butler, test_cases, output_xml, log_file=args.log_file, log_level=args.log_level, force_distribute=args.force_distribute)
+        rcode = run_butler(butler, test_cases, output_xml,
+                           log_file=args.log_file,
+                           log_level=args.log_level,
+                           force_distribute=force_distribute, force_chunk=force_chunk)
         return rcode
 
 
@@ -194,12 +204,13 @@ def get_parser():
     desc = "Testkit Tool to run pbsmrtpipe jobs."
     p = get_default_argparser(__version__, desc)
 
-    funcs = [TU.add_debug_option,
+    funcs = [TU.add_override_chunked_mode,
+             TU.add_override_distribute_option,
              _add_config_file_option,
              add_tests_only_option,
              add_log_level_option,
              add_log_file_options,
-             TU.add_force_distribute_option]
+             TU.add_debug_option]
 
     f = compose(*funcs)
     p = f(p)

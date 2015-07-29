@@ -666,7 +666,7 @@ def _validate_entry_points_or_raise(entry_points_d):
 
 
 def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline,
-                          entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
+                          entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None):
     """
     Load and resolve input IO layer
 
@@ -728,6 +728,9 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     workflow_level_opts = IO.validate_or_modify_workflow_level_options(workflow_level_opts)
 
+    if isinstance(force_chunk_mode, bool):
+        workflow_level_opts.chunk_mode = force_chunk_mode
+
     slog.info("Successfully validated workflow options.")
 
     slog.info("validating supplied task options.")
@@ -742,15 +745,15 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
         # override distributed mode only if provided.
-        if force_distribute is not None:
-            workflow_level_opts.distributed_mode = True
+        if isinstance(force_distribute, bool):
+            workflow_level_opts.distributed_mode = force_distribute
     else:
         cluster_render = None
 
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
-def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None):
+def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None):
     """Grungy loading of the IO and resolving values
 
     Returns a tuple of (WorkflowLevelOptions, TaskOptions, ClusterRender)
@@ -780,6 +783,9 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
 
     workflow_level_opts = IO.validate_or_modify_workflow_level_options(workflow_level_opts)
 
+    if isinstance(force_chunk_mode, bool):
+        workflow_level_opts.chunk_mode = force_chunk_mode
+
     # Validate
     topts = IO.validate_raw_task_options(registered_tasks, topts)
 
@@ -789,9 +795,8 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
         # override distributed mode
-        if force_distribute is not None:
-            if force_distribute is True:
-                workflow_level_opts.distributed_mode = True
+        if isinstance(force_distribute, bool):
+            workflow_level_opts.distributed_mode = force_distribute
     else:
         cluster_render = None
 
@@ -885,7 +890,8 @@ def workflow_exception_exitcode_handler(func):
 @workflow_exception_exitcode_handler
 def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d,
                  chunk_operators, workflow_template_xml, entry_points_d,
-                 output_dir, preset_xml, rc_preset_or_none, service_uri, force_distribute=None):
+                 output_dir, preset_xml, rc_preset_or_none, service_uri,
+                 force_distribute=None, force_chunk_mode=None):
     """
     Entry point for running a pipeline
 
@@ -912,7 +918,8 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
                                                                                               workflow_template_xml,
                                                                                               entry_points_d, preset_xml,
                                                                                               rc_preset_or_none,
-                                                                                              force_distribute=force_distribute)
+                                                                                              force_distribute=force_distribute,
+                                                                                              force_chunk_mode=force_chunk_mode)
 
     slog.info("building graph")
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, workflow_bindings)
@@ -991,7 +998,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 @workflow_exception_exitcode_handler
 def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators,
                     entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none,
-                    service_config, force_distribute=None):
+                    service_config, force_distribute=None, force_chunk_mode=None):
     """
     Entry Point for running a single task
 
@@ -1009,7 +1016,8 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
 
     workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d,
                                                                        preset_xml, rc_preset_or_none,
-                                                                       force_distribute=force_distribute)
+                                                                       force_distribute=force_distribute,
+                                                                       force_chunk_mode=force_chunk_mode)
 
     slog.info("building bindings graph")
     binding_str = _task_to_binding_strings(meta_task)

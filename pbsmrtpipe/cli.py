@@ -322,13 +322,12 @@ def _args_run_pipeline(args):
 
     registered_tasks_d, registered_files_d, chunk_operators, pipelines_d = __dynamically_load_all()
 
-    # FIXME. Only override if value was provided.
-    # args.force_distribute
-    force_distribute = None
+    force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri, force_distribute=force_distribute)
+                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri,
+                          force_distribute=force_distribute, force_chunk_mode=force_chunk)
 
 
 def _validate_entry_id(e):
@@ -381,10 +380,14 @@ def _add_webservice_config(p):
 
 def __add_pipeline_parser_options(p):
     """Common options for all running pipelines or tasks"""
-    funcs = [TU.add_debug_option, _add_output_dir_option,
-             _add_entry_point_option, _add_preset_xml_option,
+    funcs = [TU.add_override_chunked_mode,
+             TU.add_override_distribute_option,
+             _add_webservice_config,
              _add_rc_preset_xml_option,
-             _add_webservice_config, TU.add_force_distribute_option]
+             _add_preset_xml_option,
+             _add_output_dir_option,
+             _add_entry_point_option,
+             TU.add_debug_option]
 
     f = compose(*funcs)
     return f(p)
@@ -411,11 +414,38 @@ def add_show_template_details_parser_options(p):
 
 
 def add_task_parser_options(p):
-    funcs = [TU.add_debug_option, _add_task_id_option, _add_entry_point_option, _add_output_dir_option,
-             _add_preset_xml_option, _add_rc_preset_xml_option,
-             _add_webservice_config]
+
+    funcs = [
+        TU.add_override_chunked_mode,
+        TU.add_override_distribute_option,
+        _add_webservice_config,
+        _add_rc_preset_xml_option,
+        _add_preset_xml_option,
+        _add_output_dir_option,
+        _add_entry_point_option,
+        _add_task_id_option,
+        TU.add_debug_option]
+
     f = compose(*funcs)
     return f(p)
+
+
+def resolve_dist_chunk_overrides(args):
+    # Assumes add_override_chunk_mode and add_override_distribute_mode options
+    # were added
+    force_distribute = None
+    if args.force_distributed is True:
+        force_distribute = True
+    if args.local_only is True:
+        force_distribute = False
+
+    force_chunk = None
+    if args.force_chunk_mode is True:
+        force_chunk = True
+    if args.disable_chunk_mode is False:
+        force_chunk = False
+
+    return force_distribute, force_chunk
 
 
 def _args_task_runner(args):
@@ -428,12 +458,13 @@ def _args_task_runner(args):
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
     # FIXME. This needs to only be over written if it's provided
-    force_distribute = None
+    force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
     return D.run_single_task(registered_file_types, registered_tasks, chunk_operators,
                              ee_pd, args.task_id, args.output_dir,
                              args.preset_xml, args.preset_rc_xml, args.service_uri,
-                             force_distribute=force_distribute)
+                             force_distribute=force_distribute,
+                             force_chunk_mode=force_chunk)
 
 
 def _args_run_show_workflow_level_options(args):
@@ -473,9 +504,16 @@ def _args_run_pipeline_id(args):
 
     ep_d = _cli_entry_point_args_to_dict(args.entry_points)
 
-    return D.run_pipeline(pipelines, registered_files_d, registered_tasks_d, chunk_operators,
+    force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
+
+    return D.run_pipeline(pipelines, registered_files_d,
+                          registered_tasks_d,
+                          chunk_operators,
                           pipeline,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri)
+                          ep_d, args.output_dir, args.preset_xml,
+                          args.preset_rc_xml, args.service_uri,
+                          force_distribute=force_distribute,
+                          force_chunk_mode=force_chunk)
 
 
 def get_parser():
@@ -497,7 +535,10 @@ def get_parser():
     builder('task', "Run Task by id.", add_task_parser_options, _args_task_runner)
 
     # Show Templates
-    desc = "List all pipeline templates. A pipeline 'id' can be referenced in your my_pipeline.xml file using '<import-template id=\"pbsmrtpipe.pipelines.my_pipeline_id\" />. This can replace the explicit listing of EntryPoints and Bindings."
+    desc = "List all pipeline templates. A pipeline 'id' can be referenced in " \
+           "your my_pipeline.xml file using '<import-template id=\"pbsmrtpipe.pipelines.my_pipeline_id\" />. This " \
+           "can replace the explicit listing of EntryPoints and Bindings."
+
     builder('show-templates', desc, lambda x: x, _args_run_show_templates)
 
     # Show Template Details

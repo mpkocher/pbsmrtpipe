@@ -42,12 +42,17 @@ class Constants(object):
 class Butler(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, job_id, output_dir, entry_points, preset_xml, debug, force_distribute=False):
+    def __init__(self, job_id, output_dir, entry_points, preset_xml, debug,
+                 force_distribute=None, force_chunk=None):
         self.output_dir = output_dir
         self.entry_points = entry_points
         self.preset_xml = preset_xml
         self.debug_mode = debug
+
+        # None means no override, True|False means override
         self.force_distribute = force_distribute
+        self.force_chunk = force_chunk
+
         # this needs to be set in the Butler.cfg file.
         self.job_id = job_id
 
@@ -63,7 +68,8 @@ class Butler(object):
     def to_cmd(self):
         return _to_pbsmrtpipe_cmd(self.prefix, self.output_dir,
                                   self.entry_points, self.preset_xml,
-                                  self.debug_mode, self.force_distribute)
+                                  self.debug_mode, self.force_distribute,
+                                  self.force_chunk)
 
 
 class ButlerWorkflow(Butler):
@@ -88,14 +94,24 @@ class ButlerTask(Butler):
         return "task {i}".format(i=self.task_id)
 
 
-def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, force_distribute):
+def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, force_distribute, force_chunk):
     ep_str = " ".join([' -e ' + ":".join([k, v]) for k, v in entry_points_d.iteritems()])
     d_str = '--debug' if debug else " "
     p_str = " " if preset_xml is None else "--preset-xml={p}".format(p=preset_xml)
     m_str = ' '
-    force_dist_str = "--force-distribute" if force_distribute else ""
-    _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str, f=force_dist_str)
-    cmd = "{x} {m} {d} {e} {p} {k} {f} --output-dir={o}"
+
+    force_distribute_str = ''
+    if isinstance(force_distribute, bool):
+        m = {True: '--force-distribute', False: '--local-only'}
+        force_distribute_str = m[force_distribute]
+    force_chunk_str = ''
+    if isinstance(force_chunk, bool):
+        m = {True: '--force-chunk-mode', False: '--disable-chunk-mode'}
+        force_distribute_str = m[force_chunk]
+
+    _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str,
+              f=force_distribute_str, c=force_chunk_str)
+    cmd = "{x} {c} {m} {d} {e} {p} {k} {f} --output-dir={o}"
     return cmd.format(**_d)
 
 
