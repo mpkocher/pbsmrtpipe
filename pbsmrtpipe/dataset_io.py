@@ -2,7 +2,7 @@ import logging
 
 from pbcore.io import FastaReader, FastqReader
 
-from pbsmrtpipe.models import FileTypes
+from pbcommand.models import FileTypes
 import pbsmrtpipe.legacy.reference_utils as RU
 from pbsmrtpipe.utils import fofn_to_files, validate_file
 
@@ -94,11 +94,3 @@ def f(path):
 @register_metadata_resolver(FileTypes.FASTQ)
 def f(path):
     return _to_fastax_dataset_metadata(FastqReader, path)
-
-
-@register_metadata_resolver(FileTypes.REF_ENTRY_XML)
-def f(path):
-    reference_entry = RU.load_reference_entry(path)
-    nrecords = reference_entry.reference_info.reference.num_contigs
-    total = sum(c.length for c in reference_entry.reference_info.contigs)
-    return DatasetMetadata(nrecords, total)

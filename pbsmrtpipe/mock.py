@@ -6,14 +6,12 @@ import string
 import tempfile
 
 from pbcore.io import FastaRecord, FastqRecord, FastaWriter, FastqWriter
+from pbcommand.models.report import Report, Attribute
 
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.graph.bgraph as B
-
-from pbsmrtpipe.models import TaskStates, FileTypes
-
+from pbsmrtpipe.models import TaskStates
 from pbsmrtpipe.models import RunnableTask
-from pbcommand.models.report import Report, Attribute
 
 log = logging.getLogger(__name__)
 
@@ -167,7 +165,7 @@ def _mock_task_exe_runner(task_dir, output_files):
         else:
             _write_mock_file(mock_file, "MOCK OUTPUT FILE")
 
-    B.write_mock_task_report(task_dir)
+    write_mock_task_report(task_dir)
 
     return TaskStates.SUCCESSFUL, "", random.randint(1, 1000)
 

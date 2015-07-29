@@ -6,7 +6,7 @@ from base import TEST_DATA_DIR, get_temp_file
 
 import pbsmrtpipe.loader
 import pbsmrtpipe.pb_io as IO
-from pbsmrtpipe.models import PipelineChunk, Constants
+from pbcommand.models import PipelineChunk
 
 REGISTERED_TASKS, REGISTERED_FILE_TYPES, REGISTERED_CHUNK_OPERATORS, REGISTERED_PIPELINES = pbsmrtpipe.loader.load_all()
 
@@ -99,8 +99,8 @@ class TestWriteChunk(unittest.TestCase):
     def test_write_chunks(self):
 
         def f(i):
-            return {"{c}movie_fofn_id".format(c=Constants.CHUNK_KEY_PREFIX): "/path/to_movie-{i}.fofn".format(i=i),
-                    "{c}region_fofn_id".format(c=Constants.CHUNK_KEY_PREFIX): "/path/rgn_{i}.fofn".format(i=i)}
+            return {"{c}movie_fofn_id".format(c=PipelineChunk.CHUNK_KEY_PREFIX): "/path/to_movie-{i}.fofn".format(i=i),
+                    "{c}region_fofn_id".format(c=PipelineChunk.CHUNK_KEY_PREFIX): "/path/rgn_{i}.fofn".format(i=i)}
 
         to_i = lambda i: "chunk-id-{i}".format(i=i)
         to_p = lambda i: PipelineChunk(to_i(i), **f(i))

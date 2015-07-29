@@ -13,6 +13,8 @@ import functools
 import uuid
 from pbcore.io import DataSet
 
+from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
+
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.exceptions import (PipelineRuntimeError,
@@ -29,16 +31,15 @@ import pbsmrtpipe.driver_utils as DU
 import pbsmrtpipe.services as WS
 from pbsmrtpipe import opts_graph as GX
 
-from pbsmrtpipe.report_renderer import AnalysisLink
 from pbsmrtpipe.graph.models import (TaskStates,
                                      TaskBindingNode,
                                      TaskChunkedBindingNode,
                                      EntryOutBindingFileNode)
 
-from pbsmrtpipe.models import (FileTypes, TaskTypes, Pipeline,
-                               MetaStaticTask, MetaTask,
-                               GlobalRegistry, TaskResult, DataStoreFile,
-                               validate_operator)
+
+from pbsmrtpipe.models import (Pipeline, MetaStaticTask, MetaTask,
+                               GlobalRegistry, TaskResult, validate_operator,
+                               AnalysisLink)
 from pbsmrtpipe.engine import TaskManifestWorker
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
 

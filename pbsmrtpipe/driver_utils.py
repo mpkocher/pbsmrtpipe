@@ -4,6 +4,7 @@ import logging
 import pprint
 import shutil
 
+from pbcommand.models import DataStore
 from pbcommand.models.report import Attribute, Report, Table, Column, Plot, PlotGroup
 
 import pbsmrtpipe
@@ -12,9 +13,8 @@ import pbsmrtpipe.report_renderer as R
 import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
-from pbsmrtpipe.graph.models import TaskBindingNode, \
-    VALID_ALL_TASK_NODE_CLASSES
-from pbsmrtpipe.models import TaskStates, DataStore, JobResources
+from pbsmrtpipe.graph.models import VALID_ALL_TASK_NODE_CLASSES
+from pbsmrtpipe.models import TaskStates, JobResources
 from pbsmrtpipe.utils import setup_log
 
 log = logging.getLogger(__name__)

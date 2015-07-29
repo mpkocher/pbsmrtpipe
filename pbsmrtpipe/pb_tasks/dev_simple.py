@@ -1,7 +1,8 @@
 import logging
 
+from pbcommand.models import FileTypes, TaskTypes, ResourceTypes, SymbolTypes
+
 from pbsmrtpipe.core import MetaTaskBase
-from pbsmrtpipe.models import FileTypes, TaskTypes, ResourceTypes, SymbolTypes
 import pbsmrtpipe.schema_opt_utils as OP
 
 log = logging.getLogger(__name__)

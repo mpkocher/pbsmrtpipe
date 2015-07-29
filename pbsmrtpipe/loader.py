@@ -8,7 +8,6 @@ import importlib
 import logging
 import sys
 import functools
-from pbsmrtpipe.exceptions import MalformedChunkOperatorError
 
 import pbsmrtpipe.models as M
 

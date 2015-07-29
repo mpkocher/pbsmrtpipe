@@ -8,12 +8,13 @@ import re
 import types
 import pprint
 import jsonschema
+
+from pbcommand.models import FileTypes, TaskTypes, SymbolTypes
 from pbsmrtpipe.core import MetaScatterTaskBase
 from pbsmrtpipe.exceptions import (InvalidDependencyInjectError,
                                    MalformedDependencyInjectionFileMetadataError)
 
-from pbsmrtpipe.models import (TaskTypes, FileTypes,
-                               SymbolTypes, MetaScatterTask,
+from pbsmrtpipe.models import (MetaScatterTask,
                                MetaTask, ScatterTask, Task, MetaGatherTask,
                                GatherTask)
 

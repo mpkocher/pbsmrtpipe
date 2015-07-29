@@ -12,7 +12,7 @@ from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.legacy.reference_utils import (load_reference_entry,
                                                ReferenceEntry)
 
-from pbsmrtpipe.models import PipelineChunk
+from pbcommand.models import PipelineChunk
 
 from pbcommand.models.report import Report, Attribute
 import pbsmrtpipe.tools.chunk_utils as CU

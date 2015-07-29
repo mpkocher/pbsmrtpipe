@@ -5,7 +5,8 @@ import unittest
 
 from base import TEST_DATA_DIR, TestDirBase, DEBUG, get_temp_file
 
-from pbsmrtpipe.models import RunnableTask, TaskTypes
+from pbcommand.models import TaskTypes
+from pbsmrtpipe.models import RunnableTask
 import pbsmrtpipe.tools.runner as R
 
 log = logging.getLogger(__name__)

@@ -8,7 +8,7 @@ from pbcore.io import (FastaWriter, FastaReader, FastqReader, FastqWriter,
                        AlignmentSet, HdfSubreadSet, SubreadSet, ReferenceSet)
 from pbsmrtpipe.legacy.input_xml import fofn_to_report
 
-from pbsmrtpipe.models import PipelineChunk
+from pbcommand.models import PipelineChunk
 import pbsmrtpipe.pb_io as IO
 
 log = logging.getLogger(__name__)

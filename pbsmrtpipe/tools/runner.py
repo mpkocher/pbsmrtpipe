@@ -15,8 +15,8 @@ from pbcommand.models.report import Attribute, Report
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
 from pbsmrtpipe.engine import run_command, backticks
-from pbsmrtpipe.models import RunnableTask, ResourceTypes, TaskTypes, TaskStates
-import pbsmrtpipe.graph.bgraph_utils as BU
+from pbsmrtpipe.models import RunnableTask, TaskStates
+from pbcommand.models import ResourceTypes, TaskTypes
 import pbsmrtpipe.pb_io as IO
 
 import pbsmrtpipe.tools.utils as U

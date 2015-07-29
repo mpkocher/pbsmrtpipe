@@ -11,7 +11,7 @@ import warnings
 import jsonschema
 from pbcommand.cli.resolver import ToolContractError
 from pbcommand.models import (ToolDriver, ResolvedToolContract,
-                              ResolvedToolContractTask)
+                              ResolvedToolContractTask, PipelineChunk)
 
 from pbcommand.pb_io.tool_contract_io import load_tool_contract_from, write_resolved_tool_contract
 
@@ -25,7 +25,7 @@ from pbsmrtpipe.schema_opt_utils import crude_coerce_type_from_str
 from pbsmrtpipe.constants import ENV_PRESET, RESOLVED_TOOL_CONTRACT_JSON
 import pbsmrtpipe.cluster as C
 from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
-                               PipelineChunk, ChunkOperator, Gather,
+                               ChunkOperator, Gather,
                                GatherChunk, ScatterChunk, Scatter,
                                MetaStaticTask,
                                REGISTERED_FILE_TYPES)

@@ -1,7 +1,7 @@
 import logging
 import os
 
-from pbsmrtpipe.models import TaskTypes
+from pbcommand.models import TaskTypes
 from pbsmrtpipe.schema_opt_utils import to_opt_id
 
 from task_test_base import _TaskTestBase, TEST_DATA_DIR

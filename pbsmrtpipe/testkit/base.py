@@ -3,7 +3,7 @@ import logging
 import types
 import time
 
-from pbsmrtpipe.models import DataStore
+from pbcommand.models import DataStore
 from pbsmrtpipe.testkit.validators2 import DataStoreFileValidator
 
 log = logging.getLogger(__name__)

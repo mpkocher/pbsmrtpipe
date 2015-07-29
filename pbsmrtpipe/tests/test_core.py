@@ -2,7 +2,7 @@ import unittest
 import logging
 
 from pbsmrtpipe.core import MetaTaskBase
-from pbsmrtpipe.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
+from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 
 log = logging.getLogger(__name__)
 

@@ -1,10 +1,9 @@
 import logging
 
+from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 from pbsmrtpipe.core import (MetaTaskBase, MetaScatterTaskBase,
                              MetaGatherTaskBase)
-from pbsmrtpipe.models import (FileTypes, TaskTypes,
-                               ResourceTypes, SymbolTypes,
-                               MetaScatterTask)
+from pbsmrtpipe.models import MetaScatterTask
 import pbsmrtpipe.schema_opt_utils as OP
 
 log = logging.getLogger(__name__)

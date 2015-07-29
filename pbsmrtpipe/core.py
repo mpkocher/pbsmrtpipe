@@ -6,6 +6,9 @@ import sys
 import types
 import functools
 
+from pbcommand.models import (FileTypes, TaskTypes, SymbolTypes, ResourceTypes)
+from pbcommand.models.common import FileType
+
 from pbsmrtpipe.exceptions import (MalformedMetaTaskError,
                                    MalformedPipelineError)
 
@@ -17,9 +20,8 @@ from pbsmrtpipe.constants import (ENTRY_PREFIX,
                                   RX_TASK_ID, RX_BINDING_PIPELINE_ENTRY,
                                   RX_BINDING_PIPELINE_TASK)
 
-from pbsmrtpipe.models import (FileType, MetaTask, MetaScatterTask,
-                               MetaGatherTask, FileTypes, Pipeline, TaskTypes,
-                               SymbolTypes, ResourceTypes,
+from pbsmrtpipe.models import (MetaTask, MetaScatterTask,
+                               MetaGatherTask, Pipeline,
                                REGISTERED_FILE_TYPES,
                                REGISTERED_PIPELINES,
                                REGISTERED_TASKS)

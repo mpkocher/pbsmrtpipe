@@ -3,7 +3,7 @@ import os
 import unittest
 
 import pbsmrtpipe.mock as M
-from pbsmrtpipe.models import FileTypes
+from pbcommand.models import FileTypes
 from pbsmrtpipe.dataset_io import dispatch_metadata_resolver, DatasetMetadata
 
 from base import get_data_file, get_temp_file

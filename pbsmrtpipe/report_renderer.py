@@ -7,7 +7,7 @@ from jinja2 import Environment, PackageLoader
 import shutil
 
 import pbsmrtpipe
-from pbsmrtpipe.models import AnalysisLink
+
 
 log = logging.getLogger(__name__)
 

@@ -18,6 +18,7 @@ import uuid
 import networkx as nx
 from xmlbuilder import XMLBuilder
 
+from pbcommand.models import ResourceTypes
 from pbsmrtpipe.exceptions import (TaskIdNotFound, MalformedBindingError,
                                    InvalidEntryPointError,
                                    MalformedBindingStrError,
@@ -27,7 +28,7 @@ from pbsmrtpipe.exceptions import (TaskIdNotFound, MalformedBindingError,
 from pbsmrtpipe.opts_graph import resolve_di
 from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
                                    BindingFileTypeIncompatiblyError)
-from pbsmrtpipe.models import (TaskStates, ResourceTypes, MetaScatterTask)
+from pbsmrtpipe.models import MetaScatterTask, TaskStates
 
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.pb_io import strip_entry_prefix
