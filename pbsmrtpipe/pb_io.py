@@ -6,32 +6,28 @@ from collections import namedtuple
 from xml.etree.cElementTree import ElementTree
 import collections
 import json
-import warnings
+import datetime
 
 import jsonschema
 from pbcommand.cli.resolver import ToolContractError
 from pbcommand.models import (ToolDriver, ResolvedToolContract,
                               ResolvedToolContractTask, PipelineChunk)
-
-from pbcommand.pb_io.tool_contract_io import load_tool_contract_from, write_resolved_tool_contract
-
+from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from, write_resolved_tool_contract)
 from xmlbuilder import XMLBuilder
 
 from pbsmrtpipe.core import validate_provided_file_types, validate_task_type
 from pbsmrtpipe.exceptions import PipelineTemplateIdNotFoundError
-
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.schema_opt_utils import crude_coerce_type_from_str
-from pbsmrtpipe.constants import ENV_PRESET, RESOLVED_TOOL_CONTRACT_JSON
 import pbsmrtpipe.cluster as C
 from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ChunkOperator, Gather,
                                GatherChunk, ScatterChunk, Scatter,
-                               MetaStaticTask,
+                               ToolContractMetaTask,
                                REGISTERED_FILE_TYPES)
-from pbsmrtpipe.constants import SEYMOUR_HOME
+from pbsmrtpipe.constants import (ENV_PRESET, RESOLVED_TOOL_CONTRACT_JSON,
+                                  SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
-
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -738,19 +734,20 @@ def tool_contract_to_meta_task(tc):
     #
     task_type = validate_task_type(tc.task.task_type)
 
-    meta_task = MetaStaticTask(tc.task.task_id,
-                               task_type,
-                               input_types,
-                               output_types,
-                               schema_option_d,
-                               tc.task.nproc,
-                               tc.task.resources,
-                               output_file_names,
-                               mutable_files,
-                               tc.task.description,
-                               tc.task.name,
-                               version=tc.task.version,
-                               driver=driver)
+    meta_task = ToolContractMetaTask(tc,
+                                     tc.task.task_id,
+                                     task_type,
+                                     input_types,
+                                     output_types,
+                                     schema_option_d,
+                                     tc.task.nproc,
+                                     tc.task.resources,
+                                     output_file_names,
+                                     mutable_files,
+                                     tc.task.description,
+                                     tc.task.name,
+                                     version=tc.task.version,
+                                     driver=driver)
     return meta_task
 
 
@@ -763,7 +760,7 @@ def tool_contract_to_meta_task_from_file(path):
 def to_driver_manifest_d(static_meta_task, task):
     """
 
-    :type static_meta_task: MetaStaticTask
+    :type static_meta_task: ToolContractMetaTask
     :type task: MetaTask
     :param static_meta_task:
     :return: dict representation of driver manifest
@@ -799,12 +796,12 @@ def _resolve_options(tool_contract, tool_options):
 
     # Get and Validate resolved value.
     # TODO. None support should be removed.
-    for option in tool_contract:
+    for option in tool_contract.task.options:
         for optid in option['required']:
             exp_type = option['properties'][optid]['type']
             value = tool_options.get(optid, option['properties'][optid]['default'])
 
-            if (not isinstance(value, type_map[exp_type]) and value is not None):
+            if not isinstance(value, type_map[exp_type]):
                 raise ToolContractError("Incompatible option types. Supplied "
                                         "{i}. Expected {t}".format(
                                             i=type(value),
@@ -814,12 +811,51 @@ def _resolve_options(tool_contract, tool_options):
     return resolved_options
 
 
+def write_tool_contract(tc, path):
+    """:type tc: pbcommand.models.ToolContract"""
+
+    # FIXME. replace with pbcommand after v0.2.0
+    def _i_to_d(ifile_type):
+        return dict(file_type_id=ifile_type.file_type_id,
+                    id=ifile_type.label,
+                    title=ifile_type.display_name,
+                    description=ifile_type.description)
+
+    def _o_to_d(ofile_type):
+        return dict(file_type_id=ofile_type.file_type_id,
+                    id=ofile_type.label,
+                    title=ofile_type.display_name,
+                    description=ofile_type.description,
+                    default_name=ofile_type.default_name)
+
+    _version = '0.2.1'
+    created_at = datetime.datetime.now()
+    _t = dict(input_types=[_i_to_d(i) for i in tc.task.input_file_types],
+              output_types=[_o_to_d(i) for i in tc.task.output_file_types],
+              task_type=tc.task.task_type,
+              schema_options=tc.task.options,
+              nproc=tc.task.nproc,
+              resource_types=tc.task.resources,
+              _comment="Created by v{v} at {d}".format(v='0.2.1',
+                                                       d=created_at.isoformat()))
+
+    _d = dict(version=_version,
+              tool_contract_id=tc.task.task_id,
+              driver=tc.driver.to_dict(),
+              tool_contract=_t)
+
+    with open(path, 'w') as f:
+        f.write(json.dumps(_d, sort_keys=True, indent=4))
+
+    return _d
+
+
 def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options):
     """
 
     Shim layer to converts a static metatask to ResolvedToolContract
 
-    :type static_meta_task: MetaStaticTask
+    :type static_meta_task: ToolContractMetaTask
     :type task: MetaTask
     :param static_meta_task:
     :return: dict representation of driver manifest
@@ -828,10 +864,7 @@ def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_opti
 
     smt = static_meta_task
 
-    # stored as {opt-id:schema}
-    schema_opts = static_meta_task.option_schemas.values()
-
-    resolved_opts = _resolve_options(schema_opts, task_options)
+    resolved_opts = _resolve_options(static_meta_task.tool_contract, task_options)
 
     rtask = ResolvedToolContractTask(smt.task_id, smt.task_type,
                                      task.input_files,
@@ -852,6 +885,12 @@ def write_driver_manifest(static_meta_task, task, task_options, driver_manifest_
     with open(driver_manifest_path, 'w') as f:
         f.write(json.dumps(_d, indent=4, sort_keys=True))
 
+    # Drag around the TC. Eventually this should be written a Single container
+    # that has TC, RTC, cluster metadata, job-metadata
+    tc_path = os.path.join(task.output_dir, GlobalConstants.TOOL_CONTRACT_JSON)
+    write_tool_contract(static_meta_task.tool_contract, tc_path)
+
     rtc = static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options)
     rtc_json_path = os.path.join(task.output_dir, RESOLVED_TOOL_CONTRACT_JSON)
+
     write_resolved_tool_contract(rtc, rtc_json_path)

@@ -33,7 +33,7 @@ REGISTERED_CLUSTER_RENDERERS = {}
 
 __all__ = ['Constants', 'TaskTypes', 'SymbolTypes',
            'ResourceTypes', 'FileTypes',
-           'MetaTask', 'Task', 'MetaStaticTask',
+           'MetaTask', 'Task', 'ToolContractMetaTask',
            'ScatterTask',
            'GatherTask',
            'RunnableTask',
@@ -594,30 +594,22 @@ class WorkflowLevelOptions(collections.Sized):
 AnalysisLink = namedtuple("AnalysisLink", "name path")
 
 
-class MetaStaticTask(MetaTask):
+class ToolContractMetaTask(MetaTask):
 
-    def __init__(self, task_id, task_type, input_types, output_types, options_schema,
+    def __init__(self, tool_contract, task_id, task_type, input_types, output_types, options_schema,
                  nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
         """
 
         :type driver: ToolDriver
-        :param task_id:
-        :param task_type:
-        :param input_types:
-        :param output_types:
-        :param options_schema:
-        :param nproc:
-        :param resource_types:
-        :param output_file_names:
-        :param mutable_files:
-        :param description:
-        :param version:
-        :param driver:
-        :return:
+        :type tool_contract: pbcommand.models.ToolContract
+
         """
         # this is naughty and terrible. to_cmd should not be here!!!
-        super(MetaStaticTask, self).__init__(task_id, task_type, input_types, output_types, options_schema,
+        super(ToolContractMetaTask, self).__init__(task_id, task_type, input_types, output_types, options_schema,
                                              nproc, resource_types, "NA", output_file_names, mutable_files, description, display_name, version=version)
+        # Adding in a bit of duplication here. Once everything uses TC, then
+        # then the entire system can dramatically be simplify
+        self.tool_contract = tool_contract
         # Driver
         self.driver = driver
 

@@ -4,7 +4,7 @@ import datetime
 
 from pbcommand.models.common import FileType
 
-from pbsmrtpipe.models import (TaskStates, MetaStaticTask,
+from pbsmrtpipe.models import (TaskStates, ToolContractMetaTask,
                                MetaTask, MetaScatterTask)
 from pbsmrtpipe.pb_io import strip_entry_prefix
 from pbsmrtpipe.utils import validate_type_or_raise
@@ -203,7 +203,7 @@ class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
         :param instance_id:
         """
 
-        self.meta_task = validate_type_or_raise(meta_task, (MetaTask, MetaStaticTask))
+        self.meta_task = validate_type_or_raise(meta_task, (MetaTask, ToolContractMetaTask))
         self.instance_id = validate_type_or_raise(instance_id, int)
 
     @property

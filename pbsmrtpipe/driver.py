@@ -37,7 +37,7 @@ from pbsmrtpipe.graph.models import (TaskStates,
                                      EntryOutBindingFileNode)
 
 
-from pbsmrtpipe.models import (Pipeline, MetaStaticTask, MetaTask,
+from pbsmrtpipe.models import (Pipeline, ToolContractMetaTask, MetaTask,
                                GlobalRegistry, TaskResult, validate_operator,
                                AnalysisLink)
 from pbsmrtpipe.engine import TaskManifestWorker
@@ -568,7 +568,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 # and cluster template.
                 # this is similar to the Resolved Tool Contract
                 manifest_path = os.path.join(task_dir, GlobalConstants.TASK_MANIFEST_JSON)
-                if isinstance(tnode.meta_task, MetaStaticTask):
+                if isinstance(tnode.meta_task, ToolContractMetaTask):
                     # write driver manifest, which calls the resolved-tool-contract.json
                     # there's too many layers of indirection here. Partly due to the pre-tool-contract era
                     # python defined tasks.
