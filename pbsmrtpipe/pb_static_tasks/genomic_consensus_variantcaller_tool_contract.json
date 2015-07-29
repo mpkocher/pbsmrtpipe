@@ -22,7 +22,7 @@
         ], 
         "task_type": "pbsmrtpipe.constants.distributed_task", 
         "resource_types": [], 
-        "nproc": "$max_nproc",
+        "nproc": "$max_nproc", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -128,6 +128,6 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T17:11:34.842410"
+        "_comment": "Created by v0.1.1 at 2015-07-29T09:10:33.187225"
     }
 }
