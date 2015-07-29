@@ -220,7 +220,8 @@ def to_chunked_alignmentset_files(alignmentset_path, reference_path,
                                   max_total_nchunks, chunk_key, dir_name,
                                   base_name, ext):
     dset = AlignmentSet(alignmentset_path, strict=True)
-    dset_chunks = dset.split(contigs=True, chunks=max_total_nchunks)
+    dset_chunks = dset.split(contigs=True, maxChunks=max_total_nchunks,
+                             breakContigs=True)
 
     # sanity checking
     reference_set = ReferenceSet(reference_path, strict=True)

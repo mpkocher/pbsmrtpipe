@@ -215,8 +215,7 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
     NPROC = 1
     SCHEMA_OPTIONS = {}
     RESOURCE_TYPES = None
-    #NCHUNKS = SymbolTypes.MAX_NCHUNKS
-    NCHUNKS = 5
+    NCHUNKS = SymbolTypes.MAX_NCHUNKS
     # Keys that are expected to be written to the chunk.json file
     CHUNK_KEYS = ('$chunk.alignmentset_id', "$chunk.reference_id")
 
