@@ -51,7 +51,7 @@ from pbsmrtpipe.graph.models import (TaskBindingNode,
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger(GlobalConstants.SLOG_PREFIX + "__name__")
-# logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.DEBUG)
 
 
 def _parse_task_from_binding_str(s):
@@ -673,14 +673,23 @@ def has_next_runnable_task(g):
 
 
 def get_task_input_files(g, tnode):
+    """
+
+    :type tnode: TaskBindingNode
+    """
+    ninput_files = len(tnode.meta_task.input_types)
 
     # [(index, path)]
-    files = []
+    files = {}
     for fnode in g.predecessors(tnode):
         path = g.node[fnode][ConstantsNodes.FILE_ATTR_PATH]
-        files.append((fnode.index, path))
+        files[fnode.index] = path
 
-    return [p for _, p in sorted(files)]
+    if ninput_files != len(files):
+        log.error("Expected {n} files. Got {f}".format(n=ninput_files, f=files))
+        raise ValueError("Expected inputs to have {n}. Got {x}".format(n=ninput_files, x=len(files)))
+
+    return [p for _, p in sorted([(k, v) for k, v in files.iteritems()])]
 
 
 def get_task_output_files(g, tnode):
@@ -985,9 +994,9 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
     slog.debug("Starting to chunk task-id {i} with chunk-group {g}".format(i=scatter_meta_task.task_id, g=chunk_group_id))
 
     chunked_task_nodes = []
-    for i, pipeline_chunk in enumerate(pipeline_chunks):
+    for chunk_number, pipeline_chunk in enumerate(pipeline_chunks):
 
-        task_instance_id = i + 10
+        task_instance_id = chunk_number + 10
 
         chunked_task_node = TaskChunkedBindingNode(scatter_meta_task, task_instance_id, pipeline_chunk.chunk_id, str(chunk_group_id))
         add_node_by_type(bg, chunked_task_node)

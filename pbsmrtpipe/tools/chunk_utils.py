@@ -5,7 +5,7 @@ import datetime
 import csv
 
 from pbcore.io import (FastaWriter, FastaReader, FastqReader, FastqWriter,
-                       AlignmentSet, HdfSubreadSet, SubreadSet)
+                       AlignmentSet, HdfSubreadSet, SubreadSet, ReferenceSet)
 from pbsmrtpipe.legacy.input_xml import fofn_to_report
 
 from pbsmrtpipe.models import PipelineChunk
@@ -219,8 +219,11 @@ def write_alignmentset_chunks_to_file(chunk_file, alignmentset_path,
 def to_chunked_alignmentset_files(alignmentset_path, reference_path,
                                   max_total_nchunks, chunk_key, dir_name,
                                   base_name, ext):
-    dset = AlignmentSet(alignmentset_path)
+    dset = AlignmentSet(alignmentset_path, strict=True)
     dset_chunks = dset.split(contigs=True, chunks=max_total_nchunks)
+
+    # sanity checking
+    reference_set = ReferenceSet(reference_path, strict=True)
     d = {}
     for i, dset in enumerate(dset_chunks):
         chunk_id = '_'.join([base_name, str(i)])
@@ -249,9 +252,12 @@ def write_subreadset_chunks_to_file(chunk_file, subreadset_path,
 
 def to_chunked_subreadset_files(subreadset_path, reference_path, max_total_nchunks,
                                 chunk_key, dir_name, base_name, ext):
-    dset = SubreadSet(subreadset_path)
+    dset = SubreadSet(subreadset_path, strict=True)
     dset_chunks = dset.split(chunks=max_total_nchunks, ignoreSubDatasets=True)
     d = {}
+
+    # sanity checking
+    reference_set = ReferenceSet(reference_path)
     for i, dset in enumerate(dset_chunks):
         chunk_id = '_'.join([base_name, str(i)])
         chunk_name = '.'.join([chunk_id, ext])
@@ -277,7 +283,7 @@ def write_hdfsubreadset_chunks_to_file(chunk_file, hdfsubreadset_path,
 
 def to_chunked_hdfsubreadset_files(hdfsubreadset_path, max_total_nchunks,
                                    chunk_key, dir_name, base_name, ext):
-    dset = HdfSubreadSet(hdfsubreadset_path)
+    dset = HdfSubreadSet(hdfsubreadset_path, strict=True)
     dset_chunks = dset.split(chunks=max_total_nchunks, ignoreSubDatasets=True)
     d = {}
     for i, dset in enumerate(dset_chunks):
