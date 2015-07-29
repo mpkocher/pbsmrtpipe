@@ -132,12 +132,15 @@ def _get_last_lines_of_stderr(n, stderr_path):
     This should be smarter to look for stacktraces and common errors.
     """
     lines = []
-    if os.path.exists(stderr_path):
+    try:
         with open(stderr_path, 'r') as f:
-            lines = f.readlines()
+            outs = f.readlines()
+        x = min(n, len(outs))
+        lines = outs[-x:]
+    except Exception as e:
+        log.warn("Unable to extract stderr from {p} Error {e}".format(p=stderr_path, e=e.message))
 
-    x = min(n, len(lines))
-    return lines[-x:]
+    return lines
 
 
 def _terminate_all_workers(workers, shutdown_event):
@@ -384,9 +387,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             B.add_gather_to_completed_task_chunks(bg, global_registry.chunk_operators, global_registry.tasks)
 
             if not _are_workers_alive(workers):
-                for w_ in workers.values():
+                for tix_, w_ in workers.iteritems():
                     if not w_.is_alive():
-                        log.warn("Worker {i} (pid {p}) is not alive. Worker exit code {e}.".format(i=w_.name, p=w_.pid, e=w_.exitcode))
+                        log.warn("Worker {i} (pid {p}) is not alive for task {x}. Worker exit code {e}.".format(i=w_.name, p=w_.pid, e=w_.exitcode, x=tix_))
+                        #w_.terminate()
 
             # Check if Any tasks are running or that there still runnable tasks
             is_completed = bg.is_workflow_complete()

@@ -220,9 +220,10 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
     NPROC = 1
     SCHEMA_OPTIONS = {}
     RESOURCE_TYPES = None
-    NCHUNKS = SymbolTypes.MAX_NCHUNKS
+    #NCHUNKS = SymbolTypes.MAX_NCHUNKS
+    NCHUNKS = 5
     # Keys that are expected to be written to the chunk.json file
-    CHUNK_KEYS = ('$chunk.alignmentset_id', )
+    CHUNK_KEYS = ('$chunk.alignmentset_id', "$chunk.reference_id")
 
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
