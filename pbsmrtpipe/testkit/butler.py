@@ -212,7 +212,9 @@ def config_parser_to_butler(file_path):
     # pbsmrtpipe will make the directory if it doesn't exist
     default_output_dir = os.path.join(base_dir, 'job_output')
     output_dir = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_OUTPUT_DIR, p, default_output_dir)
-    output_dir = os.path.abspath(output_dir)
+    # output_dir must be defined relative to testkit.cfg or an absolute path
+    if not os.path.isabs(output_dir):
+        output_dir = os.path.join(base_dir, output_dir)
 
     if p.has_section(Constants.CFG_WORKFLOW):
         func = _to_parse_workflow_config(output_dir, base_dir)
