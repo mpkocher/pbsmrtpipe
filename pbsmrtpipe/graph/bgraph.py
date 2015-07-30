@@ -1256,12 +1256,8 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                         log.debug(("Outputs of chunked task ", output_node, chunk_id, output_chunk_key))
                         gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
 
-                def _to_base(task_id_):
-                    # FIXME. Centralize this
-                    return GlobalConstants.RX_TASK_ID.match(task_id_).groups()[1]
-
                 comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
-                gathered_json = os.path.join(tasks_root_dir, "{t}-gathered-pipeline.chunks.json".format(t=_to_base(node.meta_task.task_id)))
+                gathered_json = os.path.join(tasks_root_dir, "{t}-gathered-pipeline.chunks.json".format(t=node.meta_task.task_id))
                 IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
 
                 # Create New Gathered InFile Node

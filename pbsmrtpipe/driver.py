@@ -515,12 +515,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             elif isinstance(tnode, TaskBindingNode):
                 # Found a Runnable Task
 
-                def _to_base(task_id_):
-                    # FIXME need to handle task namespaces
-                    return GlobalConstants.RX_TASK_ID.match(task_id_).groups()[1]
-
                 # base task_id-instance_id
-                tid = '-'.join([_to_base(tnode.meta_task.task_id), str(tnode.instance_id)])
+                tid = '-'.join([tnode.meta_task.task_id, str(tnode.instance_id)])
 
                 # Exclude already chunked Tasks
                 if not isinstance(tnode, TaskChunkedBindingNode):
