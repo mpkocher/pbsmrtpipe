@@ -104,10 +104,11 @@ def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debu
     if isinstance(force_distribute, bool):
         m = {True: '--force-distribute', False: '--local-only'}
         force_distribute_str = m[force_distribute]
+
     force_chunk_str = ''
     if isinstance(force_chunk, bool):
         m = {True: '--force-chunk-mode', False: '--disable-chunk-mode'}
-        force_distribute_str = m[force_chunk]
+        force_chunk_str = m[force_chunk]
 
     _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str,
               f=force_distribute_str, c=force_chunk_str)
