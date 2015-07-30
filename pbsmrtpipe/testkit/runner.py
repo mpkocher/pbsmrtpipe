@@ -86,7 +86,8 @@ def run_butler_tests(test_cases, output_dir, output_xml, job_id):
     return 0 if result.wasSuccessful() else 1
 
 
-def run_butler(butler, test_cases, output_xml, log_file=None,
+def run_butler(butler, test_cases, output_xml,
+               log_file=None,
                log_level=logging.DEBUG,
                force_distribute=None,
                force_chunk=None):
@@ -103,6 +104,7 @@ def run_butler(butler, test_cases, output_xml, log_file=None,
 
     if isinstance(force_distribute, bool):
         butler.force_distribute = force_distribute
+
     if isinstance(force_chunk, bool):
         butler.force_chunk = force_chunk
 

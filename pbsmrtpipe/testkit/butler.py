@@ -74,8 +74,8 @@ class Butler(object):
 
 class ButlerWorkflow(Butler):
 
-    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=False):
-        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute)
+    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=None, force_chunk=None):
+        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk)
         self.workflow_xml = workflow_xml
 
     @property
@@ -85,8 +85,8 @@ class ButlerWorkflow(Butler):
 
 class ButlerTask(Butler):
 
-    def __init__(self, job_id, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=False):
-        super(ButlerTask, self).__init__(job_id, output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute)
+    def __init__(self, job_id, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=None, force_chunk=None):
+        super(ButlerTask, self).__init__(job_id, output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute, force_chunk=force_chunk)
         self.task_id = task_id
 
     @property
