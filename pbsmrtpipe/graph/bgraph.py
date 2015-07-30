@@ -1101,7 +1101,7 @@ def _get_chunk_operator_by_scatter_task_id(scatter_task_id, chunk_operators_d):
     raise KeyError("Unable to find chunk operator for scatter task id {i}".format(i=scatter_task_id))
 
 
-def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d):
+def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks):
     """
     Look for all successfully completed Tasks that were chunked (to
     generate chunk.json), then add corresponding TaskChunkBindingNode(s)
@@ -1124,6 +1124,10 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d):
             # Companion Chunked Task was successful and created chunk.json
             if not was_chunked:
                 pipeline_chunks = IO.load_pipeline_chunks_from_json(bg.node[tnode_]['task'].output_files[0])
+
+                if len(pipeline_chunks) > max_nchunks:
+                    raise TaskChunkingError("Task {i} created too many {n} chunks. Max chunks {m}".format(n=len(pipeline_chunks), m=max_nchunks))
+
                 chunk_operator = _get_chunk_operator_by_scatter_task_id(bg.node[tnode_]['task'].task_id, chunk_operators_d)
                 chunked_nodes = add_chunkable_task_nodes_to_bgraph(bg, tnode_, pipeline_chunks, chunk_operator, registered_tasks_d)
                 bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True

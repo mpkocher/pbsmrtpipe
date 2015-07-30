@@ -225,7 +225,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # Add scattered
     # This will add new nodes to the graph if necessary
-    B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks)
+    B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks, workflow_opts.max_nchunks)
 
     # log.info(BU.to_binding_graph_summary(bg))
 
@@ -378,8 +378,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
         while True:
 
-            # This will add new nodes to the graph if necessary
-            B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks)
+            # This will add new TaskBinding nodes to the graph if necessary
+            B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks, max_nchunks)
             # B.write_binding_graph_images(bg, job_resources.workflow)
             # If a TaskScatteredBindingNode is completed successfully and
             # output chunk.json is resolved, read in the file and
