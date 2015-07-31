@@ -39,7 +39,7 @@ from pbsmrtpipe.graph.models import (TaskStates,
 
 from pbsmrtpipe.models import (Pipeline, ToolContractMetaTask, MetaTask,
                                GlobalRegistry, TaskResult, validate_operator,
-                               AnalysisLink)
+                               AnalysisLink, RunnableTask)
 from pbsmrtpipe.engine import TaskManifestWorker
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
 
@@ -549,23 +549,24 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
 
-                # Write "manifest" of the task to run, this included the Task id,
-                # and cluster template.
-                # this is similar to the Resolved Tool Contract
-                manifest_path = os.path.join(task_dir, GlobalConstants.TASK_MANIFEST_JSON)
                 if isinstance(tnode.meta_task, ToolContractMetaTask):
                     # write driver manifest, which calls the resolved-tool-contract.json
                     # there's too many layers of indirection here. Partly due to the pre-tool-contract era
                     # python defined tasks.
-                    driver_manifest_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
-                    IO.write_driver_manifest(tnode.meta_task, task, task_opts, driver_manifest_path)
+                    tc_path = os.path.join(task_dir, GlobalConstants.TOOL_CONTRACT_JSON)
+                    IO.write_tool_contract(tnode.meta_task.tool_contract, tc_path)
+                    rtc_json_path = os.path.join(task_dir, GlobalConstants.RESOLVED_TOOL_CONTRACT_JSON)
+                    # the task.options have actually already been resolved here, but using this other
+                    # code path for clarity
+                    rtc = IO.static_meta_task_to_resolved_tool_contract(tnode.meta_task, task, task_opts)
+                    IO.write_resolved_tool_contract(rtc, rtc_json_path)
 
-                DU.write_task_manifest(manifest_path, tid, task, tnode.meta_task.resource_types,
-                                       GlobalConstants.TASK_MANIFEST_VERSION,
-                                       tnode.meta_task.__module__, global_registry.cluster_renderer)
+                runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
+                runnable_task = RunnableTask(task, global_registry.cluster_renderer)
+                runnable_task.write_json(runnable_task_path)
 
                 # Create an instance of Worker
-                w = _to_worker(tnode.meta_task.is_distributed, "worker-task-{i}".format(i=tid), tid, manifest_path)
+                w = _to_worker(tnode.meta_task.is_distributed, "worker-task-{i}".format(i=tid), tid, runnable_task_path)
 
                 workers[tid] = w
                 w.start()

@@ -395,6 +395,10 @@ class RunnableTask(object):
 
         return RunnableTask.from_d(d)
 
+    def write_json(self, path):
+        with open(path, 'w') as f:
+            f.write(json.dumps(self.to_dict(), sort_keys=True, indent=4))
+
     @staticmethod
     def from_d(d):
 

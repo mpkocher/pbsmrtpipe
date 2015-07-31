@@ -64,7 +64,7 @@ RX_CHUNK_ID = re.compile(r'(^[A-z0-9_]*)')
 
 TASK_MANIFEST_JSON = 'task-manifest.json'
 RUNNABLE_TASK_JSON = "runnable-task.json"
-TASK_MANIFEST_VERSION = '0.2.1'
+TASK_MANIFEST_VERSION = '0.3.0'
 
 RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
 TOOL_CONTRACT_JSON = "tool-contract.json"

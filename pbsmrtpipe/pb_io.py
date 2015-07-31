@@ -757,33 +757,6 @@ def tool_contract_to_meta_task_from_file(path):
     return tool_contract_to_meta_task(tc)
 
 
-def to_driver_manifest_d(static_meta_task, task):
-    """
-
-    :type static_meta_task: ToolContractMetaTask
-    :type task: MetaTask
-    :param static_meta_task:
-    :return: dict representation of driver manifest
-    """
-
-    _t = {"task_id": static_meta_task.task_id,
-          "is_distributed": static_meta_task.is_distributed,
-          "input_files": task.input_files,
-          "output_files": task.output_files,
-          "nproc": task.nproc,
-          "resources": task.resources,
-          "options": task.resolved_options}
-
-    _d = {"_comment": "Static Driver for task {i}".format(i=task.task_id),
-          "exe": static_meta_task.driver.driver_exe,
-          "env": static_meta_task.driver.env}
-
-    m = {"_comments": "Driver Manifest from Static task {t}".format(t=static_meta_task.task_id),
-         "task": _t,
-         "driver": _d}
-    return m
-
-
 def _resolve_options(tool_contract, tool_options):
     resolved_options = {}
 
@@ -844,23 +817,3 @@ def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_opti
 
     rtc = ResolvedToolContract(rtask, driver)
     return rtc
-
-
-def write_driver_manifest(static_meta_task, task, task_options, driver_manifest_path):
-    # this will write both the "driver" and the resolved-tool-contract for the
-    # resolved-tool-contract task
-
-    _d = to_driver_manifest_d(static_meta_task, task)
-
-    with open(driver_manifest_path, 'w') as f:
-        f.write(json.dumps(_d, indent=4, sort_keys=True))
-
-    # Drag around the TC. Eventually this should be written a Single container
-    # that has TC, RTC, cluster metadata, job-metadata
-    tc_path = os.path.join(task.output_dir, GlobalConstants.TOOL_CONTRACT_JSON)
-    write_tool_contract(static_meta_task.tool_contract, tc_path)
-
-    rtc = static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options)
-    rtc_json_path = os.path.join(task.output_dir, RESOLVED_TOOL_CONTRACT_JSON)
-
-    write_resolved_tool_contract(rtc, rtc_json_path)
