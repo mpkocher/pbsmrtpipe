@@ -6,23 +6,9 @@
     }, 
     "tool_contract_id": "genomic_consensus.tasks.variantcaller", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "BAM or Alignment DataSet", 
-                "title": "Alignment DataSet", 
-                "id": "infile", 
-                "file_type_id": "PacBio.FileTypes.AlignmentSet"
-            }, 
-            {
-                "description": "Fasta or Reference DataSet", 
-                "title": "Reference DataSet", 
-                "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.distributed_task", 
-        "resource_types": [], 
-        "nproc": "$max_nproc", 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -128,6 +114,22 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.1.1 at 2015-07-29T09:10:33.187225"
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:05:04.752260", 
+        "input_types": [
+            {
+                "description": "BAM or Alignment DataSet", 
+                "title": "Alignment DataSet", 
+                "id": "infile", 
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            }, 
+            {
+                "description": "Fasta or Reference DataSet", 
+                "title": "Reference DataSet", 
+                "id": "reference", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }
+        ], 
+        "nproc": "$max_nproc", 
+        "resource_types": []
     }
 }

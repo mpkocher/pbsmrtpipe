@@ -6,6 +6,20 @@
     }, 
     "tool_contract_id": "genomic_consensus.tasks.summarize_consensus", 
     "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "Output GFF file", 
+                "description": "New alignment summary GFF file", 
+                "default_name": "alignment_summary.gff", 
+                "id": "output", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }
+        ], 
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:05:36.462504", 
         "input_types": [
             {
                 "description": "Alignment summary GFF file", 
@@ -20,19 +34,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "task_type": "pbsmrtpipe.constants.distributed_task", 
-        "resource_types": [], 
         "nproc": 1, 
-        "schema_options": [], 
-        "output_types": [
-            {
-                "title": "Output GFF file", 
-                "description": "New alignment summary GFF file", 
-                "default_name": "alignment_summary.gff", 
-                "id": "output", 
-                "file_type_id": "PacBio.FileTypes.gff"
-            }
-        ], 
-        "_comment": "Created by v0.1.1 at 2015-07-28T14:41:47.207099"
+        "resource_types": []
     }
 }
