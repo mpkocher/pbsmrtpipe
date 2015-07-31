@@ -1329,23 +1329,6 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
     return bg
 
 
-def to_manifest_d(tid_, task_, resource_list_d, envs_, cluster_engine_, py_module, version):
-    """Generate a TaskManifest Dict
-
-    """
-    t = task_.__dict__
-    t['task_py_module'] = py_module
-
-    # FIXME
-    if cluster_engine_ is None:
-        cr = None
-    else:
-        cr = {name: str(t) for name, t in cluster_engine_.cluster_templates.iteritems()}
-
-    return dict(id=tid_, task=t, env=envs_,
-                cluster=cr, version=version, resource_types=resource_list_d)
-
-
 def _get_tmpdir():
     return tempfile.mkdtemp()
 

@@ -14,7 +14,7 @@ import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
 from pbsmrtpipe.graph.models import VALID_ALL_TASK_NODE_CLASSES
-from pbsmrtpipe.models import TaskStates, JobResources
+from pbsmrtpipe.models import TaskStates, JobResources, RunnableTask
 from pbsmrtpipe.utils import setup_log
 
 log = logging.getLogger(__name__)
@@ -269,7 +269,7 @@ def write_task_manifest(manifest_path, tid, task, resource_types, task_version, 
 
     :return:
     """
-    env = []
+    # this should be already set in task, or is this for deferred reasons?
     resources_list_d = [dict(resource_type=r, path=p) for r, p in zip(resource_types, task.resources)]
 
     task_manifest = os.path.join(manifest_path)
@@ -277,15 +277,8 @@ def write_task_manifest(manifest_path, tid, task, resource_types, task_version, 
     with open(task_manifest, 'w+') as f:
         # this version should be the global pbsmrtpipe version
         # or the manifest file spec version?
-        m = B.to_manifest_d(tid,
-                            task,
-                            resources_list_d,
-                            env,
-                            cluster_renderer,
-                            python_mode_str,
-                            task_version)
-
-        f.write(json.dumps(m, sort_keys=True, indent=2))
+        runnable_task = RunnableTask(task, cluster_renderer)
+        f.write(json.dumps(runnable_task.to_dict(), sort_keys=True, indent=2))
 
     log.debug("wrote task id {i} to {p}".format(i=tid, p=manifest_path))
     return True

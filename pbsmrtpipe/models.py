@@ -2,19 +2,13 @@ from collections import namedtuple
 import logging
 import json
 import os
-import datetime
 import collections
-import warnings
-import uuid
+import pbsmrtpipe
 
-import jsonschema
-
-from pbsmrtpipe.constants import (to_constant_ns,
-                                  to_file_ns, to_workflow_option_ns,
-                                  DATASTORE_VERSION, DRIVER_MANIFEST_JSON,
-                                  RX_CHUNK_KEY, to_ds_ns,
+from pbsmrtpipe.constants import (to_workflow_option_ns,
                                   RESOLVED_TOOL_CONTRACT_JSON)
-from pbsmrtpipe.exceptions import (MalformedChunkOperatorError, MalformedChunkKeyError)
+from pbsmrtpipe.exceptions import (MalformedChunkOperatorError)
+
 
 # legacy. imports into this module.
 from pbcommand.models import FileType
@@ -131,7 +125,7 @@ class TaskStates(object):
 
 class MetaTask(object):
 
-    def __init__(self, task_id, task_type,
+    def __init__(self, task_id, is_distributed,
                  input_types, output_types,
                  option_schemas,
                  nproc,
@@ -143,7 +137,7 @@ class MetaTask(object):
         self.resource_types = resource_types
         self.option_schemas = option_schemas
         self.nproc = nproc
-        self.task_type = task_type
+        self.is_distributed = is_distributed
         self.cmd_func = cmd_func
         self.output_file_names = output_file_names
         self.mutable_files = mutable_files
@@ -209,7 +203,7 @@ class MetaTask(object):
                 outs.append(" {x}: DI list (n) items".format(x=desc, n=len(attr)))
 
         _sep()
-        _to_di_str("task_type", "Task Type")
+        _to_di_str("is_distributed", "Is Distributed")
         _to_di_str("nproc", "nproc")
 
         if isinstance(self.option_schemas, dict):
@@ -274,8 +268,8 @@ class MetaTask(object):
 
 class MetaScatterTask(MetaTask):
 
-    def __init__(self, task_id, task_type, input_types, output_types, opt_schema, nproc, resource_types, cmd_func, chunk_di, chunk_keys, output_file_names, mutable_files, description, display_name, version=None):
-        super(MetaScatterTask, self).__init__(task_id, task_type, input_types, output_types, opt_schema, nproc, resource_types, cmd_func, output_file_names, mutable_files, description, display_name, version=version)
+    def __init__(self, task_id, is_distributed, input_types, output_types, opt_schema, nproc, resource_types, cmd_func, chunk_di, chunk_keys, output_file_names, mutable_files, description, display_name, version=None):
+        super(MetaScatterTask, self).__init__(task_id, is_distributed, input_types, output_types, opt_schema, nproc, resource_types, cmd_func, output_file_names, mutable_files, description, display_name, version=version)
         # this can be a primitive value or a DI model list
         self.chunk_di = chunk_di
         self.chunk_keys = chunk_keys
@@ -299,7 +293,7 @@ class Task(object):
         self.input_files = input_files
         # List of Strings
         self.output_files = output_files
-        # List of Strings
+        # [{"resource_type":"type-id", "path": "/path/to/resource"}, ...]
         self.resources = resources
         # dict
         self.resolved_options = resolved_options
@@ -331,6 +325,23 @@ class Task(object):
         # changing this so to_dot works
         return "{k} id {i} inputs {p} outputs {o} resources {r} nproc {n} ".format(**_d)
 
+    def to_dict(self):
+        return dict(task_id=self.task_id,
+                    input_files=self.input_files,
+                    output_files=self.output_files,
+                    resources=self.resources, nproc=self.nproc,
+                    options=self.resolved_options,
+                    cmds=self.cmds,
+                    is_distributed=self.is_distributed,
+                    output_dir=self.output_dir)
+
+    @staticmethod
+    def from_d(d):
+        return Task(d['task_id'], d['is_distributed'],
+                    d['input_files'], d['output_files'],
+                    d['options'], d['nproc'],
+                    d['resources'], d['cmds'], d['output_dir'])
+
 
 class ScatterTask(Task):
 
@@ -358,28 +369,23 @@ class RunnableTask(object):
 
     """Container for task-manifest.json"""
 
-    def __init__(self, task_id, is_distributed, input_files, output_files, ropts, nproc, resources, cmds, cluster, envs):
-        self.task_id = task_id
-        self.is_distributed = is_distributed
-        self.input_files = input_files
-        self.output_files = output_files
-        self.nproc = nproc
-        # list of {"resource_type": "$tmpdir", "path": "/path/to/resource"}
-        self.resources = resources
-        self.resolved_options = ropts
-        self.cmds = cmds
+    def __init__(self, task, cluster, envs=None):
+        """
 
-        # {template: "", args:{}}
+        :type cluster: ClusterTemplateRender | None
+        :type task: Task
+        """
+
+        self.task = task
         self.cluster = cluster
-        # list
-        self.envs = envs
+        self.envs = {} if envs is None else envs
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__,
-                  i=self.task_id,
-                  n=len(self.cmds),
-                  t=self.is_distributed,
-                  m=len(self.resources))
+                  i=self.task.task_id,
+                  n=len(self.task.cmds),
+                  t=self.task.is_distributed,
+                  m=len(self.task.resources))
         return "<{k} {i} task type {t} ncommands {n} nresources {m} >".format(**_d)
 
     @staticmethod
@@ -395,23 +401,27 @@ class RunnableTask(object):
         # fixme
         from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
 
-        def _f(x):
-            return d['task'][x]
-
         if d['cluster']:
             tmplates = [ClusterTemplate(k, v) for k, v in d['cluster'].iteritems()]
             c = ClusterTemplateRender(tmplates)
         else:
             c = None
 
-        return RunnableTask(d['id'],
-                            _f('is_distributed'),
-                            _f('input_files'),
-                            _f('output_files'),
-                            _f('resolved_options'),
-                            _f('nproc'),
-                            d['resource_types'],
-                            _f('cmds'), c, d['env'])
+        task = Task.from_d(d['task'])
+        return RunnableTask(task, c, d['env'])
+
+    def to_dict(self):
+        t = self.task.to_dict()
+        if self.cluster:
+            cr = {name: str(t) for name, t in self.cluster.cluster_templates.iteritems()}
+        else:
+            cr = None
+
+        return dict(id=self.task.task_id,
+                    task=t, env={},
+                    cluster=cr,
+                    version=pbsmrtpipe.get_version(),
+                    resource_types=self.task.resources)
 
 
 class Pipeline(object):
@@ -597,7 +607,7 @@ AnalysisLink = namedtuple("AnalysisLink", "name path")
 
 class ToolContractMetaTask(MetaTask):
 
-    def __init__(self, tool_contract, task_id, task_type, input_types, output_types, options_schema,
+    def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
                  nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
         """
 
@@ -606,7 +616,7 @@ class ToolContractMetaTask(MetaTask):
 
         """
         # this is naughty and terrible. to_cmd should not be here!!!
-        super(ToolContractMetaTask, self).__init__(task_id, task_type, input_types, output_types, options_schema,
+        super(ToolContractMetaTask, self).__init__(task_id, is_distributed, input_types, output_types, options_schema,
                                              nproc, resource_types, "NA", output_file_names, mutable_files, description, display_name, version=version)
         # Adding in a bit of duplication here. Once everything uses TC, then
         # then the entire system can dramatically be simplify

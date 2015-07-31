@@ -136,8 +136,8 @@ def to_di_graph_with_funcs(meta_task):
     g.add_node(SymbolTypes.TASK_TYPE, style="filled", fillcolor="aquamarine")
     g.add_edge('to_task_type', SymbolTypes.TASK_TYPE)
 
-    if isinstance(meta_task.task_type, bool):
-        task_type_label = TASK_TYPES[meta_task.task_type]
+    if isinstance(meta_task.is_distributed, bool):
+        task_type_label = TASK_TYPES[meta_task.is_distributed]
         g.add_node(task_type_label)
         g.add_edge(task_type_label, 'to_task_type')
     else:
@@ -238,7 +238,7 @@ def get_report_di(meta_task):
     """
     report_dis = []
 
-    attr_names = ['option_schemas', 'nproc', 'task_type']
+    attr_names = ['option_schemas', 'nproc', 'is_distributed']
 
     if isinstance(meta_task, MetaScatterTask):
         attr_names.append('chunk_di')
@@ -401,7 +401,7 @@ def meta_task_to_task(meta_task,
         return max_nproc if meta_task.nproc == SymbolTypes.MAX_NPROC else 1
 
     def _default_task_type():
-        return meta_task.task_type
+        return meta_task.is_distributed
 
     def _default_nchunks():
         # the old model should be removed.
@@ -431,7 +431,7 @@ def meta_task_to_task(meta_task,
     method_id_to_dollar_t = {'to_ropts': (SymbolTypes.RESOLVED_OPTS, meta_task.option_schemas),
                              'to_nproc': (SymbolTypes.NPROC, meta_task.nproc),
                              'to_nchunks': (SymbolTypes.NCHUNKS, nchunks_),
-                             'to_task_type': (SymbolTypes.TASK_TYPE, meta_task.task_type)}
+                             'to_task_type': (SymbolTypes.TASK_TYPE, meta_task.is_distributed)}
 
     if isinstance(meta_task, MetaScatterTask):
         method_id_to_dollar_t['to_nchunks'] = (SymbolTypes.NCHUNKS, meta_task.chunk_di)
@@ -518,14 +518,14 @@ def meta_task_to_task(meta_task,
 
     if isinstance(meta_task, MetaScatterTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, nchunks_)
-        t = ScatterTask(meta_task.task_id, meta_task.task_type, input_files, ofiles,
+        t = ScatterTask(meta_task.task_id, meta_task.is_distributed, input_files, ofiles,
                         resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, resolved_values[SymbolTypes.NCHUNKS], output_dir, meta_task.chunk_keys)
     elif isinstance(meta_task, MetaGatherTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
-        t = GatherTask(meta_task.task_id, meta_task.task_type, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
+        t = GatherTask(meta_task.task_id, meta_task.is_distributed, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     elif isinstance(meta_task, MetaTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
-        t = Task(meta_task.task_id, meta_task.task_type, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
+        t = Task(meta_task.task_id, meta_task.is_distributed, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     else:
         raise TypeError("Unsupported meta task type {m}".format(m=meta_task))
 

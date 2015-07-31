@@ -165,7 +165,7 @@ def cleanup_resource(rtype, path):
 
 def cleanup_resources(runnable_task):
 
-    for resource in runnable_task.resources:
+    for resource in runnable_task.task.resources:
         rtype = resource['resource_type']
         path = resource['path']
         try:
@@ -193,7 +193,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
     # host = socket.getfqdn()
     host = platform.node()
 
-    ncmds = len(runnable_task.cmds)
+    ncmds = len(runnable_task.task.cmds)
 
     # so core dumps are written to the job dir
     os.chdir(output_dir)
@@ -208,7 +208,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
             stdout_fh.write("Created at {x} on {h}\n".format(x=datetime.datetime.now(), h=host))
 
             # Validate Inputs
-            for input_file in runnable_task.input_files:
+            for input_file in runnable_task.task.input_files:
                 if os.path.exists(input_file):
                     stdout_fh.write("Validated INPUT file '{i}\n".format(i=input_file))
                 else:
@@ -218,17 +218,17 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                     break
 
             # Create resources if necessary
-            if runnable_task.resources:
-                create_tmp_resources_ignore_error(runnable_task.resources)
+            #if runnable_task.task.resources:
+            #    create_tmp_resources_ignore_error(runnable_task.task.resources)
 
             # Run commands
-            for i, cmd in enumerate(runnable_task.cmds):
+            for i, cmd in enumerate(runnable_task.task.cmds):
                 log.debug("Running command \n" + cmd)
 
                 rcode, out, error, run_time = run_command(cmd, stdout_fh, stderr_fh, time_out=None)
 
                 if rcode != 0:
-                    err_msg = "Failed task {i} exit code {r} in {s:.2f} sec".format(i=runnable_task.task_id, r=rcode, s=run_time)
+                    err_msg = "Failed task {i} exit code {r} in {s:.2f} sec".format(i=runnable_task.task.task_id, r=rcode, s=run_time)
                     log.error(err_msg)
                     log.error(error)
 
@@ -246,7 +246,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
 
             if rcode == 0:
                 # Validate output files of a successful task.
-                for output_file in runnable_task.output_files:
+                for output_file in runnable_task.task.output_files:
                     if os.path.exists(output_file):
                         stdout_fh.write("Successfully validated file '{o}'\n".format(o=output_file))
                     else:
@@ -258,9 +258,9 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
 
             total_run_time = time.time() - started_at
             warn_msg = ""
-            r = to_task_report(host, runnable_task.task_id, total_run_time, rcode, err_msg, warn_msg)
+            r = to_task_report(host, runnable_task.task.task_id, total_run_time, rcode, err_msg, warn_msg)
             task_report_path = os.path.join(output_dir, 'task-report.json')
-            msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task_id)
+            msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task.task_id)
             log.info(msg)
             stdout_fh.write(msg + "\n")
             r.write_json(task_report_path)
@@ -268,13 +268,13 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
             stdout_fh.flush()
 
     # Cleanup resource files
-    if not debug_mode and runnable_task.resources:
+    if not debug_mode and runnable_task.task.resources:
         try:
             cleanup_resources(runnable_task)
-            log.debug("successfully cleaned up {n} resources.".format(n=len(runnable_task.resources)))
+            log.debug("successfully cleaned up {n} resources.".format(n=len(runnable_task.task.resources)))
         except Exception as e:
             log.error(str(e))
-            log.error("failed to successfully cleanup resources. {f}".format(f=runnable_task.resources))
+            log.error("failed to successfully cleanup resources. {f}".format(f=runnable_task.task.resources))
 
     run_time = time.time() - started_at
     return rcode, run_time
@@ -304,7 +304,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     stdout_ = _to_p('stdout')
     stderr_ = _to_p('stderr')
 
-    if runnable_task.is_distributed is False:
+    if runnable_task.task.is_distributed is False:
         return run_task(runnable_task, output_dir, stdout_, stderr_, debug_mode)
 
     if runnable_task.cluster is None:
@@ -321,7 +321,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         ctmpls = [ClusterTemplate(name, tmpl) for name, tmpl in runnable_task.cluster.iteritems()]
         render = ClusterTemplateRender(ctmpls)
 
-    job_id = to_random_job_id(runnable_task.task_id)
+    job_id = to_random_job_id(runnable_task.task.task_id)
     log.debug("Using job id {i}".format(i=job_id))
 
     qstdout = _to_p('cluster.stdout')
@@ -349,7 +349,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     # Make +x
     os.chmod(rcmd_shell, os.stat(rcmd_shell).st_mode | stat.S_IEXEC)
 
-    cluster_cmd = render.render('interactive', rcmd_shell, job_id, qstdout, qstderr, runnable_task.nproc)
+    cluster_cmd = render.render('interactive', rcmd_shell, job_id, qstdout, qstderr, runnable_task.task.nproc)
     log.debug(cluster_cmd)
 
     with open(qshell, 'w') as f:
@@ -371,7 +371,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         warn_msg = ""
     else:
         # not sure how to scrape this from the stderr/stdout
-        err_msg = "task {i} failed".format(i=runnable_task.task_id)
+        err_msg = "task {i} failed".format(i=runnable_task.task.task_id)
         warn_msg = ""
 
     msg_ = "Completed running cluster command in {t:.2f} sec. Exit code {r}".format(r=rcode, t=run_time)
@@ -386,9 +386,9 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
             f.write(str(cstderr) + "\n")
             f.write(msg_ + "\n")
 
-    r = to_task_report(host, runnable_task.task_id, run_time, rcode, err_msg, warn_msg)
+    r = to_task_report(host, runnable_task.task.task_id, run_time, rcode, err_msg, warn_msg)
     task_report_path = os.path.join(output_dir, 'task-report.json')
-    msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task_id)
+    msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task.task_id)
     log.info(msg)
     r.write_json(task_report_path)
 
@@ -458,7 +458,7 @@ def run_to_cmd(runnable_task):
 
     :type runnable_task: RunnableTask
     """
-    print "\n".join(runnable_task.cmds)
+    print "\n".join(runnable_task.task.cmds)
     return 0
 
 

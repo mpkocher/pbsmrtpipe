@@ -3,10 +3,10 @@ import logging
 import os
 import unittest
 
-from base import TEST_DATA_DIR, TestDirBase, DEBUG, get_temp_file
+from base import TEST_DATA_DIR, TestDirBase, DEBUG, get_temp_file, get_temp_dir
 
 from pbcommand.models import TaskTypes
-from pbsmrtpipe.models import RunnableTask
+from pbsmrtpipe.models import RunnableTask, Task
 import pbsmrtpipe.tools.runner as R
 
 log = logging.getLogger(__name__)
@@ -16,11 +16,12 @@ def _to_cmd(msg, output_file):
     return "echo \"{m}\" > {o}".format(o=output_file, m=msg)
 
 
-def _to_runnable_task(task_id, input_files, output_files, cmds):
+def _to_runnable_task(task_id, input_files, output_files, cmds, output_dir):
     ropts = {}
     nproc = 1
     resources = []
-    rt = RunnableTask(task_id, True, input_files, output_files, ropts, nproc, resources, cmds, None, {})
+    task = Task(task_id, False, input_files, output_files, ropts, nproc, resources, cmds, output_dir)
+    rt = RunnableTask(task, None)
     return rt
 
 
@@ -28,9 +29,10 @@ def _create_runnable_task(task_id, input_names, output_names):
     """Write the necessary files and generate the cmds"""
     input_files = [get_temp_file(suffix=x) for x in input_names]
     output_files = [get_temp_file(suffix=x) for x in output_names]
+    d = get_temp_dir("runnable-task-")
     msg = "MOCK DATA"
     cmds = [_to_cmd(msg, x) for x in output_files]
-    return _to_runnable_task(task_id, input_files, output_files, cmds)
+    return _to_runnable_task(task_id, input_files, output_files, cmds, d)
 
 
 class TestRunnableTask(TestDirBase):

@@ -557,7 +557,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     # write driver manifest, which calls the resolved-tool-contract.json
                     # there's too many layers of indirection here. Partly due to the pre-tool-contract era
                     # python defined tasks.
-                    driver_manifest_path = os.path.join(task_dir, GlobalConstants.DRIVER_MANIFEST_JSON)
+                    driver_manifest_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
                     IO.write_driver_manifest(tnode.meta_task, task, task_opts, driver_manifest_path)
 
                 DU.write_task_manifest(manifest_path, tid, task, tnode.meta_task.resource_types,
@@ -565,7 +565,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                                        tnode.meta_task.__module__, global_registry.cluster_renderer)
 
                 # Create an instance of Worker
-                w = _to_worker(tnode.meta_task.task_type, "worker-task-{i}".format(i=tid), tid, manifest_path)
+                w = _to_worker(tnode.meta_task.is_distributed, "worker-task-{i}".format(i=tid), tid, manifest_path)
 
                 workers[tid] = w
                 w.start()

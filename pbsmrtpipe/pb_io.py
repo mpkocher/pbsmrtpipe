@@ -767,7 +767,7 @@ def to_driver_manifest_d(static_meta_task, task):
     """
 
     _t = {"task_id": static_meta_task.task_id,
-          "task_type": static_meta_task.task_type,
+          "is_distributed": static_meta_task.is_distributed,
           "input_files": task.input_files,
           "output_files": task.output_files,
           "nproc": task.nproc,
@@ -836,7 +836,7 @@ def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_opti
 
     resolved_opts = _resolve_options(static_meta_task.tool_contract, task_options)
 
-    rtask = ResolvedToolContractTask(smt.task_id, smt.task_type,
+    rtask = ResolvedToolContractTask(smt.task_id, smt.is_distributed,
                                      task.input_files,
                                      task.output_files,
                                      resolved_opts,
