@@ -20,7 +20,7 @@ def _to_runnable_task(task_id, input_files, output_files, cmds):
     ropts = {}
     nproc = 1
     resources = []
-    rt = RunnableTask(task_id, TaskTypes.LOCAL, input_files, output_files, ropts, nproc, resources, cmds, None, {})
+    rt = RunnableTask(task_id, True, input_files, output_files, ropts, nproc, resources, cmds, None, {})
     return rt
 
 

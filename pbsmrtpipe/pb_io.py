@@ -732,7 +732,7 @@ def tool_contract_to_meta_task(tc):
     output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
 
     #
-    task_type = validate_task_type(tc.task.task_type)
+    task_type = validate_task_type(tc.task.is_distributed)
 
     meta_task = ToolContractMetaTask(tc,
                                      tc.task.task_id,
@@ -814,40 +814,10 @@ def _resolve_options(tool_contract, tool_options):
 def write_tool_contract(tc, path):
     """:type tc: pbcommand.models.ToolContract"""
 
-    # FIXME. replace with pbcommand after v0.2.0
-    def _i_to_d(ifile_type):
-        return dict(file_type_id=ifile_type.file_type_id,
-                    id=ifile_type.label,
-                    title=ifile_type.display_name,
-                    description=ifile_type.description)
-
-    def _o_to_d(ofile_type):
-        return dict(file_type_id=ofile_type.file_type_id,
-                    id=ofile_type.label,
-                    title=ofile_type.display_name,
-                    description=ofile_type.description,
-                    default_name=ofile_type.default_name)
-
-    _version = '0.2.1'
-    created_at = datetime.datetime.now()
-    _t = dict(input_types=[_i_to_d(i) for i in tc.task.input_file_types],
-              output_types=[_o_to_d(i) for i in tc.task.output_file_types],
-              task_type=tc.task.task_type,
-              schema_options=tc.task.options,
-              nproc=tc.task.nproc,
-              resource_types=tc.task.resources,
-              _comment="Created by v{v} at {d}".format(v='0.2.1',
-                                                       d=created_at.isoformat()))
-
-    _d = dict(version=_version,
-              tool_contract_id=tc.task.task_id,
-              driver=tc.driver.to_dict(),
-              tool_contract=_t)
-
     with open(path, 'w') as f:
-        f.write(json.dumps(_d, sort_keys=True, indent=4))
+        f.write(json.dumps(tc.to_dict(), sort_keys=True, indent=4))
 
-    return _d
+    return tc
 
 
 def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options):

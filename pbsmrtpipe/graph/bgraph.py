@@ -1365,15 +1365,14 @@ def _get_logfile(output_dir):
 
 def resolve_di_resources(task_output_dir, specials_di):
     """Convert the ResourceTypes to Resource instances"""
-    S = ResourceTypes
 
     to_log = functools.partial(_get_logfile, task_output_dir)
     to_o = lambda: task_output_dir
 
-    r = {S.LOG_FILE: to_log,
-         S.TMP_DIR: _get_tmpdir,
-         S.TMP_FILE: _get_tmpfile,
-         S.OUTPUT_DIR: to_o}
+    r = {ResourceTypes.LOG_FILE: to_log,
+         ResourceTypes.TMP_DIR: _get_tmpdir,
+         ResourceTypes.TMP_FILE: _get_tmpfile,
+         ResourceTypes.OUTPUT_DIR: to_o}
 
     resolved_specials = resolve_di(r, specials_di)
     return resolved_specials

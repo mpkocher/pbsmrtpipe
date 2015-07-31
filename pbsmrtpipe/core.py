@@ -6,9 +6,7 @@ import sys
 import types
 import functools
 
-from pbcommand.models import (FileTypes, TaskTypes, SymbolTypes, ResourceTypes)
-from pbcommand.models.common import FileType
-
+from pbcommand.models import (FileTypes, TaskTypes, SymbolTypes, ResourceTypes, FileType)
 from pbsmrtpipe.exceptions import (MalformedMetaTaskError,
                                    MalformedPipelineError)
 
@@ -396,19 +394,13 @@ def _raise_malformed_task_attr(msg):
 
 
 def validate_task_type(x):
-    task_types = (TaskTypes.DISTRIBUTED, TaskTypes.LOCAL)
 
-    _raise = _raise_malformed_task_attr("TASK_TYPE must be a DI List or primitive value {x}.".format(x=task_types))
+    _raise = _raise_malformed_task_attr("IS_DISTRIBUTED must be a DI List or primitive value {x}.".format(x=bool))
 
-    if isinstance(x, str):
-        if x in task_types:
-            return x
-        else:
-            _raise()
-    elif isinstance(x, (tuple, list)):
-        pass
+    if isinstance(x, bool):
+        return x
     else:
-        _raise("Incompatible type. Expected str, or list")
+        _raise("Incompatible type. Expected bool")
 
     return x
 
@@ -610,7 +602,7 @@ def _metaklass_to_metatask(klass, cls, name, parents, dct, validate_input_types_
     input_types = _to_value("INPUT_TYPES", validate_input_types_func)
     output_types = _to_value("OUTPUT_TYPES", validate_output_types_func)
     schema_opts = _to_value("SCHEMA_OPTIONS", _validate_schema_options)
-    task_type = _to_value("TASK_TYPE", validate_task_type)
+    task_type = _to_value("IS_DISTRIBUTED", validate_task_type)
     nproc = _to_value("NPROC", _validate_nproc)
     version = _to_value("VERSION", _validate_version)
     resource_types = _validate_resource_types(dct.get("RESOURCE_TYPES", None))
@@ -662,7 +654,7 @@ class MetaTaskBase(object):
     NAME = None
     VERSION = None
 
-    TASK_TYPE = None
+    IS_DISTRIBUTED = None
     INPUT_TYPES = None
     OUTPUT_TYPES = None
 
@@ -716,7 +708,7 @@ class MetaScatterTaskBase(object):
     NAME = None
     VERSION = None
 
-    TASK_TYPE = None
+    IS_DISTRIBUTED = True
     INPUT_TYPES = None
     OUTPUT_TYPES = None
 
@@ -770,7 +762,7 @@ class MetaGatherTaskBase(object):
     NAME = None
     VERSION = None
 
-    TASK_TYPE = None
+    IS_DISTRIBUTED = True
     INPUT_TYPES = None
     OUTPUT_TYPES = None
 

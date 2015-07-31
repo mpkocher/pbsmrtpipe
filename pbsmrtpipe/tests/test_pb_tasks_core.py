@@ -4,8 +4,7 @@ import logging
 
 from pbsmrtpipe.constants import to_file_ns
 import pbsmrtpipe.core
-from pbcommand.models import FileTypes
-from pbcommand.models.common import FileType
+from pbcommand.models.common import FileType, FileTypes
 from pbsmrtpipe.models import RunnableTask
 import pbsmrtpipe.loader as L
 

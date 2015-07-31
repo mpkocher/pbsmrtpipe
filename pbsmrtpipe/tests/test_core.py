@@ -14,7 +14,7 @@ class _MyTask(MetaTaskBase):
     NAME = "My Awesome Task Display Name"
     VERSION = "1.2.4"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     # input types are given my a tuple of (File Type, binding label, description)
     INPUT_TYPES = ((FileTypes.FASTA, "x_fasta", "A Description of the Fasta"),

@@ -27,7 +27,7 @@ class TestDevSimpleTaskDefaults(_TaskTestBase):
     NCOMMANDS = 2
     RESOLVED_NPROC = 1
     RESOLVED_TASK_OPTIONS = {}
-    RESOLVED_TASK_TYPE = TaskTypes.LOCAL
+    RESOLVED_IS_DISTRIBUTED = True
 
 
 class TestTestDevSimpleTask(TestDevSimpleTaskDefaults):
@@ -47,5 +47,5 @@ class TestDependencyInjectionDevExampleTask(_TaskTestBase):
     NCOMMANDS = 1
     # The DI will $max_nproc / 2 + 2
     RESOLVED_NPROC = 14
-    RESOLVED_TASK_TYPE = TaskTypes.LOCAL
+    RESOLVED_IS_DISTRIBUTED = True
     RESOLVED_TASK_OPTIONS = {}

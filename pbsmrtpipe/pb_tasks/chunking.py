@@ -13,7 +13,7 @@ class GatherCSV(MetaGatherTaskBase):
     NAME = "Gather CSV"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Chunk JSON")]
     OUTPUT_TYPES = [(FileTypes.CSV, "csv", "CSV File")]
 
@@ -41,7 +41,7 @@ class GatherFastaTask(MetaGatherTaskBase):
     NAME = "Gather Fasta"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     OUTPUT_TYPES = [(FileTypes.FASTA, "fasta", "Gathered Fasta")]
@@ -63,7 +63,7 @@ class GatherFilterFastaTask(MetaGatherTaskBase):
     NAME = "Gather Filtered Fasta"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     OUTPUT_TYPES = [(FileTypes.FASTA, "fasta", "Gathered Fasta")]
@@ -89,7 +89,7 @@ class GatherFastqTask(MetaGatherTaskBase):
     NAME = "Gather Fastq"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     OUTPUT_TYPES = [(FileTypes.FASTQ, "fastq", "Gathered Fastq")]
@@ -110,7 +110,7 @@ class GatherGffTask(MetaGatherTaskBase):
     NAME = "Gather Gff"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Gathered Gff")]

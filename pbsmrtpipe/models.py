@@ -17,7 +17,8 @@ from pbsmrtpipe.constants import (to_constant_ns,
 from pbsmrtpipe.exceptions import (MalformedChunkOperatorError, MalformedChunkKeyError)
 
 # legacy. imports into this module.
-from pbcommand.models.common import FileType, REGISTERED_FILE_TYPES
+from pbcommand.models import FileType
+from pbcommand.models.common import REGISTERED_FILE_TYPES
 
 log = logging.getLogger(__name__)
 

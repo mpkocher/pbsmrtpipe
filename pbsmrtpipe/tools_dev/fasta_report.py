@@ -3,11 +3,9 @@ import sys
 
 from pbcore.io import FastaWriter, FastaReader
 from pbcommand.utils import setup_log
+from pbcommand.cli import pbparser_runner
+from pbcommand.models import get_pbparser, FileTypes
 
-import pbsmrtpipe.mock as M
-
-from pbcommand.cli import pacbio_args_or_contract_runner_emit
-from pbcommand.models import get_default_contract_parser, FileTypes, TaskTypes
 from pbsmrtpipe.tools.dev import run_fasta_report
 
 log = logging.getLogger(__name__)
@@ -19,7 +17,7 @@ def get_contract_parser():
     driver = "python -m pbsmrtpipe.tools_dev.fasta_report --resolved-tool-contract "
     desc = "Generate a PacBio report from Fasta file"
 
-    p = get_default_contract_parser(TOOL_ID, "0.1.0", desc, driver, TaskTypes.LOCAL, 1, [])
+    p = get_pbparser(TOOL_ID, "0.1.0", "Fasta Report", desc, driver, is_distributed=False)
 
     p.add_input_file_type(FileTypes.FASTA, "fasta_in", "Fasta In", "Pac Bio Fasta format")
     p.add_output_file_type(FileTypes.REPORT, "rpt_out", "Report", "PacBio ReportFiltered Fasta by sequence length Fasta", "fasta_report.json")
@@ -41,7 +39,7 @@ def rtc_runner(rtc):
 
 def main(argv=sys.argv):
     mp = get_contract_parser()
-    return pacbio_args_or_contract_runner_emit(argv[1:],
+    return pbparser_runner(argv[1:],
                                                mp,
                                                args_runner,
                                                rtc_runner,

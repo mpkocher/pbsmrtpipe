@@ -2,7 +2,7 @@ import logging
 import json
 import datetime
 
-from pbcommand.models.common import FileType
+from pbcommand.models import FileType
 
 from pbsmrtpipe.models import (TaskStates, ToolContractMetaTask,
                                MetaTask, MetaScatterTask)

@@ -6,17 +6,9 @@
     }, 
     "tool_contract_id": "pbsmrtpipe.tasks.dev_tc_fasta_report", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "Pac Bio Fasta format", 
-                "title": "Fasta In", 
-                "id": "fasta_in", 
-                "file_type_id": "PacBio.FileTypes.Fasta"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": false, 
+        "name": "DisplayName", 
         "schema_options": [], 
         "output_types": [
             {
@@ -27,6 +19,16 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T10:30:15.423270"
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:40:53.807304", 
+        "input_types": [
+            {
+                "description": "Pac Bio Fasta format", 
+                "title": "Fasta In", 
+                "id": "fasta_in", 
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

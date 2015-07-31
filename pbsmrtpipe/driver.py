@@ -291,11 +291,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # factories for getting a Worker instance
     def _determine_worker_type(task_type):
-        # resolve the specific worker type
-        if task_type == TaskTypes.LOCAL or workflow_opts.distributed_mode is False:
-            return _to_local_w
-        else:
+        # task_type now means is_distributed
+        if task_type is True:
             return _to_w
+        else:
+            return _to_local_w
 
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.

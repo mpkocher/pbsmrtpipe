@@ -17,7 +17,7 @@ class ConvertFofnToReport(MetaTaskBase):
     NAME = "FOFN to pbreport JSON"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.FOFN, "my_fofn", "A Generic Fofn")]
     OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "A FOFN report file")]
@@ -38,7 +38,7 @@ class ConvertRegionFofnToReport(MetaTaskBase):
     NAME = "Region FOFN to pbreport JSON"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.RGN_FOFN, "my_rgn_fofn", "A Region Fofn")]
     OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "A FOFN report file")]

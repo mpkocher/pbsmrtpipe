@@ -26,8 +26,8 @@ class DevSimpleHelloWorldTask(MetaTaskBase):
     # Semantic style version
     VERSION = "1.0.0"
 
-    # Task types can be local, or submitted to the cluster (TaskTypes.DISTRIBUTED)
-    TASK_TYPE = TaskTypes.LOCAL
+    # Task types can be local, or submitted to the cluster
+    IS_DISTRIBUTED = False
 
     # list of (FileType, binding label, description)
     INPUT_TYPES = [(FileTypes.TXT, "txt", "Text File")]

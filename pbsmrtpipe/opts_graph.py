@@ -106,6 +106,8 @@ def to_di_graph_with_funcs(meta_task):
     :type meta_task: MetaTask
 
     """
+    # backward compatible for task type
+    TASK_TYPES = {True: "pbsmrtpipe.task_types.distributed", False: "pbsmrtpipe.task_types.local"}
 
     to_funcs = {'to_nproc': None,
                 'to_task_type': None,
@@ -134,14 +136,12 @@ def to_di_graph_with_funcs(meta_task):
     g.add_node(SymbolTypes.TASK_TYPE, style="filled", fillcolor="aquamarine")
     g.add_edge('to_task_type', SymbolTypes.TASK_TYPE)
 
-    if meta_task.task_type in (TaskTypes.DISTRIBUTED, TaskTypes.LOCAL):
-        g.add_node(meta_task.task_type)
-        g.add_edge(meta_task.task_type, 'to_task_type')
+    if isinstance(meta_task.task_type, bool):
+        task_type_label = TASK_TYPES[meta_task.task_type]
+        g.add_node(task_type_label)
+        g.add_edge(task_type_label, 'to_task_type')
     else:
-        f = get_tail_func_or_raise(meta_task.task_type)
-        to_funcs['to_task_type'] = f
-
-        _add_di_nodes(meta_task.task_type[:-1], 'to_task_type')
+        raise ValueError("Unsupported type")
 
     # add option dependencies
     to_ropts_fname = "to_ropts"
@@ -401,9 +401,7 @@ def meta_task_to_task(meta_task,
         return max_nproc if meta_task.nproc == SymbolTypes.MAX_NPROC else 1
 
     def _default_task_type():
-        if meta_task.task_type in (TaskTypes.LOCAL, TaskTypes.DISTRIBUTED):
-            return meta_task.task_type
-        return TaskTypes.DISTRIBUTED
+        return meta_task.task_type
 
     def _default_nchunks():
         # the old model should be removed.
@@ -520,14 +518,14 @@ def meta_task_to_task(meta_task,
 
     if isinstance(meta_task, MetaScatterTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, nchunks_)
-        t = ScatterTask(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles,
+        t = ScatterTask(meta_task.task_id, meta_task.task_type, input_files, ofiles,
                         resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, resolved_values[SymbolTypes.NCHUNKS], output_dir, meta_task.chunk_keys)
     elif isinstance(meta_task, MetaGatherTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
-        t = GatherTask(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
+        t = GatherTask(meta_task.task_id, meta_task.task_type, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     elif isinstance(meta_task, MetaTask):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
-        t = Task(meta_task.task_id, resolved_values[SymbolTypes.TASK_TYPE], input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
+        t = Task(meta_task.task_id, meta_task.task_type, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     else:
         raise TypeError("Unsupported meta task type {m}".format(m=meta_task))
 

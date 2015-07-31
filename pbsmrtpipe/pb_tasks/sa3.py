@@ -15,7 +15,7 @@ class ConvertRsMovieMetaDataTask(MetaTaskBase):
     NAME = "RS Movie to Hdf5 Dataset"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.RS_MOVIE_XML, "rs_movie_metadata", "A RS Movie metadata.xml")]
     OUTPUT_TYPES = [(FileTypes.DS_SUBREADS_H5, "ds", "DS H5 Subread.xml")]
@@ -39,7 +39,7 @@ class ConvertH5SubreadsToBamDataSetTask(MetaTaskBase):
     NAME = "H5 Dataset to Subread Dataset"
     VERSION = "0.1.1"
 
-    TASK_TYPE = TaskTypes.DISTRIBUTED
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.DS_SUBREADS_H5, "h5_subreads", "H5 Subread DataSet")]
     OUTPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds", "Subread DataSet")]
@@ -68,7 +68,7 @@ class H5SubreadSetScatter(MetaScatterTaskBase):
     NAME = "H5 SubreadSet scatter"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.DS_SUBREADS_H5, "h5_subreads", "H5 Subread DataSet")]
 
@@ -101,7 +101,7 @@ class GatherGFFTask(MetaGatherTaskBase):
     NAME = "Gather GFF"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     # TODO: change this when quiver outputs xmls
@@ -132,7 +132,7 @@ class GatherContigSetTask(MetaGatherTaskBase):
     NAME = "Gather ContigSet"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     # TODO: change this when quiver outputs xmls
@@ -155,11 +155,11 @@ class GatherSubreadSetTask(MetaGatherTaskBase):
     NAME = "Gather SubreadSet"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
     # TODO: change this when quiver outputs xmls
-    OUTPUT_TYPES = [(FileTypes.DS_BAM, "ds_bam", "Gathered SubreadSets")]
+    OUTPUT_TYPES = [(FileTypes.DS_ALIGN, "ds_bam", "Gathered SubreadSets")]
     OUTPUT_FILE_NAMES = [("gathered", "xml")]
 
     SCHEMA_OPTIONS = {}
@@ -178,10 +178,10 @@ class GatherAlignmentSetTask(MetaGatherTaskBase):
     NAME = "Gather AlignmentSet"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
-    OUTPUT_TYPES = [(FileTypes.DS_BAM, "ds_bam", "Gathered AlignmentSets")]
+    OUTPUT_TYPES = [(FileTypes.DS_ALIGN, "ds_bam", "Gathered AlignmentSets")]
     OUTPUT_FILE_NAMES = [("gathered", "xml")]
 
     SCHEMA_OPTIONS = {}
@@ -203,8 +203,8 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
     NAME = "AlignmentSet Contig Scatter"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
-    INPUT_TYPES = [(FileTypes.DS_BAM, "alignment_ds", "Pacbio DataSet AlignmentSet"),
+    IS_DISTRIBUTED = False
+    INPUT_TYPES = [(FileTypes.DS_ALIGN, "alignment_ds", "Pacbio DataSet AlignmentSet"),
                    (FileTypes.DS_REF, "ref_ds", "Reference DataSet file")]
 
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
@@ -243,7 +243,7 @@ class SubreadSetScatter(MetaScatterTaskBase):
     NAME = "Scatter Subreadset DataSet"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds_subreads", "Subread DataSet"),
                    (FileTypes.DS_REF, "ds_reference", "Reference DataSet")]

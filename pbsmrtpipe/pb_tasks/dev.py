@@ -24,7 +24,7 @@ class MyDevHelloTask(MetaTaskBase):
     NAME = "My Hello Task"
     VERSION = "1.0.2"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
     INPUT_TYPES = [(FileTypes.TXT, "my_txt", "A general non-empty txt file")]
     OUTPUT_TYPES = [(FileTypes.TXT, "my_txt2", "A simple output txt file")]
     SCHEMA_OPTIONS = _get_opts()
@@ -48,7 +48,7 @@ class DevSubreadDataSet(MetaTaskBase):
     NAME = "Dev Subread Report"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
     INPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds", "Subread DataSet")]
     OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "Subread Report")]
 
@@ -70,7 +70,7 @@ class DevHelloWorlder(MetaTaskBase):
     NAME = "Dev Hello Worlder"
     VERSION = "0.2.1"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
     INPUT_TYPES = [(FileTypes.TXT, "my_txt", "A simple Text file")]
     OUTPUT_TYPES = [(FileTypes.TXT, "my_out_txt", "A simple Output txt file")]
     SCHEMA_OPTIONS = {}
@@ -93,7 +93,7 @@ class DevHelloGarfield(MetaTaskBase):
     NAME = "Dev Hello Garfield"
     VERSION = "0.2.1"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
     INPUT_TYPES = [(FileTypes.TXT, "my_txt1", "A General Txt file")]
 
     OUTPUT_TYPES = [(FileTypes.TXT, "my_txt1", "A new General Text file"),
@@ -121,7 +121,7 @@ class DevHelloLasagna(MetaTaskBase):
     NAME = "Dev Hello Lasagna"
     VERSION = "0.2.1"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
     INPUT_TYPES = [(FileTypes.TXT, "my_txt1", "A General Txt file")]
 
     OUTPUT_TYPES = [(FileTypes.TXT, "my_txt1", "A new General Text file")]
@@ -155,7 +155,7 @@ class DevDependencyInjectExample(MetaTaskBase):
     NAME = "Dependency Inject Example"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.REPORT, 'rpt', "A Report that must contain 'di_example_report.di_example_attr_x' attribute")]
     OUTPUT_TYPES = [(FileTypes.TXT, "txt1", "A txt file with output")]
@@ -180,7 +180,7 @@ class DevTxtToFofnTask(MetaTaskBase):
     NAME = "Dev TXT to Fofn"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.TXT, "txt1", "A general txt file")]
     OUTPUT_TYPES = [(FileTypes.FOFN, "fofn1", "A general FOFN file")]
@@ -202,7 +202,7 @@ class DevFofnTask(MetaTaskBase):
     NAME = "Dev FOFN"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.TXT, "txt", "A general txt file")]
     OUTPUT_TYPES = [(FileTypes.FOFN, "fofn", "A general FOFN"),
@@ -241,7 +241,7 @@ class DevFofnExampleTask(MetaTaskBase):
     NAME = "Generic Scatter FOFN"
     VERSION = '1.0.0'
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.FOFN, 'fofn', "Generic Fofn"),
                    (FileTypes.REPORT, "report", "Generic FOFN Metadata Report")]
@@ -267,7 +267,7 @@ class DevFofnScatterTask(MetaScatterTaskBase):
     NAME = "Scatter FOFN DI example"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.FOFN, 'fofn', "Generic FOFN"),
                    (FileTypes.REPORT, "report", "Fofn metadata JSON Report")]
@@ -296,7 +296,7 @@ class DevFofnScatterDependencyInjectionTask(MetaScatterTaskBase):
     NAME = "Scatter FOFN DI example"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.FOFN, 'fofn', "Generic FOFN"),
                    (FileTypes.REPORT, "report", "Fofn metadata JSON Report")]
@@ -334,7 +334,7 @@ class DevTxtToFastaTask(MetaTaskBase):
     NAME = "TXT to Fasta"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
     INPUT_TYPES = [(FileTypes.TXT, "txt", "Random txt file")]
     OUTPUT_TYPES = [(FileTypes.FASTA, 'fasta', "Random Fasta file")]
     OUTPUT_FILE_NAMES = [("random_file", "fasta")]
@@ -357,7 +357,7 @@ class FilterFastaTask(MetaTaskBase):
     NAME = "Filter Fasta"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.FASTA, 'fasta', "General Fasta File")]
     OUTPUT_TYPES = [(FileTypes.FASTA, 'fasta', "Filtered Fasta File")]
@@ -384,7 +384,7 @@ class ScatterFilterFastaTask(MetaScatterTaskBase):
     NAME = "Scatter Filter FASTA file"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.FASTA, 'fasta', 'General Fasta File')]
     OUTPUT_TYPES = [(FileTypes.CHUNK, 'chunk', 'Fasta chunks')]
@@ -411,7 +411,7 @@ class DevGatherFofnExample(MetaGatherTaskBase):
     NAME = "Dev Gather FOFN"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.CHUNK, 'jchunk', "Chunked FOFN Json")]
     OUTPUT_TYPES = [(FileTypes.FOFN, 'fofn', "Generic FOFN")]
@@ -431,7 +431,7 @@ class DevHelloDistributedTask(MetaTaskBase):
     NAME = "Dev Hello Distributed"
     VERSION = "1.0.0"
 
-    TASK_TYPE = TaskTypes.DISTRIBUTED
+    IS_DISTRIBUTED = True
 
     INPUT_TYPES = [(FileTypes.TXT, 'my_txt', "A general Text file"),
                    (FileTypes.TXT, "txt2", "A general txt file")]
@@ -456,7 +456,7 @@ class DevReferenceSetReportTask(MetaTaskBase):
     NAME = "Dev ReferenceSet Report"
     VERSION = "0.1.0"
 
-    TASK_TYPE = TaskTypes.LOCAL
+    IS_DISTRIBUTED = False
 
     INPUT_TYPES = [(FileTypes.DS_REF, 'ds', "Reference DataSet")]
     OUTPUT_TYPES = [(FileTypes.REPORT, "rpt", "A Report JSON")]
