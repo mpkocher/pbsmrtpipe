@@ -342,7 +342,7 @@ def job_resource_create_and_setup_logs(alog, job_root_dir, bg, task_opts, workfl
     with open(task_opts_path, 'w') as f:
         f.write(json.dumps(task_opts, sort_keys=True, indent=4))
 
-    env_path = os.path.join(job_resources.workflow, 'env.json')
+    env_path = os.path.join(job_resources.workflow, '.env.json')
     IO.write_env_to_json(env_path)
 
     try:
