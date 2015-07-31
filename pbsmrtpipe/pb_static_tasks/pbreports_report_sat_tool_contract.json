@@ -6,29 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.sat_report", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "AlignmentSet XML or aligned .bam file", 
-                "title": "AlignmentSet", 
-                "id": "alignment_file", 
-                "file_type_id": "PacBio.FileTypes.AlignmentSet"
-            }, 
-            {
-                "description": "The variants report - i.e., variants_report.json", 
-                "title": "Variant report JSON", 
-                "id": "var_rpt", 
-                "file_type_id": "PacBio.FileTypes.json"
-            }, 
-            {
-                "description": "The mapping stats report - i.e., mapping_stats_report.json", 
-                "title": "Mapping stats JSON", 
-                "id": "mapping_stats_rpt", 
-                "file_type_id": "PacBio.FileTypes.json"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": false, 
+        "name": "DisplayName", 
         "schema_options": [], 
         "output_types": [
             {
@@ -39,6 +19,28 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T10:41:58.348813"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:08.514238", 
+        "input_types": [
+            {
+                "description": "AlignmentSet XML or aligned .bam file", 
+                "title": "AlignmentSet", 
+                "id": "alignment_file", 
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            }, 
+            {
+                "description": "The variants report - i.e., variants_report.json", 
+                "title": "Variant report JSON", 
+                "id": "var_rpt", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }, 
+            {
+                "description": "The mapping stats report - i.e., mapping_stats_report.json", 
+                "title": "Mapping stats JSON", 
+                "id": "mapping_stats_rpt", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

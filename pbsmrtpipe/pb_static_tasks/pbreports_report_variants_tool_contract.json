@@ -6,29 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.variants_report", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "ReferenceSet or FASTA", 
-                "title": "Reference dataset", 
-                "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
-            }, 
-            {
-                "description": "Alignment summary GFF", 
-                "title": "Alignment summary GFF", 
-                "id": "aln_summ_gff", 
-                "file_type_id": "PacBio.FileTypes.gff"
-            }, 
-            {
-                "description": "Variants GFF", 
-                "title": "Variants GFF", 
-                "id": "variants_gff", 
-                "file_type_id": "PacBio.FileTypes.gff"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -88,6 +68,28 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T11:33:22.145014"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:09.940039", 
+        "input_types": [
+            {
+                "description": "ReferenceSet or FASTA", 
+                "title": "Reference dataset", 
+                "id": "reference", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }, 
+            {
+                "description": "Alignment summary GFF", 
+                "title": "Alignment summary GFF", 
+                "id": "aln_summ_gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "Variants GFF", 
+                "title": "Variants GFF", 
+                "id": "variants_gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

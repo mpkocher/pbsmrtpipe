@@ -6,23 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.summarize_coverage", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "AlignmentSet", 
-                "title": "AlignmentSet", 
-                "id": "aln_set", 
-                "file_type_id": "PacBio.FileTypes.AlignmentSet"
-            }, 
-            {
-                "description": "ReferenceSet or FASTA", 
-                "title": "Reference dataset", 
-                "id": "ref_set", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -82,6 +68,22 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T08:50:42.821237"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:11.829911", 
+        "input_types": [
+            {
+                "description": "AlignmentSet", 
+                "title": "AlignmentSet", 
+                "id": "aln_set", 
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            }, 
+            {
+                "description": "ReferenceSet or FASTA", 
+                "title": "Reference dataset", 
+                "id": "ref_set", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

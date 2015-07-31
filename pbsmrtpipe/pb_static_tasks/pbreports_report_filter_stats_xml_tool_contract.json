@@ -6,17 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.filter_stats_report_xml", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "SubreadSet", 
-                "title": "SubreadSet", 
-                "id": "subread_set", 
-                "file_type_id": "PacBio.DataSet.SubreadSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": false, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -57,9 +49,19 @@
                 "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
                 "default_name": "report.json", 
                 "id": "report", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.1.1 at 2015-07-27T15:39:48.369527"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:13.471771", 
+        "input_types": [
+            {
+                "description": "SubreadSet", 
+                "title": "SubreadSet", 
+                "id": "subread_set", 
+                "file_type_id": "PacBio.DataSet.SubreadSet"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

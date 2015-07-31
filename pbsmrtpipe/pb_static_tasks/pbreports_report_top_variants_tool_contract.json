@@ -6,23 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.top_variants", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "variants.gff (can be gzip'ed)", 
-                "title": "GFF file", 
-                "id": "gff", 
-                "file_type_id": "PacBio.FileTypes.gff"
-            }, 
-            {
-                "description": "ReferenceSet or FASTA", 
-                "title": "Reference dataset", 
-                "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": false, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -66,6 +52,22 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.1.1 at 2015-07-28T13:58:06.396266"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:10.162609", 
+        "input_types": [
+            {
+                "description": "variants.gff (can be gzip'ed)", 
+                "title": "GFF file", 
+                "id": "gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "ReferenceSet or FASTA", 
+                "title": "Reference dataset", 
+                "id": "reference", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

@@ -6,17 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.modifications_report", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "CSV file of base modifications", 
-                "title": "CSV file", 
-                "id": "csv", 
-                "file_type_id": "PacBio.FileTypes.csv"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": false, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -60,6 +52,16 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T15:26:02.163919"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:10.889788", 
+        "input_types": [
+            {
+                "description": "CSV file of base modifications", 
+                "title": "CSV file", 
+                "id": "csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }
