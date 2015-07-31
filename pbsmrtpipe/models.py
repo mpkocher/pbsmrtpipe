@@ -293,7 +293,7 @@ class MetaGatherTask(MetaTask):
 class Task(object):
     # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
 
-    def __init__(self, task_id, task_type, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
+    def __init__(self, task_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
         self.task_id = task_id
         # List of strings
         self.input_files = input_files
@@ -306,7 +306,7 @@ class Task(object):
         # int
         self.nproc = nproc
         #
-        self.task_type = task_type
+        self.is_distributed = is_distributed
         # Command list of strings or string
         self.cmds = cmd if isinstance(cmd, (list, tuple)) else [cmd]
 
@@ -358,9 +358,9 @@ class RunnableTask(object):
 
     """Container for task-manifest.json"""
 
-    def __init__(self, task_id, task_type, input_files, output_files, ropts, nproc, resources, cmds, cluster, envs):
+    def __init__(self, task_id, is_distributed, input_files, output_files, ropts, nproc, resources, cmds, cluster, envs):
         self.task_id = task_id
-        self.task_type = task_type
+        self.is_distributed = is_distributed
         self.input_files = input_files
         self.output_files = output_files
         self.nproc = nproc
@@ -378,7 +378,7 @@ class RunnableTask(object):
         _d = dict(k=self.__class__.__name__,
                   i=self.task_id,
                   n=len(self.cmds),
-                  t=self.task_type,
+                  t=self.is_distributed,
                   m=len(self.resources))
         return "<{k} {i} task type {t} ncommands {n} nresources {m} >".format(**_d)
 
@@ -405,7 +405,7 @@ class RunnableTask(object):
             c = None
 
         return RunnableTask(d['id'],
-                            _f('task_type'),
+                            _f('is_distributed'),
                             _f('input_files'),
                             _f('output_files'),
                             _f('resolved_options'),

@@ -274,28 +274,17 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         analysis_file_links.append(analysis_link)
         write_analysis_report(analysis_file_links)
 
+    # factories for getting a Worker instance
     # utils for getting the running func and worker type
-    def _to_w(wid, task_id, manifest_path_):
+    def _to_worker(w_is_distributed, wid, task_id, manifest_path_):
         # the IO loading will forceful set this to None
         # if the cluster manager not defined or cluster_mode is False
-        if global_registry.cluster_renderer is None:
+        if global_registry.cluster_renderer is None or not w_is_distributed:
             r_func = T.run_task_manifest
         else:
             r_func = T.run_task_manifest_on_cluster
         return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
                                   r_func, task_id, manifest_path_, name=wid)
-
-    def _to_local_w(wid, task_id, manifest_path_):
-        return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
-                                  T.run_task_manifest, task_id, manifest_path_, name=wid)
-
-    # factories for getting a Worker instance
-    def _determine_worker_type(task_type):
-        # task_type now means is_distributed
-        if task_type is True:
-            return _to_w
-        else:
-            return _to_local_w
 
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
@@ -576,13 +565,12 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                                        tnode.meta_task.__module__, global_registry.cluster_renderer)
 
                 # Create an instance of Worker
-                worker_type = _determine_worker_type(tnode.meta_task.task_type)
-                w = worker_type("worker-task-{i}".format(i=tid), tid, manifest_path)
+                w = _to_worker(tnode.meta_task.task_type, "worker-task-{i}".format(i=tid), tid, manifest_path)
 
                 workers[tid] = w
                 w.start()
                 total_nproc += task.nproc
-                log.debug("Starting worker {i} ({n} workers running, {m} total proc in use)".format(i=tid, n=len(workers), m=total_nproc))
+                slog.debug("Starting worker {i} ({n} workers running, {m} total proc in use)".format(i=tid, n=len(workers), m=total_nproc))
 
                 # Submit job to be run.
                 B.update_task_state(bg, tnode, TaskStates.SUBMITTED)
@@ -724,9 +712,6 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     workflow_level_opts = IO.validate_or_modify_workflow_level_options(workflow_level_opts)
 
-    if isinstance(force_chunk_mode, bool):
-        workflow_level_opts.chunk_mode = force_chunk_mode
-
     slog.info("Successfully validated workflow options.")
 
     slog.info("validating supplied task options.")
@@ -745,6 +730,9 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
             workflow_level_opts.distributed_mode = force_distribute
     else:
         cluster_render = None
+
+    if isinstance(force_chunk_mode, bool):
+        workflow_level_opts.chunk_mode = force_chunk_mode
 
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 

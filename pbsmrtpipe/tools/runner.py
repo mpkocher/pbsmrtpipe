@@ -304,7 +304,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     stdout_ = _to_p('stdout')
     stderr_ = _to_p('stderr')
 
-    if runnable_task.task_type is True:
+    if runnable_task.is_distributed is False:
         return run_task(runnable_task, output_dir, stdout_, stderr_, debug_mode)
 
     if runnable_task.cluster is None:
