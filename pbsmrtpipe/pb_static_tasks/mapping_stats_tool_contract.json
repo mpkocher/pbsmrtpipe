@@ -6,17 +6,9 @@
     }, 
     "tool_contract_id": "pbreports.tasks.mapping_stats", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "BAM, SAM or Alignment DataSet", 
-                "title": "Alignment DataSet", 
-                "id": "alignment_file", 
-                "file_type_id": "PacBio.FileTypes.AlignmentSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.distributed_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [], 
         "output_types": [
             {
@@ -27,6 +19,16 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-22T10:41:59.071212"
+        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:09.222990", 
+        "input_types": [
+            {
+                "description": "BAM, SAM or Alignment DataSet", 
+                "title": "Alignment XML DataSet", 
+                "id": "alignment_file", 
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }
