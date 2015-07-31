@@ -6,23 +6,9 @@
     }, 
     "tool_contract_id": "pbalign.tasks.pbalign", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "SubreadSet or unaligned .bam", 
-                "title": "Subread DataSet", 
-                "id": "subreads", 
-                "file_type_id": "PacBio.DataSet.SubreadSet"
-            }, 
-            {
-                "description": "Reference DataSet or FASTA file", 
-                "title": "ReferenceSet", 
-                "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.distributed_task", 
-        "resource_types": [], 
-        "nproc": "$max_nproc", 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -95,9 +81,25 @@
                 "description": "BAM file of aligned reads", 
                 "default_name": "aligned.subreads.xml", 
                 "id": "bam", 
-                "file_type_id": "PacBio.FileTypes.AlignmentSet"
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.1.1 at 2015-07-29T08:19:40.201470"
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:52.209409", 
+        "input_types": [
+            {
+                "description": "SubreadSet or unaligned .bam", 
+                "title": "Subread DataSet", 
+                "id": "subreads", 
+                "file_type_id": "PacBio.DataSet.SubreadSet"
+            }, 
+            {
+                "description": "Reference DataSet or FASTA file", 
+                "title": "ReferenceSet", 
+                "id": "reference", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }
+        ], 
+        "nproc": "$max_nproc", 
+        "resource_types": []
     }
 }

@@ -6,23 +6,9 @@
     }, 
     "tool_contract_id": "kinetics_tools.tasks.ipd_summary", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "BAM or Alignment DataSet", 
-                "title": "Alignment DataSet", 
-                "id": "infile", 
-                "file_type_id": "PacBio.FileTypes.AlignmentSet"
-            }, 
-            {
-                "description": "Fasta or Reference DataSet", 
-                "title": "Reference DataSet", 
-                "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.ReferenceSet"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.distributed_task", 
-        "resource_types": [], 
-        "nproc": "$max_nproc", 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -105,6 +91,22 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T17:12:32.179982"
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:52.956324", 
+        "input_types": [
+            {
+                "description": "BAM or Alignment DataSet", 
+                "title": "Alignment DataSet", 
+                "id": "infile", 
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            }, 
+            {
+                "description": "Fasta or Reference DataSet", 
+                "title": "Reference DataSet", 
+                "id": "reference", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }
+        ], 
+        "nproc": "$max_nproc", 
+        "resource_types": []
     }
 }

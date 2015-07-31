@@ -6,23 +6,9 @@
     }, 
     "tool_contract_id": "motif_maker.tasks.find_motifs", 
     "tool_contract": {
-        "input_types": [
-            {
-                "description": "GFF file containing modified bases", 
-                "title": "GFF file", 
-                "id": "gff", 
-                "file_type_id": "PacBio.FileTypes.gff"
-            }, 
-            {
-                "description": "Fasta reference sequence", 
-                "title": "Fasta file", 
-                "id": "reference", 
-                "file_type_id": "PacBio.FileTypes.Fasta"
-            }
-        ], 
-        "task_type": "pbsmrtpipe.constants.distributed_task", 
-        "resource_types": [], 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -50,6 +36,22 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.1.0 at 2015-07-24T17:30:11.445289"
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:53.751650", 
+        "input_types": [
+            {
+                "description": "GFF file containing modified bases", 
+                "title": "GFF file", 
+                "id": "gff", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }, 
+            {
+                "description": "Reference DataSet xml or Fasta sequence", 
+                "title": "ReferenceSet", 
+                "id": "reference", 
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            }
+        ], 
+        "nproc": 1, 
+        "resource_types": []
     }
 }

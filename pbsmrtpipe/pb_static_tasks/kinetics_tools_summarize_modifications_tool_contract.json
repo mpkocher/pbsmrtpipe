@@ -6,6 +6,20 @@
     }, 
     "tool_contract_id": "kinetics_tools.tasks.summarize_modifications", 
     "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "is_distributed": true, 
+        "name": "DisplayName", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "GFF file", 
+                "description": "Modified alignment summary file", 
+                "default_name": "alignment_summary_with_basemods.gff", 
+                "id": "gff_out", 
+                "file_type_id": "PacBio.FileTypes.gff"
+            }
+        ], 
+        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:53.351653", 
         "input_types": [
             {
                 "description": "Base modification GFF file", 
@@ -20,19 +34,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "task_type": "pbsmrtpipe.constants.local_task", 
-        "resource_types": [], 
         "nproc": 1, 
-        "schema_options": [], 
-        "output_types": [
-            {
-                "title": "GFF file", 
-                "description": "Modified alignment summary file", 
-                "default_name": "alignment_summary_with_basemods.gff", 
-                "id": "gff_out", 
-                "file_type_id": "PacBio.FileTypes.gff"
-            }
-        ], 
-        "_comment": "Created by v0.1.0 at 2015-07-25T17:46:24.943544"
+        "resource_types": []
     }
 }
