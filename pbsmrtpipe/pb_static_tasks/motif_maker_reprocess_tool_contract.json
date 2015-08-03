@@ -7,8 +7,8 @@
     "tool_contract_id": "motif_maker.tasks.reprocess", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nPython wrapper for tool contract support in MotifMaker ('reprocess' mode).\n", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -36,7 +36,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:54.146149", 
+        "_comment": "Created by v0.2.0 at 2015-08-03T11:32:17.130570", 
         "input_types": [
             {
                 "description": "GFF file containing modified bases", 
@@ -58,6 +58,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "name": "motif_maker.tasks.reprocess"
     }
 }

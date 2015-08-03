@@ -8,7 +8,7 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "is_distributed": true, 
-        "name": "DisplayName", 
+        "name": "ipdSummary", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -52,7 +52,7 @@
                     "kinetics_tools.task_options.identify": {
                         "default": "", 
                         "type": "string", 
-                        "description": "Specific modifications to identify (comma-separated list", 
+                        "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A, m4C, m5C_TET.  Cannot be used with --control.", 
                         "title": "Identify basemods"
                     }
                 }, 
@@ -66,9 +66,9 @@
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.compute_methyl_fraction": {
-                        "default": false, 
+                        "default": true, 
                         "type": "boolean", 
-                        "description": "Compute methyl fraction", 
+                        "description": "In the --identify mode, add --methylFraction to command line to estimate the methylated fraction, along with 95%% confidence interval bounds.", 
                         "title": "Compute methyl fraction"
                     }
                 }, 
@@ -91,12 +91,12 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:52.956324", 
+        "_comment": "Created by v0.2.0 at 2015-07-31T11:04:38.237115", 
         "input_types": [
             {
                 "description": "BAM or Alignment DataSet", 
                 "title": "Alignment DataSet", 
-                "id": "infile", 
+                "id": "alignment_set", 
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }, 
             {
