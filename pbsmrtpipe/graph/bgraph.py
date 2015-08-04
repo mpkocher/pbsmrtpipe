@@ -595,6 +595,20 @@ def was_workflow_successful(bg):
     return all(was_task_successful(bg, t) for t in bg.all_task_type_nodes())
 
 
+def _are_all_inputs_resolved(bg, tnode):
+    _ns = {}
+    for fnode in bg.predecessors(tnode):
+        if isinstance(fnode, VALID_FILE_NODE_CLASSES):
+            is_resolved = bg.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
+            _ns[fnode] = is_resolved
+
+    # must have at least one value and all are resolved
+    if _ns:
+        return all(_ns.values())
+
+    return False
+
+
 def get_next_runnable_task(g):
 
     if g.is_workflow_complete():
@@ -604,20 +618,16 @@ def get_next_runnable_task(g):
     for tnode in g.all_task_type_nodes():
         if isinstance(tnode, TaskBindingNode):
             state = g.node[tnode][ConstantsNodes.TASK_ATTR_STATE]
+            is_chunkable = g.node[tnode][ConstantsNodes.TASK_ATTR_IS_CHUNKABLE]
             if state == TaskStates.SCATTERED:
                 # these tasks are labeled as on-hold and will be deleted
                 # once the gather step is successful
                 continue
+            elif is_chunkable is True:
+                # Skip original 'unchunked' tasks.
+                continue
             elif state in TaskStates.RUNNABLE_STATES():
-                    # look if inputs are resolved.
-                # {node:is_resolved}
-                _ns = {}
-                for fnode in g.predecessors(tnode):
-                    if isinstance(fnode, VALID_FILE_NODE_CLASSES):
-                        is_resolved = g.node[fnode][ConstantsNodes.FILE_ATTR_IS_RESOLVED]
-                        _ns[fnode] = is_resolved
-
-                if all(_ns.values()):
+                if _are_all_inputs_resolved(g, tnode):
                     return tnode
             else:
                 log.debug("Skipping chunkable tasks {n}".format(n=tnode))
@@ -955,7 +965,46 @@ def add_scatter_task(g, scatterable_task_node, scatter_meta_task):
     attrs = [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, False),
              (ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID, chunk_group_id)]
     update_or_set_node_attrs(g, attrs, [scatter_task_node])
+
+
+    resolve_successor_binding_file_path(g)
     return g
+
+
+def _get_scatterable_task_id(chunk_operators_d, task_id):
+    """Get the companion scatterable task id from the original meta task id"""
+    for operator_id, chunk_operator in chunk_operators_d.iteritems():
+        if task_id == chunk_operator.scatter.task_id:
+            return chunk_operator.scatter.scatter_task_id
+    return None
+
+
+def _is_task_id_scatterable(chunk_operators_d, task_id):
+    return _get_scatterable_task_id(chunk_operators_d, task_id) is not None
+
+
+def apply_scatterable(bg, chunk_operators_d, task_registry_d):
+    """Add All companion scatterable tasks to task from Chunk Operator"""
+
+    def is_task_id_scatterable(task_id_):
+        return _is_task_id_scatterable(chunk_operators_d, task_id_)
+
+    def get_scatter_task_id_from_task_id(task_id_):
+        return _get_scatterable_task_id(chunk_operators_d, task_id_)
+
+    for tnode in bg.all_task_type_nodes():
+        if not isinstance(tnode, (TaskChunkedBindingNode, EntryPointNode)):
+            if is_task_id_scatterable(tnode.meta_task.task_id):
+                scatterable_task_id = get_scatter_task_id_from_task_id(tnode.meta_task.task_id)
+                was_chunked = bg.node[tnode][ConstantsNodes.TASK_ATTR_WAS_CHUNKED]
+                # Only process tasks that have not been 'scattered'
+                if not was_chunked:
+                    log.debug("Resolved scatter task {i} from task {x}".format(i=scatterable_task_id, x=tnode.meta_task.task_id))
+                    add_scatter_task(bg, tnode, task_registry_d[scatterable_task_id])
+                    bg.node[tnode][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
+
+    resolve_successor_binding_file_path(bg)
+    return bg
 
 
 def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, chunk_operator, registered_tasks_d):
@@ -1043,6 +1092,7 @@ def add_chunkable_task_nodes_to_bgraph(bg, scatter_task_node, pipeline_chunks, c
 
     # log.debug(to_binding_graph_summary(bg))
     slog.info("Chunked Tasks added {n} from task-id {i}".format(n=len(chunked_task_nodes), i=scatter_meta_task.task_id))
+    resolve_successor_binding_file_path(bg)
     return chunked_task_nodes
 
 
@@ -1090,6 +1140,7 @@ def label_chunkable_tasks(g, operators_d):
     if not found_chunkable_task:
         slog.warn("Unable to find any chunkable tasks from {n} chunk operators.".format(n=len(operators_d)))
 
+    resolve_successor_binding_file_path(g)
     return g
 
 
@@ -1136,6 +1187,7 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks)
             else:
                 log.debug("Skipping {t}. Node was already chunked".format(t=tnode_))
 
+    resolve_successor_binding_file_path(bg)
     return bg
 
 
@@ -1174,7 +1226,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
         # The Task was already scattered and Chunk.json file is being
         # generated
         _state = bg.node[node][ConstantsNodes.TASK_ATTR_STATE]
-        slog.info("Scattered task {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
+        log.debug("Scattered task {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
         # look for a completed Chunk.json file
         if _state in TaskStates.FAILURE_STATES():
             raise TaskExecutionError("Scattered task {n} failed.".format(i=node))
@@ -1307,8 +1359,11 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                         slog.info(("Mapping ", new_mapped_input_node, mapped_in_node))
                         bg.add_edge(new_mapped_input_node, mapped_in_node)
                         # delete edge to old
-                        bg.remove_edge(original_out_file, mapped_in_node)
-                        # TODO. Should also delete the original unchunked task
+                        # bg.remove_edge(original_out_file, mapped_in_node)
+
+                # Delete original task, since new gather'ed mappings have created
+                bg.remove_nodes_from(bg.successors(original_unchunked_tnode))
+                bg.remove_node(original_unchunked_tnode)
 
                 # update chunked task properties
                 attrs = [(ConstantsNodes.TASK_ATTR_WAS_CHUNKED, True),
@@ -1326,6 +1381,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
         else:
             log.warn("Chunked tasks for {n} group: {g}".format(n=node, g=chunk_group_id))
 
+    resolve_successor_binding_file_path(bg)
     return bg
 
 

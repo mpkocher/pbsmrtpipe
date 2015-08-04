@@ -297,12 +297,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         p = os.path.join(job_resources.html, 'task_summary.html')
         R.write_report_to_html(task_summary_report, p)
 
-    def is_task_id_scatterable(task_id_):
-        return _is_task_id_scatterable(global_registry.chunk_operators, task_id_)
-
-    def get_scatter_task_id_from_task_id(task_id_):
-        return _get_scatterable_task_id(global_registry.chunk_operators, task_id_)
-
     def services_log_update_progress(source_id_, level_, message_):
         if service_uri_or_none is not None:
             total_log_uri = "{u}/log".format(u=service_uri_or_none)
@@ -367,6 +361,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
         while True:
 
+            # Convert Task -> ScatterAble task (emits a Chunk.json file)
+            B.apply_scatterable(bg, global_registry.chunk_operators, global_registry.tasks)
+
             # This will add new TaskBinding nodes to the graph if necessary
             B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks, max_nchunks)
             # B.write_binding_graph_images(bg, job_resources.workflow)
@@ -399,8 +396,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             time.sleep(sleep_time)
 
             # log.debug("Sleeping for {s}".format(s=sleep_time))
-            #log.debug("\n" + BU.to_binding_graph_summary(bg))
-            # BU.to_binding_graph_task_summary(bg)
+            log.debug("\n" + BU.to_binding_graph_summary(bg))
+            BU.to_binding_graph_task_summary(bg)
 
             # This should only be triggered after events. The main reason
             # to keep updating it was the html report is up to date with the
@@ -497,7 +494,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             tnode = B.get_next_runnable_task(bg)
 
             if tnode is not None:
-                log.debug("Got task node '{t}'".format(t=tnode))
+                slog.debug("Got runnable task node '{t}'".format(t=tnode))
 
             if tnode is None:
                 continue
@@ -507,21 +504,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 # base task_id-instance_id
                 tid = '-'.join([tnode.meta_task.task_id, str(tnode.instance_id)])
 
-                # Exclude already chunked Tasks
-                if not isinstance(tnode, TaskChunkedBindingNode):
-                    if is_task_id_scatterable(tnode.meta_task.task_id):
-                        scatterable_task_id = get_scatter_task_id_from_task_id(tnode.meta_task.task_id)
-                        was_chunked = bg.node[tnode]['was_chunked']
-                        if not was_chunked:
-                            log.debug("Resolved scatter task {i} from task {x}".format(i=scatterable_task_id, x=tnode.meta_task.task_id))
-                            B.add_scatter_task(bg, tnode, global_registry.tasks[scatterable_task_id])
-                            bg.node[tnode]['was_chunked'] = True
-                            BU.write_binding_graph_images(bg, job_resources.workflow)
-
-                    # Update node to scattered and breakout of loop
-                    # let's just run the task for now
-                    # B.update_task_state(bg, tnode, TaskStates.SCATTERED)
-                    # continue
+                BU.write_binding_graph_images(bg, job_resources.workflow)
 
                 task_dir = os.path.join(job_resources.tasks, tid)
                 if not os.path.exists(task_dir):
