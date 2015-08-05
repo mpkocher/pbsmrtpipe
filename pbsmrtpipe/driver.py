@@ -602,6 +602,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         was_successful = False
 
     except Exception as e:
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        tb_text = "\n".join(traceback.format_exception(exc_type, exc_value,
+                exc_tb))
+        log.error(tb_text)
+
         # update workflow reports to failed
         write_report_(bg, TaskStates.FAILED, False)
         write_task_summary_report(bg)
