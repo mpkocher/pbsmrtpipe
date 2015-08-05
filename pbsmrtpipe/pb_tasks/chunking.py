@@ -25,7 +25,7 @@ class GatherCSV(MetaGatherTaskBase):
 
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources):
-        _d = dict(i=input_files[0], o=output_files[1])
+        _d = dict(i=input_files[0], o=output_files[0])
         return 'pbtools-gather csv --chunk-key="csv_id" {i} --output="{o}"'.format(**_d)
 
 
