@@ -7,8 +7,8 @@
     "tool_contract_id": "kinetics_tools.tasks.ipd_summary", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "ipdSummary", 
+        "resource_types": [], 
+        "description": "\nTool for detecting DNA base-modifications from kinetic signatures.\n", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -66,7 +66,7 @@
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.compute_methyl_fraction": {
-                        "default": true, 
+                        "default": false, 
                         "type": "boolean", 
                         "description": "In the --identify mode, add --methylFraction to command line to estimate the methylated fraction, along with 95%% confidence interval bounds.", 
                         "title": "Compute methyl fraction"
@@ -91,7 +91,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-31T11:04:38.237115", 
+        "_comment": "Created by v0.2.0 at 2015-08-04T17:11:21.742450", 
         "input_types": [
             {
                 "description": "BAM or Alignment DataSet", 
@@ -107,6 +107,7 @@
             }
         ], 
         "nproc": "$max_nproc", 
-        "resource_types": []
+        "is_distributed": true, 
+        "name": "ipdSummary"
     }
 }
