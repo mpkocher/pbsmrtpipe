@@ -20,12 +20,12 @@ Very similar to variantCaller chunk operator, from which this was copied
         <chunks>
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_gff</gather-task-id>
-                <chunk-key>$chunk.gff_id</chunk-key>
+                <chunk-key>$chunk.basemods_gff_id</chunk-key>
                 <task-output>kinetics_tools.tasks.ipd_summary:0</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
-                <chunk-key>$chunk.csv_id</chunk-key>
+                <chunk-key>$chunk.basemods_csv_id</chunk-key>
                 <task-output>kinetics_tools.tasks.ipd_summary:1</task-output>
             </chunk>
         </chunks>
