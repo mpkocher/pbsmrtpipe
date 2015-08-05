@@ -1,14 +1,14 @@
 {
     "version": "0.1", 
     "driver": {
-        "exe": "motifMaker_find --resolved-tool-contract ", 
+        "exe": "task_motifmaker_find --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "motif_maker.tasks.find_motifs", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nPython wrapper for tool contract support in MotifMaker ('find' mode).\n", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -36,7 +36,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T18:54:53.751650", 
+        "_comment": "Created by v0.2.0 at 2015-08-05T16:14:34.983004", 
         "input_types": [
             {
                 "description": "GFF file containing modified bases", 
@@ -52,6 +52,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "name": "motif_maker.tasks.find_motifs"
     }
 }

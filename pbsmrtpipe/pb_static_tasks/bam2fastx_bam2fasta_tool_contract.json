@@ -1,0 +1,52 @@
+{
+    "version": "0.12.0", 
+    "driver": {
+        "exe": "task_bam2fasta --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "bam2fastx.tasks.bam2fasta", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "\nWrapper to provide tool contract interface support for bam2fasta.  Should be\ndeprecated as soon as TCI support can be implemented on the C++ side.\n", 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "bam2fastx.task_options.compression_level"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "bam2fastx.task_options.compression_level": {
+                        "default": 0, 
+                        "type": "integer", 
+                        "description": "Gzip compression level", 
+                        "title": "Gzip compression level"
+                    }
+                }, 
+                "title": "JSON Schema for bam2fastx.task_options.compression_level"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": ".fasta file", 
+                "description": "Output .fasta file", 
+                "default_name": "output.fasta.gz", 
+                "id": "fasta_output", 
+                "file_type_id": "PacBio.FileTypes.Fastq"
+            }
+        ], 
+        "_comment": "Created by v0.2.0 at 2015-08-05T16:29:07.541886", 
+        "input_types": [
+            {
+                "description": "BAM file", 
+                "title": "BAM file", 
+                "id": "bam_input", 
+                "file_type_id": "PacBio.FileTypes.bam"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": true, 
+        "name": "bam2fastx.tasks.bam2fasta"
+    }
+}

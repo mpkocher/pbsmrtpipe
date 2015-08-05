@@ -22,8 +22,9 @@ python -m kineticsTools.ipdSummary --emit-tool-contract > $TC_DIR/kinetics_tools
 python -m kineticsTools.summarizeModifications --emit-tool-contract > $TC_DIR/kinetics_tools_summarize_modifications_tool_contract.json
 variantCaller --emit-tool-contract > $TC_DIR/genomic_consensus_variantcaller_tool_contract.json
 summarizeConsensus --emit-tool-contract > $TC_DIR/genomic_consensus_summarize_consensus_tool_contract.json
-motifMaker_find --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contract.json
-motifMaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
+task_motifmaker_find --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contract.json
+task_motifmaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
 gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.json
 gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
-
+task_bam2fasta --emit-tool-contract > $TC_DIR/bam2fastx_bam2fasta_tool_contract.json
+task_bam2fastq --emit-tool-contract > $TC_DIR/bam2fastx_bam2fastq_tool_contract.json

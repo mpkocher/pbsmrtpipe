@@ -1,7 +1,7 @@
 {
     "version": "0.1", 
     "driver": {
-        "exe": "motifMaker_reprocess --resolved-tool-contract ", 
+        "exe": "task_motifmaker_reprocess --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "motif_maker.tasks.reprocess", 
@@ -36,7 +36,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-08-03T11:32:17.130570", 
+        "_comment": "Created by v0.2.0 at 2015-08-05T16:14:44.421431", 
         "input_types": [
             {
                 "description": "GFF file containing modified bases", 
