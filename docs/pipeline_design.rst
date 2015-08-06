@@ -66,14 +66,14 @@ A list of **Bindings** with an **EntryPoint** is core component of creating a **
 Basic Task Model
 ----------------
 
-.. image:: images/task_model.001.jpg
+.. image:: http://s3.amazonaws.com/media.pacb.com/pbsmrtpipe_docs_images/task_model.001.jpg
 
 
 Bindings Example
 ----------------
 
 
-.. image:: images/task_model.002.jpg
+.. image:: http://s3.amazonaws.com/media.pacb.com/pbsmrtpipe_docs_images/task_model.002.jpg
 
 Bindings from pipeline are shown as b2, b3. The bindings would have the form:
 
@@ -87,7 +87,7 @@ Bindings from pipeline are shown as b2, b3. The bindings would have the form:
 
 To expose an interface of required files, entry points need to be defined. Select entry points are labeled as b0, b1 in figure below.
 
-.. image:: images/task_model.003.jpg
+.. image:: http://s3.amazonaws.com/media.pacb.com/pbsmrtpipe_docs_images/task_model.003.jpg
 
 .. code-block:: python
 
