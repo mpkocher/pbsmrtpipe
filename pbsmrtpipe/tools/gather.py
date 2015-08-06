@@ -49,7 +49,7 @@ def _read_header(csv_file):
         header = f.readline()
 
     if ',' in header:
-        return header.split(',')
+        return header.rstrip().split(',')
     else:
         return None
 
