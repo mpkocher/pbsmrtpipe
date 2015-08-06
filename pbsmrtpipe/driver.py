@@ -1,3 +1,4 @@
+from collections import deque
 import logging
 import os
 import time
@@ -11,6 +12,7 @@ import traceback
 import types
 import functools
 import uuid
+from pbcommand.utils import log_traceback
 from pbcore.io import DataSet
 
 from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
@@ -135,9 +137,8 @@ def _get_last_lines_of_stderr(n, stderr_path):
     lines = []
     try:
         with open(stderr_path, 'r') as f:
-            outs = f.readlines()
-        x = min(n, len(outs))
-        lines = outs[-x:]
+            lines = deque(f, n)
+            lines = [l.rstrip() for l in lines]
     except Exception as e:
         log.warn("Unable to extract stderr from {p} Error {e}".format(p=stderr_path, e=e.message))
 
@@ -397,7 +398,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
             # log.debug("Sleeping for {s}".format(s=sleep_time))
             log.debug("\n" + BU.to_binding_graph_summary(bg))
-            BU.to_binding_graph_task_summary(bg)
+            #BU.to_binding_graph_task_summary(bg)
 
             # This should only be triggered after events. The main reason
             # to keep updating it was the html report is up to date with the
@@ -602,11 +603,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         was_successful = False
 
     except Exception as e:
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        tb_text = "\n".join(traceback.format_exception(exc_type, exc_value,
-                exc_tb))
-        log.error(tb_text)
-
+        slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=e.message))
         # update workflow reports to failed
         write_report_(bg, TaskStates.FAILED, False)
         write_task_summary_report(bg)
@@ -798,9 +795,9 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
         else:
             emsg = "Unexpected exception. shutting down."
 
-        slog.error(emsg, exc_info=True)
+        log.error(emsg, exc_info=True)
         sys.stderr.write(emsg + "\n")
-        state = False
+        raise
 
     finally:
         _terminate_all_workers(workers.values(), shutdown_event)
@@ -837,11 +834,9 @@ def workflow_exception_exitcode_handler(func):
             traceback.print_exception(exc_type, exc_value, exc_tb, file=sys.stderr)
             type_, value_, traceback_ = sys.exc_info()
 
-            slog.exception(type_)
-            slog.exception("\n")
-            slog.exception(value_)
-            slog.exception("\n")
-            slog.exception(traceback_)
+            log_traceback(slog, e, traceback_)
+            log_traceback(log, e, traceback_)
+
             state = False
 
         finally:
@@ -853,7 +848,8 @@ def workflow_exception_exitcode_handler(func):
 
             slog.info(msg)
             log.info(msg)
-            sys.stdout.write(msg + "\n")
+            if not state:
+                sys.stderr.write(msg + "\n")
 
         return 0 if state else -1
 
