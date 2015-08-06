@@ -97,9 +97,6 @@ def get_dev_local_chunk():
     """Simple example pipeline"""
     b1 = [("$entry:e_01", "pbsmrtpipe.tasks.dev_txt_to_fofn:0")]
 
-    # fofn to report
-    b2 = [("pbsmrtpipe.tasks.dev_txt_to_fofn:0", "pbsmrtpipe.tasks.fofn_to_report:0")]
-
     b3 = [
         ("pbsmrtpipe.tasks.dev_txt_to_fofn:0", "pbsmrtpipe.tasks.dev_txt_to_fofn_report:0")]
 
@@ -110,7 +107,7 @@ def get_dev_local_chunk():
     # Add a task to the chunked output of the txt
     b5 = [("pbsmrtpipe.tasks.dev_txt_to_fofn_report:0", "pbsmrtpipe.tasks.dev_hello_worlder:0")]
 
-    return b1 + b2 + b3 + b4 + b5
+    return b1 + b3 + b4 + b5
 
 
 @register_pipeline(to_pipeline_ns("dev_local_fasta_chunk"), "Dev local Task for Chunking pipelines")
