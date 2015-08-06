@@ -7,8 +7,8 @@
     "tool_contract_id": "pbsmrtpipe.tasks.dev_fasta", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": false, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "Generate a random fasta file", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -36,7 +36,7 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T18:40:53.089084", 
+        "_comment": "Created by v0.2.0", 
         "input_types": [
             {
                 "description": "Sentinel file to trigger start", 
@@ -46,6 +46,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": false, 
+        "name": "Dev Fasta"
     }
 }

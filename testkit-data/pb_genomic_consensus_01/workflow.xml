@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<pipeline-template-preset id="MyPreset">
-
-     <import-template id="pbsmrtpipe.pipelines.pb_bam_genomic_consensus" />
-
-    <!-- Default Task specific Options -->
-
-</pipeline-template-preset>

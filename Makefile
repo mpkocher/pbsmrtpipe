@@ -41,13 +41,16 @@ test-tasks:
 test-loader:
 	python -c "import pbsmrtpipe.loader as L; L.load_all()"
 
+test-load-tasks:
+	python -c "import pbsmrtpipe.loader as L; L.load_all_task_types()"
+
 test-contracts:
 	python -c "import pbsmrtpipe.loader as L; L.load_all_pb_tool_contracts()"
 
 test-chunk-operators:
 	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
 
-test-suite: test-tasks test-pipelines test-chunk-operators test-unit test-contracts test-loader test-dev
+test-suite: test-load-tasks test-tasks test-pipelines test-chunk-operators test-unit test-contracts test-loader test-dev
 
 test-clean-suite: install test-suite
 

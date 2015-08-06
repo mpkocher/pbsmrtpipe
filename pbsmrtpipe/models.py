@@ -3,16 +3,17 @@ import logging
 import json
 import os
 import collections
-import pbsmrtpipe
 
+import pbsmrtpipe
 from pbsmrtpipe.constants import (to_workflow_option_ns,
                                   RESOLVED_TOOL_CONTRACT_JSON)
 from pbsmrtpipe.exceptions import (MalformedChunkOperatorError)
+# FIXME. This is for legacy pre-pbcommand reasons
+from pbcommand.models.common import REGISTERED_FILE_TYPES
 
 
 # legacy. imports into this module.
 from pbcommand.models import FileType
-from pbcommand.models.common import REGISTERED_FILE_TYPES
 
 log = logging.getLogger(__name__)
 
@@ -492,12 +493,16 @@ def validate_operator(op, registered_tasks):
     """
 
     def _raise_msg(m):
-        MalformedChunkOperatorError("Operator {o} malformed. {m}".format(o=op.idx, m=m))
+        raise MalformedChunkOperatorError("Operator {o} malformed. {m}\n{p}".format(o=op.idx, m=m, p=op))
 
     def _get_task_or_raise(task_id_):
         if task_id_ not in registered_tasks:
             _raise_msg("Unable to find task id {i}".format(o=op.idx, i=task_id_))
         return registered_tasks[task_id_]
+
+    def _to_i(x):
+        xs = x.split(":")
+        return xs[0], int(xs[-1])
 
     # Validate Make sure all chunked task id is found
     _get_task_or_raise(op.scatter.task_id)
@@ -508,6 +513,7 @@ def validate_operator(op, registered_tasks):
 
     # validate input types of chunked tasks and scatter task are the same
     ctask = registered_tasks[op.scatter.task_id]
+    # companion scattered -> chunk.json task
     stask = registered_tasks[op.scatter.scatter_task_id]
 
     if not isinstance(stask, MetaScatterTask):
@@ -520,13 +526,21 @@ def validate_operator(op, registered_tasks):
     for i, input_type in enumerate(ctask.input_types):
         stask_input_type = stask.input_types[i]
         if input_type != stask_input_type:
-            _raise_msg("Incompatible input types. Task {i} Expected {t}. Got {s}".format(i=ctask.task_id, t=input_type, s=stask_input_type))
+            _raise_msg("Incompatible input types for companion scattered task {i}. Expected {t}. Got {s}".format(i=ctask.task_id, t=input_type, s=stask_input_type))
 
-    _gchunks = {c.task_input: c for c in op.gather.chunks}
+    # Validate that scattered chunks inputs have the correct task
+    for chunk in op.scatter.chunks:
+        key = chunk.chunk_key
+        ctask_id, index = _to_i(chunk.task_input)
+        if ctask_id != op.scatter.task_id:
+            _raise_msg("Incompatible scatter input task. {i} with key {k} Expected {s}".format(i=ctask_id, s=ctask.task_id, k=key))
+
+
+    _gchunks = {_to_i(c.task_input):c for c in op.gather.chunks}
     # validate that all the gather chunk tasks are bound to
-    for i, input_type in enumerate(ctask.input_types):
-        task_input = ".".join([ctask.task_id, str(i)])
-        if task_input not in _gchunks:
+    for i, input_type in enumerate(ctask.output_types):
+        task_input = (ctask.task_id, i)
+        if task_input not in _gchunks.keys():
             _raise_msg("task {t} input {i} is not bound in Gather chunks {c}".format(t=ctask.task_id, i=i, c=_gchunks.keys()))
         else:
             gchunk = _gchunks[task_input]
@@ -609,7 +623,11 @@ class WorkflowLevelOptions(collections.Sized):
 AnalysisLink = namedtuple("AnalysisLink", "name path")
 
 
-class ToolContractMetaTask(MetaTask):
+class _ToolContractAble(object):
+    pass
+
+
+class ToolContractMetaTask(MetaTask, _ToolContractAble):
 
     def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
                  nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
@@ -638,3 +656,39 @@ class ToolContractMetaTask(MetaTask):
         output_dir = os.path.dirname(output_files[0])
         p = os.path.join(output_dir, RESOLVED_TOOL_CONTRACT_JSON)
         return "{d} {m}".format(d=self.driver.driver_exe, m=p)
+
+
+class ScatterToolContractMetaTask(MetaScatterTask, _ToolContractAble):
+
+    def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
+                 nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
+        """
+
+        :type driver: ToolDriver
+        :type tool_contract: pbcommand.models.ToolContract
+
+        """
+        # this is naughty and terrible. to_cmd should not be here!!!
+        super(ScatterToolContractMetaTask, self).__init__(task_id,
+                                                          is_distributed,
+                                                          input_types,
+                                                          output_types,
+                                                          options_schema,
+                                                          nproc,
+                                                          resource_types, "NA",
+                                                          output_file_names,
+                                                          mutable_files,
+                                                          description,
+                                                          display_name,
+                                                          version=version)
+        self.tool_contract = tool_contract
+        # Driver
+        self.driver = driver
+
+    def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types, nchunks):
+        return self.cmd_func(input_files, output_files, resolved_opts, nproc, resource_types, nchunks)
+
+
+class GatherToolContractMetaTask(MetaGatherTask, _ToolContractAble):
+    # this should pass the chunk-key around
+    pass
