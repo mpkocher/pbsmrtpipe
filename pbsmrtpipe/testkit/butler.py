@@ -139,7 +139,7 @@ def _parse_preset_xml(section_name, p, base_dir):
 
 
 def _parse_debug_mode(section_name, p):
-    return bool(_parse_or_default(section_name, Constants.CFG_DEBUG, p, False))
+    return bool(_parse_or_default(section_name, Constants.CFG_DEBUG, p, True))
 
 
 def _parse_entry_points(p, root_dir_name):
