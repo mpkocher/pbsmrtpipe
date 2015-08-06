@@ -125,6 +125,30 @@ def _gather_dataset(ds_type, chunk_id, input_file, output_file):
     return 'pbtools-gather {x} --debug --chunk-key="{c}" {i} --output={o}'.format(**_d)
 
 
+class GatherGFFTask2(MetaGatherTaskBase):
+    # FIXME. This should be removed once the chunk-keys are properly passed
+    # Need the KT tools in the build to debug.
+    TASK_ID = "pbsmrtpipe.tasks.gather_gff2"
+    NAME = "Gather GFF"
+    VERSION = "0.1.0"
+
+    IS_DISTRIBUTED = True
+
+    INPUT_TYPES = [(FileTypes.CHUNK, "chunk", "Gathered Chunk")]
+    OUTPUT_TYPES = [(FileTypes.GFF, "gff", "Gathered GFF")]
+    OUTPUT_FILE_NAMES = [("gathered", "gff")]
+
+    SCHEMA_OPTIONS = {}
+    NPROC = 1
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources):
+        # having the chunk key hard coded here is a problem.
+        return ('pbtools-gather {t} --debug --chunk-key="{c}" {i} '
+                '--output={o}'.format(t='gff', c='gff_id', i=input_files[0],
+                                      o=output_files[0]))
+
+
 class GatherContigSetTask(MetaGatherTaskBase):
 
     """Gather ContigSet Files"""
@@ -200,6 +224,45 @@ class AlignmentSetScatterContigs(MetaScatterTaskBase):
     # MK. Inheritance is specifically not allowed
 
     TASK_ID = "pbsmrtpipe.tasks.alignment_contig_scatter"
+    NAME = "AlignmentSet Contig Scatter"
+    VERSION = "0.1.0"
+
+    IS_DISTRIBUTED = False
+    INPUT_TYPES = [(FileTypes.DS_ALIGN, "alignment_ds", "Pacbio DataSet AlignmentSet"),
+                   (FileTypes.DS_REF, "ref_ds", "Reference DataSet file")]
+
+    OUTPUT_TYPES = [(FileTypes.CHUNK, 'cdataset',
+                     'Generic Chunked JSON AlignmentSet')]
+
+    OUTPUT_FILE_NAMES = [('alignmentset_chunked', 'json'), ]
+
+    NPROC = 1
+    SCHEMA_OPTIONS = {}
+    RESOURCE_TYPES = None
+    NCHUNKS = SymbolTypes.MAX_NCHUNKS
+    # Keys that are expected to be written to the chunk.json file
+    CHUNK_KEYS = ('$chunk.alignmentset_id', "$chunk.reference_id")
+
+    @staticmethod
+    def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
+        exe = "pbtools-chunker alignmentset"
+        chunk_key = "alignmentset_id"
+        mode = "alignmentset"
+        _d = dict(e=exe,
+                  i=input_files[0],
+                  r=input_files[1],
+                  o=output_files[0],
+                  n=nchunks)
+        return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
+
+
+class AlignmentSetScatterContigsKineticTools(MetaScatterTaskBase):
+    """Specific task for scattering for KineticTools"""
+
+    # FIXME. This should be removed once I have a chance to debug this.
+    # Need the KT tools in the build first.
+
+    TASK_ID = "pbsmrtpipe.tasks.alignment_contig_scatter2"
     NAME = "AlignmentSet Contig Scatter"
     VERSION = "0.1.0"
 
