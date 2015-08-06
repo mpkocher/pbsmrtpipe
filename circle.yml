@@ -1,0 +1,13 @@
+machine:
+  python:
+    version: 2.7.9
+
+dependencies:
+  pre:
+    - pip install -r REQUIREMENTS.txt
+    - pip install nose
+
+test:
+  override:
+    - mkdir -p $CIRCLE_TEST_REPORTS
+    - nosetests -s --verbose --with-xunit --xunit-file=$CIRCLE_TEST_REPORTS/nosetests.xml --logging-config nose.cfg pbsmrtpipe/tests/test_*.py
