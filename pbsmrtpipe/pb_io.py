@@ -6,13 +6,16 @@ from collections import namedtuple
 from xml.etree.cElementTree import ElementTree
 import collections
 import json
-import datetime
 
 import jsonschema
 from pbcommand.cli.resolver import ToolContractError
 from pbcommand.models import (ToolDriver, ResolvedToolContract,
-                              ResolvedToolContractTask, PipelineChunk)
-from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from, write_resolved_tool_contract)
+                              ResolvedToolContractTask, PipelineChunk,
+                              ToolContractTask, GatherToolContractTask,
+                              ScatterToolContractTask, ToolContract)
+from pbcommand.models.common import REGISTERED_FILE_TYPES
+from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
+
 from xmlbuilder import XMLBuilder
 
 from pbsmrtpipe.core import validate_provided_file_types, validate_task_type
@@ -24,9 +27,9 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ChunkOperator, Gather,
                                GatherChunk, ScatterChunk, Scatter,
                                ToolContractMetaTask,
-                               REGISTERED_FILE_TYPES)
-from pbsmrtpipe.constants import (ENV_PRESET, RESOLVED_TOOL_CONTRACT_JSON,
-                                  SEYMOUR_HOME)
+                               ScatterToolContractMetaTask,
+                               GatherToolContractMetaTask)
+from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
 
 log = logging.getLogger(__name__)
@@ -114,7 +117,7 @@ def validator(value):
 @register_workflow_option
 def _to_max_chunks_option():
     return OP.to_option_schema(_to_wopt_id("max_nchunks"), "integer", "Max Number of Chunks",
-                               "Max Number of chunks that a file will be scattered into", 30)
+                               "Max Number of chunks that a file will be scattered into", 10)
 
 
 @register_workflow_option
@@ -352,13 +355,7 @@ parse_workflow_options = functools.partial(__parse_options, Constants.WORKFLOW_O
 
 
 def _raw_option_with_schema(option_id, raw_value, schema):
-    """
 
-    :param key:
-    :param value:
-    :param schema:
-    :return:
-    """
     option_id = option_id.strip()
 
     schema_option_id = schema['properties'].keys()[0]
@@ -709,10 +706,66 @@ def parse_operator_xml(f):
     return ChunkOperator(operator_id, scatter, gather)
 
 
-def tool_contract_to_meta_task(tc):
-    """Shim layer to load tool contracts and convert them to StaticMetaTask
+def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d):
+    output_file_names = []
+    mutable_files = []
+    return ToolContractMetaTask(tc,
+                                tc.task.task_id,
+                                task_type,
+                                input_types,
+                                output_types,
+                                schema_option_d,
+                                tc.task.nproc,
+                                tc.task.resources,
+                                output_file_names,
+                                mutable_files,
+                                tc.task.description,
+                                tc.task.name,
+                                version=tc.task.version)
 
-    The new models in pbsystem need to be pulled used here.
+
+def _to_meta_scatter_task(tc, task_type, input_types, output_types,
+                          schema_option_d, max_nchunks, chunk_keys):
+    output_file_names = []
+    mutable_files = []
+    return ScatterToolContractMetaTask(tc,
+                                       tc.task.task_id,
+                                       task_type,
+                                       input_types,
+                                       output_types,
+                                       schema_option_d,
+                                       tc.task.nproc,
+                                       tc.task.resources,
+                                       output_file_names,
+                                       mutable_files,
+                                       tc.task.description,
+                                       tc.task.name,
+                                       max_nchunks, chunk_keys,
+                                       version=tc.task.version)
+
+
+def _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d):
+    # FIXME. The chunk-key problem
+    output_file_names = []
+    mutable_files = []
+    return GatherToolContractMetaTask(tc,
+                                      tc.task.task_id,
+                                      task_type,
+                                      input_types,
+                                      output_types,
+                                      schema_option_d,
+                                      tc.task.nproc,
+                                      tc.task.resources,
+                                      output_file_names,
+                                      mutable_files,
+                                      tc.task.description,
+                                      tc.task.name,
+                                      version=tc.task.version)
+
+
+def tool_contract_to_meta_task(tc, max_nchunks):
+    """Shim layer to load tool contracts and convert them to MetaTask type
+
     """
     # there needs to be special attention here. This is side stepping all the
     # validation layers used in the rest of the code.
@@ -721,11 +774,6 @@ def tool_contract_to_meta_task(tc):
         return REGISTERED_FILE_TYPES[x_]
 
     schema_option_d = {opt['required'][0]: opt for opt in tc.task.options}
-    # Completely ignore these for now
-    mutable_files = []
-    output_file_names = []
-
-    driver = ToolDriver(tc.driver.driver_exe)
 
     # resolve strings to FileType instances
     input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
@@ -734,27 +782,24 @@ def tool_contract_to_meta_task(tc):
     #
     task_type = validate_task_type(tc.task.is_distributed)
 
-    meta_task = ToolContractMetaTask(tc,
-                                     tc.task.task_id,
-                                     task_type,
-                                     input_types,
-                                     output_types,
-                                     schema_option_d,
-                                     tc.task.nproc,
-                                     tc.task.resources,
-                                     output_file_names,
-                                     mutable_files,
-                                     tc.task.description,
-                                     tc.task.name,
-                                     version=tc.task.version,
-                                     driver=driver)
+    if isinstance(tc.task, ScatterToolContractTask):
+        meta_task = _to_meta_scatter_task(tc, task_type, input_types, output_types, schema_option_d, max_nchunks, 'chunk-key')
+    elif isinstance(tc.task, GatherToolContractTask):
+        meta_task = _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d)
+    elif isinstance(tc.task, ToolContractTask):
+        meta_task = _to_meta_task(tc, task_type, input_types, output_types, schema_option_d)
+    else:
+        raise TypeError("Unsupported Type {t} {x}".format(x=tc.task, t=type(tc.task)))
+
     return meta_task
 
 
 def tool_contract_to_meta_task_from_file(path):
     """Loads a tool contract from a path and converts it to a StaticMetaTask"""
     tc = load_tool_contract_from(path)
-    return tool_contract_to_meta_task(tc)
+    # FIXME
+    max_chunks = 5
+    return tool_contract_to_meta_task(tc, max_chunks)
 
 
 def _resolve_options(tool_contract, tool_options):
@@ -793,7 +838,7 @@ def write_tool_contract(tc, path):
     return tc
 
 
-def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options):
+def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options, max_nchunks):
     """
 
     Shim layer to converts a static metatask to ResolvedToolContract

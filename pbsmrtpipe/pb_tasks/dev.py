@@ -373,39 +373,6 @@ class FilterFastaTask(MetaTaskBase):
         return "python -m pbsmrtpipe.tools.dev filter-fasta {i} {o}".format(**_d)
 
 
-def _nchunks_fasta(max_nchunks, nfasta_records):
-    return min(nfasta_records, 24)
-
-
-class ScatterFilterFastaTask(MetaScatterTaskBase):
-
-    """Scatter a filter tasks into a chunks.json file"""
-    TASK_ID = "pbsmrtpipe.tasks.dev_scatter_filter_fasta"
-    NAME = "Scatter Filter FASTA file"
-    VERSION = "0.1.0"
-
-    IS_DISTRIBUTED = False
-
-    INPUT_TYPES = [(FileTypes.FASTA, 'fasta', 'General Fasta File')]
-    OUTPUT_TYPES = [(FileTypes.CHUNK, 'chunk', 'Fasta chunks')]
-    OUTPUT_FILE_NAMES = [('fasta', 'chunks.json')]
-
-    SCHEMA_OPTIONS = {}
-    NPROC = 1
-    RESOURCE_TYPES = None
-
-    CHUNK_KEYS = ('$chunk.fasta_id',)
-    # NCHUNKS = SymbolTypes.MAX_NCHUNKS
-    # NCHUNKS = [SymbolTypes.MAX_NCHUNKS, '$inputs.0.nrecords', _nchunks_fasta]
-    NCHUNKS = 3
-
-    @staticmethod
-    def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
-        exe = "pbtools-chunker fasta"
-        _d = dict(e=exe, i=input_files[0], o=output_files[0], n=nchunks)
-        return "{e} --debug --max-total-chunks={n} {i} {o}".format(**_d)
-
-
 class DevGatherFofnExample(MetaGatherTaskBase):
     TASK_ID = "pbsmrtpipe.tasks.dev_gather_fofn"
     NAME = "Dev Gather FOFN"

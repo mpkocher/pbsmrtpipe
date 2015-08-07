@@ -5,7 +5,9 @@ import datetime
 from pbcommand.models import FileType
 
 from pbsmrtpipe.models import (TaskStates, ToolContractMetaTask,
-                               MetaTask, MetaScatterTask)
+                               MetaTask, MetaScatterTask,
+                               ScatterToolContractMetaTask, MetaGatherTask,
+                               GatherToolContractMetaTask)
 from pbsmrtpipe.pb_io import strip_entry_prefix
 from pbsmrtpipe.utils import validate_type_or_raise
 
@@ -250,7 +252,7 @@ class TaskScatterBindingNode(TaskBindingNode):
     DOT_COLOR = DotColorConstants.ORANGE
 
     def __init__(self, scatter_meta_task, original_task_id, instance_id, chunk_group_id):
-        validate_type_or_raise(scatter_meta_task, MetaScatterTask)
+        validate_type_or_raise(scatter_meta_task, (MetaScatterTask, ScatterToolContractMetaTask))
         super(TaskScatterBindingNode, self).__init__(scatter_meta_task, instance_id)
         # Keep track of the original task that was chunked
         self.original_task_id = original_task_id
@@ -266,6 +268,7 @@ class TaskGatherBindingNode(TaskBindingNode):
     DOT_COLOR = DotColorConstants.GREY
 
     def __init__(self, meta_task, instance_id, chunk_key):
+        validate_type_or_raise(meta_task, (MetaGatherTask, GatherToolContractMetaTask))
         super(TaskGatherBindingNode, self).__init__(meta_task, instance_id)
         # Keep track of the chunk_key that was passed to the exe.
         # Perhaps this should be in the meta task instance?

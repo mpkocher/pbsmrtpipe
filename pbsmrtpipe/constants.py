@@ -69,6 +69,9 @@ TASK_MANIFEST_VERSION = '0.3.0'
 RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
+#
+MAX_NCHUNKS = 15
+
 
 class PacBioNamespaces(object):
     # File Types

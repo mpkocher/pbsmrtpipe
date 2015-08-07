@@ -944,7 +944,7 @@ def add_scatter_task(g, scatterable_task_node, scatter_meta_task):
     # Hack till a better file type resolver is in place
     offset = 100
     for input_node in g.predecessors(scatterable_task_node):
-        slog.info(("Adding edge ", input_node, scatter_task_node))
+        log.debug(("Adding edge ", input_node, scatter_task_node))
         c_in_node = BindingInFileNode(input_node.meta_task, input_node.instance_id + offset, input_node.index, input_node.file_klass)
         add_node_by_type(g, c_in_node)
         g.add_edge(c_in_node, scatter_task_node)
@@ -1177,7 +1177,7 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks)
                 pipeline_chunks = IO.load_pipeline_chunks_from_json(bg.node[tnode_]['task'].output_files[0])
 
                 if len(pipeline_chunks) > max_nchunks:
-                    raise TaskChunkingError("Task {i} created too many {n} chunks. Max chunks {m}".format(n=len(pipeline_chunks), m=max_nchunks))
+                    raise TaskChunkingError("Task {i} created too many {n} chunks. Max chunks >={m}".format(n=len(pipeline_chunks), m=max_nchunks, i=tnode_))
 
                 chunk_operator = _get_chunk_operator_by_scatter_task_id(bg.node[tnode_]['task'].task_id, chunk_operators_d)
                 chunked_nodes = add_chunkable_task_nodes_to_bgraph(bg, tnode_, pipeline_chunks, chunk_operator, registered_tasks_d)
@@ -1239,7 +1239,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
         # Get Chunk group id
         chunk_group_id = bg.node[node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID]
-        slog.info("Scattered task was successful. {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
+        # slog.info("Scattered task was successful. {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
 
         chunk_operator = _get_chunk_operator_by_scatter_task_id(node.meta_task.task_id, chunk_operators_d)
         # used with the chunk operator to find the gather task(s)
@@ -1263,7 +1263,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
             raise ChunkGatheringError("Unable to find output chunked JSON file from task {t}".format(t=chunk_file_node))
 
         scattered_pipeline_chunks = IO.load_pipeline_chunks_from_json(scattered_chunked_json_path)
-        slog.info("Loaded {n} pipeline scattered chunks from {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path))
+        log.debug("Loaded {n} pipeline scattered chunks from {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path))
 
         pipeline_chunks_d = {c.chunk_id: c for c in scattered_pipeline_chunks}
 

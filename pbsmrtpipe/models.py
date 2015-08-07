@@ -4,16 +4,14 @@ import json
 import os
 import collections
 
+from pbcommand.models.common import REGISTERED_FILE_TYPES
+# legacy. imports into this module.
+from pbcommand.models import FileType
+
 import pbsmrtpipe
 from pbsmrtpipe.constants import (to_workflow_option_ns,
                                   RESOLVED_TOOL_CONTRACT_JSON)
 from pbsmrtpipe.exceptions import (MalformedChunkOperatorError)
-# FIXME. This is for legacy pre-pbcommand reasons
-from pbcommand.models.common import REGISTERED_FILE_TYPES
-
-
-# legacy. imports into this module.
-from pbcommand.models import FileType
 
 log = logging.getLogger(__name__)
 
@@ -126,11 +124,19 @@ class TaskStates(object):
 
 class MetaTask(object):
 
-    def __init__(self, task_id, is_distributed,
-                 input_types, output_types,
+    def __init__(self,
+                 task_id,
+                 is_distributed,
+                 input_types,
+                 output_types,
                  option_schemas,
                  nproc,
-                 resource_types, cmd_func, output_file_names, mutable_files, description, display_name, version=None):
+                 resource_types,
+                 cmd_func,
+                 output_file_names,
+                 mutable_files,
+                 description,
+                 display_name, version=None):
         """These may be specified as the DI version"""
         self.task_id = task_id
         self.input_types = input_types
@@ -630,26 +636,25 @@ class _ToolContractAble(object):
 class ToolContractMetaTask(MetaTask, _ToolContractAble):
 
     def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
-                 nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
+                 nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA"):
         """
-
-        :type driver: ToolDriver
         :type tool_contract: pbcommand.models.ToolContract
 
         """
         # this is naughty and terrible. to_cmd should not be here!!!
+        to_cmd_func = None
         super(ToolContractMetaTask, self).__init__(task_id, is_distributed, input_types, output_types, options_schema,
-                                             nproc, resource_types, "NA", output_file_names, mutable_files, description, display_name, version=version)
+                                                   nproc, resource_types, to_cmd_func, output_file_names, mutable_files, description, display_name, version=version)
         # Adding in a bit of duplication here. Once everything uses TC, then
         # then the entire system can dramatically be simplify
         self.tool_contract = tool_contract
-        # Driver
-        self.driver = driver
 
-    def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types):
-        """ Write the driver.exe driver-manifest.json
+    @property
+    def driver(self):
+        return self.tool_contract.driver
 
-        For TC/RTC era this is an extra layer that should go away.
+    def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types, **kwargs):
+        """ This is all delegated to the RTC, hence the **kwargs
         """
         # get the job dir from the resolved value of the first output file,
         # this should probably be accessed via ResourceType.JobDir
@@ -661,34 +666,81 @@ class ToolContractMetaTask(MetaTask, _ToolContractAble):
 class ScatterToolContractMetaTask(MetaScatterTask, _ToolContractAble):
 
     def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
-                 nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", driver=None):
+                 nproc, resource_types, output_file_names, mutable_files, description, display_name, max_nchunks, chunk_keys, version="NA"):
         """
 
         :type driver: ToolDriver
         :type tool_contract: pbcommand.models.ToolContract
 
         """
-        # this is naughty and terrible. to_cmd should not be here!!!
+        to_cmd_func = None
         super(ScatterToolContractMetaTask, self).__init__(task_id,
                                                           is_distributed,
                                                           input_types,
                                                           output_types,
                                                           options_schema,
                                                           nproc,
-                                                          resource_types, "NA",
+                                                          resource_types,
+                                                          to_cmd_func,
+                                                          max_nchunks,
+                                                          chunk_keys,
                                                           output_file_names,
                                                           mutable_files,
                                                           description,
                                                           display_name,
                                                           version=version)
         self.tool_contract = tool_contract
-        # Driver
-        self.driver = driver
+
+    @property
+    def driver(self):
+        return self.tool_contract.driver
 
     def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types, nchunks):
-        return self.cmd_func(input_files, output_files, resolved_opts, nproc, resource_types, nchunks)
+        """ This is all delegated to the RTC, hence the **kwargs
+        """
+        # get the job dir from the resolved value of the first output file,
+        # this should probably be accessed via ResourceType.JobDir
+        output_dir = os.path.dirname(output_files[0])
+        p = os.path.join(output_dir, RESOLVED_TOOL_CONTRACT_JSON)
+        return "{d} {m}".format(d=self.driver.driver_exe, m=p)
 
 
 class GatherToolContractMetaTask(MetaGatherTask, _ToolContractAble):
-    # this should pass the chunk-key around
-    pass
+    def __init__(self, tool_contract, task_id, is_distributed, input_types,
+                 output_types, options_schema,
+                 nproc, resource_types, output_file_names, mutable_files,
+                 description, display_name, version="NA"):
+        """
+
+        :type driver: ToolDriver
+        :type tool_contract: pbcommand.models.ToolContract
+
+        """
+        _to_cmd_func = None
+        super(GatherToolContractMetaTask, self).__init__(task_id,
+                                                         is_distributed,
+                                                         input_types,
+                                                         output_types,
+                                                         options_schema, nproc,
+                                                         resource_types,
+                                                         _to_cmd_func,
+                                                         output_file_names,
+                                                         mutable_files,
+                                                         description,
+                                                         display_name,
+                                                         version=version)
+        self.tool_contract = tool_contract
+        # self.chunk_key = chunk_key
+
+    @property
+    def driver(self):
+        return self.tool_contract.driver
+
+    def to_cmd(self, input_files, output_files, resolved_opts, nproc, resource_types, **kwargs):
+        """ This is all delegated to the RTC, hence the **kwargs
+        """
+        # get the job dir from the resolved value of the first output file,
+        # this should probably be accessed via ResourceType.JobDir
+        output_dir = os.path.dirname(output_files[0])
+        p = os.path.join(output_dir, RESOLVED_TOOL_CONTRACT_JSON)
+        return "{d} {m}".format(d=self.driver.driver_exe, m=p)

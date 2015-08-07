@@ -7,6 +7,7 @@ import types
 import functools
 
 from pbcommand.models import (FileTypes, TaskTypes, SymbolTypes, ResourceTypes, FileType)
+from pbcommand.models.common import REGISTERED_FILE_TYPES
 from pbsmrtpipe.exceptions import (MalformedMetaTaskError,
                                    MalformedPipelineError)
 
@@ -20,7 +21,6 @@ from pbsmrtpipe.constants import (ENTRY_PREFIX,
 
 from pbsmrtpipe.models import (MetaTask, MetaScatterTask,
                                MetaGatherTask, Pipeline,
-                               REGISTERED_FILE_TYPES,
                                REGISTERED_PIPELINES,
                                REGISTERED_TASKS)
 from pbsmrtpipe.utils import validate_type_or_raise

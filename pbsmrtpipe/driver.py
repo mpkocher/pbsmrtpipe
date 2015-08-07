@@ -12,10 +12,12 @@ import traceback
 import types
 import functools
 import uuid
-from pbcommand.utils import log_traceback
-from pbcore.io import DataSet
 
+from pbcommand.pb_io import write_resolved_tool_contract
+from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
+
+from pbcore.io import DataSet
 
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
@@ -41,7 +43,9 @@ from pbsmrtpipe.graph.models import (TaskStates,
 
 from pbsmrtpipe.models import (Pipeline, ToolContractMetaTask, MetaTask,
                                GlobalRegistry, TaskResult, validate_operator,
-                               AnalysisLink, RunnableTask)
+                               AnalysisLink, RunnableTask,
+                               ScatterToolContractMetaTask,
+                               GatherToolContractMetaTask)
 from pbsmrtpipe.engine import TaskManifestWorker
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
 
@@ -351,14 +355,25 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # tnode -> Task instance
     tnode_to_task = {}
 
+    # local loop for adjusting sleep time, this will get reset after each new
+    # task is created
+    niterations = 0
+    dt_ramp = 0.25
+    # number of iterations before switching to stead state sleep
+    stead_state_n = 50
+    # sleep for 5 sec
+    dt_stead_state = 4
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
         BU.write_binding_graph_images(bg, job_resources.workflow)
 
         # After the initial startup, bump up the time to reduce resource usage
         # (since multiple instances will be launched from the services)
-        if _to_run_time() > 300:
-            sleep_time = 5
+        niterations += 1
+        if niterations < stead_state_n:
+            sleep_time = dt_ramp
+        else:
+            sleep_time = dt_stead_state
 
         while True:
 
@@ -398,7 +413,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
             # log.debug("Sleeping for {s}".format(s=sleep_time))
             log.debug("\n" + BU.to_binding_graph_summary(bg))
-            #BU.to_binding_graph_task_summary(bg)
+            # BU.to_binding_graph_task_summary(bg)
 
             # This should only be triggered after events. The main reason
             # to keep updating it was the html report is up to date with the
@@ -422,6 +437,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
             # log.info("Results {r}".format(r=result))
             if isinstance(result, TaskResult):
+                niterations = 0
                 log.debug("Task result {r}".format(r=result))
 
                 tid_, state_, msg_, run_time_ = result
@@ -500,6 +516,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             if tnode is None:
                 continue
             elif isinstance(tnode, TaskBindingNode):
+                niterations = 0
                 # Found a Runnable Task
 
                 # base task_id-instance_id
@@ -519,7 +536,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     task = GX.meta_task_to_task(tnode.meta_task, input_files, task_opts, task_dir, max_nproc, max_nchunks,
                                                 to_resources_func, to_resolve_files_func)
                 except Exception as e:
-                    log.error("Failed to convert metatask {i} to task. {m}".format(i=tnode.meta_task.task_id, m=e.message))
+                    slog.error("Failed to convert metatask {i} to task. {m}".format(i=tnode.meta_task.task_id, m=e.message))
                     raise
 
                 # log.debug(task)
@@ -533,7 +550,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
 
-                if isinstance(tnode.meta_task, ToolContractMetaTask):
+                if isinstance(tnode.meta_task, (ToolContractMetaTask, ScatterToolContractMetaTask, GatherToolContractMetaTask)):
                     # write driver manifest, which calls the resolved-tool-contract.json
                     # there's too many layers of indirection here. Partly due to the pre-tool-contract era
                     # python defined tasks.
@@ -542,8 +559,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     rtc_json_path = os.path.join(task_dir, GlobalConstants.RESOLVED_TOOL_CONTRACT_JSON)
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
-                    rtc = IO.static_meta_task_to_resolved_tool_contract(tnode.meta_task, task, task_opts)
-                    IO.write_resolved_tool_contract(rtc, rtc_json_path)
+                    rtc = IO.static_meta_task_to_resolved_tool_contract(tnode.meta_task, task, task_opts, max_nchunks)
+                    write_resolved_tool_contract(rtc, rtc_json_path)
 
                 runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
                 runnable_task = RunnableTask(task, global_registry.cluster_renderer)
@@ -720,6 +737,8 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     if isinstance(force_chunk_mode, bool):
         workflow_level_opts.chunk_mode = force_chunk_mode
 
+    workflow_level_opts.max_nchunks = min(workflow_level_opts.max_nchunks, GlobalConstants.MAX_NCHUNKS)
+
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
@@ -769,6 +788,8 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
             workflow_level_opts.distributed_mode = force_distribute
     else:
         cluster_render = None
+
+    workflow_level_opts.max_nchunks = min(workflow_level_opts.max_nchunks, GlobalConstants.MAX_NCHUNKS)
 
     return workflow_level_opts, topts, cluster_render
 

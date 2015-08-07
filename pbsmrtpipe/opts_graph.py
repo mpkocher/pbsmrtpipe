@@ -16,7 +16,9 @@ from pbsmrtpipe.exceptions import (InvalidDependencyInjectError,
 
 from pbsmrtpipe.models import (MetaScatterTask,
                                MetaTask, ScatterTask, Task, MetaGatherTask,
-                               GatherTask)
+                               GatherTask, ScatterToolContractMetaTask,
+                               GatherToolContractMetaTask,
+                               ToolContractMetaTask)
 
 from pbsmrtpipe.dataset_io import (dispatch_metadata_resolver,
                                    has_metadata_resolver,
@@ -516,14 +518,14 @@ def meta_task_to_task(meta_task,
     # override output file names (if necessary)
     ofiles = to_resolve_files_func(output_dir, input_files, meta_task.output_types, meta_task.output_file_names, meta_task.mutable_files)
 
-    if isinstance(meta_task, MetaScatterTask):
+    if isinstance(meta_task, (MetaScatterTask, ScatterToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, nchunks_)
         t = ScatterTask(meta_task.task_id, meta_task.is_distributed, input_files, ofiles,
                         resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, resolved_values[SymbolTypes.NCHUNKS], output_dir, meta_task.chunk_keys)
-    elif isinstance(meta_task, MetaGatherTask):
+    elif isinstance(meta_task, (MetaGatherTask, GatherToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
         t = GatherTask(meta_task.task_id, meta_task.is_distributed, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
-    elif isinstance(meta_task, MetaTask):
+    elif isinstance(meta_task, (MetaTask, ToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles)
         t = Task(meta_task.task_id, meta_task.is_distributed, input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, cmd_str, output_dir)
     else:
