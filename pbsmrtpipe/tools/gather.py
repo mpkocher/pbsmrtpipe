@@ -81,7 +81,7 @@ _csv_is_empty = functools.partial(__csv_inspector, __has_header_and_one_record)
 _csv_has_header = functools.partial(_csv_is_empty, __has_header)
 
 
-def _get_datum_from_chunks_by_chunk_key(chunks, chunk_key):
+def get_datum_from_chunks_by_chunk_key(chunks, chunk_key):
     datum = []
     for chunk in chunks:
         if chunk_key in chunk.chunk_keys:
@@ -266,7 +266,7 @@ def __args_gather_runner(func, args):
     else:
         chunk_key = args.chunk_key
 
-    fastx_files = _get_datum_from_chunks_by_chunk_key(chunks, chunk_key)
+    fastx_files = get_datum_from_chunks_by_chunk_key(chunks, chunk_key)
     _ = func(fastx_files, args.output)
     return 0
 

@@ -9,6 +9,7 @@ python -m pbsmrtpipe.tools_dev.fasta --emit-tool-contract > $TC_DIR/dev_tools_fa
 python -m pbsmrtpipe.tools_dev.filter_fasta --emit-tool-contract > $TC_DIR/dev_tools_fasta_filter_tool_contract.json
 python -m pbsmrtpipe.tools_dev.fasta_report --emit-tool-contract > $TC_DIR/dev_fasta_report_tool_contract.json
 python -m pbsmrtpipe.tools_dev.scatter_filter_fasta --emit-tool-contract > $TC_DIR/dev_scatter_filter_fasta_tool_contract.json
+python -m pbsmrtpipe.tools_dev.fasta_gather --emit-tool-contract > $TC_DIR/dev_gather_fasta_tool_contract.json
 
 # pbcommand tasks, these are internal, so this might break if the
 # version changes.
