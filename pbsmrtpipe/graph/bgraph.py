@@ -1356,7 +1356,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                 for original_out_file in bg.successors(original_unchunked_tnode):
                     new_mapped_input_node = g_lookup[original_out_file.index]
                     for mapped_in_node in bg.successors(original_out_file):
-                        slog.info(("Mapping ", new_mapped_input_node, mapped_in_node))
+                        slog.debug("Mapping new input {i} to {o}".format(i=new_mapped_input_node, o=mapped_in_node))
                         bg.add_edge(new_mapped_input_node, mapped_in_node)
                         # delete edge to old
                         # bg.remove_edge(original_out_file, mapped_in_node)

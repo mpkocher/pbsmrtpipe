@@ -220,6 +220,11 @@ def get_parser():
     return p
 
 
+def setup_minimal_log(alog, **kwargs):
+    kwargs['str_formatter'] = '%(message)s'
+    setup_log(alog, **kwargs)
+
+
 def main(argv=sys.argv):
     parser = get_parser()
-    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_log)
+    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_minimal_log)
