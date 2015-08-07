@@ -15,6 +15,10 @@ log = logging.getLogger(__name__)
 TOOL_ID = "pbsmrtpipe.tasks.dev_scatter_filter_fasta"
 
 
+class Constants(object):
+    DEFAULT_NCHUNKS = 20
+
+
 def get_contract_parser():
     driver = "python -m pbsmrtpipe.tools_dev.scatter_filter_fasta --resolved-tool-contract "
 
@@ -29,7 +33,7 @@ def get_contract_parser():
                            "Chunked JSON Filtered Fasta",
                            "fasta.chunked.json")
     # max nchunks for this specific task
-    p.add_int("pbsmrtpipe.task_options.dev_scatter_max_nchunks", "max_nchunks", 7,
+    p.add_int("pbsmrtpipe.task_options.dev_scatter_max_nchunks", "max_nchunks", Constants.DEFAULT_NCHUNKS,
               "Max NChunks", "Maximum number of Chunks")
     p.add_str("pbsmrtpipe.task_options.dev_scatter_chunk_key", "chunk_key",
               "$chunk:fasta_id", "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
