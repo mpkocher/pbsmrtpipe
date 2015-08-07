@@ -739,6 +739,10 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     workflow_level_opts.max_nchunks = min(workflow_level_opts.max_nchunks, GlobalConstants.MAX_NCHUNKS)
 
+    if workflow_level_opts.distributed_mode is False:
+        slog.info("local-only mode detected setting total NPROC to {x}".format(x=multiprocessing.cpu_count()))
+        workflow_level_opts.total_max_nproc = multiprocessing.cpu_count()
+
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
@@ -790,6 +794,10 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
         cluster_render = None
 
     workflow_level_opts.max_nchunks = min(workflow_level_opts.max_nchunks, GlobalConstants.MAX_NCHUNKS)
+
+    if workflow_level_opts.distributed_mode is False:
+        slog.info("local-only mode detected setting total NPROC to {x}".format(x=multiprocessing.cpu_count()))
+        workflow_level_opts.total_max_nproc = multiprocessing.cpu_count()
 
     return workflow_level_opts, topts, cluster_render
 

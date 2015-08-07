@@ -891,11 +891,12 @@ def resolve_entry_binding_points(g):
         if isinstance(n, EntryOutBindingFileNode):
             # this is pretty awkward
             g.node[n][ConstantsNodes.TASK_ATTR_STATE] = TaskStates.SUCCESSFUL
-            g.node[n][ConstantsNodes.TASK_ATTR_RUN_TIME] = 0.0
+            g.node[n][ConstantsNodes.TASK_ATTR_RUN_TIME] = 1.0
             g.node[n][ConstantsNodes.FILE_ATTR_IS_RESOLVED] = True
         # File-esque node
         elif isinstance(n, EntryPointNode):
             g.node[n][ConstantsNodes.FILE_ATTR_IS_RESOLVED] = True
+            g.node[n][ConstantsNodes.TASK_ATTR_RUN_TIME] = 1.0
 
 
 def add_scatter_task(g, scatterable_task_node, scatter_meta_task):
