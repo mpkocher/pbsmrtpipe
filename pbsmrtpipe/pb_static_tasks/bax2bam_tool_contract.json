@@ -12,10 +12,10 @@
         "schema_options": [], 
         "output_types": [
             {
-                "title": ".bam file", 
-                "description": "Output .bam file", 
-                "default_name": "imported.subreads.bam", 
-                "id": "bam_output", 
+                "title": "SubreadSet", 
+                "description": "Output SubreadSet .xml file", 
+                "default_name": "imported.subreads.xml", 
+                "id": "xml_output", 
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ], 
