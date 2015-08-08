@@ -70,7 +70,7 @@ RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
 #
-MAX_NCHUNKS = 24
+MAX_NCHUNKS = 12
 
 
 class PacBioNamespaces(object):
