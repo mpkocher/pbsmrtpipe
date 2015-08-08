@@ -220,3 +220,17 @@ def rs_site_acceptance_test_1():
     ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.mapping_stats:0", "pbreports.tasks.sat_report:2"),]
 
     return x
+
+@register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads")
+def ds_ccs():
+    # Call ccs
+    b3 = [(Constants.ENTRY_DS_SUBREAD, "pbccs.tasks.ccs:0")]
+    # CCS report
+    b4 = [("pbccs.tasks.ccs:0", "pbreports.tasks.ccs_report:0")]
+    # bam2fasta
+    b5 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fasta:0")]
+    # bam2fastq
+    # FIXME bug 27427 blocks this
+    #b6 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fastq:0")]
+
+    return b3 + b4 + b5 #+ b6
