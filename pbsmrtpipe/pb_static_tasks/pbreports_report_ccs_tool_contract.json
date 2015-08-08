@@ -1,0 +1,35 @@
+{
+    "version": "0.44", 
+    "driver": {
+        "exe": "python -m pbreports.report.ccs --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.ccs_report", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "\nGenerate CCS report.\n", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "JSON report", 
+                "description": "Path to write Report json output.", 
+                "default_name": "ccs_report.json", 
+                "id": "report_json", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }
+        ], 
+        "_comment": "Created by v0.2.0", 
+        "input_types": [
+            {
+                "description": "CCS h5 FOFN", 
+                "title": "CCS h5 FOFN", 
+                "id": "input_fofn", 
+                "file_type_id": "PacBio.DataSet.CCSreadSet"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": true, 
+        "name": "ccs_report"
+    }
+}

@@ -16,6 +16,7 @@ python -m pbreports.report.adapter_xml --emit-tool-contract > $TC_DIR/pbreports_
 python -m pbreports.report.filter_stats_xml --emit-tool-contract > $TC_DIR/pbreports_report_filter_stats_xml_tool_contract.json
 python -m pbreports.report.isoseq_classify --emit-tool-contract > $TC_DIR/pbreports_report_isoseq_classify_tool_contract.json
 python -m pbreports.report.isoseq_cluster --emit-tool-contract > $TC_DIR/pbreports_report_isoseq_cluster_tool_contract.json
+python -m pbreports.report.ccs --emit-tool-contract > $TC_DIR/pbreports_report_ccs_tool_contract.json
 
 pbalign --emit-tool-contract > $TC_DIR/pbalign_tool_contract.json
 python -m kineticsTools.ipdSummary --emit-tool-contract > $TC_DIR/kinetics_tools_ipdsummary_tool_contract.json
@@ -28,3 +29,5 @@ gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.
 gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
 task_bam2fasta --emit-tool-contract > $TC_DIR/bam2fastx_bam2fasta_tool_contract.json
 task_bam2fastq --emit-tool-contract > $TC_DIR/bam2fastx_bam2fastq_tool_contract.json
+task_bax2bam --emit-tool-contract > $TC_DIR/bax2bam_tool_contract.json
+task_pbccs_ccs --emit-tool-contract > $TC_DIR/pbccs_ccs_tool_contract.json

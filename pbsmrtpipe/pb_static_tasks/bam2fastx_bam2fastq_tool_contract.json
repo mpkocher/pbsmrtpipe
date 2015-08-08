@@ -36,13 +36,13 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-08-05T16:29:13.359695", 
+        "_comment": "Created by v0.2.0", 
         "input_types": [
             {
-                "description": "BAM file", 
-                "title": "BAM file", 
+                "description": "SubreadSet or BAM file", 
+                "title": "BAM reads", 
                 "id": "bam_input", 
-                "file_type_id": "PacBio.FileTypes.bam"
+                "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ], 
         "nproc": 1, 
