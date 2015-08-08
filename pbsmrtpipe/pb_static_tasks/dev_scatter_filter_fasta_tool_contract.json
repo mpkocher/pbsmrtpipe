@@ -18,7 +18,7 @@
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.dev_scatter_max_nchunks": {
-                        "default": 20, 
+                        "default": 8,
                         "type": "integer", 
                         "description": "Maximum number of Chunks", 
                         "title": "Max NChunks"

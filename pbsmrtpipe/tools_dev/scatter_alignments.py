@@ -2,25 +2,23 @@ import logging
 import os
 import sys
 
-from pbcore.io import FastaWriter, FastaReader
 from pbcommand.utils import setup_log
 from pbcommand.cli import pbparser_runner
 from pbcommand.models import get_scatter_pbparser, FileTypes
 
-import pbsmrtpipe.mock as M
 import pbsmrtpipe.tools.chunk_utils as CU
 
 log = logging.getLogger(__name__)
 
-TOOL_ID = "pbsmrtpipe.tasks.dev_scatter_filter_fasta"
+TOOL_ID = "pbsmrtpipe.tasks.dev_scatter_alignments"
 
 
 class Constants(object):
-    DEFAULT_NCHUNKS = 5
+    DEFAULT_NCHUNKS = 12
 
 
 def get_contract_parser():
-    driver = "python -m pbsmrtpipe.tools_dev.scatter_filter_fasta --resolved-tool-contract "
+    driver = "python -m pbsmrtpipe.tools_dev.scatter_alignments --resolved-tool-contract "
 
     chunk_keys = ("$chunk.fasta_id", )
     p = get_scatter_pbparser(TOOL_ID, "0.1.3", "Scatter Filter Fasta",
@@ -52,7 +50,7 @@ def _args_run_to_random_fasta_file(args):
 
 def _rtc_runner(rtc):
     max_nchunks = rtc.task.options['pbsmrtpipe.task_options.dev_scatter_max_nchunks']
-    chunk_key = '$chunk:fasta_id'
+    chunk_key = '$chunk.fasta_id'
     return run_main(rtc.task.input_files[0], rtc.task.output_files[0], max_nchunks, chunk_key)
 
 
