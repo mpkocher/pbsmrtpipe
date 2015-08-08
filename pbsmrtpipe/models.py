@@ -295,7 +295,11 @@ class Task(object):
     # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
 
     def __init__(self, task_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
+        # FIXME. Make this globaly unique. It's currently the task_type_id
+        # globally unique id str
         self.task_id = task_id
+        # the tool_contract id, or id defined in the python Task
+        self.task_type_id = task_id
         # List of strings
         self.input_files = input_files
         # List of Strings
@@ -334,6 +338,7 @@ class Task(object):
 
     def to_dict(self):
         return dict(task_id=self.task_id,
+                    task_type_id=self.task_type_id,
                     input_files=self.input_files,
                     output_files=self.output_files,
                     resources=self.resources, nproc=self.nproc,
@@ -668,8 +673,6 @@ class ScatterToolContractMetaTask(MetaScatterTask, _ToolContractAble):
     def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
                  nproc, resource_types, output_file_names, mutable_files, description, display_name, max_nchunks, chunk_keys, version="NA"):
         """
-
-        :type driver: ToolDriver
         :type tool_contract: pbcommand.models.ToolContract
 
         """
@@ -744,3 +747,11 @@ class GatherToolContractMetaTask(MetaGatherTask, _ToolContractAble):
         output_dir = os.path.dirname(output_files[0])
         p = os.path.join(output_dir, RESOLVED_TOOL_CONTRACT_JSON)
         return "{d} {m}".format(d=self.driver.driver_exe, m=p)
+
+
+class ResourceIdGenerator(object):
+    def __init__(self, **file_types_d):
+        self._file_types = file_types_d
+
+    def get_next_id(self, file_type):
+        pass

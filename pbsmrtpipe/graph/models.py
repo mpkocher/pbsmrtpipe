@@ -183,6 +183,8 @@ class EntryPointNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
         self.idx = idx
         # FileType instance
         self.file_klass = file_klass
+        # adding this to consistent with the Task data model
+        self.instance_id = 0
 
     def __str__(self):
         _d = dict(k=self.__class__.__name__, i=self.idx, f=self.file_klass.file_type_id)
@@ -293,7 +295,11 @@ class _BindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
         :type file_type_instance: FileType
         """
 
-        # Not sure this is a great idea
+        # FileTypes are unique by (In/Out, file-type, instance-id)
+        # Trying to use int which are more friendly and make graph easier
+        # to view, but have to manually assigned in a centralized place
+
+        # This was not a great design choice
         self.meta_task = validate_type_or_raise(meta_task, MetaTask)
 
         # task index (int)

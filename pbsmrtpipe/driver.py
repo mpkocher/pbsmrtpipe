@@ -449,12 +449,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     msg_ = "Task was successful {r}".format(r=result)
                     slog.info(msg_)
 
-                    is_valid_or_emsg = B.validate_outputs_and_update_task_to_success(bg, tnode_, run_time_, bg.node[tnode_]['task'].output_files)
-
-                    # Failed to find output files
-                    if is_valid_or_emsg is not True:
-                        B.update_task_state_to_failed(bg, tnode_, result.run_time_sec, result.error_message)
-                        raise PipelineRuntimeError(is_valid_or_emsg)
+                    # this will raise if a task output is failed to be resolved
+                    B.validate_outputs_and_update_task_to_success(bg, tnode_, run_time_, bg.node[tnode_]['task'].output_files)
+                    slog.info("Successfully validated outputs of {t}".format(t=repr(tnode_)))
 
                     services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.INFO, msg_)
                     B.update_task_output_file_nodes(bg, tnode_, tnode_to_task[tnode_])
