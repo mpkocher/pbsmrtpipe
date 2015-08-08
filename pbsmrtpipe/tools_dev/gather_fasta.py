@@ -21,7 +21,7 @@ CHUNK_KEY = "$chunk.fasta_id"
 
 
 def get_contract_parser():
-    driver = "python -m pbsmrtpipe.tools_dev.fasta_gather --resolved-tool-contract "
+    driver = "python -m pbsmrtpipe.tools_dev.gather_fasta --resolved-tool-contract "
 
     p = get_gather_pbparser(TOOL_ID, "0.1.3", "Gather Fasta",
                             "Gather Fasta", driver, is_distributed=False)

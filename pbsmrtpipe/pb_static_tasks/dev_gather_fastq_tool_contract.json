@@ -1,14 +1,14 @@
 {
     "version": "0.1.3", 
     "driver": {
-        "exe": "python -m pbsmrtpipe.tools_dev.gather_fasta --resolved-tool-contract ", 
+        "exe": "python -m pbsmrtpipe.tools_dev.fastq_gather --resolved-tool-contract ", 
         "env": {}
     }, 
-    "tool_contract_id": "pbsmrtpipe.tasks.dev_gather_fasta", 
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_gather_fastq", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.gathered", 
         "resource_types": [], 
-        "description": "Gather Fasta", 
+        "description": "Gather Fastq", 
         "schema_options": [
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
@@ -18,7 +18,7 @@
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.dev_scatter_chunk_key": {
-                        "default": "$chunk:fasta_id", 
+                        "default": "$chunk:fastq_id", 
                         "type": "string", 
                         "description": "Chunk key to use (format $chunk:{chunk-key}", 
                         "title": "Chunk key"
@@ -29,17 +29,17 @@
         ], 
         "output_types": [
             {
-                "title": "Fasta Gathered", 
-                "description": "Fasta Gathered", 
-                "default_name": "file_gathered.fasta", 
-                "id": "fasta_out", 
-                "file_type_id": "PacBio.FileTypes.Fasta"
+                "title": "Fastq Gathered", 
+                "description": "Fastq Gathered", 
+                "default_name": "file_gathered.fastq", 
+                "id": "fastq_out", 
+                "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
         "_comment": "Created by v0.2.0", 
         "input_types": [
             {
-                "description": "Fasta Gather Chunk JSON", 
+                "description": "Fastq Gather Chunk JSON", 
                 "title": "Gather ChunkJson", 
                 "id": "cjson_in", 
                 "file_type_id": "PacBio.FileTypes.CHUNK"
@@ -47,6 +47,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": false, 
-        "name": "Gather Fasta"
+        "name": "Gather Fastq"
     }
 }

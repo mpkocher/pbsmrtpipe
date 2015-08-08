@@ -760,9 +760,10 @@ def validate_outputs_and_update_task_to_success(g, tnode, run_time, output_files
     :type tnode: TaskBindingNode
     """
     for output_file in output_files:
+        # Need to add NFS checks here
         if not os.path.exists(output_file):
-            e_msg = "Task {n} Failed to validate OUTPUT file '{c}'".format(c=output_file, n=tnode)
-            return e_msg
+            e_msg = "Task {n} Failed to find required OUTPUT file '{c}'".format(c=output_file, n=tnode)
+            raise TaskExecutionError(e_msg)
 
     # if we got here everything is fine
     return update_task_state_to_success(g, tnode, run_time)

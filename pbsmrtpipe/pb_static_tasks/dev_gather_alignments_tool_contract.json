@@ -1,0 +1,35 @@
+{
+    "version": "0.1.0", 
+    "driver": {
+        "exe": "python -m pbsmrtpipe.dev_tools.gather_alignments --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_gather_alignmentsets", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.gathered", 
+        "resource_types": [], 
+        "description": "General Chunk Alignments Gather", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "AlignmentSet", 
+                "description": "Gathered AlignmentSet", 
+                "default_name": "gathered_alignments.dataset.xml.", 
+                "id": "ds_out", 
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            }
+        ], 
+        "_comment": "Created by v0.2.0", 
+        "input_types": [
+            {
+                "description": "Gathered CHUNK Json with AlignmentSet chunk key", 
+                "title": "GCHUNK Json", 
+                "id": "cjson_in", 
+                "file_type_id": "PacBio.FileTypes.CHUNK"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": false, 
+        "name": "Dev Alignments Gather"
+    }
+}

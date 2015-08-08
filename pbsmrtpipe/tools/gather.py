@@ -1,8 +1,11 @@
 import sys
 import argparse
-import functools
 import logging
 import json
+
+from functools import partial as P
+
+
 from pbcommand.cli import get_default_argparser
 
 from pbcore.io.FastaIO import FastaReader, FastaWriter
@@ -39,9 +42,9 @@ def __gather_fastx(fastx_reader, fastx_writer, fastx_files, output_file):
     log.info("Completed gathering {n} files (with {x} records) to {f}".format(n=len(fastx_files), f=output_file, x=n))
 
 
-gather_fasta = functools.partial(__gather_fastx, FastaReader, FastaWriter)
-gather_fastq = functools.partial(__gather_fastx, FastqReader, FastqWriter)
-gather_gff = functools.partial(__gather_fastx, GffReader, GffWriter)
+gather_fasta = P(__gather_fastx, FastaReader, FastaWriter)
+gather_fastq = P(__gather_fastx, FastqReader, FastqWriter)
+gather_gff = P(__gather_fastx, GffReader, GffWriter)
 
 
 def _read_header(csv_file):
@@ -77,8 +80,8 @@ def __csv_inspector(func, csv_file):
     return is_empty
 
 
-_csv_is_empty = functools.partial(__csv_inspector, __has_header_and_one_record)
-_csv_has_header = functools.partial(_csv_is_empty, __has_header)
+_csv_is_empty = P(__csv_inspector, __has_header_and_one_record)
+_csv_has_header = P(_csv_is_empty, __has_header)
 
 
 def get_datum_from_chunks_by_chunk_key(chunks, chunk_key):
@@ -256,31 +259,49 @@ _gather_contigset_options = __add_gather_options("Output ContigSet XML file",
                                                  add_chunk_key_contigset)
 
 
-def __args_gather_runner(func, args):
-    chunks = IO.load_pipeline_chunks_from_json(args.chunk_json)
+def __gather_runner(func, chunk_input_json, output_file, chunk_key):
+    chunks = IO.load_pipeline_chunks_from_json(chunk_input_json)
 
     # Allow looseness
-    if not args.chunk_key.startswith('$chunk.'):
-        chunk_key = '$chunk.' + args.chunk_key
+    if not chunk_key.startswith('$chunk.'):
+        chunk_key = '$chunk.' + chunk_key
         log.warn("Prepending chunk key with '$chunk.' to '{c}'".format(c=chunk_key))
-    else:
-        chunk_key = args.chunk_key
 
-    fastx_files = get_datum_from_chunks_by_chunk_key(chunks, chunk_key)
-    _ = func(fastx_files, args.output)
+    chunked_files = get_datum_from_chunks_by_chunk_key(chunks, chunk_key)
+    _ = func(chunked_files, output_file)
     return 0
 
-_args_gather_fasta = functools.partial(__args_gather_runner, gather_fasta)
-_args_gather_gff = functools.partial(__args_gather_runner, gather_gff)
-_args_gather_fastq = functools.partial(__args_gather_runner, gather_fastq)
-_args_gather_fofn = functools.partial(__args_gather_runner, gather_fofn)
-_args_gather_subreadset = functools.partial(__args_gather_runner,
-                                            gather_subreadset)
-_args_gather_alignmentset = functools.partial(__args_gather_runner,
-                                              gather_alignmentset)
-_args_gather_contigset = functools.partial(__args_gather_runner,
-                                           gather_contigset)
-_args_gather_csv = functools.partial(__args_gather_runner, gather_csv)
+
+def __rtc_gather_runner(func, rtc):
+    # Gather Resolved ToolContracts will have a chunk
+    return func(rtc.task.input_files[0], rtc.task.output_files[0], rtc.task.chunk_key)
+
+
+def __args_gather_runner(func, args):
+    return __gather_runner(func, args.chunk_json, args.output, args.chunk_key)
+
+
+_args_gather_fasta = P(__args_gather_runner, gather_fasta)
+_args_gather_gff = P(__args_gather_runner, gather_gff)
+_args_gather_fastq = P(__args_gather_runner, gather_fastq)
+_args_gather_fofn = P(__args_gather_runner, gather_fofn)
+_args_gather_subreadset = P(__args_gather_runner, gather_subreadset)
+_args_gather_alignmentset = P(__args_gather_runner, gather_alignmentset)
+_args_gather_contigset = P(__args_gather_runner, gather_contigset)
+_args_gather_csv = P(__args_gather_runner, gather_csv)
+
+run_main_gather_fasta = P(__gather_runner, gather_fasta)
+run_main_gather_fastq = P(__gather_runner, gather_fastq)
+run_main_gather_csv = P(__gather_runner, gather_csv)
+run_main_gather_gff = P(__gather_runner, gather_gff)
+run_main_gather_alignmentset = P(__gather_runner, _args_gather_alignmentset)
+run_main_gather_subreadset = P(__gather_runner, _args_gather_subreadset)
+run_main_gather_contigset = P(__gather_runner, _args_gather_contigset)
+
+# Use this when the chunk key is passed around correctly
+rtc_csv_gather_runner = P(__rtc_gather_runner, gather_csv)
+rtc_fasta_gather_runner = P(__rtc_gather_runner, gather_fasta)
+rtc_gff_gather_runner = P(__rtc_gather_runner, gather_gff)
 
 
 def get_parser():

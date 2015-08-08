@@ -1,0 +1,35 @@
+{
+    "version": "0.1.0", 
+    "driver": {
+        "exe": "python -m pbsmrtpipe.dev_tools.gather_subreads --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_gather_subreads", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.gathered", 
+        "resource_types": [], 
+        "description": "General Chunk SubreadSet Gather", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "SubreadSet", 
+                "description": "Gathered SubreadSet", 
+                "default_name": "gathered_subreads.dataset.xml.", 
+                "id": "ds_out", 
+                "file_type_id": "PacBio.DataSet.SubreadSet"
+            }
+        ], 
+        "_comment": "Created by v0.2.0", 
+        "input_types": [
+            {
+                "description": "Gathered CHUNK Json with SubreadSet chunk key", 
+                "title": "GCHUNK Json", 
+                "id": "cjson_in", 
+                "file_type_id": "PacBio.FileTypes.CHUNK"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": false, 
+        "name": "Dev SubreadSet Gather"
+    }
+}

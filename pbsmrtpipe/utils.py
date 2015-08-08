@@ -11,6 +11,8 @@ import functools
 from jinja2 import Environment, PackageLoader
 
 from pbcore.util.Process import backticks
+# for backward compatibility
+from pbcommand.utils import setup_log
 
 from pbsmrtpipe.decos import ignored
 from pbsmrtpipe.constants import SLOG_PREFIX
@@ -245,37 +247,6 @@ class Singleton(type):
         if cls.instance is None:
             cls.instance = super(Singleton, cls).__call__(*args)
         return cls.instance
-
-
-# Basic tests
-def setup_log(alog, level=logging.INFO, file_name=None, log_filter=None,
-              str_formatter='[%(levelname)s] %(asctime)-15s [%(name)s %(funcName)s %(lineno)d] %(message)s'):
-    """Core Util to setup log handler
-
-    :param alog: a log instance
-    :param level: (int) Level of logging debug
-    :param file_name: (str, None) if None, stdout is used, str write to file
-    :param log_filter: (LogFilter, None)
-    :param str_formatter: (str) log formatting str
-    """
-    # MK. Why is this being done?
-    alog.setLevel(level)
-
-    if file_name is None:
-        handler = logging.StreamHandler(sys.stdout)
-    else:
-        handler = logging.FileHandler(file_name)
-
-    formatter = logging.Formatter(str_formatter)
-    handler.setFormatter(formatter)
-    handler.setLevel(level)
-
-    if log_filter:
-        handler.addFilter(log_filter)
-
-    alog.addHandler(handler)
-
-    return alog
 
 
 class StdOutStatusLogFilter(logging.Filter):

@@ -25,15 +25,3 @@ def _to_test_fofn(n, file_base_name):
         f.write("\n".join(fofn_files))
 
     return fofn
-
-
-class TestToolChunker(unittest.TestCase):
-
-    def test_run_movie(self):
-
-        nfiles = 5
-        fofn = _to_test_fofn(nfiles, "movie_")
-
-        chunks = CH.chunk_movie_fofn(fofn)
-        log.debug(chunks)
-        self.assertEqual(nfiles, len(chunks))

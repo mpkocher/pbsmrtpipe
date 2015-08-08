@@ -322,16 +322,14 @@ class SubreadSetScatter(MetaScatterTaskBase):
 
     @staticmethod
     def to_cmd(input_files, output_files, ropts, nproc, resources, nchunks):
-        exe = "pbtools-chunker"
+        exe = "pbtools-chunker subreadset"
         chunk_key = "subreadset_id"
-        mode = "subreadset"
         _d = dict(e=exe,
-                  m=mode,
                   i=input_files[0],
                   r=input_files[1],
                   o=output_files[0],
                   n=nchunks)
-        return "{e} {m} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
+        return "{e} --debug --max-total-chunks {n} {i} {r} {o}".format(**_d)
 
 
 class GatherCSV(MetaGatherTaskBase):

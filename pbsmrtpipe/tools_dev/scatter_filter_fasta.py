@@ -51,11 +51,6 @@ def _args_run_to_random_fasta_file(args):
 
 
 def _rtc_runner(rtc):
-    """
-    :type rtc: pbcommand.models.ResolvedToolContract
-    :return:
-    """
-    # the input file is just a sentinel file
     max_nchunks = rtc.task.options['pbsmrtpipe.task_options.dev_scatter_max_nchunks']
     chunk_key = '$chunk:fasta_id'
     return run_main(rtc.task.input_files[0], rtc.task.output_files[0], max_nchunks, chunk_key)
