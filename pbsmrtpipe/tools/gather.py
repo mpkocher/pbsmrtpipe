@@ -85,6 +85,7 @@ _csv_has_header = P(_csv_is_empty, __has_header)
 
 
 def get_datum_from_chunks_by_chunk_key(chunks, chunk_key):
+    log.info("extracting datum from chunks using chunk-key '{c}'".format(c=chunk_key))
     datum = []
     for chunk in chunks:
         if chunk_key in chunk.chunk_keys:

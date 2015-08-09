@@ -8,7 +8,11 @@ import collections
 import json
 
 import jsonschema
-from pbcommand.resolver import ToolContractError
+from pbcommand.resolver import (ToolContractError,
+                                resolve_tool_contract,
+                                resolve_scatter_tool_contract,
+                                resolve_gather_tool_contract)
+
 from pbcommand.models import (ToolDriver, ResolvedToolContract,
                               ResolvedToolContractTask, PipelineChunk,
                               ToolContractTask, GatherToolContractTask,
@@ -838,7 +842,7 @@ def write_tool_contract(tc, path):
     return tc
 
 
-def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_options, max_nchunks):
+def static_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc):
     """
 
     Shim layer to converts a static metatask to ResolvedToolContract
@@ -848,17 +852,35 @@ def static_meta_task_to_resolved_tool_contract(static_meta_task, task, task_opti
     :param static_meta_task:
     :return: dict representation of driver manifest
     """
-    driver = static_meta_task.driver
+    rtc = resolve_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options)
+    # this is a hack because the 'resolving' is done in meta_task_to_task
+    # for python defined tasks. This code path will be deleted shortly
+    rtc.task.output_files = task.output_files
+    rtc.task.is_distributed = static_meta_task.is_distributed
+    rtc.task.nproc = task.nproc
+    task.resources = task.resources
 
-    smt = static_meta_task
+    return rtc
 
-    resolved_opts = _resolve_options(static_meta_task.tool_contract, task_options)
 
-    rtask = ResolvedToolContractTask(smt.task_id, smt.is_distributed,
-                                     task.input_files,
-                                     task.output_files,
-                                     resolved_opts,
-                                     task.nproc, task.resources)
+def static_scatter_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, max_nchunks, chunk_keys):
+    rtc = resolve_scatter_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, max_nchunks, chunk_keys)
+    # See the above comment for this
+    rtc.task.output_files = task.output_files
+    rtc.task.is_distributed = static_meta_task.is_distributed
+    rtc.task.nproc = task.nproc
+    task.resources = task.resources
 
-    rtc = ResolvedToolContract(rtask, driver)
+    return rtc
+
+
+def static_gather_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, chunk_key):
+
+    rtc = resolve_gather_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, chunk_key)
+    # See the above comment for this
+    rtc.task.output_files = task.output_files
+    rtc.task.is_distributed = static_meta_task.is_distributed
+    rtc.task.nproc = task.nproc
+    task.resources = task.resources
+
     return rtc

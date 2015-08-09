@@ -33,8 +33,11 @@ def get_contract_parser():
                            "Fasta Gathered",
                            "file_gathered.fasta")
 
-    p.add_str("pbsmrtpipe.task_options.dev_scatter_chunk_key", "chunk_key",
-              "$chunk:fasta_id", "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
+    # FIXME. There's an a bit of friction between the TC and the argrunning
+    # layer here. For nproc and nchunks, chunk-key, the values are a bit
+    # different between the two backends.
+    p.arg_parser.add_str("pbsmrtpipe.task_options.dev_scatter_chunk_key", "chunk_key",
+                         "$chunk.fasta_id", "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
     return p
 
 
@@ -53,7 +56,7 @@ def run_main(chunk_json, fasta_output, chunk_key):
 
 
 def args_runner(args):
-    return run_main(args.cjson_in, args.fasta_out, CHUNK_KEY)
+    return run_main(args.cjson_in, args.fasta_out, args.chunk_key)
 
 
 def rtc_runner(rtc):
@@ -62,7 +65,7 @@ def rtc_runner(rtc):
     :return:
     """
     # the input file is just a sentinel file
-    return run_main(rtc.task.input_files[0], rtc.task.output_files[0], CHUNK_KEY)
+    return run_main(rtc.task.input_files[0], rtc.task.output_files[0], rtc.task.chunk_key)
 
 
 def main(argv=sys.argv):

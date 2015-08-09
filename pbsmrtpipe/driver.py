@@ -556,7 +556,15 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     rtc_json_path = os.path.join(task_dir, GlobalConstants.RESOLVED_TOOL_CONTRACT_JSON)
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
-                    rtc = IO.static_meta_task_to_resolved_tool_contract(tnode.meta_task, task, task_opts, max_nchunks)
+                    if isinstance(tnode.meta_task, ToolContractMetaTask):
+                        rtc = IO.static_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, '/tmp', max_nproc)
+                    elif isinstance(tnode.meta_task, ScatterToolContractMetaTask):
+                        rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, '/tmp', max_nproc, max_nchunks, tnode.meta_task.chunk_keys)
+                    elif isinstance(tnode.meta_task, GatherToolContractMetaTask):
+                        rtc = IO.static_gather_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, '/tmp', max_nproc, tnode.chunk_key)
+                    else:
+                        raise TypeError("Unsupported task type {t}".format(t=tnode.meta_task))
+
                     write_resolved_tool_contract(rtc, rtc_json_path)
 
                 runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
