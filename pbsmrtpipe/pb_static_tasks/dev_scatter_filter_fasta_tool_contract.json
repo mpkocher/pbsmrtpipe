@@ -18,7 +18,7 @@
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.dev_scatter_max_nchunks": {
-                        "default": 8,
+                        "default": 5, 
                         "type": "integer", 
                         "description": "Maximum number of Chunks", 
                         "title": "Max NChunks"
@@ -52,7 +52,8 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.0", 
+        "_comment": "Created by v0.2.3", 
+        "nchunks": "$max_nchunks", 
         "input_types": [
             {
                 "description": "Pac Bio Fasta format", 

@@ -8,7 +8,7 @@ import collections
 import json
 
 import jsonschema
-from pbcommand.cli.resolver import ToolContractError
+from pbcommand.resolver import ToolContractError
 from pbcommand.models import (ToolDriver, ResolvedToolContract,
                               ResolvedToolContractTask, PipelineChunk,
                               ToolContractTask, GatherToolContractTask,

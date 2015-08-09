@@ -19,7 +19,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0", 
+        "_comment": "Created by v0.2.3", 
         "input_types": [
             {
                 "description": "Pac Bio Fasta format", 
