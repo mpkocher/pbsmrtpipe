@@ -749,7 +749,6 @@ def _to_meta_scatter_task(tc, task_type, input_types, output_types,
 
 
 def _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d):
-    # FIXME. The chunk-key problem
     output_file_names = []
     mutable_files = []
     return GatherToolContractMetaTask(tc,

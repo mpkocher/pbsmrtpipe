@@ -13,7 +13,8 @@ import types
 import functools
 import uuid
 
-from pbcommand.pb_io import write_resolved_tool_contract
+from pbcommand.pb_io import write_resolved_tool_contract, write_tool_contract
+from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
 from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
 
@@ -548,12 +549,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 tnode_to_task[tnode] = task
 
                 if isinstance(tnode.meta_task, (ToolContractMetaTask, ScatterToolContractMetaTask, GatherToolContractMetaTask)):
-                    # write driver manifest, which calls the resolved-tool-contract.json
-                    # there's too many layers of indirection here. Partly due to the pre-tool-contract era
-                    # python defined tasks.
-                    tc_path = os.path.join(task_dir, GlobalConstants.TOOL_CONTRACT_JSON)
-                    IO.write_tool_contract(tnode.meta_task.tool_contract, tc_path)
-                    rtc_json_path = os.path.join(task_dir, GlobalConstants.RESOLVED_TOOL_CONTRACT_JSON)
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
                     if isinstance(tnode.meta_task, ToolContractMetaTask):
@@ -561,10 +556,25 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     elif isinstance(tnode.meta_task, ScatterToolContractMetaTask):
                         rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, '/tmp', max_nproc, max_nchunks, tnode.meta_task.chunk_keys)
                     elif isinstance(tnode.meta_task, GatherToolContractMetaTask):
+                        # this should always be a TaskGatherBindingNode which will have a .chunk_key
                         rtc = IO.static_gather_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, '/tmp', max_nproc, tnode.chunk_key)
                     else:
                         raise TypeError("Unsupported task type {t}".format(t=tnode.meta_task))
 
+                    # write driver manifest, which calls the resolved-tool-contract.json
+                    # there's too many layers of indirection here. Partly due to the pre-tool-contract era
+                    # python defined tasks.
+                    # Always write the RTC json for debugging purposes
+                    tc_path = os.path.join(task_dir, GlobalConstants.TOOL_CONTRACT_JSON)
+                    write_tool_contract(tnode.meta_task.tool_contract, tc_path)
+
+                    rtc_json_path = os.path.join(task_dir, GlobalConstants.RESOLVED_TOOL_CONTRACT_JSON)
+                    rtc_avro_path = os.path.join(task_dir, GlobalConstants.RESOLVED_TOOL_CONTRACT_AVRO)
+                    if rtc.driver.serialization == 'avro':
+                        # hack to fix command
+                        task.cmds[0] = task.cmds[0].replace('.json', '.avro')
+                        write_resolved_tool_contract_avro(rtc, rtc_avro_path)
+                    # for debugging
                     write_resolved_tool_contract(rtc, rtc_json_path)
 
                 runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)

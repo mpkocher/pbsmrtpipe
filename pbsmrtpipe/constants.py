@@ -67,6 +67,7 @@ RUNNABLE_TASK_JSON = "runnable-task.json"
 TASK_MANIFEST_VERSION = '0.3.0'
 
 RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
+RESOLVED_TOOL_CONTRACT_AVRO = 'resolved-tool-contract.avro'
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
 #

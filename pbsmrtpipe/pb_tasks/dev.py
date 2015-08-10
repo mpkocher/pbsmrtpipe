@@ -373,26 +373,6 @@ class FilterFastaTask(MetaTaskBase):
         return "python -m pbsmrtpipe.tools.dev filter-fasta {i} {o}".format(**_d)
 
 
-class DevGatherFofnExample(MetaGatherTaskBase):
-    TASK_ID = "pbsmrtpipe.tasks.dev_gather_fofn"
-    NAME = "Dev Gather FOFN"
-    VERSION = "0.1.0"
-
-    IS_DISTRIBUTED = True
-
-    INPUT_TYPES = [(FileTypes.CHUNK, 'jchunk', "Chunked FOFN Json")]
-    OUTPUT_TYPES = [(FileTypes.FOFN, 'fofn', "Generic FOFN")]
-    OUTPUT_FILE_NAMES = [('gathered_chunk', 'fofn')]
-
-    SCHEMA_OPTIONS = {}
-    NPROC = 1
-    RESOURCE_TYPES = None
-
-    @staticmethod
-    def to_cmd(input_files, output_files, ropts, nproc, resources):
-        return "echo \"Mock FOFN from chunks\" > {o}".format(o=output_files[0])
-
-
 class DevHelloDistributedTask(MetaTaskBase):
     TASK_ID = 'pbsmrtpipe.tasks.dev_hello_distributed'
     NAME = "Dev Hello Distributed"

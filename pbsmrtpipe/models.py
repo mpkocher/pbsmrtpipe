@@ -4,9 +4,9 @@ import json
 import os
 import collections
 
-from pbcommand.models.common import REGISTERED_FILE_TYPES
 # legacy. imports into this module.
 from pbcommand.models import FileType
+from pbcommand.models.common import REGISTERED_FILE_TYPES
 
 import pbsmrtpipe
 from pbsmrtpipe.constants import (to_workflow_option_ns,
@@ -274,9 +274,17 @@ class MetaTask(object):
 
 
 class MetaScatterTask(MetaTask):
-
-    def __init__(self, task_id, is_distributed, input_types, output_types, opt_schema, nproc, resource_types, cmd_func, chunk_di, chunk_keys, output_file_names, mutable_files, description, display_name, version=None):
-        super(MetaScatterTask, self).__init__(task_id, is_distributed, input_types, output_types, opt_schema, nproc, resource_types, cmd_func, output_file_names, mutable_files, description, display_name, version=version)
+    def __init__(self, task_id, is_distributed, input_types, output_types,
+                 opt_schema, nproc, resource_types, cmd_func, chunk_di,
+                 chunk_keys, output_file_names, mutable_files, description,
+                 display_name, version=None):
+        super(MetaScatterTask, self).__init__(task_id, is_distributed,
+                                              input_types, output_types,
+                                              opt_schema, nproc,
+                                              resource_types, cmd_func,
+                                              output_file_names, mutable_files,
+                                              description, display_name,
+                                              version=version)
         # this can be a primitive value or a DI model list
         self.chunk_di = chunk_di
         self.chunk_keys = chunk_keys
@@ -286,9 +294,16 @@ class MetaScatterTask(MetaTask):
 
 
 class MetaGatherTask(MetaTask):
-    # FIXME. This needs to override the to_cmd so the chunk_key can be passed in
-    # This will make the {Fasta|Fastq|Gff}Gather generic.
-    pass
+    def __init__(self, task_id, is_distributed, input_types, output_types,
+                 opt_schema, nproc, resource_types, cmd_func,
+                 output_file_names, mutable_files, description, display_name,
+                 version=None):
+        super(MetaGatherTask, self).__init__(task_id, is_distributed,
+                                             input_types, output_types,
+                                             opt_schema, nproc, resource_types,
+                                             cmd_func, output_file_names,
+                                             mutable_files, description,
+                                             display_name, version=version)
 
 
 class Task(object):
