@@ -6,35 +6,6 @@ from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 log = logging.getLogger(__name__)
 
 
-class ConvertH5SubreadsToBamDataSetTask(MetaTaskBase):
-
-    """
-    Convert a Hdf5 Dataset to an Unaligned Bam DataSet XML
-    """
-    TASK_ID = "pbsmrtpipe.tasks.h5_subreads_to_subread"
-    NAME = "H5 Dataset to Subread Dataset"
-    VERSION = "0.1.1"
-
-    IS_DISTRIBUTED = True
-
-    INPUT_TYPES = [(FileTypes.DS_SUBREADS_H5, "h5_subreads", "H5 Subread DataSet")]
-    OUTPUT_TYPES = [(FileTypes.DS_SUBREADS, "ds", "Subread DataSet")]
-    OUTPUT_FILE_NAMES = [("file", "dataset.subreads.xml")]
-
-    SCHEMA_OPTIONS = {}
-    NPROC = 1
-
-    @staticmethod
-    def to_cmd(input_files, output_files, ropts, nproc, resources):
-        e = "bax2bam"
-        # Doesn't support writing to an explicit file yet
-        cmds = []
-        cmds.append("{e} --subread --xml {i} ".format(e=e, i=input_files[0]))
-        # FIXME when derek updates the interface
-        cmds.append("x=$(ls -1t *.dataset.xml | head -n 1) && cp $x {o}".format(o=output_files[0]))
-        return cmds
-
-
 class H5SubreadSetScatter(MetaScatterTaskBase):
 
     """
