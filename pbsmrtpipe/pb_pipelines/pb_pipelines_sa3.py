@@ -45,10 +45,10 @@ def sa3_align():
     SA3 Convert RS movie XML to Alignment DataSet XML
     """
     # convert to RS dataset
-    b1 = [(Constants.ENTRY_RS_MOVIE_XML, "pbsmrtpipe.tasks.rs_movie_to_hdf5_dataset:0")]
+    b1 = [(Constants.ENTRY_RS_MOVIE_XML, "pbscala.tasks.rs_movie_to_ds_rtc:0")]
 
     # h5 dataset to subread dataset via bax2bam
-    b2 = [("pbsmrtpipe.tasks.rs_movie_to_hdf5_dataset:0", "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
+    b2 = [("pbscala.tasks.rs_movie_to_ds_rtc:0", "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
 
     # Call blasr/pbalign
     b3 = [("pbsmrtpipe.tasks.h5_subreads_to_subread:0", "pbalign.tasks.pbalign:0"),
