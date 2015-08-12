@@ -18,6 +18,10 @@ TEST_DIR = os.path.dirname(__file__)
 TEST_DATA_DIR = os.path.join(TEST_DIR, 'data')
 
 
+def get_data_file(file_name):
+    return os.path.join(TEST_DATA_DIR, file_name)
+
+
 def _write_dummy_file(file_name):
     with open(file_name, "w") as f:
         f.write("dummy test file\n")

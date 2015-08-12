@@ -6,9 +6,11 @@
 TC_DIR=./pbsmrtpipe/pb_static_tasks
 EMIT=" --emit-tool-contract "
 
+# Dev Tools
 python -m pbsmrtpipe.tools_dev.fasta $EMIT > $TC_DIR/dev_tools_fasta_tool_contract.json
 python -m pbsmrtpipe.tools_dev.filter_fasta $EMIT > $TC_DIR/dev_tools_fasta_filter_tool_contract.json
 python -m pbsmrtpipe.tools_dev.fasta_report $EMIT > $TC_DIR/dev_fasta_report_tool_contract.json
+python -m pbsmrtpipe.pb_tasks.dev emit-tool-contracts -o $TC_DIR
 
 # Scatter/Chunk Tasks
 python -m pbsmrtpipe.tools_dev.scatter_filter_fasta $EMIT > $TC_DIR/dev_scatter_filter_fasta_tool_contract.json

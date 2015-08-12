@@ -12,7 +12,8 @@ from jinja2 import Environment, PackageLoader
 
 from pbcore.util.Process import backticks
 # for backward compatibility
-from pbcommand.utils import setup_log
+
+from pbcommand.utils import setup_log, compose
 
 from pbsmrtpipe.decos import ignored
 from pbsmrtpipe.constants import SLOG_PREFIX
@@ -22,18 +23,6 @@ HTML_TEMPLATE_ENV = Environment(loader=PackageLoader('pbsmrtpipe', 'html_templat
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger(SLOG_PREFIX + __name__)
-
-
-def compose(*funcs):
-    """Functional composition
-
-    [f, g, h] will be f(g(h(x)))
-    """
-    def compose_two(f, g):
-        def c(x):
-            return f(g(x))
-        return c
-    return functools.reduce(compose_two, funcs)
 
 
 def validate_type_or_raise(obj, klasses, msg=None):
@@ -170,83 +159,6 @@ def validate_movie_name_deco(func):
         return func(*args, **kwargs)
 
     return wrapper
-
-
-def movie_to_cell(movie):
-    """
-    The movie file name has the 'cell' number encoded in the name
-
-    m130715_185638_SMRT1_c000000062559900001500000112311501_s1_p0
-                                                          ^
-                                                          |
-    The cell number is a number between 0-7
-
-    :param movie: (str) movie file full path or basename
-    :return: (str) movie cell number
-    """
-    return '_'.join(os.path.basename(movie).split('_')[:4])
-
-
-def movie_to_set(movie):
-    """
-    This it not a python set!
-
-    The movie file name has the 'set' number encoded in the name
-
-    m130715_185638_SMRT1_c000000062559900001500000112311501_s1_p0
-                                                             ^
-                                                             |
-    The set number is 1
-
-    :param movie: (str) movie file full path or basename
-    :return: (str) movie set
-    """
-    return movie.split('_')[4][1:]
-
-
-def object_memory_profiler(objects, fileName):
-    """Write Memory objects to dot file
-
-    :param: list of objects to be profiled
-    :param: fileName: filename to write graph to (e.g, name.dot)
-    """
-    log.info("Running in Object Memory Profiling Mode.")
-
-    t0 = time.time()
-    try:
-        import objgraph
-
-        objgraph.show_refs(objects, filename=fileName)
-    except Exception as e:
-        log.debug("Unable to run object Memory Profile due to {e}".format(e=e))
-
-    run_time = time.time() - t0
-    log.debug(
-        "completed Memory Object profiling in {s:.2f} sec.".format(s=run_time))
-
-
-class Singleton(type):
-
-    """
-    General Purpose singleton class
-
-    Usage:
-
-    >>> class MyClass(object):
-    >>>     __metaclass__ = Singleton
-    >>>     def __init__(self):
-    >>>         self.name = 'name'
-
-    """
-
-    def __init__(cls, name, bases, dct):
-        super(Singleton, cls).__init__(name, bases, dct)
-        cls.instance = None
-
-    def __call__(cls, *args, **kw):
-        if cls.instance is None:
-            cls.instance = super(Singleton, cls).__call__(*args)
-        return cls.instance
 
 
 class StdOutStatusLogFilter(logging.Filter):

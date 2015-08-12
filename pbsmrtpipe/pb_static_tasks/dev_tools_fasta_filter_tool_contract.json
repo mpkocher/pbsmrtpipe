@@ -1,6 +1,7 @@
 {
     "version": "0.1.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbsmrtpipe.tools_dev.filter_fasta --resolved-tool-contract ", 
         "env": {}
     }, 
@@ -36,7 +37,8 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
-        "_comment": "Created by v0.2.3", 
+        "_comment": "Created by v0.2.5", 
+        "name": "Filter Fasta", 
         "input_types": [
             {
                 "description": "Pac Bio Fasta format", 
@@ -47,6 +49,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": false, 
-        "name": "Filter Fasta"
+        "tool_contract_id": "pbsmrtpipe.tasks.dev_filter_fasta"
     }
 }

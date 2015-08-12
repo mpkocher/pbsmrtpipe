@@ -1,6 +1,7 @@
 {
     "version": "0.1.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbsmrtpipe.tools_dev.fasta --emit-tool-contract ", 
         "env": {}
     }, 
@@ -36,7 +37,8 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
-        "_comment": "Created by v0.2.3", 
+        "_comment": "Created by v0.2.5", 
+        "name": "Dev Fasta", 
         "input_types": [
             {
                 "description": "Sentinel file to trigger start", 
@@ -47,6 +49,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": false, 
-        "name": "Dev Fasta"
+        "tool_contract_id": "pbsmrtpipe.tasks.dev_fasta"
     }
 }

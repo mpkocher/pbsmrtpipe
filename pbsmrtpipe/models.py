@@ -762,11 +762,3 @@ class GatherToolContractMetaTask(MetaGatherTask, _ToolContractAble):
         output_dir = os.path.dirname(output_files[0])
         p = os.path.join(output_dir, RESOLVED_TOOL_CONTRACT_JSON)
         return "{d} {m}".format(d=self.driver.driver_exe, m=p)
-
-
-class ResourceIdGenerator(object):
-    def __init__(self, **file_types_d):
-        self._file_types = file_types_d
-
-    def get_next_id(self, file_type):
-        pass

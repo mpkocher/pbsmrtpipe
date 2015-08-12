@@ -124,20 +124,3 @@ def trace(func):
         return wrap_func
     else:
         return func
-
-
-def method_profiler(f):
-    """Deco used to profile methods on classes"""
-
-    @functools.wraps(f)
-    def wrapper(*args, **kw):
-        started_at = time.time()
-        result = f(*args, **kw)
-        run_time = time.time() - started_at
-        _name = f.__name__
-        log.info(
-            "MethodProfiler: Running {n} in {s:.2f} sec ({m:.2f} min).".format(
-                n=_name, s=run_time, m=run_time / 60.0))
-        return result
-
-    return wrapper

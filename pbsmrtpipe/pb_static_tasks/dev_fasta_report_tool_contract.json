@@ -1,6 +1,7 @@
 {
     "version": "0.1.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbsmrtpipe.tools_dev.fasta_report --resolved-tool-contract ", 
         "env": {}
     }, 
@@ -19,7 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.3", 
+        "_comment": "Created by v0.2.5", 
+        "name": "Fasta Report", 
         "input_types": [
             {
                 "description": "Pac Bio Fasta format", 
@@ -30,6 +32,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": false, 
-        "name": "Fasta Report"
+        "tool_contract_id": "pbsmrtpipe.tasks.dev_tc_fasta_report"
     }
 }
