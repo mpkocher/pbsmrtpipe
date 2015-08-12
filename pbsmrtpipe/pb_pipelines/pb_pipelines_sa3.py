@@ -230,7 +230,20 @@ def ds_ccs():
     # bam2fasta
     b5 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fasta:0")]
     # bam2fastq
-    # FIXME bug 27427 blocks this
-    #b6 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fastq:0")]
+    b6 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fastq:0")]
 
-    return b3 + b4 + b5 #+ b6
+    return b3 + b4 + b5 + b6
+
+
+@register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "SA3 Consensus Read Mapping")
+def ds_align_ccs():
+
+    # Call blasr/pbalign
+    b3 = [("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0",
+           "pbalign.tasks.pbalign_ccs:0"),
+          (Constants.ENTRY_DS_REF, "pbalign.tasks.pbalign_ccs:1")]
+
+    # Mapping Report FIXME won't take CCS
+    b4 = [("pbalign.tasks.pbalign_ccs:0", "pbreports.tasks.mapping_stats_ccs:0")]
+
+    return b3 + b4
