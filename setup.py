@@ -60,6 +60,7 @@ setup(
     package_data={'pbsmrtpipe': ['cluster_templates/*/*.tmpl',
                                  'chunk_operators/*.xml',
                                  'pb_static_tasks/*.json',
+                                 'register_tool_contracts/*.json',
                                  'html_templates/*.html',
                                  'html_templates/*.css',
                                  'html_templates/js/*.js',

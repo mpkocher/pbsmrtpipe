@@ -9,7 +9,7 @@ Very similar to variantCaller chunk operator, from which this was copied
     <task-id>kinetics_tools.tasks.ipd_summary</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.alignment_contig_scatter2</scatter-task-id>
+        <scatter-task-id>pbsmrtpipe.tasks.alignment_contig_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.alignmentset_id" in="kinetics_tools.tasks.ipd_summary:0"/>
             <chunk out="$chunk.reference_id" in="kinetics_tools.tasks.ipd_summary:1" />
@@ -19,7 +19,7 @@ Very similar to variantCaller chunk operator, from which this was copied
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_gff2</gather-task-id>
+                <gather-task-id>pbsmrtpipe.tasks.gather_gff</gather-task-id>
                 <chunk-key>$chunk.gff_id</chunk-key>
                 <task-output>kinetics_tools.tasks.ipd_summary:0</task-output>
             </chunk>

@@ -1,22 +1,18 @@
 import logging
-import os
 import sys
+
 from pbcommand.pb_io import load_pipeline_chunks_from_json
 
-from pbcore.io import FastaWriter, FastaReader
 from pbcommand.utils import setup_log
 from pbcommand.cli import pbparser_runner
-from pbcommand.models import get_scatter_pbparser, FileTypes, \
-    get_gather_pbparser
+from pbcommand.models import (FileTypes, get_gather_pbparser)
 
-import pbsmrtpipe.mock as M
-import pbsmrtpipe.tools.chunk_utils as CU
-from pbsmrtpipe.tools.gather import gather_fasta, \
-    get_datum_from_chunks_by_chunk_key
+from pbsmrtpipe.tools.gather import (gather_fasta,
+                                     get_datum_from_chunks_by_chunk_key)
 
 log = logging.getLogger(__name__)
 
-TOOL_ID = "pbsmrtpipe.tasks.dev_gather_fasta"
+TOOL_ID = "pbsmrtpipe.tasks.gather_fasta"
 CHUNK_KEY = "$chunk.fasta_id"
 
 

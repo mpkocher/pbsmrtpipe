@@ -1,0 +1,74 @@
+{
+    "version": "0.1.3", 
+    "driver": {
+        "serialization": "json", 
+        "exe": "python -m pbsmrtpipe.tools_dev.scatter_subreads --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbsmrtpipe.tasks.h5_subreadset_scatter", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.scattered", 
+        "resource_types": [], 
+        "description": "Scatter Hdf5 Subread DataSet", 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbsmrtpipe.task_options.scatter_hdfsubread_max_nchunks"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbsmrtpipe.task_options.scatter_hdfsubread_max_nchunks": {
+                        "default": 5, 
+                        "type": "integer", 
+                        "description": "Maximum number of Chunks", 
+                        "title": "Max NChunks"
+                    }
+                }, 
+                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_hdfsubread_max_nchunks"
+            }, 
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "required": [
+                    "pbsmrtpipe.task_options.dev_scatter_chunk_key"
+                ], 
+                "type": "object", 
+                "properties": {
+                    "pbsmrtpipe.task_options.dev_scatter_chunk_key": {
+                        "default": "$chunk:fasta_id", 
+                        "type": "string", 
+                        "description": "Chunk key to use (format $chunk:{chunk-key}", 
+                        "title": "Chunk key"
+                    }
+                }, 
+                "title": "JSON Schema for pbsmrtpipe.task_options.dev_scatter_chunk_key"
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "Chunk HdfSubreadSet", 
+                "description": "PacBio Chunked JSON HdfSubread Set", 
+                "default_name": "hdfsubreadset_chunked.json", 
+                "id": "cjson_out", 
+                "file_type_id": "PacBio.FileTypes.CHUNK"
+            }
+        ], 
+        "_comment": "Created by v0.2.6", 
+        "nchunks": "$max_nchunks", 
+        "name": "H5 SubreadSet scatter", 
+        "input_types": [
+            {
+                "description": "Pac Bio Fasta format", 
+                "title": "HdfSubreadSet", 
+                "id": "h5_subreads", 
+                "file_type_id": "PacBio.DataSet.HdfSubreadSet"
+            }
+        ], 
+        "chunk_keys": [
+            "$chunk.hdf5subreadset_id"
+        ], 
+        "nproc": 1, 
+        "is_distributed": false, 
+        "tool_contract_id": "pbsmrtpipe.tasks.h5_subreadset_scatter"
+    }
+}

@@ -281,28 +281,24 @@ def __rtc_gather_runner(func, rtc):
 def __args_gather_runner(func, args):
     return __gather_runner(func, args.chunk_json, args.output, args.chunk_key)
 
+# These make assumptions about the CLI argparser args labels (e.g., args.chunk_key)
+_args_runner_gather_fasta = P(__args_gather_runner, gather_fasta)
+_args_runner_gather_gff = P(__args_gather_runner, gather_gff)
+_args_runner_gather_fastq = P(__args_gather_runner, gather_fastq)
+_args_runner_gather_fofn = P(__args_gather_runner, gather_fofn)
+_args_runner_gather_subreadset = P(__args_gather_runner, gather_subreadset)
+_args_runner_gather_alignmentset = P(__args_gather_runner, gather_alignmentset)
+_args_runner_gather_contigset = P(__args_gather_runner, gather_contigset)
+_args_runner_gather_csv = P(__args_gather_runner, gather_csv)
 
-_args_gather_fasta = P(__args_gather_runner, gather_fasta)
-_args_gather_gff = P(__args_gather_runner, gather_gff)
-_args_gather_fastq = P(__args_gather_runner, gather_fastq)
-_args_gather_fofn = P(__args_gather_runner, gather_fofn)
-_args_gather_subreadset = P(__args_gather_runner, gather_subreadset)
-_args_gather_alignmentset = P(__args_gather_runner, gather_alignmentset)
-_args_gather_contigset = P(__args_gather_runner, gather_contigset)
-_args_gather_csv = P(__args_gather_runner, gather_csv)
-
+# (chunk.json, output_file, chunk_key)
 run_main_gather_fasta = P(__gather_runner, gather_fasta)
 run_main_gather_fastq = P(__gather_runner, gather_fastq)
 run_main_gather_csv = P(__gather_runner, gather_csv)
 run_main_gather_gff = P(__gather_runner, gather_gff)
-run_main_gather_alignmentset = P(__gather_runner, _args_gather_alignmentset)
-run_main_gather_subreadset = P(__gather_runner, _args_gather_subreadset)
-run_main_gather_contigset = P(__gather_runner, _args_gather_contigset)
-
-# Use this when the chunk key is passed around correctly
-rtc_csv_gather_runner = P(__rtc_gather_runner, gather_csv)
-rtc_fasta_gather_runner = P(__rtc_gather_runner, gather_fasta)
-rtc_gff_gather_runner = P(__rtc_gather_runner, gather_gff)
+run_main_gather_alignmentset = P(__gather_runner, gather_alignmentset)
+run_main_gather_subreadset = P(__gather_runner, gather_subreadset)
+run_main_gather_contigset = P(__gather_runner, gather_contigset)
 
 
 def get_parser():
@@ -316,31 +312,35 @@ def get_parser():
         return U.subparser_builder(sp, sid_, help_, opt_func_, exe_func_)
 
     # CSV
-    builder('csv', "Merge CSV files into a single file.", _gather_csv_options, _args_gather_csv)
+    builder('csv', "Merge CSV files into a single file.",
+            _gather_csv_options, _args_runner_gather_csv)
 
     # Fastq
-    builder('fastq', "Merge Fastq files into a single file.", _gather_fastq_options, _args_gather_fastq)
+    builder('fastq', "Merge Fastq files into a single file.",
+            _gather_fastq_options, _args_runner_gather_fastq)
 
     # Fasta
-    builder('fasta', "Merge Fasta files into a single file.", _gather_fasta_options, _args_gather_fasta)
+    builder('fasta', "Merge Fasta files into a single file.",
+            _gather_fasta_options, _args_runner_gather_fasta)
 
-    builder('fofn', "Merge FOFNs into a single file.", _gather_fofn_options, _args_gather_fofn)
+    builder('fofn', "Merge FOFNs into a single file.",
+            _gather_fofn_options, _args_runner_gather_fofn)
 
     # Gff
     builder('gff', "Merge Fasta files into a single file.",
-            _gather_gff_options, _args_gather_gff)
+            _gather_gff_options, _args_runner_gather_gff)
 
     # SubreadSet
     builder('subreadset', "Merge SubreadSet XMLs into a single file.",
-            _gather_subreadset_options, _args_gather_subreadset)
+            _gather_subreadset_options, _args_runner_gather_subreadset)
 
     # AlignmentSet
     builder('alignmentset', "Merge AlignmentSet XMLs into a single file.",
-            _gather_alignmentset_options, _args_gather_alignmentset)
+            _gather_alignmentset_options, _args_runner_gather_alignmentset)
 
     # ContigSet
     builder('contigset', "Merge ContigSet XMLs into a single file.",
-            _gather_contigset_options, _args_gather_contigset)
+            _gather_contigset_options, _args_runner_gather_contigset)
 
     return p
 

@@ -65,9 +65,9 @@ def load_all_pb_tasks_from_python_module_name(name):
     return _REGISTERED_TASKS
 
 
-def _load_all_pb_static_tasks(registered_tasks_d, filter_filename_func, processing_func):
+def _load_all_pb_static_tasks(module_name, registered_tasks_d, filter_filename_func, processing_func):
 
-    m = importlib.import_module("pbsmrtpipe.pb_static_tasks")
+    m = importlib.import_module(module_name)
 
     d = os.path.dirname(m.__file__)
     log.debug("Loading static meta tasks from {m}".format(m=d))
@@ -105,7 +105,8 @@ def load_all_pb_tool_contracts():
 
     filter_contracts = functools.partial(filter_by, "tool_contract")
 
-    rtasks = _load_all_pb_static_tasks(_REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.pb_static_tasks", _REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.register_tool_contracts", rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
 
     return rtasks
 

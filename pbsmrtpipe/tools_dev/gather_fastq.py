@@ -1,27 +1,20 @@
 import logging
-import os
 import sys
-from pbcommand.pb_io import load_pipeline_chunks_from_json
 
-from pbcore.io import FastqWriter, FastqReader
 from pbcommand.utils import setup_log
 from pbcommand.cli import pbparser_runner
-from pbcommand.models import get_scatter_pbparser, FileTypes, \
-    get_gather_pbparser
+from pbcommand.models import FileTypes, get_gather_pbparser
 
-import pbsmrtpipe.mock as M
-import pbsmrtpipe.tools.chunk_utils as CU
-from pbsmrtpipe.tools.gather import gather_fastq, \
-    get_datum_from_chunks_by_chunk_key, run_main_gather_fastq
+from pbsmrtpipe.tools.gather import run_main_gather_fastq
 
 log = logging.getLogger(__name__)
 
-TOOL_ID = "pbsmrtpipe.tasks.dev_gather_fastq"
+TOOL_ID = "pbsmrtpipe.tasks.gather_fastq"
 CHUNK_KEY = "$chunk.fastq_id"
 
 
 def get_contract_parser():
-    driver = "python -m pbsmrtpipe.tools_dev.fastq_gather --resolved-tool-contract "
+    driver = "python -m pbsmrtpipe.tools_dev.gather_fastq --resolved-tool-contract "
 
     p = get_gather_pbparser(TOOL_ID, "0.1.3", "Gather Fastq",
                             "Gather Fastq", driver, is_distributed=False)

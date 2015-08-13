@@ -1,18 +1,21 @@
 import logging
+import sys
+
 from pbcommand.cli import pbparser_runner
 from pbcommand.models import get_gather_pbparser, FileTypes
-import sys
 from pbcommand.utils import setup_log
+
 from pbsmrtpipe.tools.gather import run_main_gather_csv
 
 log = logging.getLogger(__name__)
 
 
 class Constants(object):
-    TOOL_ID = "pbsmrtpipe.tasks.dev_gather_csv"
+    TOOL_ID = "pbsmrtpipe.tasks.gather_csv"
     CHUNK_KEY = "$chunk:csv_id"
     VERSION = "0.1.0"
-    DRIVER = "python -m pbsmrtpipe.dev_tools.gather_csv --resolved-tool-contract "
+    DRIVER = "python -m pbsmrtpipe.tools_dev.gather_csv --resolved-tool-contract "
+    OPT_CHUNK_KEY = 'pbsmrtpipe.task_options.gather_csv_chunk_key'
 
 
 def get_parser():
@@ -24,12 +27,23 @@ def get_parser():
                             is_distributed=False)
     p.add_input_file_type(FileTypes.CHUNK, "cjson_in", "GCHUNK Json",
                           "Gathered CHUNK Json with CSV chunk key")
-    p.add_output_file_type(FileTypes.CSV, "csv_out", "CSV", "Gathered CSV", "gathered.csv")
+
+    p.add_output_file_type(FileTypes.CSV, "csv_out",
+                           "CSV",
+                           "Gathered CSV", "gathered.csv")
+
+    # Only need to add to argparse layer for the commandline
+    p.arg_parser.add_str(Constants.OPT_CHUNK_KEY,
+                         "chunk_key",
+                         "$chunk.csv_id",
+                         "Chunk key",
+                         "Chunk key to use (format $chunk.{chunk-key}")
+
     return p
 
 
 def args_runner(args):
-    return run_main_gather_csv(args.cjson_in, args.csv_out, Constants.CHUNK_KEY)
+    return run_main_gather_csv(args.cjson_in, args.csv_out, args.chunk_key)
 
 
 def rtc_runner(rtc):

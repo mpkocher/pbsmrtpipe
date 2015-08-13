@@ -9,10 +9,10 @@ log = logging.getLogger(__name__)
 
 
 class Constants(object):
-    TOOL_ID = "pbsmrtpipe.tasks.dev_gather_subreads"
+    TOOL_ID = "pbsmrtpipe.tasks.gather_subreadset"
     CHUNK_KEY = "$chunk:subreadset_id"
     VERSION = "0.1.0"
-    DRIVER = "python -m pbsmrtpipe.dev_tools.gather_subreads --resolved-tool-contract "
+    DRIVER = "python -m pbsmrtpipe.tools_dev.gather_subreads --resolved-tool-contract "
 
 
 def get_parser():
@@ -22,9 +22,12 @@ def get_parser():
                             "General Chunk SubreadSet Gather",
                             Constants.DRIVER,
                             is_distributed=False)
+
     p.add_input_file_type(FileTypes.CHUNK, "cjson_in", "GCHUNK Json",
                           "Gathered CHUNK Json with SubreadSet chunk key")
-    p.add_output_file_type(FileTypes.DS_SUBREADS, "ds_out", "SubreadSet", "Gathered SubreadSet", "gathered_subreads.dataset.xml.")
+
+    p.add_output_file_type(FileTypes.DS_SUBREADS, "ds_out", "SubreadSet",
+                           "Gathered SubreadSet", "gathered_subreads.dataset.xml.")
     return p
 
 

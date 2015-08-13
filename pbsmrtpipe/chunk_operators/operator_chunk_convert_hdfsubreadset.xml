@@ -14,6 +14,7 @@
         <chunks>
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_subreadset</gather-task-id>
+                <!-- This should be hdfsubreadset -->
                 <chunk-key>$chunk.subreadset_id</chunk-key>
                 <task-output>pbsmrtpipe.tasks.h5_subreads_to_subread:0</task-output>
             </chunk>

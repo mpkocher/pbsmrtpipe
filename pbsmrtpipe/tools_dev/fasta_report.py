@@ -1,7 +1,6 @@
 import logging
 import sys
 
-from pbcore.io import FastaWriter, FastaReader
 from pbcommand.utils import setup_log
 from pbcommand.cli import pbparser_runner
 from pbcommand.models import get_pbparser, FileTypes
