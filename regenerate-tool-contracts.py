@@ -74,7 +74,7 @@ def _run_cmd(cmd):
     result = run_cmd(cmd, sys.stdout, sys.stderr)
     if result.exit_code != 0:
         print result
-        raise ValueError("Failed to generate TC from {c}".format(c=c))
+        raise ValueError("Failed to generate TC from {c}".format(c=cmd))
     return result
 
 
