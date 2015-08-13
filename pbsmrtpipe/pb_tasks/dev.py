@@ -5,16 +5,17 @@ import shutil
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 import sys
+
 from pbcore.io import readFofn, ReferenceSet
-from pbsmrtpipe.core import (MetaTaskBase, MetaScatterTaskBase,
-                             MetaGatherTaskBase)
+
 from pbsmrtpipe.legacy.input_xml import fofn_to_report
 from pbsmrtpipe.mock import write_random_fasta_records
-from pbsmrtpipe.models import MetaScatterTask
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.tools.converter import write_report_and_log
-from pbsmrtpipe.tools.dev import subread_dataset_report, run_random_fofn, \
-    run_fasta_filter, run_reference_dataset_report
+from pbsmrtpipe.tools.dev import (subread_dataset_report,
+                                  run_random_fofn,
+                                  run_fasta_filter,
+                                  run_reference_dataset_report)
 
 log = logging.getLogger(__name__)
 

@@ -10,7 +10,6 @@ import pprint
 import jsonschema
 
 from pbcommand.models import FileTypes, TaskTypes, SymbolTypes
-from pbsmrtpipe.core import MetaScatterTaskBase
 from pbsmrtpipe.exceptions import (InvalidDependencyInjectError,
                                    MalformedDependencyInjectionFileMetadataError)
 
@@ -407,7 +406,7 @@ def meta_task_to_task(meta_task,
 
     def _default_nchunks():
         # the old model should be removed.
-        if isinstance(meta_task, (MetaScatterTask, MetaScatterTaskBase)):
+        if isinstance(meta_task, (MetaScatterTask, )):
             if meta_task.chunk_di == SymbolTypes.MAX_NCHUNKS:
                 return max_nchunks
             elif isinstance(meta_task.chunk_di, int):

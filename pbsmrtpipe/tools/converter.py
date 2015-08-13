@@ -2,14 +2,13 @@
 import os
 import sys
 import logging
-import argparse
-import functools
+
 from pbcommand.cli import get_default_argparser
 
 from pbcore.io import FastaWriter, FastqReader, FastaRecord, readFofn
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
-from pbsmrtpipe.legacy.input_xml import InputXml, input_xml_to_report, fofn_to_report
+from pbsmrtpipe.legacy.input_xml import fofn_to_report
 import pbsmrtpipe.legacy.reference_utils as RU
 
 import pbsmrtpipe.tools.utils as U
@@ -30,37 +29,6 @@ def write_report_and_log(report, output_file):
     report.write_json(output_file)
     log.debug("Wrote report {r} to {o}".format(r=report, o=output_file))
     return True
-
-
-def write_movie_fofn_report(input_xml_file, movie_fofn, report_json):
-    """Converts an input.xml file to a movie fofn and json report"""
-
-    input_xml = InputXml.from_file(input_xml_file)
-    movies = input_xml.movies
-
-    with open(movie_fofn, 'w+') as f:
-        f.write("\n".join(sorted(movies)) + "\n")
-    log.debug("Write {n} movies to FOFN {x}".format(n=len(movies), x=movie_fofn))
-
-    if report_json is not None:
-        report = input_xml_to_report(input_xml)
-        write_report_and_log(report, report_json)
-
-    return True
-
-
-def _add_input_xml_to_fofn_options(p):
-    _add_debug_to_parser(p)
-    p.add_argument('input_xml', type=validate_file, help="PacBio input.xml file")
-    p.add_argument('movie_fofn', type=str, help="output movie.fofn path",
-                   default="movie.fofn")
-    p.add_argument('--report', type=str, help="Path to output JSON Report.")
-    return p
-
-
-def _args_input_xml_to_movie_fofn(args):
-    _ = write_movie_fofn_report(args.input_xml, args.movie_fofn, args.report)
-    return 0
 
 
 def _fastq_to_fasta(fastq_path, fasta_path):
@@ -184,10 +152,6 @@ def get_main_parser():
 
     builder('ref-to-report', "Convert a Reference Entry director to a JSON metadata report.",
             _add_ref_to_report_options, _args_run_ref_to_report)
-
-    # InputXML to MovieFofn
-    builder('input-xml-to-fofn', "Convert a Pacbio Input.xml file to Movie FOFN",
-            _add_input_xml_to_fofn_options, _args_input_xml_to_movie_fofn)
 
     builder("fastq-to-fasta", "Convert fastq file to fasta file.",
             _add_fastq_to_fastq_options, _args_run_fastq_to_fasta)

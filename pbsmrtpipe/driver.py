@@ -360,7 +360,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # task is created
     niterations = 0
     dt_ramp = 0.25
-    # number of iterations before switching to stead state sleep
+    # number of iterations before switching to steady state sleep
     stead_state_n = 50
     # sleep for 5 sec
     dt_stead_state = 4
