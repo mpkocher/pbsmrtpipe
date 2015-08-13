@@ -5,7 +5,7 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.2.4", 
+        "_comment": "Created by v0.2.6", 
         "description": "Quick tool h5_subreads_to_subread pbsmrtpipe.tasks.h5_subreads_to_subread", 
         "input_types": [
             {

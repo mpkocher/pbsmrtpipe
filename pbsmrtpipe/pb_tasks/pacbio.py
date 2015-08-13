@@ -3,8 +3,10 @@
 Tool contract wrappers for miscellaneous quick functions.
 """
 
+import functools
 import logging
 import shutil
+import gzip
 import os
 import sys
 
@@ -22,7 +24,7 @@ registry = registry_builder(TOOL_NAMESPACE, DRIVER_BASE)
 
 def run_bax_to_bam(input_file_name, output_file_name):
     base_name = os.path.splitext(output_file_name)[0]
-    output_dir = os.path.dirname(output_file_name)
+    output_dir = os.getcwd() #os.path.dirname(output_file_name)
     args = [
         "bax2bam",
         "--subread",
@@ -37,17 +39,61 @@ def run_bax_to_bam(input_file_name, output_file_name):
         return result.exit_code
 
     # FIXME bax2bam won't let us choose the output XML file name :(
+    #       ...or even the directory, apparently
     for file_name in os.listdir(output_dir):
         if file_name.endswith(".dataset.xml") and file_name != output_file_name:
             shutil.move(file_name, output_file_name)
     return 0
 
+def run_bam_to_fastx(input_file_name, output_file_name, program_name):
+    def _splitext(path):
+        base, ext = os.path.splitext(path)
+        if ext == ".gz":
+            base, ext2 = os.path.splitext(base)
+            ext = ext2 + ext
+        return base, ext
+    args = [
+        program_name,
+        "-o", _splitext(output_file_name)[0],
+        input_file_name,
+    ]
+    logging.warn(" ".join(args))
+    result = run_cmd(" ".join(args),
+        stdout_fh=sys.stdout,
+        stderr_fh=sys.stderr)
+    if result.exit_code != 0:
+        return result.exit_code
+    else:
+        if not output_file_name.endswith(".gz"):
+            output_file_name_ = output_file_name + ".gz"
+            with gzip.open(output_file_name_) as f_in:
+                with open(output_file_name, "w") as f_out:
+                    f_out.write(f_in.read())
+    return 0
+
+
+run_bam_to_fasta = functools.partial(run_bam_to_fastx, program_name="bam2fasta")
+run_bam_to_fastq = functools.partial(run_bam_to_fastx, program_name="bam2fastq")
 
 @registry("h5_subreads_to_subread", "0.1.0",
           FileTypes.DS_SUBREADS_H5,
           FileTypes.DS_SUBREADS, is_distributed=True, nproc=1)
 def run_bax2bam(rtc):
     return run_bax_to_bam(rtc.task.input_files[0], rtc.task.output_files[0])
+
+
+@registry("bam2fastq", "0.1.0",
+          FileTypes.DS_SUBREADS,
+          FileTypes.FASTQ, is_distributed=True, nproc=1)
+def run_bam2fastq(rtc):
+    return run_bam_to_fastq(rtc.task.input_files[0], rtc.task.output_files[0])
+
+
+@registry("bam2fasta", "0.1.0",
+          FileTypes.DS_SUBREADS,
+          FileTypes.FASTA, is_distributed=True, nproc=1)
+def run_bam2fasta(rtc):
+    return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
 if __name__ == '__main__':

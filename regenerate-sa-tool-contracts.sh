@@ -29,7 +29,4 @@ task_motifmaker_find --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contra
 task_motifmaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
 gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.json
 gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
-task_bam2fasta --emit-tool-contract > $TC_DIR/bam2fastx_bam2fasta_tool_contract.json
-task_bam2fastq --emit-tool-contract > $TC_DIR/bam2fastx_bam2fastq_tool_contract.json
-task_bax2bam --emit-tool-contract > $TC_DIR/bax2bam_tool_contract.json
 task_pbccs_ccs --emit-tool-contract > $TC_DIR/pbccs_ccs_tool_contract.json

@@ -228,9 +228,9 @@ def ds_ccs():
     # CCS report
     b4 = [("pbccs.tasks.ccs:0", "pbreports.tasks.ccs_report:0")]
     # bam2fasta
-    b5 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fasta:0")]
+    b5 = [("pbccs.tasks.ccs:0", "pbsmrtpipe.tasks.bam2fasta:0")]
     # bam2fastq
-    b6 = [("pbccs.tasks.ccs:0", "bam2fastx.tasks.bam2fastq:0")]
+    b6 = [("pbccs.tasks.ccs:0", "pbsmrtpipe.tasks.bam2fastq:0")]
 
     return b3 + b4 + b5 + b6
 
