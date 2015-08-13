@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-TC_DIR=./pbsmrtpipe/pb_static_tasks/
+TC_DIR=./pbsmrtpipe/registered_tool_contract_sa3/
 
 # For now, all the SA tools that can emit a TC can be done here.
 python -m pbreports.report.sat --emit-tool-contract > $TC_DIR/pbreports_report_sat_tool_contract.json

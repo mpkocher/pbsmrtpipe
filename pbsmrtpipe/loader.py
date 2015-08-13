@@ -105,8 +105,8 @@ def load_all_pb_tool_contracts():
 
     filter_contracts = functools.partial(filter_by, "tool_contract")
 
-    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.pb_static_tasks", _REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
-    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.register_tool_contracts", rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.registered_tool_contracts_sa3", _REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.registered_tool_contracts", rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
 
     return rtasks
 
