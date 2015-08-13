@@ -1,13 +1,9 @@
-
+import os
 import unittest
 import logging
 import os.path as op
 import subprocess
 
-from pbcommand.models import TaskTypes
-from pbsmrtpipe.schema_opt_utils import to_opt_id
-
-from task_test_base import _TaskTestBase, TEST_DATA_DIR, get_data_file
 from pbcommand.testkit import PbTestApp
 
 log = logging.getLogger(__name__)
