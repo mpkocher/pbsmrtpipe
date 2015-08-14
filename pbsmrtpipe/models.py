@@ -86,6 +86,28 @@ _JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images'
 JobResources = namedtuple("JobResources", _JOB_ATTRS)
 
 
+class PacBioOption(object):
+    def __init__(self, option_id, name, default, description):
+        self.option_id = option_id
+        self.name = name
+        self.default = default
+        self.description = description
+
+    def __repr__(self):
+        _d = dict(i=self.option_id,
+                  n=self.name,
+                  v=self.default,
+                  k=self.__class__.__name__)
+        return "<{k} {i} name: {n} default: {v} >".format(**_d)
+
+    @staticmethod
+    def from_dict(d):
+        return PacBioOption(d['option_id'], d['name'], d['default'], d['description'])
+
+    def to_dict(self):
+        return dict(option_id=self.option_id, name=self.name, default=self.default, description=self.description)
+
+
 class TaskStates(object):
     # Task Has been created
     CREATED = 'created'

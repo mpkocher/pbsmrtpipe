@@ -6,6 +6,9 @@ from collections import namedtuple
 from xml.etree.cElementTree import ElementTree
 import collections
 import json
+import itertools
+from avro.datafile import DataFileWriter
+from avro.io import DatumWriter
 
 import jsonschema
 from pbcommand.resolver import (ToolContractError,
@@ -32,9 +35,10 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                GatherChunk, ScatterChunk, Scatter,
                                ToolContractMetaTask,
                                ScatterToolContractMetaTask,
-                               GatherToolContractMetaTask)
+                               GatherToolContractMetaTask, PacBioOption)
 from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
+from pbsmrtpipe.schemas import PT_SCHEMA
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -596,6 +600,108 @@ def pipeline_to_xml(p):
             getattr(root, Constants.BINDING)(**_d)
 
     return root
+
+
+def _get_file_type_id(rtasks, task_type_id, input_index):
+    return rtasks[task_type_id].input_types[input_index]
+
+
+def _to_task_id_and_index(binding):
+    s = binding.split(":")
+    return s[0], int(s[1])
+
+
+def sanity_entry_point(e_raw):
+    return e_raw.split("$entry:")[-1]
+
+
+def _pipeline_to_task_options(rtasks, p):
+    bs = itertools.chain(*p.all_bindings)
+    task_ids = [_to_task_id_and_index(b) for b in bs if not b.startswith("$entry:")]
+    tids = [x for x, y in task_ids]
+    rtsks = [rtasks[tid] for tid in tids]
+    options = []
+    for task in rtsks:
+        if task.option_schemas:
+            for k, v in task.option_schemas.iteritems():
+                options.append(v)
+    return options
+
+
+def _option_jschema_to_pb_option(opt_jschema_d):
+    """Convert from JsonSchema option to PacBioOption"""
+    opt_id = opt_jschema_d['required'][0]
+    name = opt_jschema_d['properties'][opt_id]['title']
+    default = opt_jschema_d['properties'][opt_id]['default']
+    desc = opt_jschema_d['properties'][opt_id]['description']
+    pb_opt = PacBioOption(opt_id, name, default, desc)
+    return pb_opt
+
+
+def _to_entry_bindings(rtasks, a, b):
+    entry_id = sanity_entry_point(a)
+    task_id, t_in = _to_task_id_and_index(b)
+    file_type = _get_file_type_id(rtasks, task_id, t_in)
+    etype = file_type.file_type_id
+    name = "Entry Name: {i}".format(i=file_type.file_type_id)
+    return dict(file_type_id=etype, id=entry_id, name=name)
+
+
+def pipeline_template_to_dict(pipeline, rtasks):
+    """
+    Convert and write the pipeline template to avro compatible dict
+
+    :type pipeline: Pipeline
+    """
+    version = "0.1.0"
+    options = []
+    task_pboptions = []
+    joptions = _pipeline_to_task_options(rtasks, pipeline)
+
+    for jtopt in joptions:
+            try:
+                pbopt = _option_jschema_to_pb_option(jtopt)
+                task_pboptions.append(pbopt)
+            except Exception as e:
+                sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
+                raise e
+
+    entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
+    tags = ["sa3", "dev"]
+    bindings = []
+
+    desc = "Pipeline {i} " if pipeline.description is None else pipeline.description
+
+    return dict(id=pipeline.pipeline_id,
+                name=pipeline.display_name,
+                version=version,
+                entry_points=entry_points,
+                bindings=bindings,
+                tags=tags,
+                options=options,
+                task_options=[x.to_dict() for x in task_pboptions],
+                description=desc)
+
+
+def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
+
+    d = pipeline_template_to_dict(pipeline, rtasks_d)
+    with open(output_file, 'w') as f:
+        writer = DataFileWriter(f, DatumWriter(), PT_SCHEMA)
+        writer.append(d)
+
+    return d
+
+
+def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
+    output_files = []
+    for pipeline in pipelines:
+        name = pipeline.pipeline_id + "_pipeline_template.avro"
+        file_name = os.path.join(output_dir, name)
+        write_pipeline_template_to_avro(pipeline, rtasks_d, file_name)
+        output_files.append(file_name)
+
+    return output_files
 
 
 def get_smrtanalysis_components(root):

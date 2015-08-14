@@ -59,6 +59,7 @@ setup(
     # I don't really understand the package_data semantics.
     package_data={'pbsmrtpipe': ['cluster_templates/*/*.tmpl',
                                  'chunk_operators/*.xml',
+                                 'schemas/*.avsc',
                                  'registered_tool_contracts_sa3/*.json',
                                  'registered_tool_contracts/*.json',
                                  'html_templates/*.html',

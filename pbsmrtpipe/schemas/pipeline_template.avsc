@@ -1,0 +1,169 @@
+{
+  "namespace": "com.pacbio.common.models.pipelines",
+  "type": "record",
+  "name": "PipelineTemplate",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "name": "entry_points",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "EntryPoint",
+          "fields": [
+            {
+              "doc": "Entry Id",
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "doc": "PacBio File Type identifier",
+              "name": "file_type_id",
+              "type": "string"
+            },
+            {
+              "doc": "Display Name",
+              "name": "name",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "bindings",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "PipelineBinding",
+          "fields": [
+            {
+              "doc": "Entry Id",
+              "name": "in",
+              "type": {
+                "type": "record",
+                "name": "InBinding",
+                "fields": [
+                  {
+                    "name": "task_type_id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "index",
+                    "type": "int"
+                  },
+                  {
+                    "name": "instance_id",
+                    "type": "int"
+                  }
+                ]
+              }
+            },
+            {
+              "doc": "Display Name",
+              "name": "out",
+              "type": {
+                "type": "record",
+                "name": "OutBinding",
+                "fields": [
+                  {
+                    "name": "task_type_id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "index",
+                    "type": "int"
+                  },
+                  {
+                    "name": "instance_id",
+                    "type": "int"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "task_options",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "TaskOption",
+          "fields": [
+            {
+              "name": "default",
+              "type": [
+                "int",
+                "string",
+                "boolean",
+                "float"
+              ]
+            },
+            {
+              "name": "option_id",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "options",
+     "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "doc": "Pipeline Level option. This should probably be converted to concrete values, not loose key-value pairs",
+          "name": "PipelineEngineOption",
+          "fields": [
+            {
+              "name": "default",
+              "type": [
+                "int",
+                "string",
+                "boolean",
+                "float"
+              ]
+            },
+            {
+              "name": "option_id",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
