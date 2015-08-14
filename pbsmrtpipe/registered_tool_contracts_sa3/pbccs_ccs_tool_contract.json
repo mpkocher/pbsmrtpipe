@@ -94,18 +94,18 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "required": [
-                    "pbccs.task_options.max_drop_frac"
+                    "pbccs.task_options.max_drop_fraction"
                 ], 
                 "type": "object", 
                 "properties": {
-                    "pbccs.task_options.max_drop_frac": {
+                    "pbccs.task_options.max_drop_fraction": {
                         "default": 0.33, 
                         "type": "number", 
                         "description": "Maximum fraction of subreads that can be dropped before giving up", 
                         "title": "Max. dropped fraction"
                     }
                 }, 
-                "title": "JSON Schema for pbccs.task_options.max_drop_frac"
+                "title": "JSON Schema for pbccs.task_options.max_drop_fraction"
             }
         ], 
         "output_types": [
@@ -124,7 +124,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.4", 
+        "_comment": "Created by v0.2.6", 
         "name": "ccs", 
         "input_types": [
             {
