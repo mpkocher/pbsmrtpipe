@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 class Constants(object):
     CHUNK_KEY_HDFSET = "$chunk.hdfsubreadset_id"
     CHUNK_KEY_SUBSET = "$chunk.subreadset_id"
+    CHUNK_KEY_CCSSET = "$chunk.consensusreadset_id"
     CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
     CHUNK_KEY_FASTA = "$chunk.fasta_id"
     CHUNK_KEY_FASTQ = "$chunk.fastq_id"
@@ -27,7 +28,8 @@ class Constants(object):
 
 def write_chunks_to_json(chunks, chunk_file):
     log.debug("Wrote {n} chunks to {f}.".format(n=len(chunks), f=chunk_file))
-    IO.write_pipeline_chunks(chunks, chunk_file, "Chunks written at {d}".format(d=datetime.datetime.now()))
+    IO.write_pipeline_chunks(
+        chunks, chunk_file, "Chunks written at {d}".format(d=datetime.datetime.now()))
     return 0
 
 
@@ -122,7 +124,8 @@ def write_chunked_csv(chunk_key, csv_path, max_total_nchunks, dir_name, base_nam
 
 
 def write_csv_chunks_to_file(chunk_file, csv_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext):
-    chunks = list(write_chunked_csv(Constants.CHUNK_KEY_CSV, csv_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext))
+    chunks = list(write_chunked_csv(Constants.CHUNK_KEY_CSV, csv_path,
+                                    max_total_chunks, dir_name, chunk_base_name, chunk_ext))
     return write_chunks_to_json(chunks, chunk_file)
 
 
@@ -191,7 +194,8 @@ def to_chunked_fastq_files(fastq_path, max_total_nchunks, dir_name, base_name, e
 
 
 def _write_fasta_chunks_to_file(to_chunk_fastx_file_func, chunk_file, fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext):
-    chunks = list(to_chunk_fastx_file_func(fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext))
+    chunks = list(to_chunk_fastx_file_func(
+        fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext))
     write_chunks_to_json(chunks, chunk_file)
     return 0
 
@@ -252,6 +256,22 @@ def write_subreadset_chunks_to_file(chunk_file, subreadset_path,
     return 0
 
 
+def write_subreadset_zmw_chunks_to_file(chunk_file, subreadset_path,
+                                        max_total_chunks,
+                                        dir_name, chunk_base_name, chunk_ext):
+    """Identical to write_subreadset_chunks_to_file, but chunks subreads by
+    ZMW ranges for input to pbccs."""
+    chunks = list(to_zmw_chunked_subreadset_files(
+        subreadset_path=subreadset_path,
+        max_total_nchunks=max_total_chunks,
+        chunk_key=Constants.CHUNK_KEY_SUBSET,
+        dir_name=dir_name,
+        base_name=chunk_base_name,
+        ext=chunk_ext))
+    write_chunks_to_json(chunks, chunk_file)
+    return 0
+
+
 def to_chunked_subreadset_files(subreadset_path, reference_path, max_total_nchunks,
                                 chunk_key, dir_name, base_name, ext):
     dset = SubreadSet(subreadset_path, strict=True)
@@ -267,6 +287,23 @@ def to_chunked_subreadset_files(subreadset_path, reference_path, max_total_nchun
         dset.write(chunk_path)
         d[chunk_key] = os.path.abspath(chunk_path)
         d['$chunk.reference_id'] = reference_path
+        c = PipelineChunk(chunk_id, **d)
+        yield c
+
+
+def to_zmw_chunked_subreadset_files(subreadset_path, max_total_nchunks,
+                                    chunk_key, dir_name, base_name, ext):
+    """Identical to to_chunked_subreadset_files, but chunks subreads by
+    ZMW ranges for input to pbccs."""
+    dset = SubreadSet(subreadset_path, strict=True)
+    dset_chunks = dset.split(chunks=max_total_nchunks, zmws=True)
+    d = {}
+    for i, dset in enumerate(dset_chunks):
+        chunk_id = '_'.join([base_name, str(i)])
+        chunk_name = '.'.join([chunk_id, ext])
+        chunk_path = os.path.join(dir_name, chunk_name)
+        dset.write(chunk_path)
+        d[chunk_key] = os.path.abspath(chunk_path)
         c = PipelineChunk(chunk_id, **d)
         yield c
 
@@ -341,10 +378,13 @@ def to_chunked_grouped_fofn(fofn_groups, chunk_id_prefix, fofn_chunk_key, report
 
 def write_grouped_fofn_chunks(fofn_files, max_total_chunks, chunk_dir_name, chunk_json_path):
 
-    fofn_groups = _to_grouped_items_by_max_total_chunks(fofn_files, max_total_chunks)
+    fofn_groups = _to_grouped_items_by_max_total_chunks(
+        fofn_files, max_total_chunks)
 
-    chunks = to_chunked_grouped_fofn(fofn_groups, 'fofn_group', Constants.CHUNK_KEY_FOFN, Constants.CHUNK_KEY_FOFN_REPORT, chunk_dir_name)
+    chunks = to_chunked_grouped_fofn(
+        fofn_groups, 'fofn_group', Constants.CHUNK_KEY_FOFN, Constants.CHUNK_KEY_FOFN_REPORT, chunk_dir_name)
 
-    IO.write_pipeline_chunks(chunks, chunk_json_path, "Group Fofn created at {d}".format(d=datetime.datetime.now()))
+    IO.write_pipeline_chunks(
+        chunks, chunk_json_path, "Group Fofn created at {d}".format(d=datetime.datetime.now()))
 
     return chunks
