@@ -50,7 +50,9 @@ test-contracts:
 test-chunk-operators:
 	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
 
-test-suite: test-load-tasks test-tasks test-pipelines test-chunk-operators test-unit test-contracts test-loader test-dev
+test-sanity: test-load-tasks test-tasks test-pipelines test-chunk-operators test-contracts test-loader
+
+test-suite: test-sanity test-unit test-dev
 
 test-clean-suite: install test-suite
 
