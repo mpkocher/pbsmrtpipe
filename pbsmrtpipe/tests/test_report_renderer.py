@@ -45,6 +45,6 @@ class TestCliReportRender(_TestBase):
             if not os.path.exists(p):
                 os.mkdir(p)
         html_output = os.path.join(self.temp_dir, 'report.html')
-        rcode = R.write_report_with_html_extras(report, html_output)
+        rcode = R.write_report_with_html_extras(report, html_output, self.temp_dir)
         msg = "Failed writing {f}".format(f=html_output)
         self.assertEqual(rcode, 0, msg)
