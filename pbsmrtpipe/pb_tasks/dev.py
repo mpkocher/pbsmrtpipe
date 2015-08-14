@@ -88,11 +88,8 @@ def run_rtc(rtc):
 
 @registry('dev_txt_to_fasta', '0.1.0', FileTypes.TXT, FileTypes.FASTA, is_distributed=False)
 def run_rtc(rtc):
-    n = 0
-    with open(rtc.task.input_files[0]) as f:
-        f.readline()
-        n += 1
-    write_random_fasta_records(rtc.task.output_files[0], n)
+    nrecords = 1000
+    write_random_fasta_records(rtc.task.output_files[0], nrecords)
     return 0
 
 

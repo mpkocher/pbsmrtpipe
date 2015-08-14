@@ -41,6 +41,7 @@ def get_contract_parser():
 
 
 def run_main(fasta_file, output_json, max_nchunks, chunk_key):
+    log.info("Running {f} into {n} chunks".format(f=fasta_file, n=max_nchunks))
     output_dir = os.path.dirname(output_json)
     CU.write_fasta_chunks_to_file(output_json, fasta_file, max_nchunks, output_dir, "scattered-fasta", "fasta")
     return 0
@@ -51,9 +52,9 @@ def _args_run_to_random_fasta_file(args):
 
 
 def _rtc_runner(rtc):
-    max_nchunks = rtc.task.options['pbsmrtpipe.task_options.dev_scatter_max_nchunks']
+    # the chunk key isn't really something that can be tweaked here.
     chunk_key = '$chunk:fasta_id'
-    return run_main(rtc.task.input_files[0], rtc.task.output_files[0], max_nchunks, chunk_key)
+    return run_main(rtc.task.input_files[0], rtc.task.output_files[0], rtc.task.max_nchunks, chunk_key)
 
 
 def main(argv=sys.argv):

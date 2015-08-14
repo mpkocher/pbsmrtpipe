@@ -155,6 +155,7 @@ def __to_chunked_fastx_files(fastx_reader_klass, fastax_writer_klass, chunk_key,
 
     n = int(math.ceil(float(nrecords)) / max_total_nchunks)
 
+    log.info("Found {n} total records. Max total chunks {m}. Splitting into {x} chunks".format(n=nrecords, x=n, m=max_total_nchunks))
     nchunks = 0
     with fastx_reader_klass(fastx_path) as r:
         it = iter(r)
