@@ -108,13 +108,12 @@ def write_report_to_html(report, output_file):
     return 0
 
 
-def write_report_with_html_extras(report, output_file):
+def write_report_with_html_extras(report, output_file, extras_dir):
     """Write the css/js/html to output file directory"""
     d = _get_js_css_root_dir()
 
-    root_output_dir = os.path.dirname(output_file)
     _ = write_report_to_html(report, output_file)
-    copy_js_css(d, root_output_dir)
+    copy_js_css(d, extras_dir)
     return 0
 
 

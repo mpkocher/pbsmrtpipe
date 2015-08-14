@@ -5,6 +5,7 @@ import os
 import collections
 
 # legacy. imports into this module.
+import uuid
 from pbcommand.models import FileType
 from pbcommand.models.common import REGISTERED_FILE_TYPES
 
@@ -310,8 +311,7 @@ class Task(object):
     # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
 
     def __init__(self, task_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
-        # FIXME. Make this globaly unique. It's currently the task_type_id
-        # globally unique id str
+        self.uuid = str(uuid.uuid4())
         self.task_id = task_id
         # the tool_contract id, or id defined in the python Task
         self.task_type_id = task_id
@@ -347,12 +347,13 @@ class Task(object):
                   p=len(self.input_files),
                   o=len(self.output_files),
                   r=len(self.resources),
-                  n=self.nproc)
+                  n=self.nproc, uuid=self.uuid)
         # changing this so to_dot works
         return "{k} id {i} inputs {p} outputs {o} resources {r} nproc {n} ".format(**_d)
 
     def to_dict(self):
         return dict(task_id=self.task_id,
+                    uuid=self.uuid,
                     task_type_id=self.task_type_id,
                     input_files=self.input_files,
                     output_files=self.output_files,

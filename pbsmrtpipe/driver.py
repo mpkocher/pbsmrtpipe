@@ -400,8 +400,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             is_completed = bg.is_workflow_complete()
             has_task_running = B.has_running_task(bg)
 
-            if not is_completed:
-                if not has_task_running:
+            if not has_task_running:
+                if not is_completed:
                     if not B.has_task_in_states(bg, TaskStates.RUNNABLE_STATES()):
                         if not B.has_next_runnable_task(bg):
                             msg = "Unable to find runnable task or any tasks running and workflow is NOT completed."
