@@ -23,6 +23,7 @@ class Constants(object):
     ENTRY_BAM_ALIGNMENT = to_entry("eid_bam_alignment")
     ENTRY_DS_HDF = to_entry("eid_hdfsubread")
     ENTRY_DS_SUBREAD = to_entry("eid_subread")
+    ENTRY_DS_ALIGN = to_entry("eid_alignment")
 
 
 @register_pipeline(to_pipeline_ns("sa3_fetch"), "RS Movie to Subread DataSet")
@@ -201,6 +202,49 @@ def rs_modification_and_motif_analysis_1():
     # XXX this is not currently used
     #_add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'motif_maker.tasks.reprocess:1')) # CSV
     _add(('pbsmrtpipe.pipelines.ds_modification_detection:motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1'))  # motifs CSV
+    _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.reprocess:2'))
+
+    # MK Note. Pat did something odd here that I can't remember the specifics
+    _add(('motif_maker.tasks.reprocess:0', 'pbreports.tasks.motifs_report:0'))
+    _add(('motif_maker.tasks.find_motifs:0', 'pbreports.tasks.motifs_report:1'))
+
+    return bs
+
+@register_pipeline(to_pipeline_ns("pb_modification_detection"), 'SA3 Internal Modification Analysis')
+def pb_modification_analysis_1():
+    """
+    Internal base modification analysis pipeline, starting from an existing
+    AlignmentSet
+    """
+    bs = []
+    _add = bs.append
+
+    # AlignmentSet, ReferenceSet
+    _add((Constants.ENTRY_DS_ALIGN, "kinetics_tools.tasks.ipd_summary:0"))
+    _add((Constants.ENTRY_DS_REF, 'kinetics_tools.tasks.ipd_summary:1'))
+
+    _add(('kinetics_tools.tasks.ipd_summary:1', 'pbreports.tasks.modifications_report:0'))
+
+    return bs
+
+@register_pipeline(to_pipeline_ns("pb_modification_motif_analysis"), 'SA3 Internal Modification and Motif Analysis')
+def pb_modification_and_motif_analysis_1():
+    """
+    Internal base modification and motif analysis pipeline, starting from an
+    existing AlignmentSet
+    """
+    bs = []
+    _add = bs.append
+
+    # Find Motifs. AlignmentSet, ReferenceSet
+    _add(('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0'))  # basemods GFF
+    _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.find_motifs:1'))
+
+    # Make Motifs GFF: ipdSummary GFF, ipdSummary CSV, MotifMaker CSV, REF
+    _add(('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.reprocess:0'))  # GFF
+    # XXX this is not currently used
+    #_add(('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'motif_maker.tasks.reprocess:1')) # CSV
+    _add(('pbsmrtpipe.pipelines.pb_modification_detection:motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1'))  # motifs CSV
     _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.reprocess:2'))
 
     # MK Note. Pat did something odd here that I can't remember the specifics
