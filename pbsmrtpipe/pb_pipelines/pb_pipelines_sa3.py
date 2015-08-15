@@ -97,24 +97,27 @@ def ds_genomic_consenus():
     """Run Genomic Consensus"""
     # Call consensus
     b1 = [(Constants.ENTRY_DS_REF, "genomic_consensus.tasks.variantcaller:1"),
-          (Constants.ENTRY_BAM_ALIGNMENT, "genomic_consensus.tasks.variantcaller:0")]
+          (Constants.ENTRY_DS_ALIGN, "genomic_consensus.tasks.variantcaller:0")]
 
     # Need to have a better model to avoid copy any paste. This is defined in the
     # fat resquencing pipeline.
     # Summarize Coverage
-    b2 = [(Constants.ENTRY_BAM_ALIGNMENT, "pbreports.tasks.summarize_coverage:0"),
+    b2 = [(Constants.ENTRY_DS_ALIGN, "pbreports.tasks.summarize_coverage:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage:1")]
 
+    b3 = [("pbreports.tasks.summarize_coverage:0", "genomic_consensus.tasks.summarize_consensus:0"), 
+          ("genomic_consensus.tasks.variantcaller:0", "genomic_consensus.tasks.summarize_consensus:1")]
+
     # Consensus Reports - variants
-    b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
-          ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.variants_report:1"),
+    b4 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.variants_report:0"),
+          ("genomic_consensus.tasks.summarize_consensus:0", "pbreports.tasks.variants_report:1"),
           ("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.variants_report:2")]
 
     # Consensus Reports - top variants
-    b4 = [("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
+    b5 = [("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
           (Constants.ENTRY_DS_REF, "pbreports.tasks.top_variants:1")]
 
-    return b1 + b2 + b3 + b4
+    return b1 + b2 + b3 + b4 + b5
 
 
 @register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing")
