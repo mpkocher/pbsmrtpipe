@@ -7,8 +7,8 @@ from xml.etree.cElementTree import ElementTree
 import collections
 import json
 import itertools
-from avro.datafile import DataFileWriter
-from avro.io import DatumWriter
+from avro.datafile import DataFileWriter, DataFileReader
+from avro.io import DatumWriter, DatumReader
 
 import jsonschema
 from pbcommand.resolver import (ToolContractError,
@@ -686,11 +686,19 @@ def pipeline_template_to_dict(pipeline, rtasks):
 def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
 
     d = pipeline_template_to_dict(pipeline, rtasks_d)
-    with open(output_file, 'w') as f:
-        writer = DataFileWriter(f, DatumWriter(), PT_SCHEMA)
+    f = open(output_file, 'w')
+    with DataFileWriter(f, DatumWriter(), PT_SCHEMA) as writer:
         writer.append(d)
 
     return d
+
+
+def load_pipeline_template_from_avro(path):
+    f = open(path, 'r')
+    with DataFileReader(f, DatumReader()) as reader:
+        p = reader.next()
+
+    return p
 
 
 def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
