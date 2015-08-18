@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     TOOL_ID = "pbsmrtpipe.tasks.gather_csv"
-    CHUNK_KEY = "$chunk:csv_id"
+    CHUNK_KEY = "$chunk.csv_id"
     VERSION = "0.1.0"
     DRIVER = "python -m pbsmrtpipe.tools_dev.gather_csv --resolved-tool-contract "
     OPT_CHUNK_KEY = 'pbsmrtpipe.task_options.gather_csv_chunk_key'

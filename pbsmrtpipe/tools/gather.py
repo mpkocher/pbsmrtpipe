@@ -11,7 +11,8 @@ from pbcommand.cli import get_default_argparser
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
 from pbcore.io.GffIO import GffReader, GffWriter
-from pbcore.io import SubreadSet, ContigSet, AlignmentSet
+from pbcore.io import (SubreadSet, ContigSet, AlignmentSet, ConsensusReadSet,
+                       ConsensusAlignmentSet)
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -176,7 +177,7 @@ def gather_contigset(input_files, output_file, new_resource_file=None,
     return output_file
 
 
-def gather_subreadset(input_files, output_file, skip_empty=True):
+def __gather_readset(dataset_type, input_files, output_file, skip_empty=True):
     """
     :param input_files: List of file paths
     :param output_file: File Path
@@ -186,24 +187,15 @@ def gather_subreadset(input_files, output_file, skip_empty=True):
 
     :rtype: str
     """
-    tbr = SubreadSet(*input_files)
+    tbr = dataset_type(*input_files)
     tbr.write(output_file)
     return output_file
 
 
-def gather_alignmentset(input_files, output_file, skip_empty=True):
-    """
-    :param input_files: List of file paths
-    :param output_file: File Path
-    :param skip_empty: Ignore empty files (doesn't do much yet)
-
-    :return: Output file
-
-    :rtype: str
-    """
-    tbr = AlignmentSet(*input_files)
-    tbr.write(output_file)
-    return output_file
+gather_subreadset = P(__gather_readset, SubreadSet)
+gather_alignmentset = P(__gather_readset, AlignmentSet)
+gather_ccsset = P(__gather_readset, ConsensusReadSet)
+gather_ccs_alignmentset = P(__gather_readset, ConsensusAlignmentSet)
 
 
 def __add_chunk_key_option(default_chunk_key):
@@ -220,6 +212,9 @@ add_chunk_key_gff = __add_chunk_key_option('$chunk.gff_id')
 add_chunk_key_fofn = __add_chunk_key_option('$chunk.fofn_id')
 add_chunk_key_subreadset = __add_chunk_key_option('$chunk.subreadset_id')
 add_chunk_key_alignmentset = __add_chunk_key_option('$chunk.alignmentset_id')
+add_chunk_key_ccsset = __add_chunk_key_option('$chunk.ccsset_id')
+add_chunk_key_ccs_alignmentset = __add_chunk_key_option(
+    '$chunk.ccs_alignmentset_id')
 # TODO: change this to contigset_id once quiver emits contigsets
 add_chunk_key_contigset = __add_chunk_key_option('$chunk.fasta_id')
 
@@ -248,13 +243,20 @@ _gather_fasta_options = __add_gather_options("Output Fasta file", "Chunk input J
 _gather_gff_options = __add_gather_options("Output Fasta file",
                                            "Chunk input JSON file",
                                            add_chunk_key_gff)
-_gather_fofn_options = __add_gather_options("Output Fofn file", "Chunk input JSON file", add_chunk_key_fofn)
+_gather_fofn_options = __add_gather_options(
+    "Output Fofn file", "Chunk input JSON file", add_chunk_key_fofn)
 _gather_subreadset_options = __add_gather_options("Output SubreadSet XML file",
                                                   "Chunk input JSON file",
                                                   add_chunk_key_subreadset)
+_gather_ccsset_options = __add_gather_options("Output ConsensusReadSet XML file",
+                                              "Chunk input JSON file",
+                                              add_chunk_key_ccsset)
 _gather_alignmentset_options = __add_gather_options("Output AlignmentSet XML file",
                                                     "Chunk input JSON file",
                                                     add_chunk_key_alignmentset)
+_gather_ccs_alignmentset_options = __add_gather_options("Output ConsensusAlignmentSet XML file",
+                                                        "Chunk input JSON file",
+                                                        add_chunk_key_ccs_alignmentset)
 _gather_contigset_options = __add_gather_options("Output ContigSet XML file",
                                                  "Chunk input JSON file",
                                                  add_chunk_key_contigset)
@@ -281,13 +283,17 @@ def __rtc_gather_runner(func, rtc):
 def __args_gather_runner(func, args):
     return __gather_runner(func, args.chunk_json, args.output, args.chunk_key)
 
-# These make assumptions about the CLI argparser args labels (e.g., args.chunk_key)
+# These make assumptions about the CLI argparser args labels (e.g.,
+# args.chunk_key)
 _args_runner_gather_fasta = P(__args_gather_runner, gather_fasta)
 _args_runner_gather_gff = P(__args_gather_runner, gather_gff)
 _args_runner_gather_fastq = P(__args_gather_runner, gather_fastq)
 _args_runner_gather_fofn = P(__args_gather_runner, gather_fofn)
 _args_runner_gather_subreadset = P(__args_gather_runner, gather_subreadset)
 _args_runner_gather_alignmentset = P(__args_gather_runner, gather_alignmentset)
+_args_runner_gather_ccsset = P(__args_gather_runner, gather_ccsset)
+_args_runner_gather_ccs_alignmentset = P(
+    __args_gather_runner, gather_ccs_alignmentset)
 _args_runner_gather_contigset = P(__args_gather_runner, gather_contigset)
 _args_runner_gather_csv = P(__args_gather_runner, gather_csv)
 
@@ -299,6 +305,8 @@ run_main_gather_gff = P(__gather_runner, gather_gff)
 run_main_gather_alignmentset = P(__gather_runner, gather_alignmentset)
 run_main_gather_subreadset = P(__gather_runner, gather_subreadset)
 run_main_gather_contigset = P(__gather_runner, gather_contigset)
+run_main_gather_ccsset = P(__gather_runner, gather_ccsset)
+run_main_gather_ccs_alignmentset = P(__gather_runner, gather_ccs_alignmentset)
 
 
 def get_parser():
@@ -337,6 +345,15 @@ def get_parser():
     # AlignmentSet
     builder('alignmentset', "Merge AlignmentSet XMLs into a single file.",
             _gather_alignmentset_options, _args_runner_gather_alignmentset)
+
+    # ConsensusReadSet
+    builder('ccsset', "Merge ConsensusReadSet XMLs into a single file.",
+            _gather_ccsset_options, _args_runner_gather_ccsset)
+
+    # ConsensusAlignmentSet
+    builder('ccs_alignmentset',
+            "Merge ConsensusAlignmentSet XMLs into a single file.",
+            _gather_ccs_alignmentset_options, _args_runner_gather_ccs_alignmentset)
 
     # ContigSet
     builder('contigset', "Merge ContigSet XMLs into a single file.",

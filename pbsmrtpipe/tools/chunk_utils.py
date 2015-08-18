@@ -2,10 +2,12 @@ import os
 import logging
 import math
 import datetime
+import functools
 import csv
 
 from pbcore.io import (FastaWriter, FastaReader, FastqReader, FastqWriter,
-                       AlignmentSet, HdfSubreadSet, SubreadSet, ReferenceSet)
+                       AlignmentSet, HdfSubreadSet, SubreadSet, ReferenceSet,
+                       ConsensusReadSet)
 from pbsmrtpipe.legacy.input_xml import fofn_to_report
 
 from pbcommand.models import PipelineChunk
@@ -17,8 +19,9 @@ log = logging.getLogger(__name__)
 class Constants(object):
     CHUNK_KEY_HDFSET = "$chunk.hdfsubreadset_id"
     CHUNK_KEY_SUBSET = "$chunk.subreadset_id"
-    CHUNK_KEY_CCSSET = "$chunk.consensusreadset_id"
+    CHUNK_KEY_CCSSET = "$chunk.ccsset_id"
     CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
+    CHUNK_KEY_CCS_ALNSET = "$chunk.ccs_alignmentset_id"
     CHUNK_KEY_FASTA = "$chunk.fasta_id"
     CHUNK_KEY_FASTQ = "$chunk.fastq_id"
     CHUNK_KEY_FOFN = "$chunk.fofn_id"
@@ -256,6 +259,19 @@ def write_subreadset_chunks_to_file(chunk_file, subreadset_path,
     return 0
 
 
+def write_ccsset_chunks_to_file(chunk_file, ccsset_path,
+                                reference_path,
+                                max_total_chunks, dir_name,
+                                chunk_base_name, chunk_ext):
+    chunks = list(to_chunked_ccsset_files(ccsset_path,
+                                          reference_path,
+                                          max_total_chunks,
+                                          Constants.CHUNK_KEY_CCSSET,
+                                          dir_name, chunk_base_name,
+                                          chunk_ext))
+    write_chunks_to_json(chunks, chunk_file)
+    return 0
+
 def write_subreadset_zmw_chunks_to_file(chunk_file, subreadset_path,
                                         max_total_chunks,
                                         dir_name, chunk_base_name, chunk_ext):
@@ -271,10 +287,10 @@ def write_subreadset_zmw_chunks_to_file(chunk_file, subreadset_path,
     write_chunks_to_json(chunks, chunk_file)
     return 0
 
-
-def to_chunked_subreadset_files(subreadset_path, reference_path, max_total_nchunks,
-                                chunk_key, dir_name, base_name, ext):
-    dset = SubreadSet(subreadset_path, strict=True)
+def _to_chunked_dataset_files(dataset_type, dataset_path, reference_path,
+                              max_total_nchunks, chunk_key, dir_name,
+                              base_name, ext):
+    dset = dataset_type(dataset_path, strict=True)
     dset_chunks = dset.split(chunks=max_total_nchunks, ignoreSubDatasets=True)
     d = {}
 
@@ -290,6 +306,10 @@ def to_chunked_subreadset_files(subreadset_path, reference_path, max_total_nchun
         c = PipelineChunk(chunk_id, **d)
         yield c
 
+to_chunked_subreadset_files = functools.partial(_to_chunked_dataset_files,
+    SubreadSet)
+to_chunked_ccsset_files = functools.partial(_to_chunked_dataset_files,
+    ConsensusReadSet)
 
 def to_zmw_chunked_subreadset_files(subreadset_path, max_total_nchunks,
                                     chunk_key, dir_name, base_name, ext):

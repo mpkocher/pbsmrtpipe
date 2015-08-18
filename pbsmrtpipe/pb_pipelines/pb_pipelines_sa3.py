@@ -24,6 +24,7 @@ class Constants(object):
     ENTRY_DS_HDF = to_entry("eid_hdfsubread")
     ENTRY_DS_SUBREAD = to_entry("eid_subread")
     ENTRY_DS_ALIGN = to_entry("eid_alignment")
+    ENTRY_DS_CCS = to_entry("eid_ccs")
 
 
 def _core_align(subread_ds, reference_ds):
@@ -258,18 +259,31 @@ def _core_ccs(subread_ds):
 
 @register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads")
 def ds_ccs():
+    """
+    Basic ConsensusRead (CCS) pipeline, starting from subreads.
+    """
     return _core_ccs(Constants.ENTRY_DS_SUBREAD)
 
+def _core_ccs_align(ccs_ds):
+    # pbalign w/CCS input
+    b3 = [(ccs_ds, "pbalign.tasks.pbalign_ccs:0"),
+          (Constants.ENTRY_DS_REF, "pbalign.tasks.pbalign_ccs:1")]
+    # mapping_stats_report (CCS version)
+    b4 = [("pbalign.tasks.pbalign_ccs:0",
+           "pbreports.tasks.mapping_stats_ccs:0")]
+    return b3+b4
 
 @register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "SA3 Consensus Read Mapping")
 def ds_align_ccs():
+    """
+    ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
+    """
+    return _core_ccs_align("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
 
-    # Call blasr/pbalign
-    b3 = [("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0",
-           "pbalign.tasks.pbalign_ccs:0"),
-          (Constants.ENTRY_DS_REF, "pbalign.tasks.pbalign_ccs:1")]
-
-    # Mapping Report FIXME won't take CCS
-    b4 = [("pbalign.tasks.pbalign_ccs:0", "pbreports.tasks.mapping_stats_ccs:0")]
-
-    return b3 + b4
+@register_pipeline(to_pipeline_ns("pb_ccs_align"), "Internal Consensus Read Mapping")
+def pb_align_ccs():
+    """
+    Internal ConsensusRead (CCS) alignment pipeline, starting from an existing
+    ConsensusReadSet.
+    """
+    return _core_ccs_align(Constants.ENTRY_DS_CCS)
