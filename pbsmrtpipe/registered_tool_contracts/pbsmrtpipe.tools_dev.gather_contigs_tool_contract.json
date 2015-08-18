@@ -2,14 +2,14 @@
     "version": "0.1.0", 
     "driver": {
         "serialization": "json", 
-        "exe": "python -m pbsmrtpipe.tools_dev.gather_alignments --resolved-tool-contract ", 
+        "exe": "python -m pbsmrtpipe.tools_dev.gather_contigs --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "pbsmrtpipe.tasks.gather_contigset", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.gathered", 
         "resource_types": [], 
-        "description": "General Chunk Alignments Gather", 
+        "description": "General Chunk ContigSet Gather", 
         "schema_options": [], 
         "output_types": [
             {
@@ -20,11 +20,11 @@
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }
         ], 
-        "_comment": "Created by v0.2.6", 
-        "name": "Dev Alignments Gather", 
+        "_comment": "Created by v0.2.8", 
+        "name": "Dev ContigSet Gather", 
         "input_types": [
             {
-                "description": "Gathered CHUNK Json with AlignmentSet chunk key", 
+                "description": "Gathered CHUNK Json with ContigSet chunk key", 
                 "title": "GCHUNK Json", 
                 "id": "cjson_in", 
                 "file_type_id": "PacBio.FileTypes.CHUNK"

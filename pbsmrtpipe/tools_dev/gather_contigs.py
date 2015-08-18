@@ -14,20 +14,20 @@ class Constants(object):
     TOOL_ID = "pbsmrtpipe.tasks.gather_contigset"
     CHUNK_KEY = '$chunk.contigset_id'
     VERSION = "0.1.0"
-    DRIVER = "python -m pbsmrtpipe.tools_dev.gather_alignments --resolved-tool-contract "
+    DRIVER = "python -m pbsmrtpipe.tools_dev.gather_contigs --resolved-tool-contract "
     OPT_CHUNK_KEY = '$chunk.contigset_id'
 
 
 def get_parser():
     p = get_gather_pbparser(Constants.TOOL_ID,
                             Constants.VERSION,
-                            "Dev Alignments Gather",
-                            "General Chunk Alignments Gather",
+                            "Dev ContigSet Gather",
+                            "General Chunk ContigSet Gather",
                             Constants.DRIVER,
                             is_distributed=False)
 
     p.add_input_file_type(FileTypes.CHUNK, "cjson_in", "GCHUNK Json",
-                          "Gathered CHUNK Json with AlignmentSet chunk key")
+                          "Gathered CHUNK Json with ContigSet chunk key")
 
     p.add_output_file_type(FileTypes.DS_CONTIG,
                            "contigset",
@@ -37,7 +37,7 @@ def get_parser():
 
     p.arg_parser.add_str(Constants.OPT_CHUNK_KEY,
                          "chunk_key",
-                         "$chunk.gff_id",
+                         Constants.CHUNK_KEY,
                          "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
     return p
 
