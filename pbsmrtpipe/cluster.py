@@ -79,7 +79,7 @@ def load_cluster_templates_from_dir(cluster_model_dir):
     For example, /path/to/cluster_templates/my_sge
 
     :returns: A list of ClusterTemplate
-    :rtype: list[ClusterTemplate]
+    :rtype: ClusterTemplateRender
 
     FIXME this shouldn't be a public method
     """
@@ -87,7 +87,7 @@ def load_cluster_templates_from_dir(cluster_model_dir):
     t_name_to_file_name_dct = _get_cluster_files(cluster_model_dir)
     cluster_tmpls = [ClusterTemplate(name, _template_file_to_str(file_name)) for name, file_name in t_name_to_file_name_dct.iteritems()]
 
-    return cluster_tmpls
+    return ClusterTemplateRender(cluster_tmpls)
 
 
 def load_installed_cluster_templates_by_name(name):
@@ -96,7 +96,10 @@ def load_installed_cluster_templates_by_name(name):
 
 
 def load_installed_cluster_templates_by_module_name(module_name):
-    """Load cluster templates from a python module root. Example "pbsmrtpipe.cluster_templates.sge")"""
+    """Load cluster templates from a python module root. Example "pbsmrtpipe.cluster_templates.sge")
+
+    :rtype: ClusterTemplateRender
+    """
     m = importlib.import_module(module_name)
     name = os.path.basename(os.path.dirname(m.__file__))
     return load_installed_cluster_templates_by_name(name)
