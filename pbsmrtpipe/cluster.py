@@ -179,8 +179,7 @@ class ClusterTemplateRender(object):
 
     @staticmethod
     def from_dir(cluster_manager_dir):
-        cluster_templates = load_cluster_templates_from_dir(cluster_manager_dir)
-        return ClusterTemplateRender(cluster_templates)
+        return load_cluster_templates_from_dir(cluster_manager_dir)
 
     def render(self, template_name, shell_script, job_id, stdout=None, stderr=None, nproc=1, extras=None):
         """
