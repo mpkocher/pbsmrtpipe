@@ -61,3 +61,6 @@ notebooks/*.dot
 notebooks/A Live Demo Example 1.html
 notebooks/A Live Demo Example 2.html
 notebooks/A Live Demo Example 3.html
+
+# git-sym
+/.git-sym
