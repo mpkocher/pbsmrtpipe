@@ -11,4 +11,7 @@ install:
   - "pip install -r REQUIREMENTS.txt"
   - "pip install ."
 # command to run tests
-script: "nosetests --verbose --logging-conf=nose.cfg -c nose.cfg pbsmrtpipe/pb_tasks/tests pbsmrtpipe/tests"
+script:
+  - git submodule update --init
+  - git-sym/git-sym update
+  - "nosetests --verbose --logging-conf=nose.cfg -c nose.cfg pbsmrtpipe/pb_tasks/tests pbsmrtpipe/tests"
