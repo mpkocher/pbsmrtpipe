@@ -39,17 +39,15 @@ class TestCluster(unittest.TestCase):
         self.assertIsNotNone(template_dct)
 
     def test_load_cluster_templates(self):
-        cluster_tmpls = C.load_cluster_templates_from_dir(self.cluster_model_dir)
+        render = C.load_cluster_templates_from_dir(self.cluster_model_dir)
 
-        for cluster_tmpl in cluster_tmpls:
+        for cid, cluster_tmpl in render.cluster_templates.iteritems():
             self.assertTrue(isinstance(cluster_tmpl, ClusterTemplate))
             log.info(cluster_tmpl.name)
             log.info(cluster_tmpl.template_str)
 
     def test_render_cluster_templates(self):
-        cluster_tmpls = C.load_cluster_templates_from_dir(self.cluster_model_dir)
-
-        renderer = ClusterTemplateRender(cluster_tmpls)
+        renderer = C.load_cluster_templates_from_dir(self.cluster_model_dir)
         self.assertIsNotNone(renderer)
 
         template_name = "interactive"
