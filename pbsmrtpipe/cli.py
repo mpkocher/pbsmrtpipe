@@ -123,7 +123,7 @@ def pretty_bindings(bindings):
     s = "*" * 20
 
     outs = []
-    outs.append("Entry points : {n}".format(n=len(entry_points)))
+    outs.append("Entry points  : {n}".format(n=len(entry_points)))
     outs.append(s)
 
     for i, entry_point in enumerate(entry_points):
@@ -133,7 +133,7 @@ def pretty_bindings(bindings):
     pad = 4
 
     outs.append("")
-    outs.append("Bindings     : {n}".format(n=len(bindings)))
+    outs.append("Bindings      : {n}".format(n=len(bindings)))
     outs.append(s)
 
     for i, o in bindings:
@@ -173,7 +173,11 @@ def run_show_template_details(template_id, output_preset_xml):
         print "Pipeline id   : {i}".format(i=pipeline.idx)
         print "Pipeline name : {x}".format(x=pipeline.display_name)
         print "Description   : {x}".format(x=pipeline.description)
+        if pipeline.tags:
+            print "Tags          : {t} ".format(t=",".join(pipeline.tags))
+
         print pretty_bindings(pipeline.all_bindings)
+
         if isinstance(output_preset_xml, str):
             rtasks, rfiles, operators, pipelines = __dynamically_load_all()
             task_options = {}
