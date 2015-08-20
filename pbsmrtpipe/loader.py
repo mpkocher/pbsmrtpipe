@@ -36,7 +36,7 @@ def _load_all_tool_contracts_from(dir_name):
             tc = load_tool_contract_from(f)
             # Old layer to use MetaTask
             mtask = IO.tool_contract_to_meta_task_from_file(f)
-            mtask[mtask.task_id] = mtask
+            mtasks[mtask.task_id] = mtask
 
     return mtasks
 

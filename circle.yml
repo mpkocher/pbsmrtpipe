@@ -14,4 +14,6 @@ test:
     - git submodule update --init
     - git-sym/git-sym update
     - mkdir -p $CIRCLE_TEST_REPORTS
+    - make test-sanity
     - nosetests -s --verbose --with-xunit --xunit-file=$CIRCLE_TEST_REPORTS/nosetests.xml --logging-config nose.cfg pbsmrtpipe/tests/test_*.py
+    - make test-dev
