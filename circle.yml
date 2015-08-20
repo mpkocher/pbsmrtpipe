@@ -5,7 +5,7 @@ machine:
 dependencies:
   pre:
     - pip install cython
-    - pip instal -r PB_REQUIREMENTS.txt
+    - pip install -r PB_REQUIREMENTS.txt
     - pip install -r REQUIREMENTS.txt
     - pip install nose
 
