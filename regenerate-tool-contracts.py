@@ -13,7 +13,7 @@ from pbcommand.engine import run_cmd
 
 _EMIT = '--emit-tool-contract'
 TC_DIR = 'pbsmrtpipe/registered_tool_contracts'
-SA3_TC_DIR = 'pbsmrtpipe/pb_static_tasks'
+SA3_TC_DIR = 'pbsmrtpipe/registered_tool_contracts_sa3'
 TASKS_ROOT = 'pbsmrtpipe/tools_dev'
 
 PBCOMMAND_TCS = ('dev_txt_app',
