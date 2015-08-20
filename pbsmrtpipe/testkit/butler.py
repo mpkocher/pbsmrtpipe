@@ -102,7 +102,7 @@ def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debu
 
     force_distribute_str = ''
     if isinstance(force_distribute, bool):
-        m = {True: '--force-distribute', False: '--local-only'}
+        m = {True: '--force-distributed', False: '--local-only'}
         force_distribute_str = m[force_distribute]
 
     force_chunk_str = ''
@@ -112,7 +112,7 @@ def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debu
 
     _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str,
               f=force_distribute_str, c=force_chunk_str)
-    cmd = "{x} {c} {m} {d} {e} {p} {k} {f} --output-dir={o}"
+    cmd = "{x} {m} {c} {d} {e} {p} {k} {f} --output-dir={o}"
     return cmd.format(**_d)
 
 
