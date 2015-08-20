@@ -9,7 +9,7 @@ from pbsmrtpipe.models import RunnableTask
 import pbsmrtpipe.loader as L
 
 
-REGISTERED_TASKS = pbsmrtpipe.loader.load_all_installed_pb_tasks()
+REGISTERED_TASKS = pbsmrtpipe.loader.load_all_tool_contracts()
 REGISTERED_FILES = pbsmrtpipe.loader.load_all_registered_file_types()
 
 from base import TEST_DATA_DIR

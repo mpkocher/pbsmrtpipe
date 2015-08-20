@@ -8,8 +8,10 @@ import importlib
 import logging
 import sys
 import functools
+import warnings
 
-import pbsmrtpipe.models as M
+import pbsmrtpipe.constants as GlobalConstants
+from pbcommand.pb_io import load_tool_contract_from
 
 log = logging.getLogger(__name__)
 
@@ -22,50 +24,24 @@ _REGISTERED_PIPELINES = None
 _REGISTERED_OPERATORS = None
 
 
-def load_all_installed_pb_tasks():
-    return load_all_pb_tasks_from_python_module_name('pbsmrtpipe.pb_tasks')
+def _load_all_tool_contracts_from(dir_name):
+    # the old MetaTask model is making this
+    # a bit convoluted
+    import pbsmrtpipe.pb_io as IO
+    mtasks = {}
+    for file_name in os.listdir(dir_name):
+        if file_name.endswith('.json'):
+            f = os.path.join(dir_name, file_name)
+            # sanity check using pbcommand
+            tc = load_tool_contract_from(f)
+            # Old layer to use MetaTask
+            mtask = IO.tool_contract_to_meta_task_from_file(f)
+            mtask[mtask.task_id] = mtask
+
+    return mtasks
 
 
-def load_all_pb_tasks_from_python_module_name(name):
-    """
-    Load all python modules in pbsmrtpipe.task_module_di/
-
-    All files with prepended with '_' are assumed to be internal to the package and
-    are NOT loaded.
-    """
-    global _REGISTERED_TASKS  # cache-ing mechanism. this is not awesome
-
-    if _REGISTERED_TASKS is None:
-
-        m = importlib.import_module(name)
-
-        # this is kinda gross
-        d = os.path.dirname(m.__file__)
-
-        for x in os.listdir(d):
-            if x.endswith(".py"):
-                # Ignore are files with _my_file.py. These are assumed to be
-                # internal to the package
-                if not x.startswith('_'):
-                    b, _ = os.path.splitext(x)
-                    m_name = ".".join([name, b])
-                    try:
-                        _ = importlib.import_module(m_name)
-                    except ImportError:
-                        msg = "Failed in dynamically import '{x}' -> '{m}'".format(x=x, m=m_name)
-                        log.error(msg)
-                        raise
-                    except KeyError:
-                        msg = "Duplicate task id. '{x}' -> '{m}'".format(x=x, m=m_name)
-                        log.error(msg)
-                        raise
-
-        _REGISTERED_TASKS = M.REGISTERED_TASKS
-
-    return _REGISTERED_TASKS
-
-
-def _load_all_pb_static_tasks(module_name, registered_tasks_d, filter_filename_func, processing_func):
+def _load_all_tool_contracts(module_name, registered_tasks_d, filter_filename_func, processing_func):
 
     m = importlib.import_module(module_name)
 
@@ -90,7 +66,28 @@ def _load_all_pb_static_tasks(module_name, registered_tasks_d, filter_filename_f
     return _REGISTERED_STATIC_TASKS
 
 
-def load_all_pb_tool_contracts():
+def _get_env_path_if_defined(env_var):
+    """Get a Config env variable directory, or return None"""
+    path = os.getenv(env_var)
+    if path is not None:
+        if os.path.isdir(path):
+            return os.path.abspath(path)
+        else:
+            warnings.warn("Skipping loading contracts from {e} Enable to find {p}".format(e=env_var, p=path))
+
+    return None
+
+
+def load_all_tool_contracts():
+    """
+    This name is a bit of misnomer. This loads the TCs, then converts to MetaTask
+
+    Loads all Tool Contracts.
+
+    1. from pbsmrtpipe.registered_tool_contracts
+    2. from pbsmrtpipe.regiesteried_tool_contracts_sa3
+    3. from all json files in dir defined by by the env var PB_TC_DIR
+    """
 
     import pbsmrtpipe.pb_io as IO
 
@@ -105,13 +102,18 @@ def load_all_pb_tool_contracts():
 
     filter_contracts = functools.partial(filter_by, "tool_contract")
 
-    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.registered_tool_contracts_sa3", _REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
-    rtasks = _load_all_pb_static_tasks("pbsmrtpipe.registered_tool_contracts", rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_tool_contracts("pbsmrtpipe.registered_tool_contracts_sa3", _REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_tool_contracts("pbsmrtpipe.registered_tool_contracts", rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+
+    tc_path = _get_env_path_if_defined(GlobalConstants.ENV_TC_DIR)
+    if tc_path is not None:
+        tcs_mtasks = _load_all_tool_contracts_from(tc_path)
+        rtasks.update(tcs_mtasks)
 
     return rtasks
 
 
-def load_xml_chunk_operators_from_python_module_name(name):
+def _load_xml_chunk_operators_from_python_module_name(name):
     import pbsmrtpipe.pb_io as IO
     m = importlib.import_module(name)
     d = os.path.dirname(m.__file__)
@@ -130,7 +132,7 @@ def load_xml_chunk_operators_from_python_module_name(name):
 def load_all_installed_chunk_operators():
     global _REGISTERED_OPERATORS
     if _REGISTERED_OPERATORS is None:
-        _REGISTERED_OPERATORS = load_xml_chunk_operators_from_python_module_name("pbsmrtpipe.chunk_operators")
+        _REGISTERED_OPERATORS = _load_xml_chunk_operators_from_python_module_name("pbsmrtpipe.chunk_operators")
 
     return _REGISTERED_OPERATORS
 
@@ -165,21 +167,13 @@ def load_all_registered_file_types():
     return _REGISTERED_FILE_TYPES
 
 
-def load_all_task_types():
-    """Load python defined and TCI tasks"""
-    meta_tasks = load_all_installed_pb_tasks()
-    static_metatasks = load_all_pb_tool_contracts()
-    meta_tasks.update(static_metatasks)
-    return meta_tasks
-
-
 def load_all():
     """
     Load all resources and return a tuple of (MetaTasks, FileTypes, ChunkOperators, Pipelines)
 
     :note: This will only be loaded once and cached.
     """
-    meta_tasks = load_all_task_types()
+    meta_tasks = load_all_tool_contracts()
     operators = load_all_installed_chunk_operators()
     pipelines = load_all_installed_pipelines()
 
@@ -190,7 +184,7 @@ def load_all():
 def load_and_validate_chunk_operators():
     from .models import validate_operator
 
-    rtasks = load_all_task_types()
+    rtasks = load_all_tool_contracts()
     chunk_operators = load_all_installed_chunk_operators()
     for operator_id, chunk_operator in chunk_operators.iteritems():
         # this will raise if invalide

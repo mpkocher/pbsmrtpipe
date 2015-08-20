@@ -17,9 +17,6 @@ from pbsmrtpipe.exceptions import (MalformedChunkOperatorError)
 log = logging.getLogger(__name__)
 
 
-# Global Registry. These should only be accessed via pbsmrtpipe.loader !!!
-REGISTERED_TASKS = {}
-
 REGISTERED_PIPELINES = {}
 
 REGISTERED_CHUNK_OPERATORS = {}

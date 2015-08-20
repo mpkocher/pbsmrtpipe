@@ -68,7 +68,7 @@ class _TaskTestBase(unittest.TestCase):
     def setUp(self):
         import pbsmrtpipe.loader
 
-        self.RTASKS = pbsmrtpipe.loader.load_all_installed_pb_tasks()
+        self.RTASKS = pbsmrtpipe.loader.load_all_tool_contracts()
         self.temp_dir = tempfile.mkdtemp(suffix="_pbtest_job_dir")
 
     # def tearDown(self):

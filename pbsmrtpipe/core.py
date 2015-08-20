@@ -19,10 +19,8 @@ from pbsmrtpipe.constants import (ENTRY_PREFIX,
                                   RX_TASK_ID, RX_BINDING_PIPELINE_ENTRY,
                                   RX_BINDING_PIPELINE_TASK)
 
-from pbsmrtpipe.models import (MetaTask, MetaScatterTask,
-                               MetaGatherTask, Pipeline,
-                               REGISTERED_PIPELINES,
-                               REGISTERED_TASKS)
+from pbsmrtpipe.models import Pipeline, REGISTERED_PIPELINES
+
 from pbsmrtpipe.utils import validate_type_or_raise
 
 
@@ -228,18 +226,6 @@ def to_list_if_necessary(tuple_or_s):
     if isinstance(tuple_or_s, tuple):
         return list(tuple_or_s)
     return tuple_or_s
-
-
-def _register_or_raise(meta_task):
-    if meta_task.task_id in REGISTERED_TASKS:
-        msg = "Task id {i} is already registered.".format(i=meta_task.task_id)
-        log.warn(msg)
-        # raise KeyError("Task id {i} is already registered.".format(i=meta_task.task_id))
-    else:
-        REGISTERED_TASKS[meta_task.task_id] = meta_task
-        log.debug("Successfully registered task_id {i} {t}".format(i=meta_task.task_id, t=meta_task))
-
-    return meta_task
 
 
 def __validate_output_file_names(output_types, output_file_names):
