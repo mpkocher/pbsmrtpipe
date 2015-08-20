@@ -105,6 +105,48 @@ class PacBioOption(object):
         return dict(option_id=self.option_id, name=self.name, default=self.default, description=self.description)
 
 
+class IOBinding(object):
+    def __init__(self, task_type_id, index, instance_id):
+        self.task_type_id = task_type_id
+        self.index = index
+        self.instance_id = instance_id
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  t=self.task_type_id, i=self.index, n=self.instance_id)
+        return "<{k} {t} index:{i} instance:{n} >".format(**_d)
+
+    @staticmethod
+    def from_dict(d):
+        return IOBinding(d['task_type_id'], d['index'], d['instance_id'])
+
+    def to_dict(self):
+        return dict(task_type_id=self.task_type_id,
+                    index=self.index,
+                    instance_id=self.instance_id)
+
+
+class PipelineBinding(object):
+    def __init__(self, out_binding, in_binding):
+        """
+
+        :type out_binding: IOBinding
+        :type in_binding: IOBinding
+        """
+        self.in_binding = in_binding
+        self.out_binding = out_binding
+
+    def to_dict(self):
+        return {"in": self.in_binding.to_dict(),
+                "out": self.out_binding.to_dict()}
+
+    @staticmethod
+    def from_dict(d):
+        in_b = IOBinding.from_dict(d['in'])
+        out_b = IOBinding.from_dict(d['out'])
+        return PipelineBinding(out_b, in_b)
+
+
 class TaskStates(object):
     # Task Has been created
     CREATED = 'created'

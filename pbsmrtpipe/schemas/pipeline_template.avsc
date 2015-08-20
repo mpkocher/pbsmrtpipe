@@ -58,14 +58,17 @@
                 "name": "InBinding",
                 "fields": [
                   {
+                    "doc": "Task type (tool_contract_id)",
                     "name": "task_type_id",
                     "type": "string"
                   },
                   {
+                    "doc": "Positional index of Task Input",
                     "name": "index",
                     "type": "int"
                   },
                   {
+                    "doc": "Task Type instance id. A pipeline can have multiple instances of the same task type.",
                     "name": "instance_id",
                     "type": "int"
                   }
@@ -80,14 +83,17 @@
                 "name": "OutBinding",
                 "fields": [
                   {
+                    "doc": "Task type (tool_contract_id)",
                     "name": "task_type_id",
                     "type": "string"
                   },
                   {
+                    "doc": "Positional index of Task Output",
                     "name": "index",
                     "type": "int"
                   },
                   {
+                    "doc": "Task Type instance id. A pipeline can have multiple instances of the same task type.",
                     "name": "instance_id",
                     "type": "int"
                   }

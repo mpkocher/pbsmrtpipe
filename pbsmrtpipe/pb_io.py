@@ -16,17 +16,19 @@ from pbcommand.resolver import (ToolContractError,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
 
-from pbcommand.models import (ToolDriver, ResolvedToolContract,
-                              ResolvedToolContractTask, PipelineChunk,
-                              ToolContractTask, GatherToolContractTask,
-                              ScatterToolContractTask, ToolContract)
+from pbcommand.models import (PipelineChunk,
+                              ToolContractTask,
+                              GatherToolContractTask,
+                              ScatterToolContractTask)
+
 from pbcommand.models.common import REGISTERED_FILE_TYPES
 from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
 
 from xmlbuilder import XMLBuilder
 
 from pbsmrtpipe.core import validate_provided_file_types, validate_task_type
-from pbsmrtpipe.exceptions import PipelineTemplateIdNotFoundError
+from pbsmrtpipe.exceptions import (PipelineTemplateIdNotFoundError,
+                                   MalformedBindingStrError)
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.schema_opt_utils import crude_coerce_type_from_str
 import pbsmrtpipe.cluster as C
@@ -35,7 +37,8 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                GatherChunk, ScatterChunk, Scatter,
                                ToolContractMetaTask,
                                ScatterToolContractMetaTask,
-                               GatherToolContractMetaTask, PacBioOption)
+                               GatherToolContractMetaTask, PacBioOption,
+                               PipelineBinding, IOBinding)
 from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA
@@ -90,6 +93,59 @@ class Constants(object):
 REGISTERED_WORKFLOW_OPTIONS = {}
 # {option_id: [validate_func, ..]}
 OPTION_VALIDATORS = collections.defaultdict(list)
+
+
+def _parse_task_from_binding_str(s):
+    """
+
+    Task id from task binding format from a simple format (no instance id)
+
+    pbsmrtpipe.tasks.input_xml_to_fofn:0
+
+    """
+    m = GlobalConstants.RX_BINDING_TASK.match(s)
+    if m is None:
+        raise MalformedBindingStrError("Binding '{b}' expected to match {x}.'".format(b=s, x=GlobalConstants.RX_BINDING_TASK.pattern))
+
+    namespace_, task_id_, in_out_index = m.groups()
+    task_id = ".".join([namespace_, 'tasks', task_id_])
+    return task_id, int(in_out_index)
+
+
+def _parse_task_from_advanced_binding_str(b):
+    """
+
+    Raw form455
+    pbsmrtpipe.tasks.task_id.0
+
+    Advanced form to specific multiple instances of task
+
+    pbsmrtpipe.tasks.input_xml_to_fofn:1:0
+
+    task_id:instance_id:in_out_index
+
+    :rtype: int
+
+    """
+    m = GlobalConstants.RX_BINDING_TASK_ADVANCED.match(b)
+    if m is None:
+        raise MalformedBindingStrError("Binding '{b}' expected to match {x}.'".format(b=b, x=GlobalConstants.RX_BINDING_TASK_ADVANCED.pattern))
+    else:
+        namespace_, task_id_, instance_id, in_out_index = m.groups()
+        task_id = ".".join([namespace_, 'tasks', task_id_])
+
+    return task_id, int(instance_id), int(in_out_index)
+
+
+def binding_str_to_task_id_and_instance_id(s):
+
+    try:
+        task_id, instance_id, in_out_index = _parse_task_from_advanced_binding_str(s)
+    except MalformedBindingStrError:
+        task_id, in_out_index = _parse_task_from_binding_str(s)
+        instance_id = 0
+
+    return task_id, instance_id, in_out_index
 
 
 def strip_entry_prefix(b):
@@ -647,13 +703,18 @@ def _to_entry_bindings(rtasks, a, b):
     return dict(file_type_id=etype, id=entry_id, name=name)
 
 
+def _to_pipeline_binding(s):
+    task_id, index, instance_id = binding_str_to_task_id_and_instance_id(s)
+    return IOBinding(task_id, index, instance_id)
+
+
 def pipeline_template_to_dict(pipeline, rtasks):
     """
     Convert and write the pipeline template to avro compatible dict
 
     :type pipeline: Pipeline
     """
-    version = "0.1.0"
+    version = "0.1.2"
     options = []
     task_pboptions = []
     joptions = _pipeline_to_task_options(rtasks, pipeline)
@@ -667,8 +728,8 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 raise e
 
     entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
-    tags = ["sa3", "dev"]
-    bindings = []
+    tags = ["sa3"]
+    bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
 
     desc = "Pipeline {i} " if pipeline.description is None else pipeline.description
 
@@ -676,7 +737,7 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 name=pipeline.display_name,
                 version=version,
                 entry_points=entry_points,
-                bindings=bindings,
+                bindings=[b.to_dict() for b in bindings],
                 tags=tags,
                 options=options,
                 task_options=[x.to_dict() for x in task_pboptions],
@@ -917,33 +978,6 @@ def tool_contract_to_meta_task_from_file(path):
     # FIXME
     max_chunks = 5
     return tool_contract_to_meta_task(tc, max_chunks)
-
-
-def _resolve_options(tool_contract, tool_options):
-    resolved_options = {}
-
-    # These probably exist somewhere else, feel free to replace:
-    type_map = {'integer': int,
-                'object': object,
-                'boolean': bool,
-                'number': (int, float),
-                'string': basestring}
-
-    # Get and Validate resolved value.
-    # TODO. None support should be removed.
-    for option in tool_contract.task.options:
-        for optid in option['required']:
-            exp_type = option['properties'][optid]['type']
-            value = tool_options.get(optid, option['properties'][optid]['default'])
-
-            if not isinstance(value, type_map[exp_type]):
-                raise ToolContractError("Incompatible option types. Supplied "
-                                        "{i}. Expected {t}".format(
-                                            i=type(value),
-                                            t=exp_type))
-            resolved_options[optid] = value
-
-    return resolved_options
 
 
 def write_tool_contract(tc, path):
