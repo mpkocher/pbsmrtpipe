@@ -6,10 +6,13 @@ import re
 
 ENV_PRESET = 'PB_SMRTPIPE_XML_PRESET'
 # Extra Directory for JSON Tool Contracts
-ENV_TC_DIR = "PB_TC_DIR"
+ENV_TC_DIR = "PB_TOOL_CONTRACT_DIR"
 
 # Extra Directory for JSON/Avro Pipeline Templates
-ENV_PT_DIR = "PB_PT_DIR"
+ENV_PT_DIR = "PB_PIPELINE_TEMPLATE_DIR"
+
+# Chunk Operators
+ENV_CHK_OPT_DIR = "PB_CHUNK_OPERATOR_DIR"
 
 
 DEEP_DEBUG = False

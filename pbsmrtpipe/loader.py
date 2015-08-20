@@ -10,16 +10,15 @@ import sys
 import functools
 import warnings
 
+from pbcommand.models.common import REGISTERED_FILE_TYPES
 import pbsmrtpipe.constants as GlobalConstants
 from pbcommand.pb_io import load_tool_contract_from
 
 log = logging.getLogger(__name__)
 
 # Loading Caches
-_REGISTERED_TASKS = None
-# Task define in json files
-_REGISTERED_STATIC_TASKS = None
-_REGISTERED_FILE_TYPES = None
+# ToolContracts that are converted to MetaTasks (old model)
+_REGISTERED_TOOL_CONTRACTS = None
 _REGISTERED_PIPELINES = None
 _REGISTERED_OPERATORS = None
 
@@ -63,7 +62,7 @@ def _load_all_tool_contracts(module_name, registered_tasks_d, filter_filename_fu
                 log.error(e.message)
                 raise
 
-    return _REGISTERED_STATIC_TASKS
+    return registered_tasks_d
 
 
 def _get_env_path_if_defined(env_var):
@@ -92,17 +91,17 @@ def load_all_tool_contracts():
     import pbsmrtpipe.pb_io as IO
 
     # this is gross.
-    global _REGISTERED_STATIC_TASKS
+    global _REGISTERED_TOOL_CONTRACTS
 
-    if _REGISTERED_STATIC_TASKS is None:
-        _REGISTERED_STATIC_TASKS = {}
+    if _REGISTERED_TOOL_CONTRACTS is None:
+        _REGISTERED_TOOL_CONTRACTS = {}
 
     def filter_by(name, path):
         return path.endswith(".json") and name in path
 
     filter_contracts = functools.partial(filter_by, "tool_contract")
 
-    rtasks = _load_all_tool_contracts("pbsmrtpipe.registered_tool_contracts_sa3", _REGISTERED_STATIC_TASKS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
+    rtasks = _load_all_tool_contracts("pbsmrtpipe.registered_tool_contracts_sa3", _REGISTERED_TOOL_CONTRACTS, filter_contracts, IO.tool_contract_to_meta_task_from_file)
     rtasks = _load_all_tool_contracts("pbsmrtpipe.registered_tool_contracts", rtasks, filter_contracts, IO.tool_contract_to_meta_task_from_file)
 
     tc_path = _get_env_path_if_defined(GlobalConstants.ENV_TC_DIR)
@@ -137,7 +136,7 @@ def load_all_installed_chunk_operators():
     return _REGISTERED_OPERATORS
 
 
-def load_pipelines_from_python_module_name(name):
+def _load_pipelines_from_python_module_name(name):
     # FIXME This is terrible form. Need to update the loading to be configurable to
     # dynamically load pipelines
     # it's a dict and sometimes is a list of registered resources
@@ -155,16 +154,11 @@ def load_pipelines_from_python_module_name(name):
 
 
 def load_all_installed_pipelines():
-    # FIXME
-    return load_pipelines_from_python_module_name("")
+    return _load_pipelines_from_python_module_name("")
 
 
 def load_all_registered_file_types():
-    global _REGISTERED_FILE_TYPES
-    if _REGISTERED_FILE_TYPES is None:
-        from pbsmrtpipe.models import REGISTERED_FILE_TYPES
-        _REGISTERED_FILE_TYPES = REGISTERED_FILE_TYPES
-    return _REGISTERED_FILE_TYPES
+    return REGISTERED_FILE_TYPES
 
 
 def load_all():
@@ -187,5 +181,5 @@ def load_and_validate_chunk_operators():
     rtasks = load_all_tool_contracts()
     chunk_operators = load_all_installed_chunk_operators()
     for operator_id, chunk_operator in chunk_operators.iteritems():
-        # this will raise if invalide
+        # this will raise if invalid
         validate_operator(chunk_operator, rtasks)
