@@ -136,7 +136,7 @@ def run_butler(butler, test_cases, output_xml,
         setup_log(log, level=level, file_name=log_file)
 
     # log.debug(pprint.pformat(butler.__dict__))
-    slog.info("Running butler with id {i}".format(i=butler.job_id))
+    slog.info("Running butler with test id {i}".format(i=butler.job_id))
     slog.info("Running cmd '{c}'".format(c=cmd))
 
     def _to_p(file_name):
