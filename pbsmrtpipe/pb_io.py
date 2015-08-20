@@ -26,7 +26,7 @@ from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
 
 from xmlbuilder import XMLBuilder
 
-from pbsmrtpipe.core import validate_provided_file_types, validate_task_type
+from pbsmrtpipe.validators import validate_provided_file_types, validate_task_type
 from pbsmrtpipe.exceptions import (PipelineTemplateIdNotFoundError,
                                    MalformedBindingStrError)
 import pbsmrtpipe.schema_opt_utils as OP

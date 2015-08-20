@@ -77,7 +77,7 @@ def _core_gc_plus(alignment_ds, reference_ds):
     return b1 + b2 + b3 + b4 + b5
 
 
-@register_pipeline(to_pipeline_ns("sa3_fetch"), "RS Movie to Subread DataSet")
+@register_pipeline(to_pipeline_ns("sa3_fetch"), "RS Movie to Subread DataSet", "0.1.0", tags=("convert", ))
 def sa3_fetch():
     """
     SA3 Convert RS movie metadata XML to Subread DataSet XML
@@ -91,7 +91,7 @@ def sa3_fetch():
     return b1 + b2
 
 
-@register_pipeline(to_pipeline_ns("sa3_align"), "SA3 RS movie Align")
+@register_pipeline(to_pipeline_ns("sa3_align"), "SA3 RS movie Align", "0.1.0", tags=("mapping", ))
 def sa3_align():
     """
     SA3 Convert RS movie XML to Alignment DataSet XML
@@ -107,12 +107,12 @@ def sa3_align():
     return b1 + b2 + bxs
 
 
-@register_pipeline(to_pipeline_ns("sa3_resequencing"), "SA3 RS movie Resequencing")
+@register_pipeline(to_pipeline_ns("sa3_resequencing"), "SA3 RS movie Resequencing", "0.1.0", tags=("mapping", "consensus"))
 def sa3_resequencing():
     return _core_gc("pbsmrtpipe.pipelines.sa3_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_hdfsubread_to_subread"), "Convert Hdf SubreadSet to SubreadSet")
+@register_pipeline(to_pipeline_ns("sa3_hdfsubread_to_subread"), "Convert Hdf SubreadSet to SubreadSet", "0.1.0", tags=("convert", ))
 def hdf_subread_converter():
 
     b2 = [(Constants.ENTRY_DS_HDF, "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
@@ -120,24 +120,24 @@ def hdf_subread_converter():
     return b2
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_align"), "SA3 SubreadSet Mapping")
+@register_pipeline(to_pipeline_ns("sa3_ds_align"), "SA3 SubreadSet Mapping", "0.1.0", tags=("mapping", ))
 def ds_align():
     return _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "SA3 Genomic Consensus")
+@register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "SA3 Genomic Consensus", "0.1.0")
 def ds_genomic_consenus():
     """Run Genomic Consensus"""
     return _core_gc_plus(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing")
+@register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing", "0.1.0")
 def ds_resequencing():
     """Core Resequencing Pipeline"""
     return _core_gc("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SA3 SubreadSet Resequencing With GC Extras and Reports")
+@register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SA3 SubreadSet Resequencing With GC Extras and Reports", "0.1.0")
 def ds_fat_resequencing():
     """DS RS + GC extras and Reports"""
 
@@ -156,7 +156,7 @@ def _core_mod_detection(alignment_ds, reference_ds):
     return bs
 
 
-@register_pipeline(to_pipeline_ns("ds_modification_detection"), 'SA3 Modification Detection')
+@register_pipeline(to_pipeline_ns("ds_modification_detection"), 'SA3 Modification Detection', "0.1.0", tags=("modification-detection", ))
 def rs_modification_detection_1():
     """RS Modification Detection"""
     return _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
@@ -183,7 +183,7 @@ def _core_motif_analysis(ipd_gff, motif_gff, reference_ds):
     return bs
 
 
-@register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis')
+@register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ))
 def rs_modification_and_motif_analysis_1():
     """Pacbio Official Modification and Motif Analysis Pipeline
 
@@ -213,7 +213,7 @@ def rs_modification_and_motif_analysis_1():
                                 Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("pb_modification_detection"), 'SA3 Internal Modification Analysis')
+@register_pipeline(to_pipeline_ns("pb_modification_detection"), 'SA3 Internal Modification Analysis', "0.1.0", tags=("mapping", ))
 def pb_modification_analysis_1():
     """
     Internal base modification analysis pipeline, starting from an existing
@@ -222,7 +222,7 @@ def pb_modification_analysis_1():
     return _core_mod_detection(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("pb_modification_motif_analysis"), 'SA3 Internal Modification and Motif Analysis')
+@register_pipeline(to_pipeline_ns("pb_modification_motif_analysis"), 'SA3 Internal Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ))
 def pb_modification_and_motif_analysis_1():
     """
     Internal base modification and motif analysis pipeline, starting from an
@@ -233,7 +233,7 @@ def pb_modification_and_motif_analysis_1():
                                 Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_sat"), 'SA3 Site Acceptance Test')
+@register_pipeline(to_pipeline_ns("sa3_sat"), 'SA3 Site Acceptance Test', "0.1.0", tags=("sat", ))
 def rs_site_acceptance_test_1():
     """Site Acceptance Test"""
 
@@ -257,7 +257,7 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5 + b6
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads")
+@register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads", "0.1.0", tags=("ccs", ))
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
@@ -273,14 +273,16 @@ def _core_ccs_align(ccs_ds):
            "pbreports.tasks.mapping_stats_ccs:0")]
     return b3+b4
 
-@register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "SA3 Consensus Read Mapping")
+
+@register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "SA3 Consensus Read Mapping", "0.1.0", tags=("mapping", ))
 def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
     """
     return _core_ccs_align("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
 
-@register_pipeline(to_pipeline_ns("pb_ccs_align"), "Internal Consensus Read Mapping")
+
+@register_pipeline(to_pipeline_ns("pb_ccs_align"), "Internal Consensus Read Mapping", "0.1.0", tags=("mapping", ))
 def pb_align_ccs():
     """
     Internal ConsensusRead (CCS) alignment pipeline, starting from an existing

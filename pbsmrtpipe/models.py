@@ -519,14 +519,17 @@ class RunnableTask(object):
 
 class Pipeline(object):
 
-    def __init__(self, idx, display_name, description, bindings, entry_bindings, parent_pipeline_ids=None):
+    def __init__(self, idx, display_name, version, description, bindings, entry_bindings, parent_pipeline_ids=None, tags=()):
         self.idx = idx
+        self.version = version
         self.display_name = display_name
         self.description = description
         # List of [(a, b), ...]
         self.bindings = bindings
         # List of [(a, b), ...]
         self.entry_bindings = entry_bindings
+        # list of strings
+        self.tags = tags
         if parent_pipeline_ids is None:
             self.parent_pipeline_ids = []
         else:
@@ -557,6 +560,8 @@ class Pipeline(object):
         print "[Bindings]"
         _printer(self.bindings)
         print "[Parents]", self.parent_pipeline_ids
+        if self.tags:
+            print list(set(self.tags))
 
 
 ScatterChunk = namedtuple("ScatterChunk", "chunk_key task_input")
