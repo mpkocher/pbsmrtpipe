@@ -7,7 +7,7 @@ import shutil
 import getpass
 from pbsmrtpipe.engine import backticks
 
-from pbsmrtpipe.utils import which
+from pbcommand.utils import which
 
 TEST_DIR = os.path.dirname(__file__)
 TEST_DATA_DIR = os.path.join(TEST_DIR, 'data')
