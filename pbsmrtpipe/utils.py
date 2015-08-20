@@ -107,88 +107,10 @@ def log_timing(func):
     return wrapper
 
 
-def p4_changelist_to_version(major_version, perforce_str):
-    """
-    Util to get the version from a perforce tags (KCS).
-
-    :param major_version: (str, int, float)
-    :param perforce_str: "$Change: 12345$"
-    :return str: "1.1.1234"
-    """
-    rx = re.compile(r'Change: (\d+)')
-    match = rx.search(perforce_str)
-    if match is None:
-        v = 'UnknownVersion'
-    else:
-        v = match.group(1)
-    return '%s.%s' % (str(major_version), v)
-
-
-def validate_movie_file_name(file_name):
-    """Validate the movie file name
-
-    m120201_042231_42129_c100275262550000001523007907041260_s1_p0.bas.h5
-    m130715_185638_SMRT1_c000000062559900001500000112311501_s1_p0
-
-    multipart files:
-
-    m130306_023456_42129_c100422252550000001523053002121396_s1_p0.2.bax.h5
-    m130306_023456_42129_c100422252550000001523053002121396_s1_p0.1.bax.h5
-    m130306_023456_42129_c100422252550000001523053002121396_s1_p0.3.bax.h5
-    """
-    bas_ext = '.bas.h5'
-    bax_ext = '.bax.h5'
-    supported_exts = [bas_ext, bax_ext]
-
-    if not (file_name.endswith(bas_ext) or file_name.endswith(bax_ext)):
-        raise ValueError("Unsupported file extension for '{f}'. Supported extensions {s}".format(f=file_name, s=supported_exts))
-
-    bas_rx = re.compile(r'm\d{6}_\d{6}_[A-Za-z0-9]*_c\d{32}[0-7]_s\d_p0')
-    bax_rx = re.compile(r'm\d{6}_\d{6}_[A-Za-z0-9]*_c\d{32}[0-7]_s\d_p0\.[1-3]')
-    rxs = {'.bas': bas_rx, '.bax': bax_rx}
-
-    movie, ext = os.path.splitext(os.path.splitext(os.path.basename(file_name))[0])
-    rx = rxs[ext]
-    return rx.search(file_name) is not None
-
-
-def validate_movie_name_deco(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        validate_movie_file_name(*args, **kwargs)
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
 class StdOutStatusLogFilter(logging.Filter):
 
     def filter(self, record):
         return record.name.startswith(SLOG_PREFIX)
-
-
-def which(exe_str):
-    """walk the exe_str in PATH to get current exe_str.
-
-    If path is found, the full path is returned. Else it returns None.
-    """
-    paths = os.environ.get('PATH', None)
-    state = None
-
-    if paths is None:
-        # log warning
-        msg = "PATH env var is not defined."
-        log.error(msg)
-        return state
-
-    for path in paths.split(":"):
-        exe_path = os.path.join(path, exe_str)
-        # print exe_path
-        if os.path.exists(exe_path):
-            state = exe_path
-            break
-
-    return state
 
 
 def is_verified(path, max_nfs_refresh=3):

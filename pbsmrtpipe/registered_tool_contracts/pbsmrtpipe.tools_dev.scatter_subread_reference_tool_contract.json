@@ -12,10 +12,18 @@
         "description": "Scatter Subread DataSet", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 5, 
+                    "type": "integer", 
+                    "option_id": "pbsmrtpipe.task_options.scatter_subread_max_nchunks", 
+                    "name": "Max NChunks", 
+                    "description": "Maximum number of Chunks"
+                }, 
+                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_subread_max_nchunks", 
                 "required": [
                     "pbsmrtpipe.task_options.scatter_subread_max_nchunks"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.scatter_subread_max_nchunks": {
@@ -24,14 +32,21 @@
                         "description": "Maximum number of Chunks", 
                         "title": "Max NChunks"
                     }
-                }, 
-                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_subread_max_nchunks"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": "$chunk:fasta_id", 
+                    "type": "string", 
+                    "option_id": "pbsmrtpipe.task_options.scatter_subreadset_chunk_key", 
+                    "name": "Chunk key", 
+                    "description": "Chunk key to use (format $chunk:{chunk-key}"
+                }, 
+                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_subreadset_chunk_key", 
                 "required": [
                     "pbsmrtpipe.task_options.scatter_subreadset_chunk_key"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.scatter_subreadset_chunk_key": {
@@ -40,8 +55,7 @@
                         "description": "Chunk key to use (format $chunk:{chunk-key}", 
                         "title": "Chunk key"
                     }
-                }, 
-                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_subreadset_chunk_key"
+                }
             }
         ], 
         "output_types": [
@@ -53,7 +67,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.6", 
+        "_comment": "Created by v0.2.8", 
         "nchunks": "$max_nchunks", 
         "name": "SubreadSet scatter", 
         "input_types": [

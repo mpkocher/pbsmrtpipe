@@ -45,7 +45,8 @@ def run_bax_to_bam(input_file_name, output_file_name):
             shutil.move(file_name, output_file_name)
     return 0
 
-def run_bam_to_fastx(input_file_name, output_file_name, program_name):
+
+def run_bam_to_fastx(program_name, input_file_name, output_file_name):
     def _splitext(path):
         base, ext = os.path.splitext(path)
         if ext == ".gz":
@@ -59,8 +60,8 @@ def run_bam_to_fastx(input_file_name, output_file_name, program_name):
     ]
     logging.warn(" ".join(args))
     result = run_cmd(" ".join(args),
-        stdout_fh=sys.stdout,
-        stderr_fh=sys.stderr)
+                     stdout_fh=sys.stdout,
+                     stderr_fh=sys.stderr)
     if result.exit_code != 0:
         return result.exit_code
     else:
@@ -72,8 +73,9 @@ def run_bam_to_fastx(input_file_name, output_file_name, program_name):
     return 0
 
 
-run_bam_to_fasta = functools.partial(run_bam_to_fastx, program_name="bam2fasta")
-run_bam_to_fastq = functools.partial(run_bam_to_fastx, program_name="bam2fastq")
+run_bam_to_fasta = functools.partial(run_bam_to_fastx, "bam2fasta")
+run_bam_to_fastq = functools.partial(run_bam_to_fastx, "bam2fastq")
+
 
 @registry("h5_subreads_to_subread", "0.1.0",
           FileTypes.DS_SUBREADS_H5,

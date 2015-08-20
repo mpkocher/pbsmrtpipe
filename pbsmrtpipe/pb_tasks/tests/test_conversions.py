@@ -1,33 +1,23 @@
-import os
 import unittest
 import logging
 import os.path as op
 import subprocess
 
 from pbcommand.testkit import PbTestApp
+from pbcommand.utils import which
 
 log = logging.getLogger(__name__)
 
 DATA = op.join(op.dirname(__file__), "data")
 
-# XXX hacks to make sure tools are actually available
-HAVE_BAX2BAM = False
-try:
-    rc = subprocess.call(["bax2bam", "--version"])
-except OSError as e:
-    if e.errno != os.errno.ENOENT:
-        raise
-else:
-    HAVE_BAX2BAM = True
 
-HAVE_BAM2FASTX = False
-try:
-    rc = subprocess.call(["bam2fasta", "--help"])
-except OSError as e:
-    if e.errno != os.errno.ENOENT:
-        raise
-else:
-    HAVE_BAM2FASTX = True
+class Constants(object):
+    BAX2BAM = "bax2bam"
+    BAM2FASTA = "bam2fasta"
+
+# XXX hacks to make sure tools are actually available
+HAVE_BAX2BAM = which(Constants.BAX2BAM) is not None
+HAVE_BAM2FASTX = which(Constants.BAM2FASTA) is not None
 
 
 @unittest.skipUnless(HAVE_BAX2BAM, "Missing bax2bam")

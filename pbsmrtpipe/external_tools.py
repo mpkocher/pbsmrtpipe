@@ -9,7 +9,7 @@ import functools
 
 from pbsmrtpipe.exceptions import RequiredExeNotFoundError
 from pbsmrtpipe.engine import backticks
-from pbsmrtpipe.utils import which
+from pbcommand.utils import which
 
 log = logging.getLogger(__name__)
 

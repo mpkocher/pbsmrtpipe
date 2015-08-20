@@ -2,7 +2,8 @@ import os
 import unittest
 import logging
 
-from pbsmrtpipe.utils import (which, HTML_TEMPLATE_ENV)
+from pbcommand.utils import which
+from pbsmrtpipe.utils import HTML_TEMPLATE_ENV
 from base import TEST_DATA_DIR, SIV_TEST_DATA_DIR
 
 
@@ -21,8 +22,6 @@ class TestUtils(unittest.TestCase):
         exe = 'pythonz'
         path = which(exe)
         self.assertIsNone(path)
-
-
 
 
 class TestLoadJinjaTemplate(unittest.TestCase):

@@ -1,12 +1,12 @@
 {
     "driver": {
         "env": {}, 
-        "exe": "python -m pbcommand.cli.examples.dev_quick_hello_world  run-rtc  ", 
+        "exe": "python -m pbsmrtpipe.pb_tasks.dev  run-rtc  ", 
         "serialization": "json"
     }, 
     "tool_contract": {
         "_comment": "Created by v0.2.8", 
-        "description": "Quick tool dev_fastq2fasta pbcommand.tasks.dev_fastq2fasta", 
+        "description": "Quick tool dev_fastq_to_fasta pbsmrtpipe.tasks.dev_fastq_to_fasta", 
         "input_types": [
             {
                 "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file.fastq >", 
@@ -15,8 +15,8 @@
                 "title": "<FileType id=PacBio.FileTypes.Fastq name=file.fastq >"
             }
         ], 
-        "is_distributed": true, 
-        "name": "Tool dev_fastq2fasta", 
+        "is_distributed": false, 
+        "name": "Tool dev_fastq_to_fasta", 
         "nproc": 1, 
         "output_types": [
             {
@@ -30,8 +30,8 @@
         "resource_types": [], 
         "schema_options": [], 
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "tool_contract_id": "pbcommand.tasks.dev_fastq2fasta"
+        "tool_contract_id": "pbsmrtpipe.tasks.dev_fastq_to_fasta"
     }, 
-    "tool_contract_id": "pbcommand.tasks.dev_fastq2fasta", 
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_fastq_to_fasta", 
     "version": "0.1.0"
 }
