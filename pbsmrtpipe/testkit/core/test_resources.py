@@ -3,7 +3,6 @@ import logging
 
 from .base import TestBase
 from pbsmrtpipe.testkit.base import monkey_patch
-from pbsmrtpipe.testkit.validators import JsonValidator
 
 log = logging.getLogger(__name__)
 
