@@ -26,7 +26,7 @@ from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
                                    BindingFileTypeIncompatiblyError)
 from pbsmrtpipe.models import MetaScatterTask, TaskStates
 import pbsmrtpipe.constants as GlobalConstants
-from pbsmrtpipe.pb_io import strip_entry_prefix
+from pbsmrtpipe.pb_io import strip_entry_prefix, binding_str_to_task_id_and_instance_id
 from pbsmrtpipe.utils import validate_type_or_raise
 from pbsmrtpipe.graph.models import (TaskBindingNode,
                                      ConstantsNodes,
@@ -47,59 +47,6 @@ from pbsmrtpipe.graph.models import (TaskBindingNode,
 log = logging.getLogger(__name__)
 slog = logging.getLogger(GlobalConstants.SLOG_PREFIX + "__name__")
 #logging.basicConfig(level=logging.DEBUG)
-
-
-def _parse_task_from_binding_str(s):
-    """
-
-    Task id from task binding format from a simple format (no instance id)
-
-    pbsmrtpipe.tasks.input_xml_to_fofn:0
-
-    """
-    m = GlobalConstants.RX_BINDING_TASK.match(s)
-    if m is None:
-        raise MalformedBindingStrError("Binding '{b}' expected to match {x}.'".format(b=s, x=GlobalConstants.RX_BINDING_TASK.pattern))
-
-    namespace_, task_id_, in_out_index = m.groups()
-    task_id = ".".join([namespace_, 'tasks', task_id_])
-    return task_id, int(in_out_index)
-
-
-def _parse_task_from_advanced_binding_str(b):
-    """
-
-    Raw form455
-    pbsmrtpipe.tasks.task_id.0
-
-    Advanced form to specific multiple instances of task
-
-    pbsmrtpipe.tasks.input_xml_to_fofn:1:0
-
-    task_id:instance_id:in_out_index
-
-    :rtype: int
-
-    """
-    m = GlobalConstants.RX_BINDING_TASK_ADVANCED.match(b)
-    if m is None:
-        raise MalformedBindingStrError("Binding '{b}' expected to match {x}.'".format(b=b, x=GlobalConstants.RX_BINDING_TASK_ADVANCED.pattern))
-    else:
-        namespace_, task_id_, instance_id, in_out_index = m.groups()
-        task_id = ".".join([namespace_, 'tasks', task_id_])
-
-    return task_id, int(instance_id), int(in_out_index)
-
-
-def binding_str_to_task_id_and_instance_id(s):
-
-    try:
-        task_id, instance_id, in_out_index = _parse_task_from_advanced_binding_str(s)
-    except MalformedBindingStrError:
-        task_id, in_out_index = _parse_task_from_binding_str(s)
-        instance_id = 0
-
-    return task_id, instance_id, in_out_index
 
 
 class BindingsGraph(nx.DiGraph):

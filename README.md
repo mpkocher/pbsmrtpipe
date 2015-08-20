@@ -71,7 +71,7 @@ A pipeline template can be defined using a simple micro language to bind outputs
 
 See **pbsmrtpipe.pb_pipelines_dev** for examples.
 
-The **bindings** can be used to define.
+The **bindings** are a list of tuples that are used to define the mappings of the output of a task to the input of task.
 
 This will map the 0-th output of **pbsmrtpipe.tasks.dev_txt_to_fasta** to the first input of task **pbsmrtpipe.tasks.dev_filter_fasta**.
 

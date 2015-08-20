@@ -166,7 +166,7 @@ def run_show_template_details(template_id, output_preset_xml):
 
     rtasks, rfiles, operators, pipelines_d = __dynamically_load_all()
 
-    from pbsmrtpipe.graph.bgraph import binding_str_to_task_id_and_instance_id
+    from pbsmrtpipe.pb_io import binding_str_to_task_id_and_instance_id
 
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]

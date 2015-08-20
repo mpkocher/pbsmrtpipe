@@ -64,3 +64,5 @@ notebooks/A Live Demo Example 3.html
 
 # git-sym
 /.git-sym
+
+extras/pipeline-templates-avro/*

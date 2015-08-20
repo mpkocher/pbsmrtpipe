@@ -39,7 +39,7 @@ class TestBindingFormat(unittest.TestCase):
 
     def test_binding_str_format(self):
         for b, r in zip(self.bs, self.results):
-            r2 = B.binding_str_to_task_id_and_instance_id(b)
+            r2 = IO.binding_str_to_task_id_and_instance_id(b)
             self.assertEquals(r, r2)
 
 
