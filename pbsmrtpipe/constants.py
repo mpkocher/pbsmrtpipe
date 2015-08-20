@@ -2,21 +2,15 @@ import functools
 # This is where all the rdf imports should be. Other modules should import them
 # from here because of the plugin registry.
 import re
-import rdflib
-rdflib.plugin.register('sparql', rdflib.query.Processor,
-                       'rdfextras.sparql.processor', 'Processor')
-rdflib.plugin.register('sparql', rdflib.query.Result,
-                       'rdfextras.sparql.query', 'SPARQLQueryResult')
-from rdflib import Namespace
-from rdflib import ConjunctiveGraph as RdfGraph
-from rdflib import URIRef, Literal
-
-__all__ = ['LegacyConstants', 'Namespace', 'RdfGraph', 'URIRef', 'Literal']
 
 
 ENV_PRESET = 'PB_SMRTPIPE_XML_PRESET'
+# Extra Directory for JSON Tool Contracts
+ENV_TC_DIR = "PB_TC_DIR"
 
-SMRT_RDF_NAMESPACE = Namespace("pype://v0.1/")
+# Extra Directory for JSON/Avro Pipeline Templates
+ENV_PT_DIR = "PB_PT_DIR"
+
 
 DEEP_DEBUG = False
 

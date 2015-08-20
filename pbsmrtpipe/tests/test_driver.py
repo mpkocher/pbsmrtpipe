@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 def _get_registered_tasks_and_operators():
     import pbsmrtpipe.loader as L
-    return L.load_all_installed_pb_tasks(), L.load_all_installed_chunk_operators()
+    return L.load_all_tool_contracts(), L.load_all_installed_chunk_operators()
 
 
 def _get_registered_files():

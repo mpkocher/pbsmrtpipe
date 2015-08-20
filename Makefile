@@ -35,22 +35,20 @@ test-unit:
 test-pipelines:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/tests/test_pb_pipelines_sanity.py
 
+# This should probably go away
 test-tasks:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/test_*.py
 
 test-loader:
 	python -c "import pbsmrtpipe.loader as L; L.load_all()"
 
-test-load-tasks:
-	python -c "import pbsmrtpipe.loader as L; L.load_all_task_types()"
-
 test-contracts:
-	python -c "import pbsmrtpipe.loader as L; L.load_all_pb_tool_contracts()"
+	python -c "import pbsmrtpipe.loader as L; L.load_all()"
 
 test-chunk-operators:
 	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
 
-test-sanity: test-load-tasks test-tasks test-pipelines test-chunk-operators test-contracts test-loader
+test-sanity: test-contracts test-pipelines test-chunk-operators test-loader
 
 test-suite: test-sanity test-unit test-dev
 

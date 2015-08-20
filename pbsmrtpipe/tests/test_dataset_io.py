@@ -14,11 +14,15 @@ log = logging.getLogger(__name__)
 class DatasetFastaTest(unittest.TestCase):
 
     FILE_NAME = 'small.fasta'
-    NRECORDS = 1000
+    NRECORDS = 111
     FILE_TYPE = FileTypes.FASTA
 
+    def _write_mock_file(self, p):
+        M.write_random_fasta_records(p, nrecords=self.NRECORDS)
+
     def test_01(self):
-        p = get_data_file(self.FILE_NAME)
+        p = get_temp_file(self.FILE_NAME)
+        self._write_mock_file(p)
         ds_metadata = dispatch_metadata_resolver(self.FILE_TYPE, p)
         self.assertIsInstance(ds_metadata, DatasetMetadata)
         self.assertEquals(ds_metadata.nrecords, self.NRECORDS)
@@ -26,8 +30,11 @@ class DatasetFastaTest(unittest.TestCase):
 
 class DatasetFastqTest(DatasetFastaTest):
     FILE_NAME = 'small.fastq'
-    NRECORDS = 999
+    NRECORDS = 77
     FILE_TYPE = FileTypes.FASTQ
+
+    def _write_mock_file(self, p):
+        M.write_random_fastq_records(p, nrecords=self.NRECORDS)
 
 
 class DatasetFofnTest(unittest.TestCase):

@@ -4,7 +4,8 @@ import logging
 # this will load all the tasks modules
 
 import pbsmrtpipe.loader
-RTASKS = pbsmrtpipe.loader.load_all_installed_pb_tasks()
+
+RTASKS = pbsmrtpipe.loader.load_all_tool_contracts()
 
 import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.cluster as C
