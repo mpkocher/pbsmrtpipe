@@ -15,7 +15,8 @@ import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.driver as D
 import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import StdOutStatusLogFilter, setup_log, compose
-from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY)
+
+from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY, ENV_TC_DIR)
 
 log = logging.getLogger()
 slog = logging.getLogger('status.' + __file__)
@@ -57,11 +58,12 @@ def _add_task_id_option(p):
 
 
 def _validate_dir_or_create(p):
-    if os.path.exists(p):
-        return p
+    x = os.path.abspath(os.path.expanduser(p))
+    if os.path.exists(x):
+        return x
     else:
-        os.mkdir(p)
-        return p
+        os.mkdir(x)
+        return x
 
 
 def _add_output_dir_option(p):
@@ -349,12 +351,13 @@ def _validate_entry(e):
         x = e.split(":")
         if len(x) == 2:
             entry_id, path = x[0].strip(), x[1].strip()
-            if os.path.isfile(path):
-                return entry_id, os.path.abspath(path)
+            px = os.path.abspath(os.path.expanduser(path))
+            if os.path.isfile(px):
+                return entry_id, px
             else:
-                raise IOError("Unable to find path '{p}' for entry id '{i}'".format(p=path, i=entry_id))
+                raise IOError("Unable to find path '{p}' for entry id '{i}'".format(p=px, i=entry_id))
 
-    raise ValueError("Invalid entry id '{e}' format. Expected ('entry_idX:/path/to/file.txt')".format(e=e))
+    raise ValueError("Invalid entry id '{e}' format. Expected (' -e 'entry_idX:/path/to/file.txt')".format(e=e))
 
 
 def __validate_json_file(path):
@@ -457,7 +460,6 @@ def _args_task_runner(args):
     # the code expects entry: version
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
-    # FIXME. This needs to only be over written if it's provided
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
     return D.run_single_task(registered_file_types, registered_tasks, chunk_operators,
@@ -545,7 +547,10 @@ def get_parser():
     builder('show-template-details', "Show details about a specific Pipeline template.", add_show_template_details_parser_options, _args_run_show_template_details)
 
     # Show Tasks
-    builder('show-tasks', "Show completed list of Tasks by id", lambda x: x, _args_run_show_tasks)
+    show_tasks_desc = "Show completed list of Tasks by id. Use ENV {x} to define a " \
+                      "custom directory of tool contracts. These TCs will override " \
+                      "the installed TCs (e.g., {x}=/path/to/my-tc-dir/)".format(x=ENV_TC_DIR)
+    builder('show-tasks', show_tasks_desc, lambda x: x, _args_run_show_tasks)
 
     # Show Task id details
     desc_task_details = "Show Details of a particular task by id (e.g., 'pbsmrtpipe.tasks.filter_report'). Use 'show-tasks' to get a completed list of registered tasks."

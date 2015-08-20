@@ -59,10 +59,11 @@ def _validate_resource(func, resource):
     # Attempt to trigger an NFS metadata refresh
     _ = trigger_nfs_refresh(resource)
 
-    if func(resource):
-        return os.path.abspath(resource)
+    r = os.path.abspath(os.path.expanduser(resource))
+    if func(r):
+        return r
     else:
-        raise IOError("Unable to find resource '{f}'".format(f=resource))
+        raise IOError("Unable to find resource '{f}'".format(f=r))
 
 validate_file = functools.partial(_validate_resource, os.path.isfile)
 validate_dir = functools.partial(_validate_resource, os.path.isdir)
