@@ -5,7 +5,7 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.2.6", 
+        "_comment": "Created by v0.2.8", 
         "description": "Quick tool dev_txt_to_fofn pbsmrtpipe.tasks.dev_txt_to_fofn", 
         "input_types": [
             {
@@ -28,7 +28,7 @@
             }
         ], 
         "resource_types": [], 
-        "schema_options": {}, 
+        "schema_options": [], 
         "task_type": "pbsmrtpipe.task_types.standard", 
         "tool_contract_id": "pbsmrtpipe.tasks.dev_txt_to_fofn"
     }, 

@@ -1,12 +1,12 @@
 {
     "driver": {
         "env": {}, 
-        "exe": "python -m pbcommand.cli.examples.dev_quick_hello_world  run-rtc  ", 
+        "exe": "python -m pbsmrtpipe.pb_tasks.dev  run-rtc  ", 
         "serialization": "json"
     }, 
     "tool_contract": {
         "_comment": "Created by v0.2.8", 
-        "description": "Quick tool dev_qhello_world pbcommand.tasks.dev_qhello_world", 
+        "description": "Quick tool dev_filter_fasta pbsmrtpipe.tasks.dev_filter_fasta", 
         "input_types": [
             {
                 "description": "description for <FileType id=PacBio.FileTypes.Fasta name=file.fasta >", 
@@ -15,8 +15,8 @@
                 "title": "<FileType id=PacBio.FileTypes.Fasta name=file.fasta >"
             }
         ], 
-        "is_distributed": true, 
-        "name": "Tool dev_qhello_world", 
+        "is_distributed": false, 
+        "name": "Tool dev_filter_fasta", 
         "nproc": 1, 
         "output_types": [
             {
@@ -32,30 +32,30 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "pb_option": {
-                    "default": 1234, 
-                    "description": "Option alpha description", 
-                    "name": "Option alpha", 
-                    "option_id": "pbcommand.task_options.alpha", 
+                    "default": 50, 
+                    "description": "Option dev_fasta_min_length description", 
+                    "name": "Option dev_fasta_min_length", 
+                    "option_id": "pbsmrtpipe.task_options.dev_fasta_min_length", 
                     "type": "integer"
                 }, 
                 "properties": {
-                    "pbcommand.task_options.alpha": {
-                        "default": 1234, 
-                        "description": "Option alpha description", 
-                        "title": "Option alpha", 
+                    "pbsmrtpipe.task_options.dev_fasta_min_length": {
+                        "default": 50, 
+                        "description": "Option dev_fasta_min_length description", 
+                        "title": "Option dev_fasta_min_length", 
                         "type": "integer"
                     }
                 }, 
                 "required": [
-                    "pbcommand.task_options.alpha"
+                    "pbsmrtpipe.task_options.dev_fasta_min_length"
                 ], 
-                "title": "JSON Schema for pbcommand.task_options.alpha", 
+                "title": "JSON Schema for pbsmrtpipe.task_options.dev_fasta_min_length", 
                 "type": "object"
             }
         ], 
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "tool_contract_id": "pbcommand.tasks.dev_qhello_world"
+        "tool_contract_id": "pbsmrtpipe.tasks.dev_filter_fasta"
     }, 
-    "tool_contract_id": "pbcommand.tasks.dev_qhello_world", 
-    "version": "0.2.1"
+    "tool_contract_id": "pbsmrtpipe.tasks.dev_filter_fasta", 
+    "version": "0.1.1"
 }

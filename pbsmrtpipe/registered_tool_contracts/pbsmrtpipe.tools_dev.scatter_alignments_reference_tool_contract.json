@@ -12,10 +12,18 @@
         "description": "Pacbio DataSet AlignmentSet", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 12, 
+                    "type": "integer", 
+                    "option_id": "pbsmrtpipe.task_options.scatter_alignments_reference_max_nchunks", 
+                    "name": "Max NChunks", 
+                    "description": "Maximum number of Chunks"
+                }, 
+                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_alignments_reference_max_nchunks", 
                 "required": [
                     "pbsmrtpipe.task_options.scatter_alignments_reference_max_nchunks"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.scatter_alignments_reference_max_nchunks": {
@@ -24,8 +32,7 @@
                         "description": "Maximum number of Chunks", 
                         "title": "Max NChunks"
                     }
-                }, 
-                "title": "JSON Schema for pbsmrtpipe.task_options.scatter_alignments_reference_max_nchunks"
+                }
             }
         ], 
         "output_types": [
@@ -37,7 +44,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.6", 
+        "_comment": "Created by v0.2.8", 
         "nchunks": "$max_nchunks", 
         "name": "Scatter AlignmentSet", 
         "input_types": [

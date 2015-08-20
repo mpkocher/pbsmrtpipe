@@ -85,7 +85,8 @@
             }
         ], 
         "chunk_keys": [
-            "$chunk.fasta_id"
+            "$chunk.ccs_alignmentset_id", 
+            "$chunk.reference_id"
         ], 
         "nproc": 1, 
         "is_distributed": false, 
