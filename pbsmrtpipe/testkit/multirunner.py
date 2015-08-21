@@ -1,6 +1,7 @@
 import time
 import operator
 import multiprocessing
+import functools
 import logging
 import sys
 import os
@@ -65,9 +66,9 @@ def _validate_testkit_cfg_fofn(path):
 validate_testkit_cfg_fofn = compose(_validate_testkit_cfg_fofn, validate_file)
 
 
-def _run_testkit_cfg(testkit_cfg, debug=False):
+def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=""):
     os.chdir(os.path.dirname(testkit_cfg))
-    cmd = "{e} --debug {c}".format(c=testkit_cfg, e=_EXE)
+    cmd = "{e} --debug {m} {c}".format(c=testkit_cfg, e=_EXE, m=misc_opts)
     rcode, stdout, stderr, run_time = backticks(cmd)
 
     if debug:
@@ -78,7 +79,7 @@ def _run_testkit_cfg(testkit_cfg, debug=False):
     return testkit_cfg, rcode, stdout, stderr, run_time
 
 
-def run_testkit_cfgs(testkit_cfgs, nworkers):
+def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only=False, force_chunk_mode=False, disable_chunk_mode=False):
     """Run all the butler cfgs in parallel or serial (nworkers=1)
 
     :param testkit_cfgs: (list of str) list of absolute paths to butler.cfgs)
@@ -92,16 +93,28 @@ def run_testkit_cfgs(testkit_cfgs, nworkers):
     started_at = time.time()
     log.info("Starting with nworkers {n} and {m} butler cfg files".format(n=nworkers, m=len(testkit_cfgs)))
     results = []
+    misc_opts = []
+    if disable_chunk_mode:
+        misc_opts.append("--disable-chunk-mode")
+    elif force_chunk_mode:
+        misc_opts.append("--force-chunk-mode")
+    if local_only:
+        misc_opts.append("--local-only")
+    elif force_distributed:
+        misc_opts.append("--force-distributed")
+    misc_opts = " ".join(misc_opts)
     if nworkers == 1:
         log.info("Running in serial mode.")
         for testkit_cfg in testkit_cfgs:
-            bcfg, rcode, stdout, stderr, job_run_time = _run_testkit_cfg(testkit_cfg)
+            bcfg, rcode, stdout, stderr, job_run_time = _run_testkit_cfg(testkit_cfg, misc_opts=misc_opts)
             d = dict(x=testkit_cfg, r=rcode, s=int(job_run_time), m=job_run_time / 60.0)
             log.info("Completed running {x}. exit code {r} in {s} sec ({m:.2f} min).".format(**d))
             results.append((testkit_cfg, rcode, stdout, stderr, job_run_time))
     else:
+        __run_testkit_cfg = functools.partial(_run_testkit_cfg,
+            misc_opts=misc_opts)
         pool = multiprocessing.Pool(nworkers)
-        results = pool.map_async(_run_testkit_cfg, testkit_cfgs).get(9999999)
+        results = pool.map_async(__run_testkit_cfg, testkit_cfgs).get(9999999)
 
     log.info("Results:")
     for bcfg, rcode, _, _, job_run_time in results:
@@ -128,7 +141,8 @@ def _args_run_multi_testkit_cfg(args):
 
     nworkers = min(len(testkit_cfgs), args.nworkers)
 
-    return run_testkit_cfgs(testkit_cfgs, nworkers)
+    return run_testkit_cfgs(testkit_cfgs, nworkers, args.force_distributed,
+        args.local_only, args.force_chunk_mode, args.disable_chunk_mode)
 
 
 def get_parser():
