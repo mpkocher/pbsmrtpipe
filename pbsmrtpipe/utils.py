@@ -6,6 +6,9 @@ import sys
 import re
 import time
 import logging
+import logging.config
+import logging.handlers
+
 import functools
 
 from jinja2 import Environment, PackageLoader
@@ -126,53 +129,73 @@ def is_verified(path, max_nfs_refresh=3):
     return False
 
 
-def get_default_logging_config_dict():
-    """Returns a dict configuration of the logger."""
+def get_default_logging_config_dict(master_log, master_level, pb_log, stdout_level):
+    """Returns a dict configuration of the logger. """
     d = {
         'version': 1,
         'disable_existing_loggers': False,  # this fixes the problem
         'formatters': {
-            'standard': {
-                'format': '[%(levelname)s] %(asctime)-15s [%(name)s %(funcName)s %(lineno)d] %(message)s'
+            'console': {
+                'format': '[%(levelname)s] %(asctime)-15sZ %(message)s'
             },
+            'standard': {
+                'format': '[%(levelname)s] %(asctime)-15sZ [%(name)s] %(message)s'
+            },
+            'full': {
+                'format': '[%(levelname)s] %(asctime)-15sZ [%(name)s %(funcName)s %(lineno)d] %(message)s'
+            }
+        },
+        'filters': {
+            "slog_filter": {
+                '()': StdOutStatusLogFilter,
+            }
         },
         'handlers': {
-            'default': {
-                'level': 'DEBUG',
+            'console': {
+                'level': logging.getLevelName(stdout_level),
                 'class': 'logging.StreamHandler',
-                'formatter': 'standard',
-                'stream': 'ext://sys.stdout'
+                'formatter': 'console',
+                'stream': 'ext://sys.stdout',
+                'filters': ['slog_filter']
             },
-            "error_file_handler": {
-                "class": "logging.handlers.RotatingFileHandler",
-                "level": "ERROR",
-                "formatter": "standard",
-                "filename": "errors.log",
+            "debug_file_handler": {
+                "class": 'logging.handlers.RotatingFileHandler',
+                "level": logging.getLevelName(master_level),
+                "formatter": "full",
+                "filename": master_log,
                 "maxBytes": "10485760",
                 "backupCount": "20",
                 "encoding": "utf8"
             },
             "info_file_handler": {
-                "class": "logging.handlers.RotatingFileHandler",
-                "level": "DEBUG",
+                "class": 'logging.handlers.RotatingFileHandler',
+                "level": "INFO",
                 "formatter": "standard",
-                "filename": "info.log",
+                "filename": pb_log,
                 "maxBytes": "10485760",
                 "backupCount": "20",
-                "encoding": "utf8"
+                "encoding": "utf8",
+                "filters": ['slog_filter']
             }
         },
         'loggers': {
             '': {
-                'handlers': ['default'],
+                'handlers': ['console', 'info_file_handler', 'debug_file_handler'],
                 'level': 'DEBUG',
                 'propagate': True
             }
         },
         'root': {
             'level': 'DEBUG',
-            'handlers': ['default', 'error_file_handler', 'info_file_handler']
+            'handlers': ['console', 'debug_file_handler', 'info_file_handler']
         }
 
     }
     return d
+
+
+def setup_internal_logs(master_log, master_level, pb_log, stdout_level):
+    d = get_default_logging_config_dict(master_log, master_level, pb_log, stdout_level)
+    logging.config.dictConfig(d)
+    return d
+

@@ -51,7 +51,7 @@ def _get_entry_points():
 
 
 def _to_wopts(tmp_dir):
-    return WorkflowLevelOptions(True, 24, 6, 18, 24, False, None, tmp_dir, None, True)
+    return WorkflowLevelOptions(True, 24, 6, 18, 24, False, None, tmp_dir, None, True, True)
 
 
 def _test_run_driver(chunk_operators, register_tasks_d, rfiles_d, ep_d, bg, job_output_dir, tmp_dir, task_opts, cluster_renderer):
@@ -62,7 +62,7 @@ def _test_run_driver(chunk_operators, register_tasks_d, rfiles_d, ep_d, bg, job_
     log.debug(("output dir", job_output_dir))
     log.debug(("tmp dir", tmp_dir))
 
-    workflow_level_options = WorkflowLevelOptions(True, 24, 6, 18, 24, False, None, tmp_dir, None, True)
+    workflow_level_options = WorkflowLevelOptions(True, 24, 6, 18, 24, False, None, tmp_dir, None, True, True)
 
     log.debug(workflow_level_options)
 

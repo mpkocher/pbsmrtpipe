@@ -138,7 +138,10 @@ def _parse_task_from_advanced_binding_str(b):
 
 
 def binding_str_to_task_id_and_instance_id(s):
+    """Returns a task type id, instance id, in-out positional index
 
+    :raises: MalformedBindingStrError
+    """
     try:
         task_id, instance_id, in_out_index = _parse_task_from_advanced_binding_str(s)
     except MalformedBindingStrError:
@@ -246,6 +249,13 @@ def _get_exit_on_failure():
                                "Immediately exit if a task fails (Instead of trying to run as many tasks as possible before exiting.", False)
 
 
+@register_workflow_option
+def _get_exit_on_failure():
+    return OP.to_option_schema(_to_wopt_id("debug_mode"), "boolean", "Enable Debug Mode",
+                               "Debug will emit debug messages to Stdout and set the level in the master log to DEBUG.", False)
+
+
+
 def validate_or_modify_workflow_level_options(wopts):
     """
     This will adjust or modify intra-option dependencies.
@@ -289,11 +299,13 @@ class WorkflowLevelOptions(collections.Sized):
                   "cluster_manager_path": _to_wopt_id("cluster_manager"),
                   "tmp_dir": _to_wopt_id("tmp_dir"),
                   "progress_status_url": _to_wopt_id("progress_status_url"),
-                  "exit_on_failure": _to_wopt_id("exit_on_failure")}
+                  "exit_on_failure": _to_wopt_id("exit_on_failure"),
+                  "debug_mode": _to_wopt_id("debug_mode")
+                  }
 
     def __init__(self, chunk_mode, max_nchunks, max_nproc, total_max_nproc, max_nworkers,
                  distributed_mode, cluster_manager_path, tmp_dir,
-                 progress_status_url, exit_on_failure):
+                 progress_status_url, exit_on_failure, debug_mode):
         """ Container for the known workflow options"""
         self.chunk_mode = chunk_mode
         self.max_nchunks = max_nchunks
@@ -307,6 +319,7 @@ class WorkflowLevelOptions(collections.Sized):
         self.tmp_dir = tmp_dir
         self.progress_status_url = progress_status_url
         self.exit_on_failure = exit_on_failure
+        self.debug_mode = debug_mode
 
     @staticmethod
     def from_defaults():

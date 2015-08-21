@@ -453,10 +453,10 @@ def meta_task_to_task(meta_task,
     log.debug(pprint.pformat(nodes))
 
     for node in nodes:
-        log.debug("Trying to resolve '{r}'".format(r=node))
+        # log.debug("Trying to resolve '{r}'".format(r=node))
         if node in resolved_values:
             # nothing to do here
-            log.debug("Value {n} has been resolved. '{v}'".format(n=node, v=resolved_values[node]))
+            # log.debug("Value {n} has been resolved. '{v}'".format(n=node, v=resolved_values[node]))
             pass
         else:
             # Are we using default funcs to resolve values
@@ -483,8 +483,8 @@ def meta_task_to_task(meta_task,
                                 raise ValueError("$ value '{x}' not resolved.".format(x=x))
                         else:
                             injectable.append(x)
-                    log.debug(f.__name__)
-                    log.debug(injectable)
+                    # log.debug(f.__name__)
+                    # log.debug(injectable)
 
                     # this should do an argsinpsect. Putting a TypeError try/catch
                     # could be misleading
@@ -503,7 +503,7 @@ def meta_task_to_task(meta_task,
                     resolved_values[dollar_key] = value
             else:
                 msg = "potentially unsupported value '{n}'".format(n=node)
-                log.warn(msg)
+                #log.warn(msg)
                 #raise ValueError(msg)
 
     # Sanity Check to make sure required values are resolved

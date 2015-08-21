@@ -333,7 +333,7 @@ def _args_run_pipeline(args):
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
                           ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri,
-                          force_distribute=force_distribute, force_chunk_mode=force_chunk)
+                          force_distribute=force_distribute, force_chunk_mode=force_chunk, debug_mode=args.debug)
 
 
 def _validate_entry_id(e):
@@ -470,7 +470,7 @@ def _args_task_runner(args):
                              ee_pd, args.task_id, args.output_dir,
                              args.preset_xml, args.preset_rc_xml, args.service_uri,
                              force_distribute=force_distribute,
-                             force_chunk_mode=force_chunk)
+                             force_chunk_mode=force_chunk, debug_mode=args.debug)
 
 
 def _args_run_show_workflow_level_options(args):
@@ -574,8 +574,9 @@ def _pbsmrtipe_setup_log(alog, **kwargs):
 
     str_formatter = '[%(levelname)s] %(asctime)-15s %(message)s'
 
+    level = kwargs.get('level', logging.INFO)
     setup_log(alog,
-              level=logging.INFO,
+              level=level,
               file_name=None,
               log_filter=StdOutStatusLogFilter(),
               str_formatter=str_formatter)
