@@ -728,6 +728,9 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     workflow_level_opts = IO.WorkflowLevelOptions.from_id_dict(wopts)
 
+    # override distributed mode only if provided.
+    if isinstance(force_distribute, bool):
+        workflow_level_opts.distributed_mode = force_distribute
     workflow_level_opts = IO.validate_or_modify_workflow_level_options(workflow_level_opts)
 
     slog.info("Successfully validated workflow options.")
@@ -743,9 +746,6 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     if isinstance(workflow_level_opts.cluster_manager_path, str):
         cluster_render = C.load_cluster_templates(workflow_level_opts.cluster_manager_path)
-        # override distributed mode only if provided.
-        if isinstance(force_distribute, bool):
-            workflow_level_opts.distributed_mode = force_distribute
     else:
         cluster_render = None
 
