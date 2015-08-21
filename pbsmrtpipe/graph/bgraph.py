@@ -845,7 +845,7 @@ def resolve_successor_binding_file_path(g):
         path = attrs.get(ConstantsNodes.FILE_ATTR_PATH, None)
 
         if is_resolved and path is None:
-            log.warn("Incompatible attrs. Resolved files, must have path defined. File {f}".format(f=fnode))
+            log.debug("Incompatible attrs. Resolved files, must have path defined. File {f}".format(f=fnode))
 
         if is_resolved and path is not None:
             snodes = g.successors(fnode)
@@ -1446,7 +1446,7 @@ def resolve_io_files(id_to_count, output_dir, input_files, output_file_type_list
         override_names = [None for _ in output_file_type_list] if output_files_names is None else output_files_names
     else:
         if len(output_files_names) != len(output_file_type_list):
-            log.warning("IGNORING override file names. Incompatible file type list ({i}) and override names ({f})".format(i=len(output_file_type_list), f=len(output_files_names)))
+            log.debug("IGNORING override file names. Incompatible file type list ({i}) and override names ({f})".format(i=len(output_file_type_list), f=len(output_files_names)))
             override_names = [None for _ in output_file_type_list]
         else:
             override_names = output_files_names

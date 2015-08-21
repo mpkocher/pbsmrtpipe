@@ -15,7 +15,7 @@ import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
 from pbsmrtpipe.graph.models import VALID_ALL_TASK_NODE_CLASSES
 from pbsmrtpipe.models import TaskStates, JobResources, RunnableTask
-from pbsmrtpipe.utils import setup_log
+from pbsmrtpipe.utils import setup_log, setup_internal_logs
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -300,7 +300,7 @@ def _log_pbsmrptipe_header():
     return s
 
 
-def job_resource_create_and_setup_logs(alog, job_root_dir, bg, task_opts, workflow_level_opts, ep_d):
+def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_level_opts, ep_d):
     """
     Create job resource dirs and setup log handlers
 
@@ -313,8 +313,15 @@ def job_resource_create_and_setup_logs(alog, job_root_dir, bg, task_opts, workfl
 
     job_resources = to_job_resources_and_create_dirs(job_root_dir)
 
-    setup_log(alog, level=logging.INFO, file_name=os.path.join(job_resources.logs, 'pbsmrtpipe.log'))
-    setup_log(alog, level=logging.DEBUG, file_name=os.path.join(job_resources.logs, 'master.log'))
+    pb_log_path = os.path.join(job_resources.logs, 'pbsmrtpipe.log')
+    master_log_path = os.path.join(job_resources.logs, "master.log")
+    master_log_level = logging.INFO
+    stdout_level = logging.INFO
+    if workflow_level_opts.debug_mode:
+        master_log_level = logging.DEBUG
+        stdout_level = logging.DEBUG
+
+    setup_internal_logs(master_log_path, master_log_level, pb_log_path, stdout_level)
 
     log.info("Starting pbsmrtpipe v{v}".format(v=pbsmrtpipe.get_version()))
     log.info("\n" + _log_pbsmrptipe_header())

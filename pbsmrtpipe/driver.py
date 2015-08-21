@@ -210,7 +210,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # Setup logger, job directory and initialize DS
     slog.info("creating job resources in {o}".format(o=output_dir))
-    job_resources, ds = DU.job_resource_create_and_setup_logs(log, output_dir, bg, task_opts, workflow_opts, ep_d)
+    job_resources, ds = DU.job_resource_create_and_setup_logs(output_dir, bg, task_opts, workflow_opts, ep_d)
     slog.info("successfully created job resources.")
 
     # Some Pre-flight checks
@@ -668,7 +668,7 @@ def _validate_entry_points_or_raise(entry_points_d):
 
 
 def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline,
-                          entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None):
+                          entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Load and resolve input IO layer
 
@@ -758,10 +758,14 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         slog.info("local-only mode detected setting total NPROC to {x}".format(x=multiprocessing.cpu_count()))
         workflow_level_opts.total_max_nproc = multiprocessing.cpu_count()
 
+    if debug_mode is True:
+        slog.info("overriding debug-mode to True")
+        workflow_level_opts.debug_mode = debug_mode
+
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
-def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None):
+def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """Grungy loading of the IO and resolving values
 
     Returns a tuple of (WorkflowLevelOptions, TaskOptions, ClusterRender)
@@ -813,6 +817,10 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
     if workflow_level_opts.distributed_mode is False:
         slog.info("local-only mode detected setting total NPROC to {x}".format(x=multiprocessing.cpu_count()))
         workflow_level_opts.total_max_nproc = multiprocessing.cpu_count()
+
+    if debug_mode is True:
+        slog.info("overriding debug-mode to True")
+        workflow_level_opts.debug_mode = debug_mode
 
     return workflow_level_opts, topts, cluster_render
 
@@ -904,7 +912,7 @@ def workflow_exception_exitcode_handler(func):
 def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d,
                  chunk_operators, workflow_template_xml, entry_points_d,
                  output_dir, preset_xml, rc_preset_or_none, service_uri,
-                 force_distribute=None, force_chunk_mode=None):
+                 force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Entry point for running a pipeline
 
@@ -932,7 +940,8 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
                                                                                               entry_points_d, preset_xml,
                                                                                               rc_preset_or_none,
                                                                                               force_distribute=force_distribute,
-                                                                                              force_chunk_mode=force_chunk_mode)
+                                                                                              force_chunk_mode=force_chunk_mode,
+                                                                                              debug_mode=debug_mode)
 
     slog.info("building graph")
     bg = B.binding_strs_to_binding_graph(registered_tasks_d, workflow_bindings)
@@ -1011,7 +1020,10 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 @workflow_exception_exitcode_handler
 def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators,
                     entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none,
-                    service_config, force_distribute=None, force_chunk_mode=None):
+                    service_config,
+                    force_distribute=None,
+                    force_chunk_mode=None,
+                    debug_mode=None):
     """
     Entry Point for running a single task
 
@@ -1030,7 +1042,8 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
     workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d,
                                                                        preset_xml, rc_preset_or_none,
                                                                        force_distribute=force_distribute,
-                                                                       force_chunk_mode=force_chunk_mode)
+                                                                       force_chunk_mode=force_chunk_mode,
+                                                                       debug_mode=debug_mode)
 
     slog.info("building bindings graph")
     binding_str = _task_to_binding_strings(meta_task)
