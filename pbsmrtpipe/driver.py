@@ -204,6 +204,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
     log.info("exe'ing workflow Cluster renderer {c}".format(c=global_registry.cluster_renderer))
     slog.info("Service URI: {i} {t}".format(i=service_uri_or_none, t=type(service_uri_or_none)))
+    slog.info("Max number of Chunks  {n} ".format(n=workflow_opts.max_nchunks))
+    slog.info("Max number of nproc   {n}".format(n=workflow_opts.max_nproc))
+    slog.info("Max number of workers {n}".format(n=workflow_opts.max_nworkers))
 
     # Setup logger, job directory and initialize DS
     slog.info("creating job resources in {o}".format(o=output_dir))
@@ -350,6 +353,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # write empty analysis reports
     write_analysis_report(analysis_file_links)
 
+    BU.write_binding_graph_images(bg, job_resources.workflow)
+
     # For book-keeping
     # task id -> tnode
     tid_to_tnode = {}
@@ -366,7 +371,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     dt_stead_state = 4
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
-        BU.write_binding_graph_images(bg, job_resources.workflow)
 
         # After the initial startup, bump up the time to reduce resource usage
         # (since multiple instances will be launched from the services)
@@ -520,8 +524,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 # base task_id-instance_id
                 tid = '-'.join([tnode.meta_task.task_id, str(tnode.instance_id)])
 
-                BU.write_binding_graph_images(bg, job_resources.workflow)
-
                 task_dir = os.path.join(job_resources.tasks, tid)
                 if not os.path.exists(task_dir):
                     os.mkdir(task_dir)
@@ -587,7 +589,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 workers[tid] = w
                 w.start()
                 total_nproc += task.nproc
-                slog.debug("Starting worker {i} ({n} workers running, {m} total proc in use)".format(i=tid, n=len(workers), m=total_nproc))
+                slog.info("Starting worker {i} ({n} workers running, {m} total proc in use)".format(i=tid, n=len(workers), m=total_nproc))
 
                 # Submit job to be run.
                 B.update_task_state(bg, tnode, TaskStates.SUBMITTED)
@@ -595,7 +597,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 log.debug(msg_)
                 tid_to_tnode[tid] = tnode
                 services_log_update_progress("pbsmrtpipe::{i}".format(i=tnode.idx), WS.LogLevels.INFO, msg_)
-                #B.write_binding_graph_images(bg, job_resources.workflow)
+                BU.write_binding_graph_images(bg, job_resources.workflow)
 
             elif isinstance(tnode, EntryOutBindingFileNode):
                 # Handle EntryPoint types. This is not a particularly elegant design :(
@@ -618,8 +620,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
         # end of while loop
         _terminate_all_workers(workers.values(), shutdown_event)
-
-        #B.write_binding_graph_images(bg, job_resources.workflow)
 
         if has_failed:
             log.debug("\n" + BU.to_binding_graph_summary(bg))
