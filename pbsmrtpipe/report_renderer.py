@@ -93,7 +93,7 @@ def copy_js_css(root_resource_dir, root_output_dir):
                 shutil.copy(p, r)
 
     _d = dict(r=root_output_dir, o=root_output_dir)
-    log.debug("completed copying files from {r} to {o}.".format(**_d))
+    # log.debug("completed copying files from {r} to {o}.".format(**_d))
 
 
 def _write_str_report(s, path, mode):

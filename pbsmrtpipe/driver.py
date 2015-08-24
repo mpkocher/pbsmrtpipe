@@ -512,9 +512,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
             tnode = B.get_next_runnable_task(bg)
 
-            if tnode is not None:
-                slog.debug("Got runnable task node '{t}'".format(t=tnode))
-
             if tnode is None:
                 continue
             elif isinstance(tnode, TaskBindingNode):
@@ -960,14 +957,33 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
             except MalformedChunkOperatorError as e:
                 log.warn("Invalid chunk operator {i}. {m}".format(i=chunk_operator_id, m=e.message))
 
+    filtered_chunk_operators_d = _filter_chunk_operators(bg, valid_chunk_operators)
     # Container to hold all the resources
     global_registry = GlobalRegistry(registered_tasks_d,
                                      registered_file_types_d,
-                                     valid_chunk_operators,
+                                     filtered_chunk_operators_d,
                                      cluster_render)
 
     return exe_workflow(global_registry, entry_points_d, bg, task_opts,
                         workflow_level_opts, output_dir, service_uri)
+
+
+def _filter_chunk_operators(bg, chunk_operators_d):
+    """Filters all the chunk operators that don't have tasks in the BindingsGraph
+
+    Returns a chunk operator dict
+    """
+    operators_d = {}
+    task_ids = {tnode.meta_task.task_id for tnode in bg.task_nodes() if isinstance(tnode, TaskBindingNode)}
+    for op_id, op, in chunk_operators_d.iteritems():
+        if op.scatter.task_id in task_ids:
+            operators_d[op_id] = op
+
+    dn = len(chunk_operators_d) - len(operators_d)
+    if dn != 0:
+        log.warn("Filtered {n} chunk operators from registry.".format(n=dn))
+
+    return operators_d
 
 
 def _task_to_entry_point_ids(meta_task):
@@ -1053,10 +1069,11 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
 
     # Validate chunk operators
     valid_chunk_operators = {k: v for k, v in chunk_operators.iteritems() if validate_operator(v, registered_tasks_d)}
+    filtered_chunk_operators_d = _filter_chunk_operators(bg, valid_chunk_operators)
     # Container to hold all the resources
-    global_registry = GlobalRegistry(valid_chunk_operators,
+    global_registry = GlobalRegistry(registered_tasks_d,
                                      registered_file_types_d,
-                                     chunk_operators,
+                                     filtered_chunk_operators_d,
                                      cluster_render)
 
     return exe_workflow(global_registry, entry_points_d, bg, task_opts,
