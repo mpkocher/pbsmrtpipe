@@ -2,9 +2,9 @@ jinja2
 numpy
 h5py
 networkx
-pbcommand
-# Install Pbcore from github
+# Install from github
 -e git://github.com/PacificBiosciences/pbcore.git#egg=pbcore
+-e git://github.com/PacificBiosciences/pbcommand.git#egg=pbcommand
 pyparsing==1.5.7
 pydot
 jsonschema
