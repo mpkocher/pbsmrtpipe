@@ -16,7 +16,7 @@ TOOL_ID = "pbsmrtpipe.tasks.h5_subreadset_scatter"
 
 
 class Constants(object):
-    DRIVER = "python -m pbsmrtpipe.tools_dev.scatter_subreads --resolved-tool-contract "
+    DRIVER = "python -m pbsmrtpipe.tools_dev.scatter_hdfsubreads --resolved-tool-contract "
     DEFAULT_NCHUNKS = 5
     CHUNK_KEYS = ('$chunk.hdf5subreadset_id', )
 
