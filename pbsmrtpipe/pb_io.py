@@ -534,6 +534,7 @@ def __parse_template_id_to_bindings(root, registered_pipelines):
     if template_id not in registered_pipelines:
         raise PipelineTemplateIdNotFoundError("Unable to find Pipeline template '{i}' in {n} registered pipelines".format(i=template_id, n=len(registered_pipelines)))
     else:
+        slog.info("Loading pipeline template id {i}".format(i=template_id))
         pipeline = registered_pipelines[template_id]
 
     return pipeline.all_bindings
