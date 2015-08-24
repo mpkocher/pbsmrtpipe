@@ -67,4 +67,5 @@ notebooks/A Live Demo Example 3.html
 
 extras/pipeline-templates-avro/*
 testkit-data/*/job_output
+testkit-data/*/run.sh
 sync_over_sa3_build.sh
