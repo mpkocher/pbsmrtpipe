@@ -564,9 +564,34 @@ class Pipeline(object):
             print list(set(self.tags))
 
 
-ScatterChunk = namedtuple("ScatterChunk", "chunk_key task_input")
-# task id to scatter, scatter task id
-Scatter = namedtuple("Scatter", "task_id scatter_task_id chunks")
+class ScatterChunk(object):
+    def __init__(self, chunk_key, task_input):
+        """Map of the chunk_key -> task input"""
+        self.chunk_key = chunk_key
+        self.task_input = task_input
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  y=self.chunk_key,
+                  t=self.task_input)
+        return "<{k} key:{y} task:{t} >".format(**_d)
+
+
+class Scatter(object):
+    def __init__(self, task_id, scatter_task_id, chunks):
+        # Task To Scatter
+        self.task_id = task_id
+        # ScatterTask -> Chunk.json
+        self.scatter_task_id = scatter_task_id
+        # List of ScatterChunks
+        self.chunks = chunks
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__,
+                  s=self.task_id,
+                  t=self.scatter_task_id)
+        return "<{k} {s} {t} > ".format(**_d)
+
 
 GatherChunk = namedtuple("GatherChunk", "gather_task_id chunk_key task_input")
 Gather = namedtuple("Gather", "chunks")

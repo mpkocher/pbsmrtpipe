@@ -87,6 +87,9 @@ class ConstantsNodes(object):
     # Chunk Group, applies to
     TASK_ATTR_CHUNK_GROUP_ID = "chunk_group_id"
 
+    # Chunk keys to store on TaskScatterBindingNode
+    TASK_ATTR_CHUNK_KEYS = "chunk_keys"
+
 
 class _NodeLike(object):
 
@@ -152,6 +155,7 @@ class _TaskLike(_NodeLike):
                   ConstantsNodes.TASK_ATTR_OPERATOR_ID: None,
                   ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID: None,
                   ConstantsNodes.TASK_ATTR_WAS_GATHERED: False,
+                  ConstantsNodes.TASK_ATTR_CHUNK_KEYS: []
                   }
 
 

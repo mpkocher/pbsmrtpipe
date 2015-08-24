@@ -197,5 +197,6 @@ def get_default_logging_config_dict(master_log, master_level, pb_log, stdout_lev
 def setup_internal_logs(master_log, master_level, pb_log, stdout_level):
     d = get_default_logging_config_dict(master_log, master_level, pb_log, stdout_level)
     logging.config.dictConfig(d)
+    logging.Formatter.converter = time.gmtime
     return d
 

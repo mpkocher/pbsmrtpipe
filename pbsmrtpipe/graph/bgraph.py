@@ -647,7 +647,8 @@ def get_next_runnable_task(g):
                 if _are_all_inputs_resolved(g, tnode):
                     return tnode
             else:
-                log.debug("Skipping chunkable tasks {n}".format(n=tnode))
+                # log.debug("Skipping chunkable tasks {n}".format(n=tnode))
+                pass
 
     log.debug("Unable to find runnable task")
     return None
@@ -984,10 +985,12 @@ def add_scatter_task(g, scatterable_task_node, scatter_meta_task):
 
 def _get_scatterable_task_id(chunk_operators_d, task_id):
     """Get the companion scatterable task id from the original meta task id"""
+    ids = []
     for operator_id, chunk_operator in chunk_operators_d.iteritems():
         if task_id == chunk_operator.scatter.task_id:
-            return chunk_operator.scatter.scatter_task_id
-    return None
+            ids.append(chunk_operator.scatter.scatter_task_id)
+
+    return ids if ids else None
 
 
 def _is_task_id_scatterable(chunk_operators_d, task_id):
@@ -995,24 +998,50 @@ def _is_task_id_scatterable(chunk_operators_d, task_id):
 
 
 def apply_scatterable(bg, chunk_operators_d, task_registry_d):
-    """Add All companion scatterable tasks to task from Chunk Operator"""
+    """Add All companion scatterable tasks to task from Chunk Operator
+
+    For Operators that have the same scatter-task-id **and** chunk-keys, these
+    are considered identical operations.
+
+    The Chunking will be:
+
+    a -> Tx -> b
+    a -> Ty -> c
+
+    To
+
+    a -> TS -> chunk.json -> {Tx_i ... Tx_n} -> chunk.gather.json -> Txg -> b
+                          -> {Ty_i ... Ty_n} -> chunk.gather.json -> Tyg -> c
+
+    A single scatter task will be applied and the same mappings
+    of the chunk keys in the chunk.json will be used to map
+    the keys to the corresponding inputs.
+
+    If the chunk keys are different, then a NEW scatter task will be created.
+
+    """
 
     def is_task_id_scatterable(task_id_):
         return _is_task_id_scatterable(chunk_operators_d, task_id_)
 
-    def get_scatter_task_id_from_task_id(task_id_):
+    def get_scatter_task_ids_from_task_id(task_id_):
         return _get_scatterable_task_id(chunk_operators_d, task_id_)
 
     for tnode in bg.all_task_type_nodes():
         if not isinstance(tnode, (TaskChunkedBindingNode, EntryPointNode)):
+
             if is_task_id_scatterable(tnode.meta_task.task_id):
-                scatterable_task_id = get_scatter_task_id_from_task_id(tnode.meta_task.task_id)
+                scatterable_task_ids = get_scatter_task_ids_from_task_id(tnode.meta_task.task_id)
+
                 was_chunked = bg.node[tnode][ConstantsNodes.TASK_ATTR_WAS_CHUNKED]
-                # Only process tasks that have not been 'scattered'
-                if not was_chunked:
-                    log.debug("Resolved scatter task {i} from task {x}".format(i=scatterable_task_id, x=tnode.meta_task.task_id))
-                    add_scatter_task(bg, tnode, task_registry_d[scatterable_task_id])
-                    bg.node[tnode][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
+                # Only process tasks that have not been 'scattered' to create the companion task
+                if not was_chunked and scatterable_task_ids is not None:
+                    for scatterable_task_id in scatterable_task_ids:
+                        log.debug("Resolved scatter task {i} from task {x}".format(i=scatterable_task_id, x=tnode.meta_task.task_id))
+                        # add scatterable task to generate the chunk.json file
+                        # and assign the chunk group id
+                        add_scatter_task(bg, tnode, task_registry_d[scatterable_task_id])
+                        bg.node[tnode][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
 
     resolve_successor_binding_file_path(bg)
     validate_binding_graph_integrity(bg)
@@ -1112,9 +1141,6 @@ def label_chunkable_tasks(g, operators_d):
 
     :return:
     """
-    # scatterable-task -> operator id
-    chunkable_task_ids = {op.scatter.task_id: op for op_id, op in operators_d.iteritems()}
-
     found_chunkable_task = False
 
     for task_node in g.task_nodes():
@@ -1122,26 +1148,26 @@ def label_chunkable_tasks(g, operators_d):
 
             task_id = task_node.meta_task.task_id
 
-            if task_id in chunkable_task_ids.keys():
-                operator = chunkable_task_ids[task_id]
-                scatter_task_id = operator.scatter.scatter_task_id
+            for operator_id, chunk_operator in operators_d.iteritems():
+                if chunk_operator.scatter.task_id == task_id:
+                    scatter_task_id = chunk_operator.scatter.scatter_task_id
 
-                # This Id should be used for ChunkTaskBinding Nodes
-                chunk_group_id = uuid.uuid4()
+                    # This Id should be used for ChunkTaskBinding Nodes
+                    chunk_group_id = uuid.uuid4()
 
-                slog.info("Found chunkable task '{i}' assigning chunk-group {s}".format(i=task_id, s=str(chunk_group_id)))
+                    slog.info("Found chunkable task '{i}' assigning chunk-group {s}".format(i=task_id, s=str(chunk_group_id)))
 
-                # Setting the is-chunkable is trigger that a chunk/scatter task
-                # can be created
-                g.node[task_node][ConstantsNodes.TASK_ATTR_IS_CHUNKABLE] = True
-                # Set the operator id
-                g.node[task_node][ConstantsNodes.TASK_ATTR_OPERATOR_ID] = operator.idx
-                # Keep track of the original task_id for book-keeping
-                g.node[task_node][ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID] = scatter_task_id
-                # This is not great. In the TaskChunkedBindingNode this is a attribute of the node
-                g.node[task_node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID] = str(chunk_group_id)
+                    # Setting the is-chunkable is trigger that a chunk/scatter task
+                    # can be created
+                    g.node[task_node][ConstantsNodes.TASK_ATTR_IS_CHUNKABLE] = True
+                    # Set the operator id
+                    g.node[task_node][ConstantsNodes.TASK_ATTR_OPERATOR_ID] = chunk_operator.idx
+                    # Keep track of the original task_id for book-keeping
+                    g.node[task_node][ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID] = scatter_task_id
+                    # This is not great. In the TaskChunkedBindingNode this is a attribute of the node
+                    g.node[task_node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID] = str(chunk_group_id)
 
-                found_chunkable_task = True
+                    found_chunkable_task = True
 
     if not found_chunkable_task:
         slog.warn("Unable to find any chunkable tasks from {n} chunk operators.".format(n=len(operators_d)))
@@ -1151,10 +1177,14 @@ def label_chunkable_tasks(g, operators_d):
     return g
 
 
-def _get_chunk_operator_by_scatter_task_id(scatter_task_id, chunk_operators_d):
+def _get_chunk_operators_by_scatter_task_id(scatter_task_id, chunk_operators_d):
+    ops = []
     for operator_id, chunk_operator in chunk_operators_d.iteritems():
         if scatter_task_id == chunk_operator.scatter.scatter_task_id:
-            return chunk_operator
+            ops.append(chunk_operator)
+
+    if ops:
+        return ops
 
     raise KeyError("Unable to find chunk operator for scatter task id {i}".format(i=scatter_task_id))
 
@@ -1186,11 +1216,17 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks)
                 if len(pipeline_chunks) > max_nchunks:
                     raise TaskChunkingError("Task {i} created too many {n} chunks. Max chunks >={m}".format(n=len(pipeline_chunks), m=max_nchunks, i=tnode_))
 
-                chunk_operator = _get_chunk_operator_by_scatter_task_id(bg.node[tnode_]['task'].task_id, chunk_operators_d)
-                chunked_nodes = add_chunkable_task_nodes_to_bgraph(bg, tnode_, pipeline_chunks, chunk_operator, registered_tasks_d)
-                bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
-                slog.info("Successfully applying chunked operator to {x}".format(x=tnode_))
-                slog.info(chunked_nodes)
+                # This applies the chunk operator once (or more) if task is chunked by multiple
+                # This needs to be revisited fixed.
+                chunk_operators = _get_chunk_operators_by_scatter_task_id(bg.node[tnode_]['task'].task_id, chunk_operators_d)
+                for chunk_operator in chunk_operators:
+                    chunked_nodes = add_chunkable_task_nodes_to_bgraph(bg, tnode_, pipeline_chunks, chunk_operator, registered_tasks_d)
+                    if chunked_nodes:
+                        bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
+                        bg.node[tnode_][ConstantsNodes.TASK_ATTR_OPERATOR_ID] = chunk_operator.idx
+                        bg.node[tnode_][ConstantsNodes.TASK_ATTR_CHUNK_KEYS] = [c.chunk_key for c in chunk_operator.scatter.chunks]
+                        slog.info("Successfully applying chunk operator {i} to {x} to generate {n} tasks.".format(x=tnode_, i=chunk_operator.idx, n=len(chunked_nodes)))
+                        slog.info(chunked_nodes)
             else:
                 log.debug("Skipping {t}. Node was already chunked".format(t=tnode_))
 
@@ -1249,7 +1285,8 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
         chunk_group_id = bg.node[node][ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID]
         # slog.info("Scattered task was successful. {n} {k} in state '{s}'".format(n=node, k=node.__class__, s=_state))
 
-        chunk_operator = _get_chunk_operator_by_scatter_task_id(node.meta_task.task_id, chunk_operators_d)
+        chunk_operator_id = bg.node[node][ConstantsNodes.TASK_ATTR_OPERATOR_ID]
+        chunk_operator = chunk_operators_d[chunk_operator_id]
         # used with the chunk operator to find the gather task(s)
         original_task_id = node.original_task_id
         # original meta task
@@ -1292,7 +1329,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
             # Check if all chunked tasks have completed and output files have been resolved
             if all(was_task_successful_with_resolve_outputs(bg, cnode) for cnode, s in chunked_task_states):
 
-                slog.info("Starting chunking gathering process for task {n} chunk-group {g}".format(n=node, g=chunk_group_id))
+                slog.info("Starting chunking gathering process for task {n} chunk-group {g} with operator {i}".format(n=node, g=chunk_group_id, i=chunk_operator_id))
                 gathered_pipeline_chunks_d = copy.deepcopy(pipeline_chunks_d)
 
                 # Found completed chunked files. Now:
@@ -1311,7 +1348,11 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                     for output_node in bg.successors(chunked_task_node):
                         all_chunked_out_files_nodes.append(output_node)
 
-                        # map to $chunk_key
+                        # map to $chunk_key. Add better error message
+                        if output_node.index not in gs:
+                            log.error(("Chunk Operator {i} gather index ".format(i=chunk_operator_id), gs))
+                            raise ChunkGatheringError("Chunk Operator {i} Failed to map {n}".format(i=chunk_operator_id, n=output_node))
+
                         output_chunk_key, _, _ = gs[output_node.index]
                         log.debug(("Outputs of chunked task ", output_node, chunk_id, output_chunk_key))
                         gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
