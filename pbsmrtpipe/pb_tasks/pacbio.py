@@ -24,26 +24,18 @@ registry = registry_builder(TOOL_NAMESPACE, DRIVER_BASE)
 
 def run_bax_to_bam(input_file_name, output_file_name):
     base_name = os.path.splitext(output_file_name)[0]
-    output_dir = os.getcwd() #os.path.dirname(output_file_name)
     args = [
         "bax2bam",
         "--subread",
         "-o", base_name,
+        "--output-xml", output_file_name,
         "--xml", input_file_name
     ]
-    logging.warn(" ".join(args))
+    logging.info(" ".join(args))
     result = run_cmd(" ".join(args),
                      stdout_fh=sys.stdout,
                      stderr_fh=sys.stderr)
-    if result.exit_code != 0:
-        return result.exit_code
-
-    # FIXME bax2bam won't let us choose the output XML file name :(
-    #       ...or even the directory, apparently
-    for file_name in os.listdir(output_dir):
-        if file_name.endswith(".dataset.xml") and file_name != output_file_name:
-            shutil.move(file_name, output_file_name)
-    return 0
+    return result.exit_code
 
 
 def run_bam_to_fastx(program_name, input_file_name, output_file_name):
@@ -58,7 +50,7 @@ def run_bam_to_fastx(program_name, input_file_name, output_file_name):
         "-o", _splitext(output_file_name)[0],
         input_file_name,
     ]
-    logging.warn(" ".join(args))
+    logging.info(" ".join(args))
     result = run_cmd(" ".join(args),
                      stdout_fh=sys.stdout,
                      stderr_fh=sys.stderr)
