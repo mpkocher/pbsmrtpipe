@@ -162,7 +162,7 @@ def rs_modification_detection_1():
     return _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-def _core_motif_analysis(ipd_gff, motif_gff, reference_ds):
+def _core_motif_analysis(ipd_gff, reference_ds):
     bs = []
     x = bs.append
     # Find Motifs. AlignmentSet, ReferenceSet
@@ -173,7 +173,7 @@ def _core_motif_analysis(ipd_gff, motif_gff, reference_ds):
     x((ipd_gff, 'motif_maker.tasks.reprocess:0'))  # GFF
     # XXX this is not currently used
     #_add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'motif_maker.tasks.reprocess:1')) # CSV
-    x((motif_gff, 'motif_maker.tasks.reprocess:1'))  # motifs CSV
+    x(('motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1'))  # motifs GFF
     x((reference_ds, 'motif_maker.tasks.reprocess:2'))
 
     # MK Note. Pat did something odd here that I can't remember the specifics
@@ -185,32 +185,11 @@ def _core_motif_analysis(ipd_gff, motif_gff, reference_ds):
 
 @register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ))
 def rs_modification_and_motif_analysis_1():
-    """Pacbio Official Modification and Motif Analysis Pipeline
-
-
-    The motif finder contract id needs to have the correct form.
     """
-    bs = []
-    _add = bs.append
-
-    # Find Motifs. AlignmentSet, ReferenceSet
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.find_motifs:0'))  # basemods GFF
-    _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.find_motifs:1'))
-
-    # Make Motifs GFF: ipdSummary GFF, ipdSummary CSV, MotifMaker CSV, REF
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', 'motif_maker.tasks.reprocess:0'))  # GFF
-    # XXX this is not currently used
-    #_add(('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:1', 'motif_maker.tasks.reprocess:1')) # CSV
-    _add(('pbsmrtpipe.pipelines.ds_modification_detection:motif_maker.tasks.find_motifs:0', 'motif_maker.tasks.reprocess:1'))  # motifs CSV
-    _add((Constants.ENTRY_DS_REF, 'motif_maker.tasks.reprocess:2'))
-
-    # MK Note. Pat did something odd here that I can't remember the specifics
-    _add(('motif_maker.tasks.reprocess:0', 'pbreports.tasks.motifs_report:0'))
-    _add(('motif_maker.tasks.find_motifs:0', 'pbreports.tasks.motifs_report:1'))
-
-    return _core_motif_analysis('pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0',
-                                'pbsmrtpipe.pipelines.ds_modification_detection:motif_maker.tasks.find_motifs:0',
-                                Constants.ENTRY_DS_REF)
+    Pacbio Official Modification and Motif Analysis Pipeline
+    """
+    return _core_motif_analysis(
+        'pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', Constants.ENTRY_DS_REF)
 
 
 @register_pipeline(to_pipeline_ns("pb_modification_detection"), 'SA3 Internal Modification Analysis', "0.1.0", tags=("mapping", ))
@@ -229,7 +208,6 @@ def pb_modification_and_motif_analysis_1():
     existing AlignmentSet
     """
     return _core_motif_analysis('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:0',
-                                'pbsmrtpipe.pipelines.pb_modification_detection:motif_maker.tasks.find_motifs:0',
                                 Constants.ENTRY_DS_REF)
 
 
