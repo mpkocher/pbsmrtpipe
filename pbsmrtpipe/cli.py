@@ -142,16 +142,29 @@ def pretty_bindings(bindings):
     return "\n".join(outs)
 
 
-def run_show_templates():
+def run_show_templates(output_dir=None):
     import pbsmrtpipe.loader as L
+    from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro
 
-    print pretty_registered_pipelines(L.load_all_installed_pipelines())
+    rtasks_d, _, _, pts = L.load_all()
+
+    print pretty_registered_pipelines(pts)
+
+    if output_dir is not None:
+        write_pipeline_templates_to_avro(pts.values(), rtasks_d, output_dir)
 
     return 0
 
 
+def add_run_show_templates_options(p):
+    add_log_level_option(p)
+    p.add_argument('--output-templates-avro', type=str,
+                   help="Output Registered pipeline templates to AVRO files.")
+    return p
+
+
 def _args_run_show_templates(args):
-    return run_show_templates()
+    return run_show_templates(output_dir=args.output_templates_avro)
 
 
 def write_task_options_to_preset_xml_and_print(opts, output_file, warning_msg):
@@ -545,7 +558,7 @@ def get_parser():
            "your my_pipeline.xml file using '<import-template id=\"pbsmrtpipe.pipelines.my_pipeline_id\" />. This " \
            "can replace the explicit listing of EntryPoints and Bindings."
 
-    builder('show-templates', desc, lambda x: x, _args_run_show_templates)
+    builder('show-templates', desc, add_run_show_templates_options, _args_run_show_templates)
 
     # Show Template Details
     builder('show-template-details', "Show details about a specific Pipeline template.", add_show_template_details_parser_options, _args_run_show_template_details)
