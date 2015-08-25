@@ -205,7 +205,7 @@ def _to_max_nproc_option():
 def _get_workflow_option_schema():
     return OP.to_option_schema(_to_wopt_id("max_nworkers"), "integer",
                                "Max Number of Workers",
-                               "Max Number of concurrently running tasks. (Note:  max_nproc will restrict the number of workers if max_nworkers * max_nproc > max_total_nproc)", 16)
+                               "Max Number of concurrently running tasks. (Note:  max_nproc will restrict the number of workers if max_nworkers * max_nproc > max_total_nproc)", 100)
 
 
 @register_workflow_option
