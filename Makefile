@@ -62,4 +62,4 @@ build-java-classes:
 	avro-tools compile schema pbsmrtpipe/schemas java-classes/
 
 write-pipeline-templates-avro:
-	python -c "import pbsmrtpipe.loader as L; ts, _, _, ps = L.load_all(); from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro as W; W(ps.values(), ts, 'extras/pipeline-templates-avro')"
+	pbsmrtpipe show-templates --output-templates-avro extras/pipeline-templates-avro

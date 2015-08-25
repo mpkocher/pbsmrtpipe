@@ -516,6 +516,7 @@ def meta_task_to_task(meta_task,
 
     # override output file names (if necessary)
     ofiles = to_resolve_files_func(output_dir, input_files, meta_task.output_types, meta_task.output_file_names, meta_task.mutable_files)
+    log.debug(("Resolved output files", ofiles))
 
     if isinstance(meta_task, (MetaScatterTask, ScatterToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, resolved_values[SymbolTypes.RESOLVED_OPTS], resolved_values[SymbolTypes.NPROC], rfiles, nchunks_)

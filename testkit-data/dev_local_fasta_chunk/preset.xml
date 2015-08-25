@@ -26,7 +26,7 @@
 
         <!-- MAX Number of NPROC -->
         <option id="pbsmrtpipe.options.max_nchunks">
-            <value>48</value>
+            <value>3</value>
         </option>
 
         <option id="pbsmrtpipe.options.cluster_manager" >

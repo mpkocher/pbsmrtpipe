@@ -781,6 +781,7 @@ def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
     for pipeline in pipelines:
         name = pipeline.pipeline_id + "_pipeline_template.avro"
         file_name = os.path.join(output_dir, name)
+        slog.debug("writing pipeline {i} to avro".format(i=pipeline.pipeline_id))
         write_pipeline_template_to_avro(pipeline, rtasks_d, file_name)
         output_files.append(file_name)
 

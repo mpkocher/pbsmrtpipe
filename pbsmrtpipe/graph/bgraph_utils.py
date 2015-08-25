@@ -134,9 +134,10 @@ def binding_graph_to_dot(g):
         _d['color'] = state_color
 
         # Chunk Operator Id
-        operator_id = _get_attr_or_default(g_, n_, 'operator_id', None)
-        if operator_id is not None:
-            _d['operator_id'] = operator_id.replace('.', '_')
+        operator_ids = _get_attr_or_default(g_, n_, 'operator_id', None)
+        if operator_ids is not None:
+            #_d['operator_ids'] = " ".join([operator_id.replace('.', '_') for operator_id in operator_ids])
+            pass
 
         attrs_str = _to_attr_s(_d)
         return ' '.join([_to_s(n_), attrs_str])
