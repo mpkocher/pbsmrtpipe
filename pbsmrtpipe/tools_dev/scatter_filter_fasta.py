@@ -16,7 +16,8 @@ TOOL_ID = "pbsmrtpipe.tasks.dev_scatter_filter_fasta"
 
 
 class Constants(object):
-    DEFAULT_NCHUNKS = 5
+    DEFAULT_NCHUNKS = 24
+    CHUNK_KEY = '$chunk.fasta_id'
 
 
 def get_contract_parser():
@@ -36,7 +37,7 @@ def get_contract_parser():
     p.add_int("pbsmrtpipe.task_options.dev_scatter_max_nchunks", "max_nchunks", Constants.DEFAULT_NCHUNKS,
               "Max NChunks", "Maximum number of Chunks")
     p.add_str("pbsmrtpipe.task_options.dev_scatter_chunk_key", "chunk_key",
-              "$chunk:fasta_id", "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
+              Constants.CHUNK_KEY, "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
     return p
 
 
@@ -53,8 +54,7 @@ def _args_run_to_random_fasta_file(args):
 
 def _rtc_runner(rtc):
     # the chunk key isn't really something that can be tweaked here.
-    chunk_key = '$chunk:fasta_id'
-    return run_main(rtc.task.input_files[0], rtc.task.output_files[0], rtc.task.max_nchunks, chunk_key)
+    return run_main(rtc.task.input_files[0], rtc.task.output_files[0], rtc.task.max_nchunks, Constants.CHUNK_KEY)
 
 
 def main(argv=sys.argv):
