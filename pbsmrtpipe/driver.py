@@ -431,10 +431,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 services_log_update_progress("pbsmrtpipe", WS.LogLevels.INFO, msg_)
                 break
 
-            if len(workers) >= max_nworkers:
-                # don't do anything
-                continue
-
             try:
                 result = q_out.get_nowait()
             except Queue.Empty:
@@ -509,6 +505,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 log.error("job has failed. breaking out.")
                 # Just kill everything
                 break
+
+            # Computational resources are tapped
+            if len(workers) >= max_nworkers:
+                # don't do anything
+                continue
 
             tnode = B.get_next_runnable_task(bg)
 

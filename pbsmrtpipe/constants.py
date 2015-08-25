@@ -68,7 +68,7 @@ RESOLVED_TOOL_CONTRACT_AVRO = 'resolved-tool-contract.avro'
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
 #
-MAX_NCHUNKS = 12
+MAX_NCHUNKS = 64
 
 
 class PacBioNamespaces(object):
