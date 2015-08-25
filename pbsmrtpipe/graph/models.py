@@ -74,14 +74,18 @@ class ConstantsNodes(object):
     # label for identifiying tasks that have a companion chunk task
     # defined by the chunk operator
     TASK_ATTR_IS_CHUNKABLE = 'is_chunkable'
-    # Was the chunked applied to the scattered chunk
+
+    # Was the chunked applied to the scattered chunk and the new
+    # chunked N-tasks were created
     TASK_ATTR_WAS_CHUNKED = 'was_chunked'
+
     # Was the Gather'ing process applied to the
     TASK_ATTR_WAS_GATHERED = "was_gathered"
+
     # Label scatterable TaskBindingNode
     TASK_ATTR_IS_SCATTERABLE = "is_scatterable"
 
-    TASK_ATTR_COMPANION_CHUNK_TASK_ID = "companion_chunk_task_id"
+    TASK_ATTR_COMPANION_CHUNK_TASK_TYPE_ID = "companion_chunk_task_id"
     # Chunk operator
     TASK_ATTR_OPERATOR_ID = 'operator_id'
     # Chunk Group, applies to
@@ -151,7 +155,7 @@ class _TaskLike(_NodeLike):
                   ConstantsNodes.TASK_ATTR_EMESSAGE: None,
                   ConstantsNodes.TASK_ATTR_IS_CHUNKABLE: False,
                   ConstantsNodes.TASK_ATTR_WAS_CHUNKED: False,
-                  ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_ID: None,
+                  ConstantsNodes.TASK_ATTR_COMPANION_CHUNK_TASK_TYPE_ID: None,
                   ConstantsNodes.TASK_ATTR_OPERATOR_ID: None,
                   ConstantsNodes.TASK_ATTR_CHUNK_GROUP_ID: None,
                   ConstantsNodes.TASK_ATTR_WAS_GATHERED: False,
@@ -223,6 +227,10 @@ class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
     def idx(self):
         return self.meta_task.task_id
 
+    @property
+    def nid(self):
+        return repr(self)
+
     def __str__(self):
         _d = dict(k=self.__class__.__name__, i=self.idx, n=self.instance_id)
         return "{k} {i}-{n}".format(**_d)
@@ -235,8 +243,10 @@ class TaskChunkedBindingNode(TaskBindingNode):
     DOT_SHAPE = DotShapeConstants.TRIPLE_OCTAGON
     DOT_COLOR = DotColorConstants.AQUA_DARK
 
-    def __init__(self, meta_task, instance_id, chunk_id, chunk_group_id):
+    def __init__(self, meta_task, instance_id, chunk_id, chunk_group_id, operator_id):
         super(TaskChunkedBindingNode, self).__init__(meta_task, instance_id)
+        # Chunk Operator Id
+        self.operator_id = operator_id
         self.chunk_id = chunk_id
         # str(uuid)
         self.chunk_group_id = chunk_group_id
@@ -257,11 +267,12 @@ class TaskScatterBindingNode(TaskBindingNode):
     DOT_SHAPE = DotShapeConstants.OCTAGON
     DOT_COLOR = DotColorConstants.ORANGE
 
-    def __init__(self, scatter_meta_task, original_task_id, instance_id, chunk_group_id):
+    def __init__(self, scatter_meta_task, original_nid, original_task_type_id, instance_id, chunk_group_id):
         validate_type_or_raise(scatter_meta_task, (MetaScatterTask, ScatterToolContractMetaTask))
         super(TaskScatterBindingNode, self).__init__(scatter_meta_task, instance_id)
-        # Keep track of the original task that was chunked
-        self.original_task_id = original_task_id
+        # Keep track of the original task type that was chunked
+        self.original_task_id = original_task_type_id
+        self.original_nid = original_nid
         self.chunk_group_id = chunk_group_id
 
 
