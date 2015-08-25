@@ -23,7 +23,7 @@ def get_contract_parser():
     driver = "python -m pbsmrtpipe.tools_dev.scatter_subread_reference --resolved-tool-contract "
 
     # These Keys are expected to be PipelineChunks produced by this tool
-    chunk_keys = ("$chunk.reference_id", "chunk.subreadset_id")
+    chunk_keys = ("$chunk.reference_id", "$chunk.subreadset_id")
     p = get_scatter_pbparser(TOOL_ID, "0.1.3", "SubreadSet scatter",
                              "Scatter Subread DataSet", driver, chunk_keys,
                              is_distributed=False)

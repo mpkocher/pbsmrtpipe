@@ -63,7 +63,7 @@
         ], 
         "chunk_keys": [
             "$chunk.reference_id", 
-            "chunk.subreadset_id"
+            "$chunk.subreadset_id"
         ], 
         "nproc": 1, 
         "is_distributed": false, 
