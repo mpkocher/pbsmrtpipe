@@ -22,7 +22,8 @@ class Constants(object):
 def get_contract_parser():
     driver = "python -m pbsmrtpipe.tools_dev.scatter_subread_reference --resolved-tool-contract "
 
-    chunk_keys = ("$chunk.fasta_id", )
+    # These Keys are expected to be PipelineChunks produced by this tool
+    chunk_keys = ("$chunk.reference_id", "chunk.subreadset_id")
     p = get_scatter_pbparser(TOOL_ID, "0.1.3", "SubreadSet scatter",
                              "Scatter Subread DataSet", driver, chunk_keys,
                              is_distributed=False)
@@ -47,8 +48,12 @@ def get_contract_parser():
     p.add_int("pbsmrtpipe.task_options.scatter_subread_max_nchunks", "max_nchunks", Constants.DEFAULT_NCHUNKS,
               "Max NChunks", "Maximum number of Chunks")
 
-    p.add_str("pbsmrtpipe.task_options.scatter_subreadset_chunk_key", "chunk_key",
-              "$chunk:fasta_id", "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
+    # This should only be added at the argparse level.
+    # Disabling for now.
+    # FIXME. This should support --reference-chunk-key and --subread-key
+    # p.arg_parser.add_str("pbsmrtpipe.task_options.scatter_subreadset_chunk_key",
+    #                      "chunk_key",
+    #                      "$chunk:fasta_id", "Chunk key", "Chunk key to use (format $chunk:{chunk-key}")
     return p
 
 
