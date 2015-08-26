@@ -17,7 +17,7 @@ TOOL_ID = "pbsmrtpipe.tasks.ccsset_align_scatter"
 
 class Constants(object):
     DEFAULT_NCHUNKS = 5
-    CHUNK_KEYS = ('$chunk.ccs_alignmentset_id', "$chunk.reference_id")
+    CHUNK_KEYS = ('$chunk.ccsset_id', "$chunk.reference_id")
 
 def get_contract_parser():
     driver = "python -m pbsmrtpipe.tools_dev.scatter_ccs_reference --resolved-tool-contract "
