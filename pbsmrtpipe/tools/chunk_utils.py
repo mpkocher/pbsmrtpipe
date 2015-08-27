@@ -272,21 +272,6 @@ def write_ccsset_chunks_to_file(chunk_file, ccsset_path,
     write_chunks_to_json(chunks, chunk_file)
     return 0
 
-def write_subreadset_zmw_chunks_to_file(chunk_file, subreadset_path,
-                                        max_total_chunks,
-                                        dir_name, chunk_base_name, chunk_ext):
-    """Identical to write_subreadset_chunks_to_file, but chunks subreads by
-    ZMW ranges for input to pbccs."""
-    chunks = list(to_zmw_chunked_subreadset_files(
-        subreadset_path=subreadset_path,
-        max_total_nchunks=max_total_chunks,
-        chunk_key=Constants.CHUNK_KEY_SUBSET,
-        dir_name=dir_name,
-        base_name=chunk_base_name,
-        ext=chunk_ext))
-    write_chunks_to_json(chunks, chunk_file)
-    return 0
-
 def _to_chunked_dataset_files(dataset_type, dataset_path, reference_path,
                               max_total_nchunks, chunk_key, dir_name,
                               base_name, ext):
@@ -311,11 +296,14 @@ to_chunked_subreadset_files = functools.partial(_to_chunked_dataset_files,
 to_chunked_ccsset_files = functools.partial(_to_chunked_dataset_files,
     ConsensusReadSet)
 
-def to_zmw_chunked_subreadset_files(subreadset_path, max_total_nchunks,
-                                    chunk_key, dir_name, base_name, ext):
-    """Identical to to_chunked_subreadset_files, but chunks subreads by
-    ZMW ranges for input to pbccs."""
-    dset = SubreadSet(subreadset_path, strict=True)
+def _to_zmw_chunked_dataset_files(dataset_type, dataset_path,
+                                  max_total_nchunks, chunk_key, dir_name,
+                                  base_name, ext):
+    """
+    Similar to to_chunked_subreadset_files, but chunks reads by ZMW ranges
+    for input to pbccs or pbtranscript.
+    """
+    dset = dataset_type(dataset_path, strict=True)
     dset_chunks = dset.split(chunks=max_total_nchunks, zmws=True)
     d = {}
     for i, dset in enumerate(dset_chunks):
@@ -327,6 +315,34 @@ def to_zmw_chunked_subreadset_files(subreadset_path, max_total_nchunks,
         c = PipelineChunk(chunk_id, **d)
         yield c
 
+to_zmw_chunked_subreadset_files = functools.partial(
+    _to_zmw_chunked_dataset_files, SubreadSet)
+to_zmw_chunked_ccsset_files = functools.partial(
+    _to_zmw_chunked_dataset_files, ConsensusReadSet)
+
+def _write_dataset_zmw_chunks_to_file(chunk_func, chunk_key, chunk_file,
+                                      dataset_path, max_total_chunks,
+                                      dir_name, chunk_base_name, chunk_ext):
+    """
+    Similar to write_subreadset_chunks_to_file, but chunks reads (subread or
+    CCS) by ZMW ranges for input to pbccs.
+    """
+    chunks = list(chunk_func(
+        dataset_path=dataset_path,
+        max_total_nchunks=max_total_chunks,
+        chunk_key=chunk_key,
+        dir_name=dir_name,
+        base_name=chunk_base_name,
+        ext=chunk_ext))
+    write_chunks_to_json(chunks, chunk_file)
+    return 0
+
+write_subreadset_zmw_chunks_to_file = functools.partial(
+    _write_dataset_zmw_chunks_to_file, to_zmw_chunked_subreadset_files,
+    Constants.CHUNK_KEY_SUBSET)
+write_ccsset_zmw_chunks_to_file = functools.partial(
+    _write_dataset_zmw_chunks_to_file, to_zmw_chunked_ccsset_files,
+    Constants.CHUNK_KEY_CCSSET)
 
 def write_hdfsubreadset_chunks_to_file(chunk_file, hdfsubreadset_path,
                                        max_total_chunks, dir_name,
