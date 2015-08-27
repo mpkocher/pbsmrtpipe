@@ -267,3 +267,17 @@ def pb_align_ccs():
     ConsensusReadSet.
     """
     return _core_ccs_align(Constants.ENTRY_DS_CCS)
+
+
+def _core_isoseq(ccs_ds):
+    b3 = [(ccs_ds, "pbtranscript.tasks.classify:0")]
+    # FIXME isoseq_classify report
+    return b3
+
+
+@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.1.0", tags=("isoseq", ))
+def ds_isoseq():
+    """
+    (Partial) IsoSeq pipeline, starting from subreads.
+    """
+    return _core_isoseq("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
