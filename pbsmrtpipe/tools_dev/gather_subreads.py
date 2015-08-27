@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     TOOL_ID = "pbsmrtpipe.tasks.gather_subreadset"
-    CHUNK_KEY = "$chunk:subreadset_id"
+    CHUNK_KEY = "$chunk.subreadset_id"
     VERSION = "0.1.0"
     DRIVER = "python -m pbsmrtpipe.tools_dev.gather_subreads --resolved-tool-contract "
 
