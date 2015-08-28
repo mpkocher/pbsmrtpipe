@@ -6,7 +6,7 @@
     <scatter>
         <scatter-task-id>pbsmrtpipe.tasks.h5_subreadset_scatter</scatter-task-id>
         <chunks>
-            <chunk out="$chunk.hdfsubreadset_id" in="pbsmrtpipe.tasks.h5_subreads_to_subread:0"/>
+            <chunk out="$chunk.hdf5subreadset_id" in="pbsmrtpipe.tasks.h5_subreads_to_subread:0"/>
         </chunks>
     </scatter>
     <!-- Define the Gather Mechanism -->
