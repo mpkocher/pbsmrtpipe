@@ -43,7 +43,7 @@ class Constants(object):
 
     CHUNK_KEY_ALNSET = "$chunk.alignmentset_id"
     CHUNK_KEY_SUBSET = "$chunk.subreadset_id"
-    CHUNK_KEY_HDFSET = "$chunk.hdfsubreadset_id"
+    CHUNK_KEY_HDFSET = "$chunk.hdf5subreadset_id"
     CHUNK_KEY_REFSET = "$chunk.reference_id"
     CHUNK_KEY_FOFN = "$chunk.fofn_id"
     CHUNK_KEY_MOVIE_FOFN = "$chunk.movie_id"
