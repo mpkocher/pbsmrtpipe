@@ -221,7 +221,7 @@ class ServiceAccessLayer(object):
 
     def _import_dataset(self, dataset_type, path):
         # This returns a job resource
-        return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
+        return _import_dataset_by_type(dataset_type)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/import-dataset"), path)
 
     def run_import_dataset_by_type(self, dataset_type, path_to_xml):
         job = self._import_dataset(dataset_type, path_to_xml)
