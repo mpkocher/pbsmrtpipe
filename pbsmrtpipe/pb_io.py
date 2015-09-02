@@ -900,8 +900,8 @@ def parse_operator_xml(f):
     return ChunkOperator(operator_id, scatter, gather)
 
 
-def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d):
-    output_file_names = []
+def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d,
+        output_file_names):
     mutable_files = []
     return ToolContractMetaTask(tc,
                                 tc.task.task_id,
@@ -971,6 +971,8 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     # resolve strings to FileType instances
     input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
     output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
+    _spe = os.path.splitext
+    output_file_names = [ (_spe(x.default_name)[0], ft.ext) for x,ft in zip(tc.task.output_file_types, output_types) ]
 
     #
     task_type = validate_task_type(tc.task.is_distributed)
@@ -980,7 +982,7 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     elif isinstance(tc.task, GatherToolContractTask):
         meta_task = _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d)
     elif isinstance(tc.task, ToolContractTask):
-        meta_task = _to_meta_task(tc, task_type, input_types, output_types, schema_option_d)
+        meta_task = _to_meta_task(tc, task_type, input_types, output_types, schema_option_d, output_file_names)
     else:
         raise TypeError("Unsupported Type {t} {x}".format(x=tc.task, t=type(tc.task)))
 
