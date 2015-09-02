@@ -272,10 +272,14 @@ def pb_align_ccs():
 def _core_isoseq(ccs_ds):
     b3 = [(ccs_ds, "pbtranscript.tasks.classify:0")]
     b4 = [] # FIXME isoseq_classify report
-    b5 = [("pbtranscript.tasks.classify:1", "pbtranscript.tasks.cluster:0"),
-          (ccs_ds, "pbtranscript.tasks.cluster:1"),
-          (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.cluster:2"),
-          ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.cluster:3")]
+    b5 = [
+        # full-length, non-chimeric transcripts
+        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.cluster:0"),
+        # non-full-length transcripts
+        ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.cluster:1"),
+        (ccs_ds, "pbtranscript.tasks.cluster:2"),
+        (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.cluster:3")
+    ]
     b6 = [] # FIXME isoseq_cluster report
     return b3 + b4 + b5 + b6
 
