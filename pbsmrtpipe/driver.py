@@ -755,6 +755,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     if workflow_level_opts.distributed_mode is False:
         slog.info("local-only mode detected setting total NPROC to {x}".format(x=multiprocessing.cpu_count()))
         workflow_level_opts.total_max_nproc = multiprocessing.cpu_count()
+        workflow_level_opts.max_nproc = multiprocessing.cpu_count() - 1
 
     if debug_mode is True:
         slog.info("overriding debug-mode to True")
