@@ -13,24 +13,29 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_fasta</gather-task-id>
+                <gather-task-id>pbsmrtpipe.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:0</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_fasta</gather-task-id>
+                <gather-task-id>pbsmrtpipe.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_flnc_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:1</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_fasta</gather-task-id>
+                <gather-task-id>pbsmrtpipe.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_nfl_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:2</task-output>
             </chunk>
-            <chunk>
+            <chunk><!-- FIXME this may not do what we want -->
                 <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
                 <chunk-key>$chunk.csv_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:3</task-output>
+            </chunk>
+            <chunk>
+                <gather-task-id>pbsmrtpipe.tasks.gather_json_stats</gather-task-id>
+                <chunk-key>$chunk.json_id</chunk-key>
+                <task-output>pbtranscript.tasks.classify:4</task-output>
             </chunk>
         </chunks>
     </gather>
