@@ -70,3 +70,4 @@ ValidateFasta = DataStoreFileValidator(FileTypes.FASTA.file_type_id, validate_fa
 ValidateFastq = DataStoreFileValidator(FileTypes.FASTQ.file_type_id, validate_fastq)
 
 ValidateJsonReport = DataStoreFileValidator(FileTypes.REPORT.file_type_id, _validate_json_report)
+ValidateJson = DataStoreFileValidator(FileTypes.JSON.file_type_id, _validate_json)

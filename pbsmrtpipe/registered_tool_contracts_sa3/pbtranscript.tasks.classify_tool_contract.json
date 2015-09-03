@@ -109,6 +109,13 @@
                 "default_name": "isoseq_primer_info.csv", 
                 "id": "report", 
                 "file_type_id": "PacBio.FileTypes.csv"
+            }, 
+            {
+                "title": "JSON summary", 
+                "description": "JSON summary", 
+                "default_name": "summary.json", 
+                "id": "json_summary", 
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
         "_comment": "Created by v0.2.13", 
