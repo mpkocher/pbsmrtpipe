@@ -148,7 +148,7 @@ def gather_json_stats(json_files, output_file):
                 n_fields = len(json_dict)
             for key in json_dict:
                 val = json_dict[key]
-                if getattr(merged, key, None) is None:
+                if merged.get(key, None) is None:
                     merged[key] = val
                 elif val is not None:
                     merged[key] += val

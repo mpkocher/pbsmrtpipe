@@ -1,4 +1,5 @@
 from collections import namedtuple
+import json
 import csv
 import os
 import unittest
@@ -54,3 +55,25 @@ class TestCsvGather(unittest.TestCase):
                 nrecords += 1
 
         self.assertEqual(nrecords, 157)
+
+
+def _write_stats_to_json(stats, output_json):
+    with open(output_json, 'w') as w:
+        w.write(json.dumps(stats))
+
+
+class TestJsonGather(unittest.TestCase):
+
+    def test_smoke(self):
+        t = get_temp_file(suffix="-stats-1.json")
+        _write_stats_to_json({'n_reads':549,'n_zmws':100}, t)
+        t2 = get_temp_file(suffix="-stats-2.json")
+        _write_stats_to_json({'n_reads':733,'n_zmws':100}, t2)
+
+        tg = get_temp_file(suffix="stats-gather.json")
+        G.gather_json_stats([t, t2], tg)
+
+        with open(tg, 'r') as f:
+            stats = json.loads(f.read())
+            self.assertEqual(stats['n_reads'], 549+733)
+            self.assertEqual(stats['n_zmws'], 200)
