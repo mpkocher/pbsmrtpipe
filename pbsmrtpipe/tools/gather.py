@@ -194,6 +194,13 @@ def gather_contigset(input_files, output_file, new_resource_file=None,
 
     :rtype: str
     """
+    if skip_empty:
+        _input_files = []
+        for file_name in input_files:
+            cs = ContigSet(file_name)
+            if len(cs.toExternalFiles()) > 0:
+                _input_files.append(file_name)
+        input_files = _input_files
     tbr = ContigSet(*input_files)
     if not new_resource_file:
         if output_file.endswith('xml'):
