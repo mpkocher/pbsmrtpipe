@@ -33,8 +33,8 @@
                 <task-output>pbtranscript.tasks.classify:3</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_json_stats</gather-task-id>
-                <chunk-key>$chunk.json_id</chunk-key>
+                <gather-task-id>pbsmrtpipe.tasks.gather_report</gather-task-id>
+                <chunk-key>$chunk.report_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:4</task-output>
             </chunk>
         </chunks>

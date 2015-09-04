@@ -115,7 +115,7 @@
                 "description": "JSON summary", 
                 "default_name": "summary.json", 
                 "id": "json_summary", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
         "_comment": "Created by v0.2.13", 

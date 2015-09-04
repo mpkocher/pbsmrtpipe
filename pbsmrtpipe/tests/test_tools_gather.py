@@ -5,6 +5,9 @@ import os
 import unittest
 import logging
 
+from pbcommand.models.report import Report
+from pbcommand.pb_io.report import load_report_from_json
+
 import pbsmrtpipe.tools.gather as G
 
 from base import get_temp_file, get_temp_dir
@@ -59,7 +62,10 @@ class TestCsvGather(unittest.TestCase):
 
 def _write_stats_to_json(stats, output_json):
     with open(output_json, 'w') as w:
-        w.write(json.dumps(stats))
+        w.write(Report.from_simple_dict(
+            report_id="pbcommand_test",
+            raw_d=stats,
+            namespace="pb").to_json())
 
 
 class TestJsonGather(unittest.TestCase):
@@ -71,9 +77,9 @@ class TestJsonGather(unittest.TestCase):
         _write_stats_to_json({'n_reads':733,'n_zmws':100}, t2)
 
         tg = get_temp_file(suffix="stats-gather.json")
-        G.gather_json_stats([t, t2], tg)
+        G.gather_report([t, t2], tg)
 
-        with open(tg, 'r') as f:
-            stats = json.loads(f.read())
-            self.assertEqual(stats['n_reads'], 549+733)
-            self.assertEqual(stats['n_zmws'], 200)
+        r = load_report_from_json(tg)
+        stats = { a.id:a.value for a in r.attributes }
+        self.assertEqual(stats['pb_n_reads'], 549+733)
+        self.assertEqual(stats['pb_n_zmws'], 200)

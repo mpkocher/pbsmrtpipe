@@ -9,6 +9,8 @@ from functools import partial as P
 
 
 from pbcommand.cli import get_default_argparser
+from pbcommand.models.report import Report
+from pbcommand.pb_io.report import load_report_from_json
 
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
@@ -133,27 +135,15 @@ def gather_csv(csv_files, output_file, skip_empty=True):
     return output_file
 
 
-def gather_json_stats(json_files, output_file):
+def gather_report(json_files, output_file):
     """
-    Combines statistics (usually raw counts) stored as json dictionaries.
+    Combines statistics (usually raw counts) stored as JSON files.
+    Data models: pbcommand.models.report
     """
-    merged = {}
-    n_fields = -1
-    for file_name in json_files:
-        with open(file_name, "r") as f:
-            json_dict = json.loads(f.read())
-            if n_fields > 0:
-                assert len(json_dict) == n_fields
-            else:
-                n_fields = len(json_dict)
-            for key in json_dict:
-                val = json_dict[key]
-                if merged.get(key, None) is None:
-                    merged[key] = val
-                elif val is not None:
-                    merged[key] += val
+    reports = [ load_report_from_json(fn) for fn in json_files ]
+    merged = Report.merge(reports)
     with open(output_file, "w") as writer:
-        writer.write(json.dumps(merged))
+        writer.write(merged.to_json())
     return output_file
 
 
@@ -250,7 +240,7 @@ add_chunk_key_ccs_alignmentset = __add_chunk_key_option(
     '$chunk.ccs_alignmentset_id')
 # TODO: change this to contigset_id once quiver emits contigsets
 add_chunk_key_contigset = __add_chunk_key_option('$chunk.fasta_id')
-add_chunk_key_json_stats = __add_chunk_key_option('$chunk.json_id')
+add_chunk_key_report = __add_chunk_key_option('$chunk.json_id')
 
 
 def __gather_options(output_file_message, input_files_message, input_validate_func, add_chunk_key_func_):
@@ -272,7 +262,7 @@ def __add_gather_options(output_file_msg, input_file_msg, chunk_key_func):
 
 
 _gather_csv_options = __add_gather_options("Output CSV file", "input CSV file", add_chunk_key_csv)
-_gather_json_stats_options = __add_gather_options("Output JSON file", "input JSON file", add_chunk_key_json_stats)
+_gather_report_options = __add_gather_options("Output JSON file", "input JSON file", add_chunk_key_report)
 _gather_fastq_options = __add_gather_options("Output Fastq file", "Chunk input JSON file", add_chunk_key_fastq)
 _gather_fasta_options = __add_gather_options("Output Fasta file", "Chunk input JSON file", add_chunk_key_fasta)
 _gather_gff_options = __add_gather_options("Output Fasta file",
@@ -331,13 +321,13 @@ _args_runner_gather_ccs_alignmentset = P(
     __args_gather_runner, gather_ccs_alignmentset)
 _args_runner_gather_contigset = P(__args_gather_runner, gather_contigset)
 _args_runner_gather_csv = P(__args_gather_runner, gather_csv)
-_args_runner_gather_json_stats = P(__args_gather_runner, gather_json_stats)
+_args_runner_gather_report = P(__args_gather_runner, gather_report)
 
 # (chunk.json, output_file, chunk_key)
 run_main_gather_fasta = P(__gather_runner, gather_fasta)
 run_main_gather_fastq = P(__gather_runner, gather_fastq)
 run_main_gather_csv = P(__gather_runner, gather_csv)
-run_main_gather_json_stats = P(__gather_runner, gather_json_stats)
+run_main_gather_report = P(__gather_runner, gather_report)
 run_main_gather_gff = P(__gather_runner, gather_gff)
 run_main_gather_alignmentset = P(__gather_runner, gather_alignmentset)
 run_main_gather_subreadset = P(__gather_runner, gather_subreadset)
