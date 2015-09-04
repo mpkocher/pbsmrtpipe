@@ -25,6 +25,13 @@
                 "default_name": "cluster_report.csv", 
                 "id": "cluster_report", 
                 "file_type_id": "PacBio.FileTypes.csv"
+            }, 
+            {
+                "title": "JSON summary", 
+                "description": "JSON summary", 
+                "default_name": "summary.json", 
+                "id": "json_summary", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
         "_comment": "Created by v0.2.13", 

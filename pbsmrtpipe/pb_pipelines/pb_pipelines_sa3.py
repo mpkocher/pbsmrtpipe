@@ -271,7 +271,10 @@ def pb_align_ccs():
 
 def _core_isoseq(ccs_ds):
     b3 = [(ccs_ds, "pbtranscript.tasks.classify:0")]
-    b4 = [] # FIXME isoseq_classify report
+    b4 = [
+        ("pbtranscript.tasks.classify:1","pbreports.tasks.isoseq_classify:0"),
+        ("pbtranscript.tasks.classify:4","pbreports.tasks.isoseq_classify:1")
+    ]
     b5 = [
         # full-length, non-chimeric transcripts
         ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.cluster:0"),
@@ -280,7 +283,11 @@ def _core_isoseq(ccs_ds):
         (ccs_ds, "pbtranscript.tasks.cluster:2"),
         (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.cluster:3")
     ]
-    b6 = [] # FIXME isoseq_cluster report
+    b6 = [
+        ("pbtranscript.tasks.cluster:0", "pbreports.tasks.isoseq_cluster:0"),
+        ("pbtranscript.tasks.cluster:2", "pbreports.tasks.isoseq_cluster:1")
+    ]
+    # TODO quiver polishing
     return b3 + b4 + b5 + b6
 
 
