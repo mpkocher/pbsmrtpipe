@@ -182,6 +182,25 @@ def _block_for_job_to_complete(sal, job_id, time_out=600):
 
     return job_result
 
+# Make this consistent somehow. Maybe defined 'shortname' in the core model?
+# Martin is doing this for the XML file names
+DATASET_METATYPES_TO_ENDPOINTS =  {
+     DataSetMetaTypes.HDF_SUBREAD: "hdfsubreads",
+     DataSetMetaTypes.SUBREAD: "subreads",
+     DataSetMetaTypes.ALIGNMENT: "alignments",
+     DataSetMetaTypes.REFERENCE: "references",
+     DataSetMetaTypes.BARCODE: "barcodes",
+     DataSetMetaTypes.CCS: "ccsreads",
+     DataSetMetaTypes.CONTIG: "contigs",
+     DataSetMetaTypes.CCS_ALIGNMENT: "css-alignments"
+     }
+
+
+def _get_endpoint_or_raise(ds_type):
+    if ds_type in DATASET_METATYPES_TO_ENDPOINTS:
+        return DATASET_METATYPES_TO_ENDPOINTS[ds_type]
+    raise KeyError("Unsupported datasettype {t}. Supported values {v}".format(t=ds_type, v=DATASET_METATYPES_TO_ENDPOINTS.keys()))
+
 
 class ServiceAccessLayer(object):
     """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
@@ -250,6 +269,23 @@ class ServiceAccessLayer(object):
     def run_import_dataset_reference(self, path, time_out=60):
         return self._run_import_and_block(self.import_dataset_reference, path, time_out=time_out)
 
+    def get_dataset_by_id(self, dataset_type, int_or_uuid):
+        """Get a Dataset using the DataSetMetaType and (int|uuid) of the dataset"""
+        ds_endpoint = _get_endpoint_or_raise(dataset_type)
+        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/datasets/{t}/{i}".format(t=ds_endpoint, i=int_or_uuid)))
+
+    def get_subreadset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.SUBREAD, int_or_uuid)
+
+    def get_hdfsubreadset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.HDF_SUBREAD, int_or_uuid)
+
+    def get_referenceset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.REFERENCE, int_or_uuid)
+
+    def get_alignementset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.ALIGNMENT, int_or_uuid)
+
     def create_logger_resource(self, idx, name, description):
         _d = dict(id=idx, name=name, description=description)
         return _process_rpost(_null_func)(_to_url(self.uri, "/loggers"), _d)
@@ -283,7 +319,6 @@ class ServiceAccessLayer(object):
         job_id = job['id']
 
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
-
 
 
 def log_pbsmrtpipe_progress(total_url, message, level, source_id, ignore_errors=True):
