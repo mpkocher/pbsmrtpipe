@@ -4,6 +4,7 @@
 """
 import json
 import logging
+import pprint
 from collections import namedtuple
 
 from pbcore.io import DataSetMetaTypes
@@ -42,7 +43,6 @@ PbsmrtpipeLogResource = LogResource(SERVICE_LOGGER_RESOURCE_ID, "Pbsmrtpipe",
 
 
 class JobExeError(ValueError):
-
     """Service Job Failure"""
     pass
 
@@ -51,9 +51,7 @@ JobResult = namedtuple("JobResult", "job run_time errors")
 
 
 class ServiceEntryPoint(object):
-
     """Entry Points to initialize Pipelines"""
-
     def __init__(self, entry_id, dataset_type, path_or_uri):
         self.entry_id = entry_id
         self.dataset_type = dataset_type
@@ -115,6 +113,8 @@ def _process_rget(func):
     # apply the tranform func to the output of GET request if it was successful
     def wrapper(total_url):
         r = rqget(total_url)
+        if r.status_code != 200:
+            log.error("Failed ({s}) GET to {x}".format(x=total_url, s=r.status_code))
         r.raise_for_status()
         j = r.json()
         return func(j)
@@ -126,6 +126,10 @@ def _process_rpost(func):
     # apply the transform func to the output of POST request if it was successful
     def wrapper(total_url, payload_d):
         r = rqpost(total_url, payload_d)
+        if r.status_code != 200:
+            log.error("Failed ({s} to call {u}".format(u=total_url, s=r.status_code))
+            log.error("payload")
+            log.error("\n" + pprint.pformat(payload_d))
         r.raise_for_status()
         j = r.json()
         return func(j)
@@ -180,12 +184,12 @@ def _block_for_job_to_complete(sal, job_id, time_out=600):
 
 
 class ServiceAccessLayer(object):
-
     """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
-
-    def __init__(self, base_url, port):
+    def __init__(self, base_url, port, debug=False):
         self.base_url = base_url
         self.port = port
+        # This will display verbose details with respect to the failed request
+        self.debug = debug
 
     @property
     def uri(self):
@@ -210,18 +214,12 @@ class ServiceAccessLayer(object):
 
     def _get_job_resource_type(self, job_type, job_id, resource_type_id):
         # grab the datastore or the reports
-        _d = dict(t=job_type, i=job_id, r=resource_type_id)
-        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
-
-    def get_job_datastore(self, job_type, job_id):
-        return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.DATASTORE)
-
-    def get_job_report_records(self, job_type, job_id):
-        return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.REPORTS)
+        _d = dict(t=job_type, i=job_id,r=resource_type_id)
+        return _process_rget(_null_func)(_to_url(self.uri,"/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
 
     def _import_dataset(self, dataset_type, path):
         # This returns a job resource
-        return _import_dataset_by_type(dataset_type)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/import-dataset"), path)
+        return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
 
     def run_import_dataset_by_type(self, dataset_type, path_to_xml):
         job = self._import_dataset(dataset_type, path_to_xml)
@@ -287,6 +285,7 @@ class ServiceAccessLayer(object):
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
 
+
 def log_pbsmrtpipe_progress(total_url, message, level, source_id, ignore_errors=True):
     """Log the status of a pbsmrtpipe to SMRT Server"""
 
@@ -317,3 +316,4 @@ def add_datastore_file(total_url, datastore_file, ignore_errors=True):
             log.warn("Failed Request to {u} data: {d}. {e}".format(u=total_url, d=_d, e=e))
     else:
         return func(total_url, _d)
+
