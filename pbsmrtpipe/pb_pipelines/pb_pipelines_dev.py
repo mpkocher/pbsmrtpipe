@@ -139,7 +139,7 @@ def get_dist_dev_pipeline():
     return bs + b2
 
 
-@dev_register("dev_05", "Reference Set Report", tags=('reports', "reference" ))
+@dev_register("dev_diagnostic", "Reference Set Report", tags=('reports', "reference" ))
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 
