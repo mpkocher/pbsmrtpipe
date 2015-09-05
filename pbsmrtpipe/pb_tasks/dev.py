@@ -140,7 +140,7 @@ def run_rtc(rtc):
     return 0
 
 
-@registry('dev_reference_ds_report', '0.1.0', FileTypes.DS_REF, FileTypes.REPORT, is_distributed=False, nproc=3)
+@registry('dev_reference_ds_report', '0.1.0', FileTypes.DS_REF, FileTypes.REPORT, is_distributed=False, nproc=3, options=dict(dev_diagnostic_strict=False))
 def run_rtc(rtc):
     reference_ds = ReferenceSet(rtc.task.input_files[0])
     return run_reference_dataset_report(reference_ds, rtc.task.output_files[0])

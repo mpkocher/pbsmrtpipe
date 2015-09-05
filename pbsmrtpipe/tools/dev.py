@@ -1,6 +1,7 @@
 """CLI Tools to facilitate development testing."""
 import logging
 import os
+import socket
 import sys
 from pbcommand.cli import get_default_argparser
 
@@ -194,13 +195,19 @@ def run_reference_dataset_report(reference_ds, output_json):
     :param output_json:
     :return:
     """
+    output_dir = os.path.dirname(output_json)
+    host = socket.getfqdn()
+
     attributes = _dataset_to_attribute_reports(reference_ds)
+    _add = attributes.append
+
+    _add(Attribute("host", host, name="Host"))
+    _add(Attribute("task_dir", output_dir, name="Task Directory"))
 
     fasta_file = reference_ds.toExternalFiles()[0]
 
-    output_dir = os.path.dirname(output_json)
     plot_groups = try_fasta_to_plot_group(fasta_file, output_dir)
-    report = Report("ds_reference_report",
+    report = Report("dev_diagnostic_report",
                     attributes=attributes,
                     plotgroups=plot_groups,
                     dataset_uuids=[reference_ds.uuid])
