@@ -87,7 +87,6 @@ def create_all():
                ]
 
     cmds = itertools.chain(*to_cmds)
-    #[_run_cmd(cmd) for cmd in cmds]
     p = multiprocessing.Pool(min(multiprocessing.cpu_count(), 4))
     results = p.map(_run_cmd, cmds)
     return 0
