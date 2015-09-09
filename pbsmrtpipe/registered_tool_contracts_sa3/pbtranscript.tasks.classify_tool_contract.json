@@ -85,30 +85,23 @@
             {
                 "title": "Output ContigSet", 
                 "description": "Output fasta file", 
-                "default_name": "pbtranscript_output.fasta", 
+                "default_name": "isoseq_draft.contigset.xml", 
                 "id": "outReadsFN", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "FASTA file", 
                 "description": "Output full-length non-chimeric reads in fasta", 
-                "default_name": "isoseq_flnc.fasta", 
+                "default_name": "isoseq_flnc.contigset.xml", 
                 "id": "flnc", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "FASTA file", 
                 "description": "Output non-full-length reads in fasta", 
-                "default_name": "isoseq_nfl.fasta", 
+                "default_name": "isoseq_nfl.contigset.xml", 
                 "id": "nfl", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
-            {
-                "title": "CSV file", 
-                "description": "CSV file to output primer info", 
-                "default_name": "isoseq_primer_info.csv", 
-                "id": "report", 
-                "file_type_id": "PacBio.FileTypes.csv"
             }, 
             {
                 "title": "JSON summary", 
@@ -116,9 +109,16 @@
                 "default_name": "summary.json", 
                 "id": "json_summary", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
+            }, 
+            {
+                "title": "CSV file", 
+                "description": "CSV file to output primer info", 
+                "default_name": "isoseq_primer_info.csv", 
+                "id": "report", 
+                "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.13", 
+        "_comment": "Created by v0.2.14", 
         "name": "pbtranscript.tasks.classify", 
         "input_types": [
             {
