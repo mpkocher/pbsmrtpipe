@@ -140,29 +140,45 @@ def _get_nrecords_from_fastx(fastx_reader):
     return n
 
 
-def write_fasta_records(fastax_writer_klass, records, file_name):
-
-    fasta_file_name = file_name
-    if file_name.endswith(".contigset.xml"):
-        fasta_file_name = ".".join(file_name.split(".")[:-2]) + ".fasta"
+def write_pbcore_records(pbcore_writer_class, records, file_name):
     n = 0
-    with fastax_writer_klass(fasta_file_name) as w:
+    with pbcore_writer_class(file_name) as w:
         for record in records:
             w.writeRecord(record)
             n += 1
 
-    log.debug("Completed writing {n} fasta records".format(n=n))
-    if file_name.endswith(".contigset.xml"):
-        log.debug("Writing ContigSet XML")
-        ds = ContigSet(fasta_file_name)
-        ds.write(file_name)
+    log.debug("Completed writing {n} records".format(n=n))
 
 
-def __to_chunked_fastx_files(fastx_reader_klass, fastax_writer_klass, chunk_key, fastx_path, max_total_nchunks, dir_name, base_name, ext):
-    """Convert a Fasta/Fasta file to a chunked list of files"""
+def write_contigset_records(pbcore_writer_class, records, file_name):
+    """
+    Writes the Chunked fasta files and Writes a ContigSet.xml
+
+    Filename has contigset.xml
+
+    """
+    fasta_file_name = ".".join(file_name.split(".")[:-2]) + ".fasta"
+    write_pbcore_records(pbcore_writer_class, records, fasta_file_name)
+    log.debug("Writing ContigSet XML to {f}".format(f=file_name))
+    ds = ContigSet(fasta_file_name)
+    ds.write(file_name)
+
+
+def __to_chunked_fastx_files(write_records_func, pbcore_reader_class, pbcore_writer_class,
+                             chunk_key, input_file, max_total_nchunks, dir_name, base_name, ext):
+    """Convert a Fasta/Fasta file to a chunked list of files
+
+    :param write_records_func: Func(writer_class, records, file_name)
+    :param pbcore_reader_class Pbcore IO Reader
+    :param pbcore_writer_class Pbcore IO Writer
+    :param chunk_key: Chunk key to assign to PipelineChunk
+    :param input_file: Path to input file
+
+
+    """
 
     # grab the number of records so we can chunk it
-    with fastx_reader_klass(fastx_path) as f:
+    with pbcore_reader_class(input_file) as f:
         nrecords = __get_nrecords_from_reader(f)
 
     max_total_nchunks = min(nrecords, max_total_nchunks)
@@ -171,7 +187,7 @@ def __to_chunked_fastx_files(fastx_reader_klass, fastax_writer_klass, chunk_key,
 
     log.info("Found {n} total records. Max total chunks {m}. Splitting into {x} chunks".format(n=nrecords, x=n, m=max_total_nchunks))
     nchunks = 0
-    with fastx_reader_klass(fastx_path) as r:
+    with pbcore_reader_class(input_file) as r:
         it = iter(r)
         for i in xrange(max_total_nchunks):
             records = []
@@ -188,7 +204,7 @@ def __to_chunked_fastx_files(fastx_reader_klass, fastax_writer_klass, chunk_key,
                 for x in it:
                     records.append(x)
 
-            write_fasta_records(fastax_writer_klass, records, fasta_chunk_path)
+            write_records_func(pbcore_writer_class, records, fasta_chunk_path)
             total_bases = sum(len(r.sequence) for r in records)
             d = dict(total_bases=total_bases, nrecords=len(records))
             d[chunk_key] = os.path.abspath(fasta_chunk_path)
@@ -196,16 +212,19 @@ def __to_chunked_fastx_files(fastx_reader_klass, fastax_writer_klass, chunk_key,
             yield c
 
 
+_to_chunked_fastx_files = functools.partial(__to_chunked_fastx_files, write_pbcore_records)
+
+
 def to_chunked_fasta_files(fasta_path, max_total_nchunks, dir_name, base_name, ext):
-    return __to_chunked_fastx_files(FastaReader, FastaWriter, Constants.CHUNK_KEY_FASTA, fasta_path, max_total_nchunks, dir_name, base_name, ext)
+    return _to_chunked_fastx_files(FastaReader, FastaWriter, Constants.CHUNK_KEY_FASTA, fasta_path, max_total_nchunks, dir_name, base_name, ext)
 
 
 def to_chunked_fastq_files(fastq_path, max_total_nchunks, dir_name, base_name, ext):
-    return __to_chunked_fastx_files(FastqReader, FastqWriter, Constants.CHUNK_KEY_FASTQ, fastq_path, max_total_nchunks, dir_name, base_name, ext)
+    return _to_chunked_fastx_files(FastqReader, FastqWriter, Constants.CHUNK_KEY_FASTQ, fastq_path, max_total_nchunks, dir_name, base_name, ext)
 
 
 def to_chunked_contigset_files(dataset_path, max_total_nchunks, dir_name, base_name, ext):
-    return __to_chunked_fastx_files(ContigSet, FastaWriter, Constants.CHUNK_KEY_CONTIGSET, dataset_path, max_total_nchunks, dir_name, base_name, ext)
+    return __to_chunked_fastx_files(write_contigset_records, ContigSet, FastaWriter, Constants.CHUNK_KEY_CONTIGSET, dataset_path, max_total_nchunks, dir_name, base_name, ext)
 
 
 def _write_fasta_chunks_to_file(to_chunk_fastx_file_func, chunk_file, fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext):
@@ -288,6 +307,7 @@ def write_ccsset_chunks_to_file(chunk_file, ccsset_path,
     write_chunks_to_json(chunks, chunk_file)
     return 0
 
+
 def _to_chunked_dataset_files(dataset_type, dataset_path, reference_path,
                               max_total_nchunks, chunk_key, dir_name,
                               base_name, ext):
@@ -311,6 +331,7 @@ to_chunked_subreadset_files = functools.partial(_to_chunked_dataset_files,
     SubreadSet)
 to_chunked_ccsset_files = functools.partial(_to_chunked_dataset_files,
     ConsensusReadSet)
+
 
 def _to_zmw_chunked_dataset_files(dataset_type, dataset_path,
                                   max_total_nchunks, chunk_key, dir_name,
@@ -336,6 +357,7 @@ to_zmw_chunked_subreadset_files = functools.partial(
 to_zmw_chunked_ccsset_files = functools.partial(
     _to_zmw_chunked_dataset_files, ConsensusReadSet)
 
+
 def _write_dataset_zmw_chunks_to_file(chunk_func, chunk_key, chunk_file,
                                       dataset_path, max_total_chunks,
                                       dir_name, chunk_base_name, chunk_ext):
@@ -359,6 +381,7 @@ write_subreadset_zmw_chunks_to_file = functools.partial(
 write_ccsset_zmw_chunks_to_file = functools.partial(
     _write_dataset_zmw_chunks_to_file, to_zmw_chunked_ccsset_files,
     Constants.CHUNK_KEY_CCSSET)
+
 
 def write_hdfsubreadset_chunks_to_file(chunk_file, hdfsubreadset_path,
                                        max_total_chunks, dir_name,
