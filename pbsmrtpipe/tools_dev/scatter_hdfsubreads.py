@@ -50,7 +50,8 @@ def run_main(chunk_output_json, hdfsubread_xml, max_nchunks, output_dir):
     return CU.write_hdfsubreadset_chunks_to_file(chunk_output_json, hdfsubread_xml,
                                                  max_nchunks,
                                                  output_dir,
-                                                 "chunk_hdfsubreadset", 'xml')
+                                                 "chunk_hdfsubreadset",
+                                                 FileTypes.DS_SUBREADS_H5.ext)
 
 
 def _args_run_to_random_fasta_file(args):

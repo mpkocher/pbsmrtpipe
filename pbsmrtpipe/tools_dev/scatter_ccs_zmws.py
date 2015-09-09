@@ -36,7 +36,7 @@ def run_main(chunk_output_json, dataset_xml, max_nchunks, output_dir):
         max_total_chunks=max_nchunks,
         dir_name=output_dir,
         chunk_base_name="chunk_subreadset",
-        chunk_ext='xml')
+        chunk_ext=FileTypes.DS_CCS.ext)
 
 
 def _args_runner(args):
