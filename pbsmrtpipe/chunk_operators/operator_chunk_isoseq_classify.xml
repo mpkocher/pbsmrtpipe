@@ -27,14 +27,14 @@
                 <chunk-key>$chunk.fasta_nfl_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:2</task-output>
             </chunk>
-            <chunk><!-- FIXME this may not do what we want -->
-                <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
-                <chunk-key>$chunk.csv_id</chunk-key>
-                <task-output>pbtranscript.tasks.classify:3</task-output>
-            </chunk>
             <chunk>
                 <gather-task-id>pbsmrtpipe.tasks.gather_report</gather-task-id>
                 <chunk-key>$chunk.report_id</chunk-key>
+                <task-output>pbtranscript.tasks.classify:3</task-output>
+            </chunk>
+            <chunk><!-- FIXME this may not do what we want -->
+                <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
+                <chunk-key>$chunk.csv_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:4</task-output>
             </chunk>
         </chunks>

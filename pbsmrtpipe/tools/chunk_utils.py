@@ -7,7 +7,7 @@ import csv
 
 from pbcore.io import (FastaWriter, FastaReader, FastqReader, FastqWriter,
                        AlignmentSet, HdfSubreadSet, SubreadSet, ReferenceSet,
-                       ConsensusReadSet, ContigSet)
+                       ConsensusReadSet, ContigSet, FastaRecord)
 from pbsmrtpipe.legacy.input_xml import fofn_to_report
 
 from pbcommand.models import PipelineChunk
@@ -158,6 +158,9 @@ def write_contigset_records(pbcore_writer_class, records, file_name):
 
     """
     fasta_file_name = ".".join(file_name.split(".")[:-2]) + ".fasta"
+    # XXX workaround for pbcore's FastaWriter, which won't work with the
+    # IndexedFastaRecord that we might get here
+    records = (FastaRecord(r.header, r.sequence[:]) for r in records)
     write_pbcore_records(pbcore_writer_class, records, fasta_file_name)
     log.debug("Writing ContigSet XML to {f}".format(f=file_name))
     ds = ContigSet(fasta_file_name)
@@ -165,7 +168,7 @@ def write_contigset_records(pbcore_writer_class, records, file_name):
 
 
 def __to_chunked_fastx_files(write_records_func, pbcore_reader_class, pbcore_writer_class,
-                             chunk_key, input_file, max_total_nchunks, dir_name, base_name, ext):
+                             chunk_key, input_file, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=None):
     """Convert a Fasta/Fasta file to a chunked list of files
 
     :param write_records_func: Func(writer_class, records, file_name)
@@ -208,6 +211,8 @@ def __to_chunked_fastx_files(write_records_func, pbcore_reader_class, pbcore_wri
             total_bases = sum(len(r.sequence) for r in records)
             d = dict(total_bases=total_bases, nrecords=len(records))
             d[chunk_key] = os.path.abspath(fasta_chunk_path)
+            if extra_chunk_keys is not None:
+                d.update(extra_chunk_keys)
             c = PipelineChunk(chunk_id, **d)
             yield c
 
@@ -215,21 +220,22 @@ def __to_chunked_fastx_files(write_records_func, pbcore_reader_class, pbcore_wri
 _to_chunked_fastx_files = functools.partial(__to_chunked_fastx_files, write_pbcore_records)
 
 
-def to_chunked_fasta_files(fasta_path, max_total_nchunks, dir_name, base_name, ext):
-    return _to_chunked_fastx_files(FastaReader, FastaWriter, Constants.CHUNK_KEY_FASTA, fasta_path, max_total_nchunks, dir_name, base_name, ext)
+def to_chunked_fasta_files(fasta_path, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=None):
+    return _to_chunked_fastx_files(FastaReader, FastaWriter, Constants.CHUNK_KEY_FASTA, fasta_path, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=extra_chunk_keys)
 
 
-def to_chunked_fastq_files(fastq_path, max_total_nchunks, dir_name, base_name, ext):
-    return _to_chunked_fastx_files(FastqReader, FastqWriter, Constants.CHUNK_KEY_FASTQ, fastq_path, max_total_nchunks, dir_name, base_name, ext)
+def to_chunked_fastq_files(fastq_path, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=None):
+    return _to_chunked_fastx_files(FastqReader, FastqWriter, Constants.CHUNK_KEY_FASTQ, fastq_path, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=extra_chunk_keys)
 
 
-def to_chunked_contigset_files(dataset_path, max_total_nchunks, dir_name, base_name, ext):
-    return __to_chunked_fastx_files(write_contigset_records, ContigSet, FastaWriter, Constants.CHUNK_KEY_CONTIGSET, dataset_path, max_total_nchunks, dir_name, base_name, ext)
+def to_chunked_contigset_files(dataset_path, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=None):
+    return __to_chunked_fastx_files(write_contigset_records, ContigSet, FastaWriter, Constants.CHUNK_KEY_CONTIGSET, dataset_path, max_total_nchunks, dir_name, base_name, ext, extra_chunk_keys=extra_chunk_keys)
 
 
-def _write_fasta_chunks_to_file(to_chunk_fastx_file_func, chunk_file, fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext):
+def _write_fasta_chunks_to_file(to_chunk_fastx_file_func, chunk_file, fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext, extra_chunk_keys=None):
     chunks = list(to_chunk_fastx_file_func(
-        fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext))
+        fastx_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext,
+        extra_chunk_keys=extra_chunk_keys))
     write_chunks_to_json(chunks, chunk_file)
     return 0
 
@@ -242,8 +248,8 @@ def write_fastq_chunks_to_file(chunk_file, fasta_path, max_total_chunks, dir_nam
     return _write_fasta_chunks_to_file(to_chunked_fastq_files, chunk_file, fasta_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext)
 
 
-def write_contigset_chunks_to_file(chunk_file, dataset_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext):
-    return _write_fasta_chunks_to_file(to_chunked_contigset_files, chunk_file, dataset_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext)
+def write_contigset_chunks_to_file(chunk_file, dataset_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext, extra_chunk_keys=None):
+    return _write_fasta_chunks_to_file(to_chunked_contigset_files, chunk_file, dataset_path, max_total_chunks, dir_name, chunk_base_name, chunk_ext, extra_chunk_keys=extra_chunk_keys)
 
 
 def write_alignmentset_chunks_to_file(chunk_file, alignmentset_path,
