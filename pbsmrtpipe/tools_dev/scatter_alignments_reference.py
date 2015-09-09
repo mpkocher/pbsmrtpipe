@@ -62,7 +62,8 @@ def run_main(ds_xml, reference_set_xml, output_json, max_nchunks, output_dir):
                                          reference_set_xml,
                                          max_nchunks,
                                          output_dir,
-                                         "chunk_alignmentset", 'xml')
+                                         "chunk_alignmentset",
+                                         FileTypes.DS_ALIGN.ext)
     return 0
 
 

@@ -43,7 +43,9 @@ def get_contract_parser():
 def run_main(dataset_file, output_json, max_nchunks, chunk_key):
     log.info("Running {f} into {n} chunks".format(f=dataset_file, n=max_nchunks))
     output_dir = os.path.dirname(output_json)
-    CU.write_contigset_chunks_to_file(output_json, dataset_file, max_nchunks, output_dir, "scattered-contigset", "contigset.xml")
+    CU.write_contigset_chunks_to_file(output_json, dataset_file, max_nchunks,
+                                      output_dir, "scattered-contigset",
+                                      FileTypes.DS_CONTIG.ext)
     return 0
 
 

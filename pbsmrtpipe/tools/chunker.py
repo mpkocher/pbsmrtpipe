@@ -9,7 +9,7 @@ from pbcommand.utils import setup_log
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
 
-from pbcommand.models import PipelineChunk
+from pbcommand.models import PipelineChunk, FileTypes
 
 from pbcommand.models.report import Report, Attribute
 import pbsmrtpipe.tools.chunk_utils as CU
@@ -170,7 +170,8 @@ def _args_run_chunk_alignmentset(args):
                                                 args.fasta,
                                                 args.max_total_chunks,
                                                 args.output_dir,
-                                                "chunk_alignmentset", 'xml')
+                                                "chunk_alignmentset",
+                                                FileTypes.DS_ALIGN.ext)
 
 
 def _args_run_chunk_subreadset(args):
@@ -179,7 +180,8 @@ def _args_run_chunk_subreadset(args):
                                               args.fasta,
                                               args.max_total_chunks,
                                               args.output_dir,
-                                              "chunk_subreadset", 'xml')
+                                              "chunk_subreadset",
+                                              FileTypes.DS_SUBREADS.ext)
 
 
 def _add_chunk_hdfsubreadset_options(p):
@@ -200,7 +202,8 @@ def _args_run_chunk_hdfsubreadset(args):
                                                  args.hdfsubreadset,
                                                  args.max_total_chunks,
                                                  args.output_dir,
-                                                 "chunk_hdfsubreadset", 'xml')
+                                                 "chunk_hdfsubreadset",
+                                                 FileTypes.DS_SUBREADS_H5.ext)
 
 
 def _add_chunk_csv_options(p):
