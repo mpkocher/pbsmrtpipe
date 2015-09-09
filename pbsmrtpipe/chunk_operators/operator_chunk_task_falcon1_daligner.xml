@@ -4,9 +4,10 @@
     <task-id>falcon_ns.tasks.task_falcon1_run_daligner_jobs</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.scatter_run_daligner_jobs</scatter-task-id>
+        <scatter-task-id>pbfalcon.tasks.scatter_run_daligner_jobs</scatter-task-id>
         <chunks>
-            <chunk out="$chunk.bash_id" in="falcon_ns.tasks.task_falcon1_run_daligner_jobs:0"/>
+            <chunk out="$chunk.json_id" in="falcon_ns.tasks.task_falcon1_run_daligner_jobs:0"/>
+            <chunk out="$chunk.bash_id" in="falcon_ns.tasks.task_falcon1_run_daligner_jobs:1"/>
         </chunks>
     </scatter>
     <!-- Define the Gather Mechanism -->
@@ -14,7 +15,7 @@
         <chunks>
             <chunk>
                 <!-- This is actually a txt -->
-                <gather-task-id>pbsmrtpipe.tasks.gather_run_daligner_jobs</gather-task-id>
+                <gather-task-id>pbfalcon.tasks.gather_run_daligner_jobs</gather-task-id>
                 <chunk-key>$chunk.fofn_id</chunk-key>
                 <task-output>falcon_ns.tasks.task_falcon1_run_daligner_jobs:0</task-output>
             </chunk>

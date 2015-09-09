@@ -49,7 +49,6 @@ def quick_registry(output_dir):
     x = cmds.append
     x('python -m pbsmrtpipe.pb_tasks.dev emit-tool-contracts -o {o}'.format(o=output_dir))
     x('python -m pbcommand.cli.examples.dev_quick_hello_world emit-tool-contracts -o {o}'.format(o=output_dir))
-    x('python -m pbsmrtpipe.pb_tasks.tasks_falcon emit-tool-contracts -o {o}'.format(o=output_dir))
     return cmds
 
 
