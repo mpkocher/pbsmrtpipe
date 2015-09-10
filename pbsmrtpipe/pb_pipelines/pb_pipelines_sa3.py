@@ -285,26 +285,34 @@ def _core_isoseq(ccs_ds):
         (ccs_ds, "pbtranscript.tasks.cluster:2"),
         (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.cluster:3")
     ]
-    b6 = [ # pbreports isoseq_cluster
-        # draft consensus isoforms
-        ("pbtranscript.tasks.cluster:0", "pbreports.tasks.isoseq_cluster:0"),
-        # json report
-        ("pbtranscript.tasks.cluster:1", "pbreports.tasks.isoseq_cluster:1"),
-    ]
-    b7 = [ # ice_partial to map non-full-lenth reads to consensus isoforms
+    b6 = [ # ice_partial to map non-full-lenth reads to consensus isoforms
         # non-full-length transcripts
         ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.ice_partial:0"),
         # draft consensus isoforms
         ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_partial:1"),
         (ccs_ds, "pbtranscript.tasks.ice_partial:2"),
     ]
-    b8 = [
+    b7 = [
         (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.ice_quiver:0"),
         ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_quiver:1"),
         ("pbtranscript.tasks.cluster:3", "pbtranscript.tasks.ice_quiver:2"),
         ("pbtranscript.tasks.ice_partial:0", "pbtranscript.tasks.ice_quiver:3")
     ]
-    return b3 + b4 + b5 + b6 + b7 + b8
+    b8 = [
+        (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.ice_quiver_postprocess:0"),
+        ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_quiver_postprocess:1"),
+        ("pbtranscript.tasks.cluster:3", "pbtranscript.tasks.ice_quiver_postprocess:2"),
+        ("pbtranscript.tasks.ice_partial:0", "pbtranscript.tasks.ice_quiver_postprocess:3"),
+        ("pbtranscript.tasks.ice_quiver:0", "pbtranscript.tasks.ice_quiver_postprocess:4")
+    ]
+    b9 = [ # pbreports isoseq_cluster
+        # draft consensus isoforms
+        ("pbtranscript.tasks.cluster:0", "pbreports.tasks.isoseq_cluster:0"),
+        # json report - use the post-processed version!
+        ("pbtranscript.tasks.ice_quiver_postprocess:0", "pbreports.tasks.isoseq_cluster:1"),
+    ]
+
+    return b3 + b4 + b5 + b6 + b7 + b8 + b9
 
 
 @register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.1.0", tags=("isoseq", ))

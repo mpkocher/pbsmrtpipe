@@ -51,6 +51,7 @@ def _write_xunit_output(test_cases, result, output_xml, job_id):
     slog.info(xsuite)
     nfailed_tests = xsuite.nfailure
     nerrors = xsuite.nerrors
+    nskipped = xsuite.nskipped
 
     jenkins_xml = X.xunit_file_to_jenkins(output_xml, job_name=job_id)
 
@@ -62,7 +63,7 @@ def _write_xunit_output(test_cases, result, output_xml, job_id):
     with open(jenkins_xml_file, 'w') as f:
         f.write(str(jenkins_xml))
     
-    log.info("Completed running {t} tests. {e} errors and {n} failed tests.".format(e=nerrors, n=nfailed_tests, t=len(xsuite)))
+    log.info("Completed running {t} tests. {s} skipped, {e} errors, and {n} failed tests.".format(e=nerrors, n=nfailed_tests, s=nskipped, t=len(xsuite)))
 
 
 def run_butler_tests(test_cases, output_dir, output_xml, job_id):
