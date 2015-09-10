@@ -11,7 +11,7 @@ from base import get_temp_file
 
 def _write_fasta_or_contigset(file_name):
     fasta_file = re.sub(".contigset.xml", ".fasta", file_name)
-    rec = [ ">chr%d\nacgtacgtacgt"%x for x in range(251) ]
+    rec = [">chr%d\nacgtacgtacgt" % x for x in range(251)]
     with open(fasta_file, "w") as f:
         f.write("\n".join(rec))
     if file_name.endswith(".xml"):
@@ -32,17 +32,17 @@ class ScatterSequenceBase(object):
         chunks = load_pipeline_chunks_from_json(json_file)
         n_rec = 0
         with self.READER_CLASS(self.INPUT_FILES[0]) as f:
-            n_rec = len([ r for r in f ])
+            n_rec = len([r for r in f])
         n_rec_chunked = 0
         for chunk in chunks:
             d = chunk.chunk_d
             with self.READER_CLASS(d[self.CHUNK_KEYS[0]]) as cs:
-                n_rec_chunked += len([ r for r in cs ])
+                n_rec_chunked += len([r for r in cs])
         self.assertEqual(n_rec_chunked, n_rec)
 
 
 class TestScatterFilterFasta(ScatterSequenceBase,
-        pbcommand.testkit.core.PbTestScatterApp):
+                             pbcommand.testkit.core.PbTestScatterApp):
     READER_CLASS = FastaReader
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_filter_fasta"
     INPUT_FILES = [
@@ -54,7 +54,7 @@ class TestScatterFilterFasta(ScatterSequenceBase,
 
 
 class TestScatterContigSet(ScatterSequenceBase,
-        pbcommand.testkit.core.PbTestScatterApp):
+                           pbcommand.testkit.core.PbTestScatterApp):
     READER_CLASS = ContigSet
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_contigset"
     INPUT_FILES = [
