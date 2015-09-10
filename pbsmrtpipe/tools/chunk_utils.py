@@ -186,9 +186,9 @@ def __to_chunked_fastx_files(write_records_func, pbcore_reader_class, pbcore_wri
 
     max_total_nchunks = min(nrecords, max_total_nchunks)
 
-    n = int(math.ceil(float(nrecords)) / max_total_nchunks)
+    n_per_chunk = int(math.ceil(float(nrecords) / max_total_nchunks))
 
-    log.info("Found {n} total records. Max total chunks {m}. Splitting into {x} chunks".format(n=nrecords, x=n, m=max_total_nchunks))
+    log.info("Found {n} total records. Max total chunks {m}. Splitting into chunks of approximately {x} records each".format(n=nrecords, x=n_per_chunk, m=max_total_nchunks))
     nchunks = 0
     with pbcore_reader_class(input_file) as r:
         it = iter(r)
@@ -201,7 +201,8 @@ def __to_chunked_fastx_files(write_records_func, pbcore_reader_class, pbcore_wri
             fasta_chunk_path = os.path.join(dir_name, chunk_name)
 
             if i != max_total_nchunks:
-                for _ in xrange(n):
+                n_left = nrecords - (n_per_chunk * i)
+                for _ in xrange(min(n_per_chunk, n_left)):
                     records.append(it.next())
             else:
                 for x in it:
