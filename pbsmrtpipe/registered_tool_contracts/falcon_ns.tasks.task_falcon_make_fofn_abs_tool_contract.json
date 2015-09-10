@@ -1,7 +1,7 @@
 {
     "driver": {
         "env": {}, 
-        "exe": "python -m pbsmrtpipe.pb_tasks.tasks_falcon  run-rtc  ", 
+        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ", 
         "serialization": "json"
     }, 
     "tool_contract": {
