@@ -1,9 +1,10 @@
 
 import unittest
+import os.path as op
 import re
 
 from pbcommand.pb_io.common import load_pipeline_chunks_from_json
-from pbcore.io import ContigSet, FastaReader
+from pbcore.io import SubreadSet, ContigSet, FastaReader
 import pbcommand.testkit.core
 
 from base import get_temp_file
@@ -19,13 +20,8 @@ def _write_fasta_or_contigset(file_name):
         cs.write(file_name)
 
 
-class ScatterSequenceBase(object):
+class CompareChunkRecordsBase(object):
     READER_CLASS = None
-
-    @classmethod
-    def setUpClass(cls):
-        super(ScatterSequenceBase, cls).setUpClass()
-        _write_fasta_or_contigset(cls.INPUT_FILES[0])
 
     def run_after(self, rtc, output_dir):
         json_file = rtc.task.output_files[0]
@@ -39,6 +35,14 @@ class ScatterSequenceBase(object):
             with self.READER_CLASS(d[self.CHUNK_KEYS[0]]) as cs:
                 n_rec_chunked += len([r for r in cs])
         self.assertEqual(n_rec_chunked, n_rec)
+
+
+class ScatterSequenceBase(CompareChunkRecordsBase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(ScatterSequenceBase, cls).setUpClass()
+        _write_fasta_or_contigset(cls.INPUT_FILES[0])
 
 
 class TestScatterFilterFasta(ScatterSequenceBase,
@@ -63,3 +67,17 @@ class TestScatterContigSet(ScatterSequenceBase,
     MAX_NCHUNKS = 12
     RESOLVED_MAX_NCHUNKS = 12
     CHUNK_KEYS = ("$chunk.contigset_id",)
+
+
+MNT_DATA = "/mnt/secondary-siv/testdata/SA3-DS"
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterSubreadZMWs(CompareChunkRecordsBase,
+                             pbcommand.testkit.core.PbTestScatterApp):
+    READER_CLASS = SubreadSet
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_zmws"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml"
+    ]
+    MAX_NCHUNKS = 12
+    RESOLVED_MAX_NCHUNKS = 12
+    CHUNK_KEYS = ("$chunk.subreadset_id",)
