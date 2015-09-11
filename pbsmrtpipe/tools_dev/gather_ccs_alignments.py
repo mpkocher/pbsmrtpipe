@@ -30,7 +30,7 @@ def get_parser():
                            "ds_out",
                            "AlignmentSet",
                            "Gathered AlignmentSet",
-                           "gathered_alignments.dataset.xml.")
+                           "gathered.consensusalignmentset.xml")
     return p
 
 
