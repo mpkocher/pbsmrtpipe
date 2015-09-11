@@ -15,7 +15,7 @@
             {
                 "title": "ConsensusReadSet", 
                 "description": "Gathered ConsensusReadSet", 
-                "default_name": "gathered_consensus_reads.dataset.xml.", 
+                "default_name": "gathered.consensusreadset.xml", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }
