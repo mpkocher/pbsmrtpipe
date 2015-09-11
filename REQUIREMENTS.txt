@@ -2,8 +2,8 @@ jinja2
 numpy
 h5py
 networkx
-pbcore
-pbcommand
+pbcore <= 1.2.3
+pbcommand <= 0.2.14
 pyparsing==1.5.7
 pydot
 jsonschema
