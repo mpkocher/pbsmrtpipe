@@ -238,7 +238,7 @@ class ServiceAccessLayer(object):
 
     def _import_dataset(self, dataset_type, path):
         # This returns a job resource
-        return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
+        return _import_dataset_by_type(dataset_type)(self._to_url("/secondary-analysis/job-manager/jobs/import-dataset"), path)
 
     def run_import_dataset_by_type(self, dataset_type, path_to_xml):
         job = self._import_dataset(dataset_type, path_to_xml)
@@ -247,7 +247,7 @@ class ServiceAccessLayer(object):
 
     def _run_import_and_block(self, func, path, time_out=None):
         # func while be self.import_dataset_X
-        job = func(self, path)
+        job = func(path)
         job_id = job['id']
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
@@ -299,7 +299,7 @@ class ServiceAccessLayer(object):
         return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/pipeline-templates/{i}".format(i=pipeline_template_id)))
 
     def create_by_pipeline_template_id(self, name, pipeline_template_id, epoints):
-        """Runs a pbsmrtpipe pipeline by pipeline template id"""
+        """Creates and runs a pbsmrtpipe pipeline by pipeline template id"""
         # sanity checking to see if pipeline is valid
         _ = self.get_pipeline_template_by_id(pipeline_template_id)
 
