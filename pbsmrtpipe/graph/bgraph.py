@@ -1221,6 +1221,8 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks)
 
                 if len(pipeline_chunks) > max_nchunks:
                     raise TaskChunkingError("Task {i} created too many {n} chunks. Max chunks must be <= {m}".format(n=len(pipeline_chunks), m=max_nchunks, i=tnode_))
+                if not pipeline_chunks:
+                    raise TaskChunkingError("Task {i} generated 0 chunks. Chunks must be >0 and <= {m} file: {f}".format(i=tnode_, m=max_nchunks, f=bg.node[tnode_]['task'].output_files[0]))
 
                 # This applies the chunk operator once (or more) if task is chunked by multiple
                 # This needs to be revisited fixed.
