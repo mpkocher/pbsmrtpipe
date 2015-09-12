@@ -158,9 +158,6 @@ def write_contigset_records(pbcore_writer_class, records, file_name):
 
     """
     fasta_file_name = ".".join(file_name.split(".")[:-2]) + ".fasta"
-    # XXX workaround for pbcore's FastaWriter, which won't work with the
-    # IndexedFastaRecord that we might get here
-    records = (FastaRecord(r.header, r.sequence[:]) for r in records)
     write_pbcore_records(pbcore_writer_class, records, fasta_file_name)
     log.debug("Writing ContigSet XML to {f}".format(f=file_name))
     ds = ContigSet(fasta_file_name)

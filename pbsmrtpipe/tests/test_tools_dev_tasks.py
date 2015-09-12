@@ -81,6 +81,7 @@ class TestScatterFilterFasta(ScatterSequenceBase,
     CHUNK_KEYS = ("$chunk.fasta_id",)
 
 
+
 class TestScatterContigSet(ScatterSequenceBase,
                            pbcommand.testkit.core.PbTestScatterApp):
     READER_CLASS = ContigSet
@@ -90,6 +91,24 @@ class TestScatterContigSet(ScatterSequenceBase,
     ]
     MAX_NCHUNKS = 12
     RESOLVED_MAX_NCHUNKS = 12
+    CHUNK_KEYS = ("$chunk.contigset_id",)
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterContigSetIndexed(CompareScatteredRecordsBase,
+                                  pbcommand.testkit.core.PbTestScatterApp):
+    """
+    Test ContigSet scatter when the underlying .fasta file is indexed
+    (requires samtools and thus stored externally).
+    """
+    # XXX validates fix for bug ticket 27977
+    READER_CLASS = ContigSet
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_contigset"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/transcripts.contigset.xml"
+    ]
+    MAX_NCHUNKS = 2
+    RESOLVED_MAX_NCHUNKS = 2
     CHUNK_KEYS = ("$chunk.contigset_id",)
 
 
@@ -153,3 +172,15 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
             'num_below_snr_threshold': 27,
             'num_ccs_reads': 52,
             'num_not_enough_full_passes': 58})
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestGatherContigs(CompareGatheredRecordsBase,
+                        pbcommand.testkit.core.PbTestGatherApp):
+
+    READER_CLASS = ContigSet
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_contigs"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/contig_gather.chunks.json"
+    ]
+    CHUNK_KEY = "$chunk.contigset_id"
