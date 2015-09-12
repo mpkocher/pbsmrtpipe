@@ -9,8 +9,11 @@ import re
 
 from pbcommand.pb_io.common import load_pipeline_chunks_from_json
 from pbcommand.pb_io.report import load_report_from_json
-from pbcore.io import SubreadSet, ContigSet, FastaReader, ConsensusReadSet
+from pbcommand.models import PipelineChunk
 import pbcommand.testkit.core
+from pbcore.io import SubreadSet, ContigSet, FastaReader, ConsensusReadSet
+
+from pbsmrtpipe.tools.chunk_utils import write_chunks_to_json
 
 from base import get_temp_file
 
@@ -29,34 +32,39 @@ def _write_fasta_or_contigset(file_name):
 
 class CompareScatteredRecordsBase(object):
     READER_CLASS = None
+    READER_KWARGS = {}
 
     def run_after(self, rtc, output_dir):
+        unchunked = self.INPUT_FILES[0]
         json_file = rtc.task.output_files[0]
         chunks = load_pipeline_chunks_from_json(json_file)
         n_rec = 0
-        with self.READER_CLASS(self.INPUT_FILES[0]) as f:
+        with self.READER_CLASS(unchunked, **self.READER_KWARGS) as f:
             n_rec = len([r for r in f])
         n_rec_chunked = 0
         for chunk in chunks:
             d = chunk.chunk_d
-            with self.READER_CLASS(d[self.CHUNK_KEYS[0]]) as cs:
+            chunked = d[self.CHUNK_KEYS[0]]
+            with self.READER_CLASS(chunked, **self.READER_KWARGS) as cs:
                 n_rec_chunked += len([r for r in cs])
         self.assertEqual(n_rec_chunked, n_rec)
 
 
 class CompareGatheredRecordsBase(object):
     READER_CLASS = None
+    READER_KWARGS = {}
 
     def run_after(self, rtc, output_dir):
         gathered_file = rtc.task.output_files[0]
         chunks = load_pipeline_chunks_from_json(self.INPUT_FILES[0])
         n_rec = 0
-        with self.READER_CLASS(gathered_file) as f:
+        with self.READER_CLASS(gathered_file, **self.READER_KWARGS) as f:
             n_rec = len([r for r in f])
         n_rec_chunked = 0
         for chunk in chunks:
             d = chunk.chunk_d
-            with self.READER_CLASS(d[self.CHUNK_KEY]) as cs:
+            chunked = d[self.CHUNK_KEY]
+            with self.READER_CLASS(chunked, **self.READER_KWARGS) as cs:
                 n_rec_chunked += len([r for r in cs])
         self.assertEqual(n_rec_chunked, n_rec)
 
@@ -94,9 +102,29 @@ class TestScatterContigSet(ScatterSequenceBase,
 
 
 @unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterContigSetIndexed(CompareScatteredRecordsBase,
+                                  pbcommand.testkit.core.PbTestScatterApp):
+
+    """
+    Test ContigSet scatter when the underlying .fasta file is indexed
+    (requires samtools and thus stored externally).
+    """
+    # XXX validates fix for bug ticket 27977
+    READER_CLASS = ContigSet
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_contigset"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/transcripts.contigset.xml"
+    ]
+    MAX_NCHUNKS = 2
+    RESOLVED_MAX_NCHUNKS = 2
+    CHUNK_KEYS = ("$chunk.contigset_id",)
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterSubreadZMWs(CompareScatteredRecordsBase,
                              pbcommand.testkit.core.PbTestScatterApp):
     READER_CLASS = SubreadSet
+    READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_zmws"
     INPUT_FILES = [
         "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml"
@@ -110,6 +138,7 @@ class TestScatterSubreadZMWs(CompareScatteredRecordsBase,
 class TestScatterCCSZMWs(CompareScatteredRecordsBase,
                          pbcommand.testkit.core.PbTestScatterApp):
     READER_CLASS = ConsensusReadSet
+    READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_ccs_zmws"
     INPUT_FILES = [
         "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml"
@@ -124,6 +153,7 @@ class TestGatherCCS(CompareGatheredRecordsBase,
                     pbcommand.testkit.core.PbTestGatherApp):
 
     READER_CLASS = ConsensusReadSet
+    READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_ccs"
     INPUT_FILES = [
         "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs_gather.chunks.json"
@@ -153,3 +183,90 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
             'num_below_snr_threshold': 27,
             'num_ccs_reads': 52,
             'num_not_enough_full_passes': 58})
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestGatherContigs(CompareGatheredRecordsBase,
+                        pbcommand.testkit.core.PbTestGatherApp):
+
+    READER_CLASS = ContigSet
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_contigs"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/contig_gather.chunks.json"
+    ]
+    CHUNK_KEY = "$chunk.contigset_id"
+
+
+class TextRecordsGatherBase(object):
+    RECORDS = []
+    RECORD_HEADER = None
+    EXTENSION = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(TextRecordsGatherBase, cls).setUpClass()
+        json_file = cls.INPUT_FILES[0]
+        base = ".".join(json_file.split(".")[:-2])
+        chunks = []
+        for i in range(2):
+            file_name = "%s.%d.%s" % (base, i + 1, cls.EXTENSION)
+            with open(file_name, 'w') as f:
+                if cls.RECORD_HEADER is not None:
+                    f.write(cls.RECORD_HEADER)
+                f.write("\n".join(cls.RECORDS[i * 2:(i + 1) * 2]))
+                f.write("\n")  # XXX we need this for CSV gather
+            d = {cls.CHUNK_KEY: op.abspath(file_name)}
+            c = PipelineChunk("%s_%i" % (cls.EXTENSION, i + 1), **d)
+            chunks.append(c)
+        write_chunks_to_json(chunks, json_file)
+
+    def run_after(self, rtc, output_dir):
+        gathered_file = rtc.task.output_files[0]
+        base, ext = op.splitext(gathered_file)
+        self.assertEqual(ext, ".%s" % self.EXTENSION)
+        with open(gathered_file) as f:
+            lines = self._get_lines(f.readlines())
+            self.assertEqual(lines, self.RECORDS)
+
+
+class TestGatherGFF(TextRecordsGatherBase,
+                    pbcommand.testkit.core.PbTestGatherApp):
+
+    RECORDS = [
+        "contig1\tkinModCall\tmodified_base\t1\t1\t31\t+\t.\tcoverage=169",
+        "contig1\tkinModCall\tmodified_base\t2\t2\t41\t-\t.\tcoverage=170",
+        "contig1\tkinModCall\tmodified_base\t3\t3\t51\t+\t.\tcoverage=168",
+        "contig1\tkinModCall\tmodified_base\t4\t4\t60\t-\t.\tcoverage=173",
+    ]
+    RECORD_HEADER = None
+    EXTENSION = "gff"
+
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_gff"
+    INPUT_FILES = [
+        get_temp_file(suffix=".chunks.json")
+    ]
+    CHUNK_KEY = "$chunk.gff_id"
+
+    def _get_lines(self, lines):
+        return [l.strip() for l in lines if l[0] != '#']
+
+
+class TestGatherCSV(TextRecordsGatherBase,
+                    pbcommand.testkit.core.PbTestGatherApp):
+    RECORDS = [
+        "contig1,3000000,170",
+        "contig2,90000,180",
+        "contig3,58000,159",
+        "contig4,20000,160",
+    ]
+    RECORD_HEADER = "contig_id,length,coverage\n"
+    EXTENSION = "csv"
+
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_csv"
+    INPUT_FILES = [
+        get_temp_file(suffix=".chunks.json")
+    ]
+    CHUNK_KEY = "$chunk.csv_id"
+
+    def _get_lines(self, lines):
+        return [l.strip() for l in lines[1:]]

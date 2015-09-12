@@ -27,7 +27,7 @@ def get_parser():
                           "Gathered CHUNK Json with SubreadSet chunk key")
 
     p.add_output_file_type(FileTypes.DS_SUBREADS, "ds_out", "SubreadSet",
-                           "Gathered SubreadSet", "gathered_subreads.dataset.xml.")
+                           "Gathered SubreadSet", "gathered_subreads.dataset.xml")
     return p
 
 

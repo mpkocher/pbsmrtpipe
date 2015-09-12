@@ -15,7 +15,7 @@
             {
                 "title": "SubreadSet", 
                 "description": "Gathered SubreadSet", 
-                "default_name": "gathered_subreads.dataset.xml.", 
+                "default_name": "gathered_subreads.dataset.xml", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }

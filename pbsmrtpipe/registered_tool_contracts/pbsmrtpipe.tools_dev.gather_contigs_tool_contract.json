@@ -15,7 +15,7 @@
             {
                 "title": "ContigSet", 
                 "description": "Gathered ContigSet", 
-                "default_name": "gathered_contigset.dataset.xml.", 
+                "default_name": "gathered_contigset.dataset.xml", 
                 "id": "contigset", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }
