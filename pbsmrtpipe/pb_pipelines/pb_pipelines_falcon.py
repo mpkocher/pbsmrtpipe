@@ -15,9 +15,17 @@ def dev_register(relative_id, display_name, tags=()):
 
 @dev_register("pipe_falcon", "Falcon Pipeline", tags=("local", "chunking"))
 def get_task_falcon_local_pipeline():
-    """Simple example pipeline"""
+    """Simple falcon local pipeline.
+    Use an entry-point for FASTA input.
+    """
+    return _get_task_falcon_pipeline('$entry:e_02')
+
+def _get_task_falcon_pipeline(i_fasta_fofn):
+    """Basic falcon pipeline components.
+    """
     b0 = [
           ('$entry:e_01', 'falcon_ns.tasks.task_falcon_config:0'),
+          (i_fasta_fofn,  'falcon_ns.tasks.task_falcon_config:1'),
           ('falcon_ns.tasks.task_falcon_config:0', 'falcon_ns.tasks.task_falcon_make_fofn_abs:0'),
     ]
     br0 = [
