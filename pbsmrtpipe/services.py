@@ -283,7 +283,7 @@ class ServiceAccessLayer(object):
     def get_referenceset_by_id(self, int_or_uuid):
         return self.get_dataset_by_id(DataSetMetaTypes.REFERENCE, int_or_uuid)
 
-    def get_alignementset_by_id(self, int_or_uuid):
+    def get_alignmentset_by_id(self, int_or_uuid):
         return self.get_dataset_by_id(DataSetMetaTypes.ALIGNMENT, int_or_uuid)
 
     def create_logger_resource(self, idx, name, description):
@@ -312,11 +312,16 @@ class ServiceAccessLayer(object):
         d = dict(name=name, pipelineId=pipeline_template_id, entryPoints=seps, taskOptions=task_options, workflowOptions=workflow_options)
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{p}".format(p=JobTypes.PB_PIPE)), d)
 
-    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=600):
+    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=6000):
         """Blocks and runs a job with a timeout"""
 
-        job = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
-        job_id = job['id']
+        job_or_error = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
+        if 'errorType' in job_or_error:
+            emsg = job_or_error.get('message', "Unknown")
+            _d = dict(name=name, p=pipeline_template_id, eps=epoints)
+            raise JobExeError("Failed ({e}) to create job {n} args: {a}".format(n=name, e=emsg, a=_d))
+        else:
+            job_id = job_or_error['id']
 
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
