@@ -69,7 +69,7 @@ def run_main_dev_hello_world(input_file, output_file):
     return 0
 
 
-@registry("dev_hello_world", '0.1.0', FileTypes.TXT, FileTypes.TXT, is_distributed=False)
+@registry("dev_hello_world", '0.1.0', FileTypes.TXT, FileTypes.TXT, is_distributed=False, options=dict(dev_message="Hello Dev message"))
 def run_rtc(rtc):
     return run_main_dev_hello_world(rtc.task.input_files[0], rtc.task.output_files[0])
 

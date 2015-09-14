@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
-        "_comment": "Created by v0.2.8", 
+        "_comment": "Created by v0.2.14", 
         "name": "Gather Fasta", 
         "input_types": [
             {

@@ -67,14 +67,14 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.8", 
+        "_comment": "Created by v0.2.14", 
         "nchunks": "$max_nchunks", 
         "name": "SubreadSet ZMW scatter", 
         "input_types": [
             {
                 "description": "Pac Bio Fasta format", 
                 "title": "SubreadSet", 
-                "id": "subreadset", 
+                "id": "dataset", 
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ], 

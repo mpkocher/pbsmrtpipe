@@ -207,6 +207,13 @@ def run_show_template_details(template_id, output_preset_xml):
             warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
 
+        if pipeline.task_options:
+            print "Default Task Options"
+            for k, v in pipeline.task_options.iteritems():
+                print "'{k}' -> {v}".format(k=k, v=v)
+        else:
+            print "No default task options"
+
     else:
         msg = "Unable to find template id '{t}' in registered pipelines. Use the show-templates option to get a list of workflow options.".format(t=template_id)
         log.error(msg)

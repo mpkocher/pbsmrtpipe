@@ -13,7 +13,7 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": 5, 
+                    "default": 24, 
                     "type": "integer", 
                     "option_id": "pbsmrtpipe.task_options.dev_scatter_max_nchunks", 
                     "name": "Max NChunks", 
@@ -27,7 +27,7 @@
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.dev_scatter_max_nchunks": {
-                        "default": 5, 
+                        "default": 24, 
                         "type": "integer", 
                         "description": "Maximum number of Chunks", 
                         "title": "Max NChunks"
@@ -36,7 +36,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": "$chunk:fasta_id", 
+                    "default": "$chunk.fasta_id", 
                     "type": "string", 
                     "option_id": "pbsmrtpipe.task_options.dev_scatter_chunk_key", 
                     "name": "Chunk key", 
@@ -50,7 +50,7 @@
                 "type": "object", 
                 "properties": {
                     "pbsmrtpipe.task_options.dev_scatter_chunk_key": {
-                        "default": "$chunk:fasta_id", 
+                        "default": "$chunk.fasta_id", 
                         "type": "string", 
                         "description": "Chunk key to use (format $chunk:{chunk-key}", 
                         "title": "Chunk key"
@@ -67,7 +67,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.8", 
+        "_comment": "Created by v0.2.14", 
         "nchunks": "$max_nchunks", 
         "name": "Scatter Filter Fasta", 
         "input_types": [

@@ -38,7 +38,7 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ToolContractMetaTask,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask, PacBioOption,
-                               PipelineBinding, IOBinding)
+                               PipelineBinding, IOBinding, Pipeline)
 from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA
@@ -537,14 +537,16 @@ def __parse_template_id_to_bindings(root, registered_pipelines):
         slog.info("Loading pipeline template id {i}".format(i=template_id))
         pipeline = registered_pipelines[template_id]
 
-    return pipeline.all_bindings
+    return pipeline.all_bindings, pipeline.task_options
 
 
 def __parse_explicit_bindings(root, registered_pipelines):
     # fixme the registered pipelines are necessary to keep the interface
     bindings = parse_bindings(root)
     epoints = parse_entry_points(root)
-    return bindings + epoints
+    bs =  bindings + epoints
+    task_options = {}
+    return bs, task_options
 
 
 def __parse_pipeline_template_xml(binding_func, file_name, registered_pipelines):
@@ -552,8 +554,12 @@ def __parse_pipeline_template_xml(binding_func, file_name, registered_pipelines)
     t = ElementTree(file=file_name)
     r = t.getroot()
 
-    bindings = binding_func(r, registered_pipelines)
-    task_options = parse_task_options(r)
+    bindings, task_opts = binding_func(r, registered_pipelines)
+    # Values from XML file. Returned as a [(k, v), ] similar to the bindings
+    task_options = dict(parse_task_options(r))
+    # Override the pipeline templated defined task option defaults with
+    # the values in the XML
+    task_options.update(task_opts)
     wopts_tlist = parse_workflow_options(r)
     wopts = dict(wopts_tlist)
     workflow_options = validate_workflow_options(wopts)
