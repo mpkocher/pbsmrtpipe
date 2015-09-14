@@ -67,8 +67,8 @@ RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
 RESOLVED_TOOL_CONTRACT_AVRO = 'resolved-tool-contract.avro'
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
-#
-MAX_NCHUNKS = 64
+# Global hard limit on the maximum number of chunks per task are created
+MAX_NCHUNKS = 128
 
 
 class PacBioNamespaces(object):
