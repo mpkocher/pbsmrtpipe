@@ -21,7 +21,11 @@ class Constants(object):
 registry = PipelineRegistry(Constants.PT_NAMESPACE)
 
 
-@registry("dev_a", "Example 01", "0.1.0", tags=("dev", "hello-world"))
+def _example_topts():
+    return {"pbsmrtpipe.task_options.dev_message": "Preset Custom Dev Message from register pipeline"}
+
+
+@registry("dev_a", "Example 01", "0.1.0", tags=("dev", "hello-world"), task_options=_example_topts())
 def to_bs():
     """Custom Pipeline Registry for dev hello world tasks"""
     b1 = [('$entry:e_01', 'pbsmrtpipe.tasks.dev_hello_world:0')]
