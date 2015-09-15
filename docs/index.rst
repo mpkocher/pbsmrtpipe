@@ -16,7 +16,6 @@ pbsmrtpipe
    pipeline_design
    cli
    task_model_extras
-   task_model_advanced
    testkit
    chunking
-   
+   chunking_task

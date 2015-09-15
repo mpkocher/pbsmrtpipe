@@ -1,7 +1,7 @@
 Installing
 ==========
 
-pbsmrtpipe only major dependency is pbcore, so installing should be painless to install locally for testing, or installing on the pacbio login node. This is tested on login14-biofx01.
+pbsmrtpipe only major python dependencies are pbcommand and pbcore. Installing should be painless to install locally for testing, or installing on the remote system.
 
 .. note:: graphviz is external subprocess dependency. You must have dot in your path.
 
@@ -47,12 +47,13 @@ Grab pbsmrtpipe
 
 .. code-block:: bash
 
-    $> git clone https://github.com/mpkocher/pbsmrtpipe.git
+    $> git clone https://github.com/PacificBiosciences/pbsmrtpipe.git
 
     $> cd pbsmrtpipe
 
-    $> # this will install pbcore (from github), compile pysam, etc...  amongst other things
-    $> pip install -r REQUIREMENTS.txt
+    $> # this will install pbcore andn pbcommand
+    $> pip install -r PB_REQUIREMENTS.txt # this will install pbcommand and pbcore from master on github
+    $> pip install -r REQUIREMENTS.txt # will install from pypi
     $> pip install .
 
     $> # for nosetests
@@ -63,8 +64,8 @@ submitted to the cluster, otherwise the cluster tests will be skipped). This wil
 
 .. code-block:: bash
 
-    $> make unit-test
-    $> # which just calls nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests pbsmrtpipe/tests
+    $> make test-suite
+    $> # which just run several unittests and integration tests. See the example output in test-data/*
 
 Ready to start!
 
