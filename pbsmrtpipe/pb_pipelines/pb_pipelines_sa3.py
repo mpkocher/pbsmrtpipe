@@ -332,7 +332,7 @@ def _core_isoseq(ccs_ds):
     return b3 + b4 + b5 + b6 + b7 + b8 + b9
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.1.0", tags=("isoseq", ))
+@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.1.0", tags=("isoseq", ), task_options={"pbccs.task_options.min_passes":1})
 def ds_isoseq():
     """
     (Partial) IsoSeq pipeline, starting from subreads.
