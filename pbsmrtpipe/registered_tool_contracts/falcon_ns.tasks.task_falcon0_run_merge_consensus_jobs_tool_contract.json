@@ -29,7 +29,7 @@
         ], 
         "is_distributed": false, 
         "name": "Tool task_falcon0_run_merge_consensus_jobs", 
-        "nproc": 4, 
+        "nproc": 1,
         "output_types": [
             {
                 "default_name": "generic.fofn", 

@@ -23,7 +23,7 @@
         ], 
         "is_distributed": false, 
         "name": "Tool task_falcon2_run_asm", 
-        "nproc": 4, 
+        "nproc": 1,
         "output_types": [
             {
                 "default_name": "file.fasta", 
