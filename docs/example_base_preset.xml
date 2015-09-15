@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline-template-preset>
+    <!-- Pipeline Engine Level Options -->
+    <options>
+        <option id="pbsmrtpipe.options.max_nchunks" >
+            <value>13</value>
+        </option>
+        <option id="pbsmrtpipe.options.cluster_manager" >
+            <value>/path/to/my-cluster-template-dir</value>
+        </option>
+    </options>
+
+    <!-- Task Options -->
+    <task-options>
+        <!-- Typically, this is NOT a good idea to a single task option to
+         to every pipeline execution. -->
+        <option id="pbsmrtpipe.task_options.option_id1">
+            <value>1234</value>
+        </option>
+    </task-options>
+</pipeline-template-preset >

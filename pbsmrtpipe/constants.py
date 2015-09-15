@@ -1,6 +1,7 @@
 import functools
 # This is where all the rdf imports should be. Other modules should import them
 # from here because of the plugin registry.
+import os
 import re
 
 
@@ -67,8 +68,19 @@ RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
 RESOLVED_TOOL_CONTRACT_AVRO = 'resolved-tool-contract.avro'
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
+# ***** DEFAULT PIPELINE LEVEL OPTIONS ******
 # Global hard limit on the maximum number of chunks per task are created
 MAX_NCHUNKS = 128
+MAX_NPROC = 16
+MAX_TOTAL_NPROC = None
+MAX_NWORKERS = 100
+CHUNKED_MODE = False
+# Only if the CLUSTER_MANAGER_DIR is defined
+DISTRIBUTED_MODE = True
+CLUSTER_MANAGER_DIR = None
+TMP_DIR = os.getenv('TMP_DIR', '/tmp')
+EXIT_ON_FAILIURE = False
+DEBUG_MODE = False
 
 
 class PacBioNamespaces(object):

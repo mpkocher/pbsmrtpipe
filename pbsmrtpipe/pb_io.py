@@ -184,42 +184,42 @@ def validator(value):
 @register_workflow_option
 def _to_max_chunks_option():
     return OP.to_option_schema(_to_wopt_id("max_nchunks"), "integer", "Max Number of Chunks",
-                               "Max Number of chunks that a file will be scattered into", 10)
+                               "Max Number of chunks that a file will be scattered into", GlobalConstants.MAX_NCHUNKS)
 
 
 @register_workflow_option
 def _to_max_nproc_option():
     return OP.to_option_schema(_to_wopt_id("max_nproc"), "integer",
                                "Maximum Total Number of Processors Per Task",
-                               "Maximum number of Processors per Task.", 16)
+                               "Maximum number of Processors per Task.", GlobalConstants.MAX_NPROC)
 
 
 @register_workflow_option
 def _to_max_nproc_option():
     return OP.to_option_schema(_to_wopt_id("max_total_nproc"), ("integer", "null"),
                                "Maximum Total Number of Processors",
-                               "Maximum Total number of Processors/Slots the workflow engine will use (null means there is no limit).", None)
+                               "Maximum Total number of Processors/Slots the workflow engine will use (null means there is no limit).", GlobalConstants.MAX_TOTAL_NPROC)
 
 
 @register_workflow_option
 def _get_workflow_option_schema():
     return OP.to_option_schema(_to_wopt_id("max_nworkers"), "integer",
                                "Max Number of Workers",
-                               "Max Number of concurrently running tasks. (Note:  max_nproc will restrict the number of workers if max_nworkers * max_nproc > max_total_nproc)", 100)
+                               "Max Number of concurrently running tasks. (Note:  max_nproc will restrict the number of workers if max_nworkers * max_nproc > max_total_nproc)", GlobalConstants.MAX_NWORKERS)
 
 
 @register_workflow_option
 def _get_chunked_mode_schema():
     return OP.to_option_schema(_to_wopt_id("chunk_mode"), "boolean",
                                "Chunked File Mode",
-                               "Enable file splitting (chunking) mode", False)
+                               "Enable file splitting (chunking) mode", GlobalConstants.CHUNKED_MODE)
 
 
 @register_workflow_option
 def _get_distributed_mode_schema():
     return OP.to_option_schema(_to_wopt_id("distributed_mode"), "boolean",
                                "Distributed File Mode",
-                               "Enable Distributed mode to submit jobs to the cluster. (Must provide 'cluster_manager' path to cluster templates)", True)
+                               "Enable Distributed mode to submit jobs to the cluster. (Must provide 'cluster_manager' path to cluster templates)", GlobalConstants.DISTRIBUTED_MODE)
 
 
 @register_workflow_option
@@ -227,14 +227,14 @@ def _get_cluster_manager_schema():
     return OP.to_option_schema(_to_wopt_id("cluster_manager"), ("string", "null"),
                                "Cluster Template Path",
                                "Path to Cluster template files directory. The directory must contain 'start.tmpl', 'interactive.tmpl' and 'kill.tmpl' "
-                               "Or path to python module (e.g., 'pbsmrtpipe.cluster_templates.sge')", "pbsmrtpipe.cluster_templates.sge_pacbio")
+                               "Or the path can be provided to a python module (e.g., 'pbsmrtpipe.cluster_templates.sge')", "pbsmrtpipe.cluster_templates.sge_pacbio")
 
 
 @register_workflow_option
 def _get_node_tmp_dir_schema():
     return OP.to_option_schema(_to_wopt_id("tmp_dir"), ("string", "null"), "Temp directory",
                                "Temporary directory (/tmp) on the execution node. If running in distributed mode, "
-                               "the tmp directory must be on the head node too.", "/tmp")
+                               "the tmp directory must be on the head node too.", GlobalConstants.TMP_DIR)
 
 
 @register_workflow_option
@@ -246,14 +246,13 @@ def _get_process_url_schema():
 @register_workflow_option
 def _get_exit_on_failure():
     return OP.to_option_schema(_to_wopt_id("exit_on_failure"), "boolean", "Exit On Failure",
-                               "Immediately exit if a task fails (Instead of trying to run as many tasks as possible before exiting.", False)
+                               "Immediately exit if a task fails (Instead of trying to run as many tasks as possible before exiting.)", GlobalConstants.EXIT_ON_FAILIURE)
 
 
 @register_workflow_option
 def _get_exit_on_failure():
     return OP.to_option_schema(_to_wopt_id("debug_mode"), "boolean", "Enable Debug Mode",
-                               "Debug will emit debug messages to Stdout and set the level in the master log to DEBUG.", False)
-
+                               "Debug will emit debug messages to Stdout and set the level in the master log to DEBUG.", GlobalConstants.DEBUG_MODE)
 
 
 def validate_or_modify_workflow_level_options(wopts):

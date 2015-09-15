@@ -11,6 +11,7 @@ pbsmrtpipe
 
    installing
    intro
+   configuration_details
    task_model
    task_testing
    pipeline_design
