@@ -90,5 +90,25 @@ def run_bam2fasta(rtc):
     return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
+@registry("bam2fastq_ccs", "0.1.0",
+          FileTypes.DS_CCS,
+          FileTypes.FASTQ, is_distributed=True, nproc=1)
+def run_bam2fastq_ccs(rtc):
+    """
+    Duplicate of run_bam2fastq, but with ConsensusReadSet as input.
+    """
+    return run_bam_to_fastq(rtc.task.input_files[0], rtc.task.output_files[0])
+
+
+@registry("bam2fasta_ccs", "0.1.0",
+          FileTypes.DS_CCS,
+          FileTypes.FASTA, is_distributed=True, nproc=1)
+def run_bam2fasta_ccs(rtc):
+    """
+    Duplicate of run_bam2fasta, but with ConsensusReadSet as input.
+    """
+    return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0])
+
+
 if __name__ == '__main__':
     sys.exit(registry_runner(registry, sys.argv[1:]))
