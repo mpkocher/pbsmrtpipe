@@ -202,7 +202,15 @@ def run_show_template_details(template_id, output_preset_xml):
                         log.warn("Unable to load task {x}".format(x=task_id))
                     else:
                         for k, v in task.option_schemas.iteritems():
-                            task_options[k] = v
+                            if k in pipeline.task_options:
+                                # this is kinda not awesome. there's the double API here
+                                # pbcommand and pbsmrtpipe need to be converted to
+                                # use a non-jsonschema model
+                                v['properties'][k]['default'] = pipeline.task_options[k]
+                                v['pb_option']['default'] = pipeline.task_options[k]
+                                task_options[k] = v
+                            else:
+                                task_options[k] = v
 
             warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
@@ -238,7 +246,7 @@ def __dynamically_load_all():
 
     rtasks, rfile_types, roperators, rpipelines = L.load_all()
     _d = dict(n=_f(rtasks), f=_f(rfile_types), o=_f(roperators), p=_f(rpipelines))
-    print "Registry Loaded. Number of MetaTasks:{n} FileTypes:{f} ChunkOperators:{o} Pipelines:{p}".format(**_d)
+    print "Registry Loaded. Number of ToolContracts:{n} FileTypes:{f} ChunkOperators:{o} Pipelines:{p}".format(**_d)
     return rtasks, rfile_types, roperators, rpipelines
 
 
