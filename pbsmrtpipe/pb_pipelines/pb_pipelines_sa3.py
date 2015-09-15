@@ -27,6 +27,13 @@ class Constants(object):
     ENTRY_DS_CCS = to_entry("eid_ccs")
 
 
+def _core_export_fastx(subread_ds):
+    b1 = [(subread_ds, "pbsmrtpipe.tasks.bam2fasta:0")]
+    # bam2fastq
+    b2 = [(subread_ds, "pbsmrtpipe.tasks.bam2fastq:0")]
+    return b1 + b2
+
+
 def _core_align(subread_ds, reference_ds):
     # Call blasr/pbalign
     b3 = [(subread_ds, "pbalign.tasks.pbalign:0"),
@@ -223,16 +230,25 @@ def rs_site_acceptance_test_1():
     return x
 
 
+def _core_export_fastx(subread_ds):
+    b1 = [(subread_ds, "pbsmrtpipe.tasks.bam2fasta:0")]
+    b2 = [(subread_ds, "pbsmrtpipe.tasks.bam2fastq:0")]
+    return b1 + b2
+
+
+def _core_export_fastx_ccs(ccs_ds):
+    b1 = [(ccs_ds, "pbsmrtpipe.tasks.bam2fasta_ccs:0")]
+    b2 = [(ccs_ds, "pbsmrtpipe.tasks.bam2fastq_ccs:0")]
+    return b1 + b2
+
+
 def _core_ccs(subread_ds):
     # Call ccs
     b3 = [(subread_ds, "pbccs.tasks.ccs:0")]
     # CCS report
     b4 = [("pbccs.tasks.ccs:0", "pbreports.tasks.ccs_report:0")]
-    # bam2fasta
-    b5 = [("pbccs.tasks.ccs:0", "pbsmrtpipe.tasks.bam2fasta:0")]
-    # bam2fastq
-    b6 = [("pbccs.tasks.ccs:0", "pbsmrtpipe.tasks.bam2fastq:0")]
-    return b3 + b4 + b5 + b6
+    b5 = _core_export_fastx_ccs("pbccs.tasks.ccs:0")
+    return b3 + b4 + b5
 
 
 @register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads", "0.1.0", tags=("ccs", ))
@@ -241,6 +257,7 @@ def ds_ccs():
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
     """
     return _core_ccs(Constants.ENTRY_DS_SUBREAD)
+
 
 def _core_ccs_align(ccs_ds):
     # pbalign w/CCS input
@@ -329,3 +346,8 @@ def pb_isoseq():
     Internal IsoSeq pipeline starting from an existing CCS dataset.
     """
     return _core_isoseq(Constants.ENTRY_DS_CCS)
+
+
+@register_pipeline(to_pipeline_ns("sa3_ds_subreads_to_fastx"), "SA3 SubreadSet to .fastx Conversion", "0.1.0", tags=("convert",))
+def ds_subreads_to_fastx():
+    return _core_export_fastx(Constants.ENTRY_DS_SUBREAD)
