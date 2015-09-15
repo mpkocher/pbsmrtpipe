@@ -5,14 +5,14 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.2.8", 
+        "_comment": "Created by v0.2.14", 
         "description": "Quick tool dev_subread_report pbsmrtpipe.tasks.dev_subread_report", 
         "input_types": [
             {
-                "description": "description for <FileType id=PacBio.DataSet.SubreadSet name=file.subreads.xml >", 
+                "description": "description for PacBio.DataSet.SubreadSet_0", 
                 "file_type_id": "PacBio.DataSet.SubreadSet", 
-                "id": "Label PacBio.DataSet.SubreadSet", 
-                "title": "<FileType id=PacBio.DataSet.SubreadSet name=file.subreads.xml >"
+                "id": "Label PacBio.DataSet.SubreadSet_0", 
+                "title": "<FileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
             }
         ], 
         "is_distributed": false, 
@@ -23,7 +23,7 @@
                 "default_name": "report.json", 
                 "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report.json >", 
                 "file_type_id": "PacBio.FileTypes.JsonReport", 
-                "id": "Label PacBio.FileTypes.JsonReport", 
+                "id": "Label PacBio.FileTypes.JsonReport_0", 
                 "title": "<FileType id=PacBio.FileTypes.JsonReport name=report.json >"
             }
         ], 

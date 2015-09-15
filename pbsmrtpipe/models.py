@@ -519,7 +519,7 @@ class RunnableTask(object):
 
 class Pipeline(object):
 
-    def __init__(self, idx, display_name, version, description, bindings, entry_bindings, parent_pipeline_ids=None, tags=()):
+    def __init__(self, idx, display_name, version, description, bindings, entry_bindings, parent_pipeline_ids=None, tags=(), task_options=None):
         self.idx = idx
         self.version = version
         self.display_name = display_name
@@ -534,6 +534,8 @@ class Pipeline(object):
             self.parent_pipeline_ids = []
         else:
             self.parent_pipeline_ids = parent_pipeline_ids
+        # Task Level options
+        self.task_options = {} if task_options is None else task_options
 
     @property
     def pipeline_id(self):

@@ -31,8 +31,8 @@
 
     <!-- Default Task specific Options -->
     <task-options>
-        <option id="pbsmrtpipe.task_options.dev.hello_message">
-            <value>My Custom Preset Message</value>
+        <option id="pbsmrtpipe.task_options.dev_message">
+            <value>My Custom Preset Message from preset.xml</value>
         </option>
     </task-options>
 

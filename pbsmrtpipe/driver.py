@@ -699,7 +699,8 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         rc_preset = IO.parse_pipeline_preset_xml(rc_preset_or_none)
 
     if isinstance(workflow_template_xml_or_pipeline, Pipeline):
-        builder_record = IO.BuilderRecord(workflow_template_xml_or_pipeline.all_bindings, {}, {})
+        # Use default values defined in the Pipeline
+        builder_record = IO.BuilderRecord(workflow_template_xml_or_pipeline.all_bindings, workflow_template_xml_or_pipeline.task_options, {})
     else:
         slog.info("Loading workflow template.")
         builder_record = IO.parse_pipeline_template_xml(workflow_template_xml_or_pipeline, registered_pipelines)
@@ -737,9 +738,6 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     topts = IO.validate_raw_task_options(registered_tasks, topts)
     slog.info("successfully validated (pre DI) task options.")
 
-    log.debug("Resolved task options to {d}".format(d=workflow_level_opts))
-    log.debug(pprint.pformat(workflow_level_opts.to_dict(), indent=4))
-
     workflow_bindings = builder_record.bindings
 
     if isinstance(workflow_level_opts.cluster_manager_path, str):
@@ -760,6 +758,11 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     if debug_mode is True:
         slog.info("overriding debug-mode to True")
         workflow_level_opts.debug_mode = debug_mode
+
+    log.debug("Resolved workflow level options to {d}".format(d=workflow_level_opts))
+    log.debug("\n" + pprint.pformat(workflow_level_opts.to_dict(), indent=4))
+    log.debug("Initial resolving of loaded preset.xml and pipeline.xml task options:")
+    log.debug("\n" + pprint.pformat(topts))
 
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
