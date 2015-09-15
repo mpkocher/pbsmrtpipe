@@ -125,13 +125,13 @@ The four steps are encoded in XML for the "pbsmrtipe.tasks.filter" example shown
 Chunking Operators are registered under the **pbsmrtpipe.operators.** namespace.
 
 
-.. literalinclude:: ../pbsmrtpipe/chunk_operators/operator_chunk_filter.xml
+.. literalinclude:: ../pbsmrtpipe/chunk_operators/operator_chunk_align_ds.xml
     :language: xml
 
 
-Filter Subread Chunking Operator Example
+Quiver Chunking Operator Example
 
-.. literalinclude:: ../pbsmrtpipe/chunk_operators/operator_chunk_filter_subreads.xml
+.. literalinclude:: ../pbsmrtpipe/chunk_operators/operator_chunk_quiver_ds.xml
     :language: xml
 
 .. note:: This is still in flux.
