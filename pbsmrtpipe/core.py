@@ -235,14 +235,13 @@ class PipelineRegistry(object):
         _d = dict(k=self.__class__.__name__, n=self.namespace, p=len(self.pipelines))
         return "<{k} ns:{n} pipelines:{p} >".format(**_d)
 
-    def __call__(self, relative_pipeline_id, name, version, tags=()):
+    def __call__(self, relative_pipeline_id, name, version, tags=(), task_options=None):
         """Register a pipeline by relative id"""
         def _w(func):
             desc = func.__doc__
             bs = func()
             pipeline_id = ".".join([self.namespace, 'pipelines', relative_pipeline_id])
-            # FIXME. clean this up. Add support for TaskOptions and Pipeline Options
-            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags)
+            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags, task_options=task_options)
             return bs
 
         return _w
