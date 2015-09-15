@@ -54,3 +54,18 @@ class TestBam2Fasta(PbTestApp):
 @unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
 class TestBam2Fastq(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fastq"
+    DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
+
+
+@unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
+class TestBam2FastqCCS(TestBam2Fasta):
+    TASK_ID = "pbsmrtpipe.tasks.bam2fasta_ccs"
+    DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
+    INPUT_FILES = [ "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
+
+
+@unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
+class TestBam2FastqCCS(TestBam2Fasta):
+    TASK_ID = "pbsmrtpipe.tasks.bam2fastq_ccs"
+    DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
+    INPUT_FILES = [ "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
