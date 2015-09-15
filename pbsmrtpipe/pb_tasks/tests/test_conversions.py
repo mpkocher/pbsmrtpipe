@@ -3,6 +3,7 @@ import logging
 import os.path as op
 import subprocess
 
+from pbcore.io import FastaReader, FastqReader, openDataSet
 from pbcommand.testkit import PbTestApp
 from pbcommand.utils import which
 
@@ -49,19 +50,30 @@ class TestBam2Fasta(PbTestApp):
     RESOLVED_NPROC = 1
     RESOLVED_TASK_OPTIONS = {}
     RESOLVED_IS_DISTRIBUTED = True
+    READER_CLASS = FastaReader
+
+    def run_after(self, rtc, output_dir):
+        n_actual = n_expected = 0
+        with openDataSet(self.INPUT_FILES[0]) as ds:
+            n_expected = len([ rec for rec in ds ])
+        with self.READER_CLASS(rtc.task.output_files[0]) as f:
+            n_actual = len([ rec for rec in f ])
+        self.assertEqual(n_actual, n_expected)
 
 
 @unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
 class TestBam2Fastq(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fastq"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
+    READER_CLASS = FastqReader
 
 
 @unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
-class TestBam2FastqCCS(TestBam2Fasta):
+class TestBam2FastaCCS(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fasta_ccs"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     INPUT_FILES = [ "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
+    READER_CLASS = FastaReader
 
 
 @unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
@@ -69,3 +81,4 @@ class TestBam2FastqCCS(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fastq_ccs"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     INPUT_FILES = [ "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
+    READER_CLASS = FastqReader
