@@ -66,5 +66,9 @@ def get_task_falcon_local_pipeline():
     """Simple falcon local pipeline.
     FASTA input comes from config file.
     """
-    cfg = '$entry:e_01'
-    return _get_falcon_pipeline(cfg, '$entry:e_02')
+    i_cfg = '$entry:e_01'
+    init = [
+          (i_cfg, 'falcon_ns.tasks.task_falcon_config_get_fasta:0'),
+           ]
+    i_fasta_fofn = 'falcon_ns.tasks.task_falcon_config_get_fasta:0' # output from init
+    return init + _get_falcon_pipeline(i_cfg, i_fasta_fofn)
