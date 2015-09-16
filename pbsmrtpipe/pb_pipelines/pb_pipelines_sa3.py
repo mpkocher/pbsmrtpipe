@@ -371,33 +371,34 @@ def pb_isoseq():
     return _core_isoseq_cluster(Constants.ENTRY_DS_CCS)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify_align"),
-                   "SA3 IsoSeq Classification and GMAP Alignment", "0.1.0",
-                   tags=("isoseq", ),
-                   task_options=ISOSEQ_TASK_OPTIONS)
-def ds_isoseq_classify_align():
-    b1 = _core_isoseq_classify(Constants.ENTRY_DS_SUBREAD)
-    b2 = [
-        # full-length, non-chimeric transcripts
-        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.gmap:0"),
-        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
-    ]
-    return b1 + b2
-
-
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_align"),
-                   "SA3 IsoSeq Pipeline plus GMAP alignment", "0.1.0",
-                   tags=("isoseq", ),
-                   task_options=ISOSEQ_TASK_OPTIONS)
-def ds_isoseq_align():
-    b1 = _core_isoseq_cluster(Constants.ENTRY_DS_SUBREAD)
-    b2 = [
-        # XXX use high-quality isoforms here? or something else?
-        ("pbtranscript.tasks.ice_quiver_postprocess:2",
-         "pbtranscript.tasks.gmap:0"),
-        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
-    ]
-    return b1 + b2
+# XXX will resurrect in the future
+#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify_align"),
+#                   "SA3 IsoSeq Classification and GMAP Alignment", "0.1.0",
+#                   tags=("isoseq", ),
+#                   task_options=ISOSEQ_TASK_OPTIONS)
+#def ds_isoseq_classify_align():
+#    b1 = _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+#    b2 = [
+#        # full-length, non-chimeric transcripts
+#        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.gmap:0"),
+#        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
+#    ]
+#    return b1 + b2
+#
+#
+#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_align"),
+#                   "SA3 IsoSeq Pipeline plus GMAP alignment", "0.1.0",
+#                   tags=("isoseq", ),
+#                   task_options=ISOSEQ_TASK_OPTIONS)
+#def ds_isoseq_align():
+#    b1 = _core_isoseq_cluster("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+#    b2 = [
+#        # use high-quality isoforms here? or something else?
+#        ("pbtranscript.tasks.ice_quiver_postprocess:2",
+#         "pbtranscript.tasks.gmap:0"),
+#        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
+#    ]
+#    return b1 + b2
 
 
 @register_pipeline(to_pipeline_ns("sa3_ds_subreads_to_fastx"), "SA3 SubreadSet to .fastx Conversion", "0.1.0", tags=("convert",))
