@@ -21,7 +21,7 @@
                 "title": "<OutputFileType PacBio.FileTypes.txt Label PacBio.FileTypes.txt >"
             }
         ], 
-        "is_distributed": false, 
+        "is_distributed": true,
         "name": "Tool task_falcon0_run_daligner_jobs", 
         "nproc": 4, 
         "output_types": [

@@ -26,9 +26,9 @@
                 "id": "Label PacBio.FileTypes.generic_fofn_2", 
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic.fofn >"
             }
-        ], 
-        "is_distributed": false, 
-        "name": "Tool task_falcon0_run_merge_consensus_jobs", 
+        ],
+        "is_distributed": true,
+        "name": "Tool task_falcon0_run_merge_consensus_jobs",
         "nproc": 1,
         "output_types": [
             {
