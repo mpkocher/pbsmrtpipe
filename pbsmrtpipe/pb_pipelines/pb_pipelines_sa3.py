@@ -336,7 +336,16 @@ def _core_isoseq_cluster(ccs_ds):
     return _core_isoseq_classify(ccs_ds) + b5 + b6 + b7 + b8 + b9
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify"), "SA3 IsoSeq Classify", "0.1.0", tags=("isoseq", ), task_options={"pbccs.task_options.min_passes":1})
+ISOSEQ_TASK_OPTIONS = {
+    "pbccs.task_options.min_passes":1,
+    "pbccs.task_options.min_length":300,
+    "pbccs.task_options.min_zscore":-9999,
+    "pbccs.task_options.max_drop_fraction":1.0
+}
+
+@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify"),
+                   "SA3 IsoSeq Classify", "0.1.0",
+                   tags=("isoseq", ), task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq_classify():
     """
     Partial IsoSeq pipeline (classify step only), starting from subreads.
@@ -344,7 +353,8 @@ def ds_isoseq_classify():
     return _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.2.0", tags=("isoseq", ), task_options={"pbccs.task_options.min_passes":1, "pbccs.task_options.min_length":300, "pbccs.task_options.min_zscore":-9999, "pbccs.task_options.max_drop_fraction":1.0})
+@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.2.0",
+                   tags=("isoseq", ), task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq():
     """
     Main IsoSeq pipeline, starting from subreads.
@@ -358,6 +368,16 @@ def pb_isoseq():
     Internal IsoSeq pipeline starting from an existing CCS dataset.
     """
     return _core_isoseq_cluster(Constants.ENTRY_DS_CCS)
+
+
+#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify_align"), "SA3 IsoSeq Classification and Alignment", "0.1.0", tags=("isoseq", ), task_options={"pbccs.task_options.min_passes":1})
+def ds_isoseq_classify_align():
+    return []
+
+
+#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_align"), "SA3 IsoSeq Pipeline plus alignment", "0.1.0", tags=("isoseq", ), task_options={"pbccs.task_options.min_passes":1})
+def ds_isoseq_align():
+    return []
 
 
 @register_pipeline(to_pipeline_ns("sa3_ds_subreads_to_fastx"), "SA3 SubreadSet to .fastx Conversion", "0.1.0", tags=("convert",))
