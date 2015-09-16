@@ -36,29 +36,6 @@
             }, 
             {
                 "pb_option": {
-                    "default": 10, 
-                    "type": "integer", 
-                    "option_id": "pbtranscript.task_options.min_score", 
-                    "name": "Min. score", 
-                    "description": "Minimum phmmer score for primer hit (default: 10)"
-                }, 
-                "title": "JSON Schema for pbtranscript.task_options.min_score", 
-                "required": [
-                    "pbtranscript.task_options.min_score"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "pbtranscript.task_options.min_score": {
-                        "default": 10, 
-                        "type": "integer", 
-                        "description": "Minimum phmmer score for primer hit (default: 10)", 
-                        "title": "Min. score"
-                    }
-                }
-            }, 
-            {
-                "pb_option": {
                     "default": false, 
                     "type": "boolean", 
                     "option_id": "pbtranscript.task_options.ignore_polya", 
@@ -123,7 +100,7 @@
         "input_types": [
             {
                 "description": "Input fasta file (usually filtered_subreads.fasta or reads_of_insert.fasta)", 
-                "title": "ContigSet", 
+                "title": "ConsensusReadSet", 
                 "id": "readsFN", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }
