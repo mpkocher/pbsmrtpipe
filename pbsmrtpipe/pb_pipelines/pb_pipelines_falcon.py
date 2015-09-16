@@ -13,11 +13,12 @@ def dev_register(relative_id, display_name, tags=()):
     ptags = list(set(tags + ('dev', )))
     return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags)
 
-@dev_register("pipe_falcon", "Falcon Pipeline", tags=("local", "chunking"))
-def get_task_falcon_local_pipeline():
-    """Simple example pipeline"""
+def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
+    """Basic falcon pipeline components.
+    """
     b0 = [
-          ('$entry:e_01', 'falcon_ns.tasks.task_falcon_config:0'),
+          (i_cfg,        'falcon_ns.tasks.task_falcon_config:0'),
+          (i_fasta_fofn, 'falcon_ns.tasks.task_falcon_config:1'),
           ('falcon_ns.tasks.task_falcon_config:0', 'falcon_ns.tasks.task_falcon_make_fofn_abs:0'),
     ]
     br0 = [
@@ -52,3 +53,22 @@ def get_task_falcon_local_pipeline():
             ('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon2_run_asm:1'),
          ]
     return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf
+
+@dev_register("pipe_falcon_with_fofn", "Falcon FOFN Pipeline", tags=("local", "chunking"))
+def get_task_falcon_local_pipeline():
+    """Simple falcon local pipeline.
+    Use an entry-point for FASTA input.
+    """
+    return _get_falcon_pipeline('$entry:e_01', '$entry:e_02')
+
+@dev_register("pipe_falcon", "Falcon Pipeline", tags=("local", "chunking"))
+def get_task_falcon_local_pipeline():
+    """Simple falcon local pipeline.
+    FASTA input comes from config file.
+    """
+    i_cfg = '$entry:e_01'
+    init = [
+          (i_cfg, 'falcon_ns.tasks.task_falcon_config_get_fasta:0'),
+           ]
+    i_fasta_fofn = 'falcon_ns.tasks.task_falcon_config_get_fasta:0' # output from init
+    return init + _get_falcon_pipeline(i_cfg, i_fasta_fofn)
