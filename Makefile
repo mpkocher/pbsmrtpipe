@@ -63,3 +63,6 @@ build-java-classes:
 
 write-pipeline-templates-avro:
 	pbsmrtpipe show-templates --output-templates-avro extras/pipeline-templates-avro
+
+test-chunk:
+	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/tests/test_tools_dev_tasks.py
