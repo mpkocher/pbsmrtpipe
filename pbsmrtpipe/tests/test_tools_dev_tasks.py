@@ -198,7 +198,7 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
                              pbcommand.testkit.core.PbTestGatherApp):
 
     """
-    Test pbsmrtpipe.tools_dev.gather_alignments, consolidate=False
+    Test pbsmrtpipe.tools_dev.gather_alignments
     """
     READER_CLASS = AlignmentSet
     READER_KWARGS = {'strict': True}
@@ -207,9 +207,6 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
         "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/alignmentset_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.alignmentset_id"
-    TASK_OPTIONS = {
-        "pbsmrtpipe.task_options.consolidate_aligned_bam": False,
-    }
 
     def run_after(self, rtc, output_dir):
         super(TestGatherAlignmentSet, self).run_after(rtc,
@@ -221,19 +218,6 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
     def _check_bam_count(self, files):
         # should still be multiple .bam files
         self.assertNotEqual(len(files), 1)
-
-
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
-class TestGatherAlignmentSetConsolidate(TestGatherAlignmentSet):
-    """
-    Test pbsmrtpipe.tools_dev.gather_alignments, consolidate=True
-    """
-    TASK_OPTIONS = {
-        "pbsmrtpipe.task_options.consolidate_aligned_bam": True,
-    }
-
-    def _check_bam_count(self, files):
-        self.assertEqual(len(files), 1)
 
 
 @unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
