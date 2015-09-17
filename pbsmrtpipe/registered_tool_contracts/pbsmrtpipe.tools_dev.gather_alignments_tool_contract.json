@@ -10,59 +10,12 @@
         "task_type": "pbsmrtpipe.task_types.gathered", 
         "resource_types": [], 
         "description": "General Chunk Alignments Gather", 
-        "schema_options": [
-            {
-                "pb_option": {
-                    "default": false, 
-                    "type": "boolean", 
-                    "option_id": "pbsmrtpipe.task_options.consolidate_aligned_bam", 
-                    "name": "Consolidate .bam", 
-                    "description": "Merge chunked/gathered .bam files"
-                }, 
-                "title": "JSON Schema for pbsmrtpipe.task_options.consolidate_aligned_bam", 
-                "required": [
-                    "pbsmrtpipe.task_options.consolidate_aligned_bam"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "pbsmrtpipe.task_options.consolidate_aligned_bam": {
-                        "default": false, 
-                        "type": "boolean", 
-                        "description": "Merge chunked/gathered .bam files", 
-                        "title": "Consolidate .bam"
-                    }
-                }
-            }, 
-            {
-                "pb_option": {
-                    "default": 1, 
-                    "type": "integer", 
-                    "option_id": "pbsmrtpipe.task_options.consolidate_n_files", 
-                    "name": "Number of .bam files", 
-                    "description": "Number of .bam files to create in consolidate mode"
-                }, 
-                "title": "JSON Schema for pbsmrtpipe.task_options.consolidate_n_files", 
-                "required": [
-                    "pbsmrtpipe.task_options.consolidate_n_files"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "pbsmrtpipe.task_options.consolidate_n_files": {
-                        "default": 1, 
-                        "type": "integer", 
-                        "description": "Number of .bam files to create in consolidate mode", 
-                        "title": "Number of .bam files"
-                    }
-                }
-            }
-        ], 
+        "schema_options": [], 
         "output_types": [
             {
                 "title": "AlignmentSet", 
                 "description": "Gathered AlignmentSet", 
-                "default_name": "gathered_alignments.dataset.xml", 
+                "default_name": "gathered.alignmentset.xml", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
