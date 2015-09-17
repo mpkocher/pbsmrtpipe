@@ -15,7 +15,7 @@
             {
                 "title": "AlignmentSet", 
                 "description": "Gathered AlignmentSet", 
-                "default_name": "gathered_alignments.dataset.xml", 
+                "default_name": "gathered.alignmentset.xml", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }

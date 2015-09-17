@@ -200,7 +200,8 @@ def gather_contigset(input_files, output_file, new_resource_file=None,
     return output_file
 
 
-def __gather_readset(dataset_type, input_files, output_file, skip_empty=True):
+def __gather_readset(dataset_type, input_files, output_file, skip_empty=True,
+                     consolidate=False, consolidate_n_files=1):
     """
     :param input_files: List of file paths
     :param output_file: File Path
@@ -211,6 +212,10 @@ def __gather_readset(dataset_type, input_files, output_file, skip_empty=True):
     :rtype: str
     """
     tbr = dataset_type(*input_files)
+    if consolidate:
+        new_resource_file = output_file[:-4] + ".bam"
+        tbr.consolidate(new_resource_file, numFiles=consolidate_n_files)
+        tbr._induceIndices()
     tbr.write(output_file)
     return output_file
 
@@ -287,7 +292,7 @@ _gather_contigset_options = __add_gather_options("Output ContigSet XML file",
                                                  add_chunk_key_contigset)
 
 
-def __gather_runner(func, chunk_input_json, output_file, chunk_key):
+def __gather_runner(func, chunk_input_json, output_file, chunk_key, **kwargs):
     chunks = IO.load_pipeline_chunks_from_json(chunk_input_json)
 
     # Allow looseness
@@ -296,7 +301,7 @@ def __gather_runner(func, chunk_input_json, output_file, chunk_key):
         log.warn("Prepending chunk key with '$chunk.' to '{c}'".format(c=chunk_key))
 
     chunked_files = get_datum_from_chunks_by_chunk_key(chunks, chunk_key)
-    _ = func(chunked_files, output_file)
+    _ = func(chunked_files, output_file, **kwargs)
     return 0
 
 

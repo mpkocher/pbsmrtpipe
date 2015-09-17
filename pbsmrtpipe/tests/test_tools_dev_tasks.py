@@ -208,6 +208,17 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
     ]
     CHUNK_KEY = "$chunk.alignmentset_id"
 
+    def run_after(self, rtc, output_dir):
+        super(TestGatherAlignmentSet, self).run_after(rtc,
+            output_dir)
+        with AlignmentSet(rtc.task.output_files[0]) as ds:
+            self.assertTrue(ds.isIndexed)
+            self._check_bam_count(ds.toExternalFiles())
+
+    def _check_bam_count(self, files):
+        # should still be multiple .bam files
+        self.assertNotEqual(len(files), 1)
+
 
 @unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestGatherCCS(CompareGatheredRecordsBase,
