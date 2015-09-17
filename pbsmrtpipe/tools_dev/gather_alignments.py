@@ -13,6 +13,8 @@ class Constants(object):
     CHUNK_KEY = "$chunk:alignmentset_id"
     VERSION = "0.1.0"
     DRIVER = "python -m pbsmrtpipe.tools_dev.gather_alignments --resolved-tool-contract "
+    CONSOLIDATE_ID = "pbsmrtpipe.task_options.consolidate_aligned_bam"
+    N_FILES_ID = "pbsmrtpipe.task_options.consolidate_n_files"
 
 
 def get_parser():
@@ -31,19 +33,33 @@ def get_parser():
                            "AlignmentSet",
                            "Gathered AlignmentSet",
                            "gathered_alignments.dataset.xml")
+    p.add_boolean(Constants.CONSOLIDATE_ID, "consolidate",
+        default=False,
+        name="Consolidate .bam",
+        description="Merge chunked/gathered .bam files")
+    p.add_int(Constants.N_FILES_ID, "consolidate_n_files",
+        default=1,
+        name="Number of .bam files",
+        description="Number of .bam files to create in consolidate mode")
     return p
 
 
 def args_runner(args):
-    return run_main_gather_alignmentset(args.cjson_in,
-                                        args.ds_out,
-                                        args.chunk_key)
+    return run_main_gather_alignmentset(
+        chunk_input_json=args.cjson_in,
+        output_file=args.ds_out,
+        chunk_key=args.chunk_key,
+        consolidate=args.consolidate,
+        consolidate_n_files=args.consolidate_n_files)
 
 
 def rtc_runner(rtc):
-    return run_main_gather_alignmentset(rtc.task.input_files[0],
-                                        rtc.task.output_files[0],
-                                        rtc.task.chunk_key)
+    return run_main_gather_alignmentset(
+        chunk_input_json=rtc.task.input_files[0],
+        output_file=rtc.task.output_files[0],
+        chunk_key=rtc.task.chunk_key,
+        consolidate=rtc.task.options[Constants.CONSOLIDATE_ID],
+        consolidate_n_files=rtc.task.options[Constants.N_FILES_ID])
 
 
 def main(argv=sys.argv):
