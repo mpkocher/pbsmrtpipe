@@ -1,20 +1,29 @@
 {
     "version": "0.3.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbreports.report.summarize_coverage.summarize_coverage --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.summarize_coverage", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "Summarizes depth of coverage from an AlignmentSet file.\n\nPorted from summarize_coverage.py in pbreports/reports, which was ported from\nsummarizeCoverage.py in pbpy/bin.\n", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 1000, 
+                    "type": "integer", 
+                    "option_id": "pbreports.task_options.num_regions", 
+                    "name": "Num Regions", 
+                    "description": "Desired number of regions in the summary statistics (used for guidance, not strict). Defaults to 1000"
+                }, 
+                "title": "JSON Schema for pbreports.task_options.num_regions", 
                 "required": [
                     "pbreports.task_options.num_regions"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbreports.task_options.num_regions": {
@@ -23,14 +32,21 @@
                         "description": "Desired number of regions in the summary statistics (used for guidance, not strict). Defaults to 1000", 
                         "title": "Num Regions"
                     }
-                }, 
-                "title": "JSON Schema for pbreports.task_options.num_regions"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 0, 
+                    "type": "integer", 
+                    "option_id": "pbreports.task_options.region_size", 
+                    "name": "Region Size", 
+                    "description": "If supplied, used a fixed region size (overrides numRegions)"
+                }, 
+                "title": "JSON Schema for pbreports.task_options.region_size", 
                 "required": [
                     "pbreports.task_options.region_size"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbreports.task_options.region_size": {
@@ -39,14 +55,21 @@
                         "description": "If supplied, used a fixed region size (overrides numRegions)", 
                         "title": "Region Size"
                     }
-                }, 
-                "title": "JSON Schema for pbreports.task_options.region_size"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": false, 
+                    "type": "boolean", 
+                    "option_id": "pbreports.task_options.force_num_regions", 
+                    "name": "Force the number of regions", 
+                    "description": "If supplied, then try to use numRegions number of regions per reference, otherwise this script will optimize numRegions in the case of many references. [MAX_NUM_REGIONS=40000]"
+                }, 
+                "title": "JSON Schema for pbreports.task_options.force_num_regions", 
                 "required": [
                     "pbreports.task_options.force_num_regions"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbreports.task_options.force_num_regions": {
@@ -55,20 +78,20 @@
                         "description": "If supplied, then try to use numRegions number of regions per reference, otherwise this script will optimize numRegions in the case of many references. [MAX_NUM_REGIONS=40000]", 
                         "title": "Force the number of regions"
                     }
-                }, 
-                "title": "JSON Schema for pbreports.task_options.force_num_regions"
+                }
             }
         ], 
         "output_types": [
             {
                 "title": "Alignment Summary GFF", 
                 "description": "Alignment Summary GFF", 
-                "default_name": "aln_summ.gff", 
+                "default_name": "alignment_summary_final.gff", 
                 "id": "aln_summ_gff", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:11.829911", 
+        "_comment": "Created by v0.2.14", 
+        "name": "Summarize Coverage", 
         "input_types": [
             {
                 "description": "AlignmentSet", 
@@ -84,6 +107,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.summarize_coverage"
     }
 }
