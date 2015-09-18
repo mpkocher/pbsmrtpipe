@@ -12,3 +12,4 @@ ipdbplugin
 sphinx
 sphinx-bootstrap-theme
 #pygraphviz
+mock
