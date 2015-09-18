@@ -1,6 +1,4 @@
 jinja2
-numpy
-h5py
 networkx
 pbcore <= 1.2.3
 pbcommand <= 0.2.14
