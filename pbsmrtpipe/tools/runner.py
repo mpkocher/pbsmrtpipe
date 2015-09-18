@@ -198,7 +198,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
     # so core dumps are written to the job dir
     os.chdir(output_dir)
 
-    env_json = os.path.join(output_dir, 'env.json')
+    env_json = os.path.join(output_dir, '.env.json')
 
     IO.write_env_to_json(env_json)
 
@@ -206,6 +206,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
         with open(task_stderr, 'w') as stderr_fh:
             stdout_fh.write(repr(runnable_task) + "\n")
             stdout_fh.write("Created at {x} on {h}\n".format(x=datetime.datetime.now(), h=host))
+            stderr_fh.write("Running task in {o}\n".format(o=output_dir))
 
             # Validate Inputs
             for input_file in runnable_task.task.input_files:
@@ -311,7 +312,8 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         log.warn("No cluster provided. Running task locally.")
         return run_task(runnable_task, output_dir, stdout_, stderr_, debug_mode)
 
-    env_json = os.path.join(output_dir, 'env.json')
+    os.chdir(runnable_task.task.output_dir)
+    env_json = os.path.join(output_dir, '.cluster-env.json')
     IO.write_env_to_json(env_json)
 
     # sloppy API
@@ -340,8 +342,15 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         f.write("Creating cluster stdout for Job {i} {r}\n".format(i=job_id, r=runnable_task))
 
     debug_str = " --debug "
-    _d = dict(t=task_manifest_path, o=stdout, e=stderr, d=debug_str, m=mstdout, n=mstderr)
-    cmd = "pbtools-runner run {d} --task-stderr=\"{e}\" --task-stdout=\"{o}\" \"{t}\" > \"{m}\" 2> \"{n}\"".format(**_d)
+    _d = dict(t=task_manifest_path,
+              o=stdout,
+              e=stderr,
+              d=debug_str,
+              m=mstdout,
+              n=mstderr,
+              r=output_dir)
+
+    cmd = "pbtools-runner run {d} --output-dir=\"{r}\" --task-stderr=\"{e}\" --task-stdout=\"{o}\" \"{t}\" > \"{m}\" 2> \"{n}\"".format(**_d)
 
     with open(rcmd_shell, 'w+') as x:
         x.write(cmd + "\n")
@@ -397,6 +406,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
 
 def run_task_manifest(path):
     output_dir = os.path.dirname(path)
+    os.chdir(output_dir)
     stderr = os.path.join(output_dir, 'stderr')
     stdout = os.path.join(output_dir, 'stdout')
 
@@ -423,6 +433,7 @@ def run_task_manifest_on_cluster(path):
     :return:
     """
     output_dir = os.path.dirname(path)
+    os.chdir(output_dir)
     rt = RunnableTask.from_manifest_json(path)
 
     rcode, run_time = run_task_on_cluster(rt, path, output_dir, True)
