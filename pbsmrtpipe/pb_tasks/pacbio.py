@@ -64,6 +64,21 @@ def run_bam_to_fastx(program_name, input_file_name, output_file_name):
                     f_out.write(f_in.read())
     return 0
 
+def run_fasta_to_fofn(input_file_name, output_file_name):
+    args = ["echo", input_file_name, ">", output_file_name]
+    logging.info(" ".join(args))
+    result = run_cmd(" ".join(args), stdout_fh = sys.stdout,
+                     stderr_fh=sys.stderr)
+    return result.exit_code
+
+def run_fasta_to_referenceset(input_file_name, output_file_name):
+    args = ["dataset.py create", "--type ReferenceSet", "--generateIndices",
+            output_file_name, input_file_name]
+    logging.info(" ".join(args))
+    result = run_cmd(" ".join(args), stdout_fh = sys.stdout,
+                     stderr_fh=sys.stderr)
+    return result.exit_code
+
 
 run_bam_to_fasta = functools.partial(run_bam_to_fastx, "bam2fasta")
 run_bam_to_fastq = functools.partial(run_bam_to_fastx, "bam2fastq")
@@ -89,6 +104,18 @@ def run_bam2fastq(rtc):
 def run_bam2fasta(rtc):
     return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0])
 
+@registry("fasta2fofn", "0.1.0",
+          FileTypes.FASTA,
+          FileTypes.FOFN, is_distributed=False, nproc=1)
+def run_fasta2fofn(rtc):
+    return run_fasta_to_fofn(rtc.task.input_files[0], rtc.task.output_files[0])
+
+@registry("fasta2referenceset", "0.1.0",
+          FileTypes.FASTA,
+          FileTypes.DS_REF, is_distributed=True, nproc=1)
+def run_fasta2referenceset(rtc):
+    return run_fasta_to_referenceset(rtc.task.input_files[0],
+                                     rtc.task.output_files[0])
 
 @registry("bam2fastq_ccs", "0.1.0",
           FileTypes.DS_CCS,
