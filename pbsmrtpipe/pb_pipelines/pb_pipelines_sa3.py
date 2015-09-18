@@ -168,8 +168,14 @@ def _core_mod_detection(alignment_ds, reference_ds):
 @register_pipeline(to_pipeline_ns("ds_modification_detection"), 'SA3 Modification Detection', "0.1.0", tags=("modification-detection", ))
 def rs_modification_detection_1():
     """RS Modification Detection"""
-    return _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
-
+    b1 = _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
+    b2 = [
+        # basemods.gff
+        ("kinetics_tools.tasks.ipd_summary:0", "kinetics_tools.tasks.summarize_modifications:0"),
+        # alignment_summary_final.gff
+        ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.summarize_coverage:0", "kinetics_tools.tasks.summarize_modifications:1")
+    ]
+    return b1 + b2
 
 def _core_motif_analysis(ipd_gff, reference_ds):
     bs = []
