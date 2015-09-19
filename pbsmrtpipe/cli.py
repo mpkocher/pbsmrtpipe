@@ -82,7 +82,9 @@ def _add_entry_point_option(p):
 
 def _add_preset_xml_option(p):
     p.add_argument('--preset-xml', type=validate_file,
-                   help="Preset/Option XML file.")
+                   nargs='*',
+                   default=[],
+                   help="Preset/Option XML file. Multiple values can be provided.")
     return p
 
 
@@ -358,9 +360,11 @@ def _args_run_pipeline(args):
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
+    # Validate all preset files exist
+    preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri,
+                          ep_d, args.output_dir, preset_xmls, args.preset_rc_xml, args.service_uri,
                           force_distribute=force_distribute, force_chunk_mode=force_chunk, debug_mode=args.debug)
 
 
@@ -493,10 +497,10 @@ def _args_task_runner(args):
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
-
+    preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
     return D.run_single_task(registered_file_types, registered_tasks, chunk_operators,
                              ee_pd, args.task_id, args.output_dir,
-                             args.preset_xml, args.preset_rc_xml, args.service_uri,
+                             preset_xmls, args.preset_rc_xml, args.service_uri,
                              force_distribute=force_distribute,
                              force_chunk_mode=force_chunk, debug_mode=args.debug)
 
@@ -539,12 +543,12 @@ def _args_run_pipeline_id(args):
     ep_d = _cli_entry_point_args_to_dict(args.entry_points)
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
-
+    preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
     return D.run_pipeline(pipelines, registered_files_d,
                           registered_tasks_d,
                           chunk_operators,
                           pipeline,
-                          ep_d, args.output_dir, args.preset_xml,
+                          ep_d, args.output_dir, preset_xmls,
                           args.preset_rc_xml, args.service_uri,
                           force_distribute=force_distribute,
                           force_chunk_mode=force_chunk)
