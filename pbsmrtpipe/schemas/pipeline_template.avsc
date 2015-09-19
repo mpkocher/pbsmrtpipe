@@ -16,6 +16,10 @@
       "type": "string"
     },
     {
+      "name": "version",
+      "type": "string"
+    },
+    {
       "name": "entry_points",
       "type": {
         "type": "array",
