@@ -1,0 +1,39 @@
+{
+  "namespace": "com.pacbio.common.models.pipelines.viewrules",
+  "type": "record",
+  "name": "PipelineTemplateViewRule",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "name": "pipelineTemplateId",
+      "type": "string"
+    },
+    {
+      "name": "task_options",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "PipelineOptionView",
+          "fields": [
+            {
+              "name": "option_id",
+              "type": "string"
+            },
+            {
+              "name": "hidden",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
