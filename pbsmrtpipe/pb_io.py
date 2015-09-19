@@ -691,16 +691,20 @@ def sanity_entry_point(e_raw):
 
 
 def _pipeline_to_task_options(rtasks, p):
+    """Returns a list of SchemaOption """
     bs = itertools.chain(*p.all_bindings)
     task_ids = [_to_task_id_and_index(b) for b in bs if not b.startswith("$entry:")]
-    tids = [x for x, y in task_ids]
+    tids = {x for x, _ in task_ids}
     rtsks = [rtasks[tid] for tid in tids]
-    options = []
+    # {id:schema-opt}
+    options = {}
     for task in rtsks:
         if task.option_schemas:
             for k, v in task.option_schemas.iteritems():
-                options.append(v)
-    return options
+                if k not in options:
+                    options[k] = v
+
+    return options.values()
 
 
 def _option_jschema_to_pb_option(opt_jschema_d):
@@ -746,16 +750,17 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
                 raise e
 
-    entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
+    all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
+    entry_points_d = {d['id']: d for d in all_entry_points}
     tags = ["sa3"]
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
 
-    desc = "Pipeline {i} " if pipeline.description is None else pipeline.description
+    desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
 
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
-                version=version,
-                entry_points=entry_points,
+                version=pipeline.version,
+                entry_points=entry_points_d.values(),
                 bindings=[b.to_dict() for b in bindings],
                 tags=tags,
                 options=options,
