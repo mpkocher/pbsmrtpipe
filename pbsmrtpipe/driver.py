@@ -666,7 +666,7 @@ def _validate_entry_points_or_raise(entry_points_d):
 
 
 def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline,
-                          entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
+                          entry_points_d, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Load and resolve input IO layer
 
@@ -706,13 +706,13 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         builder_record = IO.parse_pipeline_template_xml(workflow_template_xml_or_pipeline, registered_pipelines)
         slog.info("successfully loaded workflow template.")
 
-    if preset_xml is None:
+    if preset_xmls:
+        slog.info("Loading preset(s) {p}".format(p=preset_xmls))
+        preset_record = IO.parse_pipeline_preset_xmls(preset_xmls)
+        slog.info("successfully loaded preset.")
+    else:
         slog.info("No preset provided. Skipping preset.xml loading.")
         preset_record = None
-    else:
-        slog.info("Loading preset {p}".format(p=preset_xml))
-        preset_record = IO.parse_pipeline_preset_xml(preset_xml)
-        slog.info("successfully loaded preset.")
 
     if rc_preset is not None:
         topts.update(dict(rc_preset.task_options))
@@ -767,7 +767,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
-def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
+def _load_io_for_task(registered_tasks, entry_points_d, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """Grungy loading of the IO and resolving values
 
     Returns a tuple of (WorkflowLevelOptions, TaskOptions, ClusterRender)
@@ -788,8 +788,8 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xml, rc_preset_or
         topts.update(dict(rc_preset.task_options))
         wopts.update(dict(rc_preset.workflow_options))
 
-    if preset_xml is not None:
-        preset_record = IO.parse_pipeline_preset_xml(preset_xml)
+    if preset_xmls:
+        preset_record = IO.parse_pipeline_preset_xmls(preset_xmls)
         wopts.update(dict(preset_record.workflow_options))
         topts.update(dict(preset_record.task_options))
 
@@ -913,7 +913,7 @@ def workflow_exception_exitcode_handler(func):
 @workflow_exception_exitcode_handler
 def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d,
                  chunk_operators, workflow_template_xml, entry_points_d,
-                 output_dir, preset_xml, rc_preset_or_none, service_uri,
+                 output_dir, preset_xmls, rc_preset_or_none, service_uri,
                  force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Entry point for running a pipeline
@@ -921,14 +921,14 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     :param workflow_template_xml: path to workflow xml
     :param entry_points_d:
     :param output_dir:
-    :param preset_xml: path to preset xml (or None)
+    :param preset_xmls: list of path to preset xml
     :return: exit code
 
     :type registered_tasks_d: dict[str, pbsmrtpipe.pb_tasks.core.MetaTask]
     :type registered_file_types_d: dict[str, pbsmrtpipe.pb_tasks.core.FileType]
     :type workflow_template_xml: str
     :type output_dir: str
-    :type preset_xml: str | None
+    :type preset_xmls: list[str]
     :type service_uri: str | None
     :type force_distribute: None | bool
 
@@ -939,7 +939,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     workflow_bindings, workflow_level_opts, task_opts, cluster_render = _load_io_for_workflow(registered_tasks_d,
                                                                                               registered_pipelines_d,
                                                                                               workflow_template_xml,
-                                                                                              entry_points_d, preset_xml,
+                                                                                              entry_points_d, preset_xmls,
                                                                                               rc_preset_or_none,
                                                                                               force_distribute=force_distribute,
                                                                                               force_chunk_mode=force_chunk_mode,
@@ -1040,7 +1040,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 
 @workflow_exception_exitcode_handler
 def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators,
-                    entry_points_d, task_id, output_dir, preset_xml, rc_preset_or_none,
+                    entry_points_d, task_id, output_dir, preset_xmls, rc_preset_or_none,
                     service_config,
                     force_distribute=None,
                     force_chunk_mode=None,
@@ -1061,7 +1061,7 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
                        "'show-tasks' to get a list of registered tasks.".format(i=task_id))
 
     workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d,
-                                                                       preset_xml, rc_preset_or_none,
+                                                                       preset_xmls, rc_preset_or_none,
                                                                        force_distribute=force_distribute,
                                                                        force_chunk_mode=force_chunk_mode,
                                                                        debug_mode=debug_mode)
