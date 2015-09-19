@@ -566,6 +566,54 @@ class Pipeline(object):
             print list(set(self.tags))
 
 
+class OptionViewRules(object):
+    def __init__(self, option_id, hidden):
+        self.option_id = option_id
+        self.hidden = hidden
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__, i=self.option_id, h=self.hidden)
+        return "<{k} {i} is-hidden? {h} >".format(**_d)
+
+    def to_dict(self):
+        return dict(option_id=self.option_id, hidden=self.hidden)
+
+    @staticmethod
+    def from_dict(d):
+        return OptionViewRules(d['option_id'], d['hidden'])
+
+
+class PipelineTemplateViewRules(object):
+    def __init__(self, idx, name, description, task_option_rules):
+        """
+
+        :param idx: Pipeline Template Id to apply rules to
+        :param name: Override pipeline template name
+        :param description: Override Description
+        :param task_option_rules: Option View Rules
+        :return:
+        """
+        # PipelineTemplate Id the rules will be applied to
+        self.id = idx
+        self.name = name
+        self.description = description
+        self.task_options = task_option_rules
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__, i=self.id, n=self.name)
+        return "<{k} {i} name:{n} >".format(**_d)
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    name=self.name,
+                    description=self.description, task_options=[t.to_dict() for t in self.task_options])
+
+    @staticmethod
+    def from_dict(d):
+        task_option_rules = [OptionViewRules.from_dict(x) for x in d['task_options']]
+        return PipelineTemplateViewRules(d['id'], d['name'], d['description'], task_option_rules)
+
+
 class ScatterChunk(object):
     def __init__(self, chunk_key, task_input):
         """Map of the chunk_key -> task input"""

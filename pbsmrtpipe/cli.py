@@ -113,7 +113,8 @@ def pretty_registered_pipelines(registered_new_pipelines_d):
     max_name_len = max(len(pipeline.display_name) for pipeline in registered_new_pipelines_d.values())
     pad = 4 + max_name_len
 
-    for i, k in enumerate(registered_new_pipelines_d.values()):
+    spipelines = sorted(registered_new_pipelines_d.values(), key=lambda x: x.pipeline_id)
+    for i, k in enumerate(spipelines):
         outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.idx]))
 
     return "\n".join(outs)
@@ -260,7 +261,7 @@ def run_show_tasks():
     max_id = max(len(t.task_id) for t in sorted_tasks)
     pad = 4
     offset = max_id + pad
-    print "Registered Tasks ({n})".format(n=len(sorted_tasks))
+    print "Registered ToolContracts ({n})".format(n=len(sorted_tasks))
     print
 
     def _to_a(klass):
