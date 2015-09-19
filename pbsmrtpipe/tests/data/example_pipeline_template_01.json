@@ -1,6 +1,7 @@
 {
   "id": "pbsmrtpipe.pipelines.sa3_fetch",
   "name": "Pipeline Name",
+  "version": "0.1.0",
   "description": "Pipeline Description",
   "_comment": "For the entry points, these will be distilled down to a set of entry points",
   "entry_points": [
