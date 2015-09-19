@@ -41,7 +41,7 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                PipelineBinding, IOBinding, Pipeline)
 from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
-from pbsmrtpipe.schemas import PT_SCHEMA
+from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -783,21 +783,32 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 description=desc)
 
 
-def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
-
-    d = pipeline_template_to_dict(pipeline, rtasks_d)
+def _write_avro(schema, d, output_file):
     f = open(output_file, 'w')
-    with DataFileWriter(f, DatumWriter(), PT_SCHEMA) as writer:
+    with DataFileWriter(f, DatumWriter(), schema) as writer:
         writer.append(d)
-
     return d
 
 
-def load_pipeline_template_from_avro(path):
+def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
+    d = pipeline_template_to_dict(pipeline, rtasks_d)
+    return _write_avro(PT_SCHEMA, d, output_file)
+
+
+def write_pipeline_template_rules_to_avro(pipeline_template_rule, output_file):
+    return _write_avro(PTVR_SCHEMA, pipeline_template_rule.to_dict(), output_file)
+
+
+def read_avro_to_d(path):
     f = open(path, 'r')
     with DataFileReader(f, DatumReader()) as reader:
-        p = reader.next()
+        yield reader.next()
 
+
+def load_pipeline_template_from_avro(path):
+    gen = read_avro_to_d(path)
+    # There's only one record
+    p = gen.next()
     return p
 
 

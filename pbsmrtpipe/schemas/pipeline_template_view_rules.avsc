@@ -5,14 +5,17 @@
   "fields": [
     {
       "name": "id",
+      "doc": "Pipeline Template Id to apply rules to.",
       "type": "string"
     },
     {
       "name": "description",
+      "doc": "Override pipeline template description",
       "type": "string"
     },
     {
-      "name": "pipelineTemplateId",
+      "name": "name",
+      "doc": "Override pipeline template name",
       "type": "string"
     },
     {
@@ -24,10 +27,12 @@
           "name": "PipelineOptionView",
           "fields": [
             {
+              "doc": "Tool Contract option id (e.g., pbcommand.task_options.my_option)",
               "name": "option_id",
               "type": "string"
             },
             {
+              "doc": "Should option be hidden",
               "name": "hidden",
               "type": "boolean"
             }

@@ -8,6 +8,7 @@ from avro.io import validate
 SCHEMA_REGISTRY = {}
 
 __all__ = ['validate_pipeline_template',
+           'validate_pipeline_template_view_rules',
            'validate_tc',
            'validate_rtc',
            'SCHEMA_REGISTRY']
@@ -23,6 +24,7 @@ def _load_schema(idx, name):
     return schema
 
 PT_SCHEMA = _load_schema("pipeline_template", "pipeline_template.avsc")
+PTVR_SCHEMA = _load_schema("pipeline_template_view_rules", "pipeline_template_view_rules.avsc")
 
 
 def _validate(schema, d):
@@ -30,3 +32,4 @@ def _validate(schema, d):
     return validate(schema, d)
 
 validate_pipeline_template = functools.partial(_validate, PT_SCHEMA)
+validate_pipeline_template_view_rules = functools.partial(_validate, PTVR_SCHEMA)
