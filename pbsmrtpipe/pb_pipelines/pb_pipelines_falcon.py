@@ -3,7 +3,7 @@ import logging
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import to_pipeline_ns
 
-from .pb_pipelines_sa3 import Constants
+from .pb_pipelines_sa3 import Constants, _core_align, _core_gc
 
 log = logging.getLogger(__name__)
 
@@ -72,3 +72,29 @@ def get_task_falcon_local_pipeline():
            ]
     i_fasta_fofn = 'falcon_ns.tasks.task_falcon_config_get_fasta:0' # output from init
     return init + _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+
+@dev_register("polished_falcon", "Polished Falcon Pipeline", tags=("local", "chunking"))
+def get_task_falcon_local_pipeline():
+    """Simple polished falcon local pipeline.
+    FASTA input comes from the SubreadSet.
+    """
+    i_cfg = '$entry:e_01'
+    subreadset = Constants.ENTRY_DS_SUBREAD
+
+    btf = [(subreadset, 'pbsmrtpipe.tasks.bam2fasta:0')]
+    ftfofn = [('pbsmrtpipe.tasks.bam2fasta:0', 'pbsmrtpipe.tasks.fasta2fofn:0')]
+
+    i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
+
+    falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+
+    ref = 'falcon_ns.tasks.task_falcon2_run_asm:0'
+
+    faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
+
+    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+
+    polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
+                                                     ref)
+
+    return btf + ftfofn + falcon + faidx + polish
