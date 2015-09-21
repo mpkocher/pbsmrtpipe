@@ -28,6 +28,8 @@ def _get_requirements(file_name):
         lines = f.readlines()
     rx = re.compile('^[A-z]')
     requirements = [l for l in lines if rx.match(l) is not None]
+    if "READTHEDOCS" in os.environ:
+        requirements = [r for r in requirements if not "pbcore" in r]
     return requirements
 
 setup(
