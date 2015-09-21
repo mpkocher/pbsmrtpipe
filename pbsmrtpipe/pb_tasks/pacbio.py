@@ -72,11 +72,21 @@ def run_fasta_to_fofn(input_file_name, output_file_name):
     return result.exit_code
 
 def run_fasta_to_referenceset(input_file_name, output_file_name):
-    args = ["dataset.py create", "--type ReferenceSet", "--generateIndices",
+    # this can be moved out to pbdataset/pbcoretools eventually
+    args = ["dataset create", "--type ReferenceSet", "--generateIndices",
             output_file_name, input_file_name]
     logging.info(" ".join(args))
     result = run_cmd(" ".join(args), stdout_fh = sys.stdout,
                      stderr_fh=sys.stderr)
+    # the '.py' name difference will be resolved in pbdataset/pbcoretools, but
+    # for now, work with either
+    if result.exit_code == 127:
+        args = ["dataset.py create", "--type ReferenceSet",
+                "--generateIndices",
+                output_file_name, input_file_name]
+        logging.info(" ".join(args))
+        result = run_cmd(" ".join(args), stdout_fh = sys.stdout,
+                         stderr_fh=sys.stderr)
     return result.exit_code
 
 
