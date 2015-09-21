@@ -6,7 +6,7 @@ Getting started
 ===============
 
 The **pbsmrtpipe** command is designed to be more-or-less self-documenting.
-It is intended to be run in one of several modes, which is specified as a
+It is normally run in one of several modes, which is specified as a
 positional argument.  To get the full overview of functionality, run this::
 
   $ pbsmrtpipe --help
@@ -31,6 +31,35 @@ for instructions on generating these), although single raw data files
 input will be *eid_subread*, a SubreadSet XML dataset, which contains one or
 more BAM files containing the raw unaligned subreads.  Also common is
 *eid_ref_dataset*, for a ReferenceSet or genomic FASTA file.
+
+
+Common workflows
+================
+
+All pipelines in pbsmrtpipe are prefixed with "pbsmrtpipe.pipelines."; for
+clarity this is omitted from the table below.
+
+
++-------------------------------+------------------------------------------+
+|Pipeline                       | Purpose                                  |
++===============================+==========================================+
+|sa3_ds_resequencing            | Map subreads to reference genome and     |
+|                               | determine consensus sequence with Quiver |
++-------------------------------+------------------------------------------+
+|sa3_ds_ccs                     | Generate high-accuracy Circular          |
+|                               | Consensus Reads                          |
++-------------------------------+------------------------------------------+
+|sa3_ds_ccs_mapping             | CCS + mapping to reference genome        |
++-------------------------------+------------------------------------------+
+|sa3_ds_isoseq_classify         | IsoSeq transcript analysis               |
++-------------------------------+------------------------------------------+
+|sa3_ds_isoseq                  | Full IsoSeq with clustering and          |
+|                               | Quiver polishing (much slower)           |
++-------------------------------+------------------------------------------+
+|ds_modification_motif_analysis | Base mod detection and motif finding     |
++-------------------------------+------------------------------------------+
+|sa3_hdfsubread_to_subread      | Import h5 basecalling files              |
++-------------------------------+------------------------------------------+
 
 
 Practical Examples
@@ -129,14 +158,22 @@ fasta file from quiver should be in ``pbsmrtpipe.tasks.gather_contigset-1``.
 Modifying task-specific options
 -------------------------------
 
-You can generate an appropriate initial preset.xml containing options relevant
-to a selected pipeline by running the *show-template-details* sub-command::
+You can generate an appropriate initial preset.xml containing task-specific
+options relevant to a selected pipeline by running the *show-template-details*
+sub-command::
 
   $ pbsmrtpipe show-template-details pbsmrtpipe.pipelines.sa3_ds_resequencing \
       -o preset_tasks.xml
 
-The entire ``<options>`` block can also be copied-and-pasted into the
-equivalent level in the ``preset.xml`` that contains global options.
+You may specify multiple preset files on the command line::
+
+  $ pbsmrtpipe pipeline-id pbsmrtpipe.pipelines.sa3_ds_resequencing \
+    --preset-xml preset.xml --preset-xml preset_tasks.xml \
+    -e eid_subread:/path/to/subreadset.xml \
+    -e eid_ref_dataset:/path/to/referenceset.xml
+
+Alternately, the entire ``<options>`` block can also be copied-and-pasted into
+the equivalent level in the ``preset.xml`` that contains global options.
 
 
 Appendix A: hdfsubreadset to subreadset conversion.
