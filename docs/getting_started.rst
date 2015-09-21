@@ -5,8 +5,8 @@ How to use pbsmrtpipe
 Getting started
 ===============
 
-The **pbsmrtpipe** command is designed to be more-or-less self-documenting.
-It is intended to be run in one of several modes, which is specified as a
+The ``pbsmrtpipe`` command is designed to be more-or-less self-documenting.
+It is normally run in one of several modes, which is specified as a
 positional argument.  To get the full overview of functionality, run this::
 
   $ pbsmrtpipe --help
@@ -33,22 +33,78 @@ more BAM files containing the raw unaligned subreads.  Also common is
 *eid_ref_dataset*, for a ReferenceSet or genomic FASTA file.
 
 
+Parallelization
+===============
+
+The algorithms used to analyze PacBio data are computationally intensive but
+also intrinsically highly parallel.  pbsmrtpipe is designed to scale to at
+least hundreds of processors on multi-core systems and/or managed clusters.
+This is handled by two distinct but complementary methods:
+
+  - **multiprocessing** is implemented in the underlying tasks, all of which
+    are generally shared-memory programs.  This is effectively always turned
+    on unless the ``max_nchunk`` parameter is set to 1 (see examples section
+    below for a description of how to modify parameter values).  For most
+    compute node configurations a value between 8 and 16 is appropriate.
+
+  - **chunking** is implemented by pbsmrtpipe and works by applying filters to
+    the input datasets, which direct tasks to operate on a subset ("chunk") of
+    the data.  These chunks are most commonly either a contiguous subset of
+    reads or windows in the reference genome sequence.  
+
+Note that at present, the task-level output directories (and the locations
+of the final result files) may be slightly different depending on whether
+chunking is used, since an intermediate "gather" step is required to join
+chunked results.
+
+
+Common workflows
+================
+
+All pipelines in pbsmrtpipe are prefixed with "pbsmrtpipe.pipelines."; for
+clarity this is omitted from the table below.
+
+
++-------------------------------+------------------------------------------+
+|Pipeline                       | Purpose                                  |
++===============================+==========================================+
+|sa3_ds_resequencing            | Map subreads to reference genome and     |
+|                               | determine consensus sequence with Quiver |
++-------------------------------+------------------------------------------+
+|sa3_ds_ccs                     | Generate high-accuracy Circular          |
+|                               | Consensus Reads                          |
++-------------------------------+------------------------------------------+
+|sa3_ds_ccs_mapping             | CCS + mapping to reference genome        |
++-------------------------------+------------------------------------------+
+|sa3_ds_isoseq_classify         | IsoSeq transcript analysis               |
++-------------------------------+------------------------------------------+
+|sa3_ds_isoseq                  | Full IsoSeq with clustering and          |
+|                               | Quiver polishing (much slower)           |
++-------------------------------+------------------------------------------+
+|ds_modification_motif_analysis | Base mod detection and motif finding     |
++-------------------------------+------------------------------------------+
+|sa3_hdfsubread_to_subread      | Import h5 basecalling files              |
++-------------------------------+------------------------------------------+
+|sa3_sat                        | Site Acceptance Test run on all new      |
+|                               | PacBio installations                     |
++-------------------------------+------------------------------------------+
+
+
 Practical Examples
 ==================
 
 Basic resequencing
 ------------------
 
-This pipeline uses **pbalign** to map reads to a reference genome, **quiver**
-to determine the consensus sequence, and generates several additional reports.
+This pipeline uses **pbalign** to map reads to a reference genome, and
+**quiver** to determine the consensus sequence.
 
 We will be using the **sa3_ds_resequencing** pipeline::
 
-w
   $ pbsmrtpipe show-template-details pbsmrtpipe.pipelines.sa3_ds_resequencing
 
-Which requires two entry points: a SubreadSet and a ReferenceSet.  A typical
-invocation might look like this::
+Which requires two entry points: a ``SubreadSet`` and a ``ReferenceSet``.  A
+typical invocation might look like this::
 
   $ pbsmrtpipe pipeline-id pbsmrtpipe.pipelines.sa3_ds_resequencing \
     -e eid_subread:/data/smrt/2372215/0007/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml \
@@ -60,29 +116,32 @@ intermediate results and resolved tool contracts (how the task was executed)
 for each task. The directory names (task_ids) should be somewhat
 self-explanatory.
 
+Other pipelines related to resequencing, such as the basemods detection
+and motif finding, have nearly identical command-line arguments except for the
+pipeline ID.
+
+
 Quiver (Genomic Consensus)
 --------------------------
 
 If you already have an AlignmentSet on which you just want to run quiver, the
-**pbsmrtpipe.pipelines.sa3_ds_genomic_consensus** pipeline will be more
-useful::
+**sa3_ds_genomic_consensus** pipeline will be faster::
 
   $ pbsmrtpipe pipeline-id pbsmrtpipe.pipelines.sa3_ds_genomic_consensus \
     -e eid_bam_alignment:/data/project/my_lambda_genome.alignmentset.xml \
     -e eid_ref_dataset:/data/references/lambda.referenceset.xml \
     --preset-xml=preset.xml
 
+Chunking
+--------
 
-Chunking (parallelization)
---------------------------
-
-We often want to be able to run a task in parallel across a cluster or large
-multi-core systen. To do this we need a preset.xml file for global pbsmrtpipe
-options, which can be generated by the following command::
+To take advantage of pbsmrtpipe's parallelization, we need an XML configuration
+file for global pbsmrtpipe options, which can be generated by the following
+command::
 
   $ pbsmrtpipe show-workflow-options -o preset.xml
 
-The output *preset.xml* will contain sections for each option that look like
+The output ``preset.xml`` will contain sections for each option that look like
 this::
 
         <option id="pbsmrtpipe.options.chunk_mode">
@@ -91,22 +150,22 @@ this::
 
 The appropriate types should be clear; quotes are unnecessary, and boolean
 values should have initial capitals ("True", "False").  To enable chunk mode,
-change the value of option *pbsmrtpipe.options.chunk_mode* to True.  Several
+change the value of option ``pbsmrtpipe.options.chunk_mode`` to True.  Several
 additional options may also need to be modified:
 
-  - *pbsmrtpipe.options.distributed_mode* enables execution of most tasks on
+  - ``bsmrtpipe.options.distributed_mode`` enables execution of most tasks on
     a managed cluster such as Sun Grid Engine.  Use this for chunk mode if
     available.
-  - *pbsmrtpipe.options.max_nchunks* sets the upper limit on the number of
+  - ``pbsmrtpipe.options.max_nchunks`` sets the upper limit on the number of
     jobs per task in chunked mode.  Note that more chunks is not always better,
     as there is some overhead to chunking (especially in distributed mode).
-  - *pbsmrtpipe.options.max_nproc* sets the upper limit on the number of
+  - ``pbsmrtpipe.options.max_nproc`` sets the upper limit on the number of
     processors per job (including individual chunk jobs).  This should be set
     to a value appropriate for your compute environment.
 
-You can tweak the nproc and nchunks in the preset.xml to consume as many
-queue slots as you desire, but note that the number of slots consumed will be
-the product of the two numbers.
+You can adjust ``max_nproc`` and max_nchunks`` in the preset.xml to consume as
+many queue slots as you desire, but note that the number of slots consumed will
+be the product of the two numbers.
 
 Once you are satisfied with the settings, add it to your command like this::
 
@@ -129,14 +188,22 @@ fasta file from quiver should be in ``pbsmrtpipe.tasks.gather_contigset-1``.
 Modifying task-specific options
 -------------------------------
 
-You can generate an appropriate initial preset.xml containing options relevant
-to a selected pipeline by running the *show-template-details* sub-command::
+You can generate an appropriate initial preset.xml containing task-specific
+options relevant to a selected pipeline by running the *show-template-details*
+sub-command::
 
   $ pbsmrtpipe show-template-details pbsmrtpipe.pipelines.sa3_ds_resequencing \
       -o preset_tasks.xml
 
-The entire ``<options>`` block can also be copied-and-pasted into the
-equivalent level in the ``preset.xml`` that contains global options.
+You may specify multiple preset files on the command line::
+
+  $ pbsmrtpipe pipeline-id pbsmrtpipe.pipelines.sa3_ds_resequencing \
+    --preset-xml preset.xml --preset-xml preset_tasks.xml \
+    -e eid_subread:/path/to/subreadset.xml \
+    -e eid_ref_dataset:/path/to/referenceset.xml
+
+Alternately, the entire ``<options>`` block can also be copied-and-pasted into
+the equivalent level in the ``preset.xml`` that contains global options.
 
 
 Appendix A: hdfsubreadset to subreadset conversion.
@@ -186,10 +253,10 @@ or::
   $ dataset create --type AlignmentSet allTheMappedSubreads.alignmentset.xml \
       myMappedSubreadBams/*.bam
 
-Make sure that all .bam files have corresponding .bai and .pbi index files
-before generating the dataset, as these make some operations significantly
-faster and are required by many programs.  You can create indices with
-**samtools** and **pbindex**, both included in the distribution::
+Make sure that all ``.bam`` files have corresponding ``.bai`` and ``.pbi``
+index files before generating the dataset, as these make some operations
+significantly faster and are required by many programs.  You can create indices
+with **samtools** and **pbindex**, both included in the distribution::
 
   $ samtools index subreads.bam
   $ pbindex subreads.bam
