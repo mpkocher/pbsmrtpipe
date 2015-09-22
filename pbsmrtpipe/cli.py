@@ -145,29 +145,39 @@ def pretty_bindings(bindings):
     return "\n".join(outs)
 
 
-def run_show_templates(output_dir=None):
+def run_show_templates(avro_output_dir=None, json_output_dir=None):
     import pbsmrtpipe.loader as L
-    from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro
+    from pbsmrtpipe.pb_io import (write_pipeline_templates_to_avro,
+                                  write_pipeline_templates_to_json)
 
     rtasks_d, _, _, pts = L.load_all()
 
     print pretty_registered_pipelines(pts)
 
-    if output_dir is not None:
-        write_pipeline_templates_to_avro(pts.values(), rtasks_d, output_dir)
+    if avro_output_dir is not None:
+        write_pipeline_templates_to_avro(pts.values(), rtasks_d, avro_output_dir)
+
+    if json_output_dir is not None:
+        write_pipeline_templates_to_json(pts.values(), rtasks_d, json_output_dir)
 
     return 0
 
 
 def add_run_show_templates_options(p):
     add_log_level_option(p)
-    p.add_argument('--output-templates-avro', type=str,
-                   help="Output Registered pipeline templates to AVRO files.")
+
+    def _to_h(m):
+        return "Resolve, Validate and Output Registered pipeline templates to {m} files to output-dir".format(m=m)
+
+    p.add_argument('--output-templates-avro', type=str, help=_to_h("AVRO"))
+    p.add_argument('--output-templates-json', type=str, help=_to_h("JSON"))
+
     return p
 
 
 def _args_run_show_templates(args):
-    return run_show_templates(output_dir=args.output_templates_avro)
+    return run_show_templates(avro_output_dir=args.output_templates_avro,
+                              json_output_dir=args.output_templates_json)
 
 
 def write_task_options_to_preset_xml_and_print(opts, output_file, warning_msg):
