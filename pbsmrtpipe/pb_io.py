@@ -565,7 +565,7 @@ _parse_pipeline_template_xml_with_template_id = functools.partial(__parse_pipeli
 _parse_pipeline_template = functools.partial(__parse_pipeline_template_xml, __parse_explicit_bindings)
 
 
-def parse_pipeline_preset_xml(file_name):
+def parse_pipeline_preset_xml(file_name, validate=True):
     if not os.path.exists(file_name):
         raise IOError("Unable to find preset in {f}".format(f=file_name))
 
@@ -573,7 +573,11 @@ def parse_pipeline_preset_xml(file_name):
     r = t.getroot()
     task_options = parse_task_options(r)
     wopts_tlist = parse_workflow_options(r)
-    #wopts = dict(wopts_tlist)
+    wopts = dict(wopts_tlist)
+    # XXX if we have multiple preset XMLs, we need to postpone this step
+    # until all of them have been collected and merged
+    if validate:
+        wopts_tlist = validate_workflow_options(wopts)
     # this API is a bit funky. [(k, v), ..] is the format
     return PresetRecord(task_options, wopts_tlist)
 
@@ -581,7 +585,7 @@ def parse_pipeline_preset_xml(file_name):
 def parse_pipeline_preset_xmls(file_names):
     task_options = {}
     workflow_options = {}
-    prs = [parse_pipeline_preset_xml(file_name) for file_name in file_names]
+    prs = [parse_pipeline_preset_xml(file_name, False) for file_name in file_names]
     for pr in prs:
         task_options.update(dict(pr.task_options))
         workflow_options.update(dict(pr.workflow_options))
