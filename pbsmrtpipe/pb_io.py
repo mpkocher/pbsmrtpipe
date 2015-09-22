@@ -573,10 +573,9 @@ def parse_pipeline_preset_xml(file_name):
     r = t.getroot()
     task_options = parse_task_options(r)
     wopts_tlist = parse_workflow_options(r)
-    wopts = dict(wopts_tlist)
-    workflow_options = validate_workflow_options(wopts)
+    #wopts = dict(wopts_tlist)
     # this API is a bit funky. [(k, v), ..] is the format
-    return PresetRecord(task_options, workflow_options)
+    return PresetRecord(task_options, wopts_tlist)
 
 
 def parse_pipeline_preset_xmls(file_names):
@@ -586,11 +585,12 @@ def parse_pipeline_preset_xmls(file_names):
     for pr in prs:
         task_options.update(dict(pr.task_options))
         workflow_options.update(dict(pr.workflow_options))
+    workflow_options_t = validate_workflow_options(workflow_options)
 
     def to_t(d):
         return [(k, v) for k,v in d.iteritems()]
 
-    return PresetRecord(to_t(task_options), to_t(workflow_options))
+    return PresetRecord(to_t(task_options), workflow_options_t)
 
 
 def parse_pipeline_template_xml(file_name, registered_pipelines):
