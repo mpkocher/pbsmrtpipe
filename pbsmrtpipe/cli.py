@@ -81,10 +81,10 @@ def _add_entry_point_option(p):
 
 
 def _add_preset_xml_option(p):
-    p.add_argument('--preset-xml', type=validate_file,
-                   nargs='*',
+    p.add_argument('--preset-xml', action="append", type=validate_file,
                    default=[],
-                   help="Preset/Option XML file. Multiple values can be provided.")
+                   help="Preset/Option XML file.  This option may be "+
+                        "repeated if you have multiple preset files.")
     return p
 
 
