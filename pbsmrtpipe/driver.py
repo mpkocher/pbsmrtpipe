@@ -543,8 +543,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
                 if not has_available_slots(task.nproc):
                     # not enough slots to run in
-                    slog.debug("Not enough slots available! {n} requested".format(n=task.nproc)
-                    break
+                    continue
 
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
