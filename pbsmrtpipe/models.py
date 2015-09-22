@@ -99,7 +99,7 @@ class PacBioOption(object):
 
     @staticmethod
     def from_dict(d):
-        return PacBioOption(d['option_id'], d['name'], d['default'], d['description'])
+        return PacBioOption(d['id'], d['name'], d['default'], d['description'])
 
     def to_dict(self):
         return dict(id=self.option_id, name=self.name, default=self.default, description=self.description)
@@ -118,7 +118,7 @@ class IOBinding(object):
 
     @staticmethod
     def from_dict(d):
-        return IOBinding(d['task_type_id'], d['index'], d['instance_id'])
+        return IOBinding(d['taskTypeId'], d['index'], d['instanceId'])
 
     def to_dict(self):
         return dict(taskTypeId=self.task_type_id,
@@ -576,11 +576,11 @@ class OptionViewRules(object):
         return "<{k} {i} is-hidden? {h} >".format(**_d)
 
     def to_dict(self):
-        return dict(option_id=self.option_id, hidden=self.hidden)
+        return dict(id=self.option_id, hidden=self.hidden)
 
     @staticmethod
     def from_dict(d):
-        return OptionViewRules(d['option_id'], d['hidden'])
+        return OptionViewRules(d['id'], d['hidden'])
 
 
 class PipelineTemplateViewRules(object):
@@ -606,11 +606,11 @@ class PipelineTemplateViewRules(object):
     def to_dict(self):
         return dict(id=self.id,
                     name=self.name,
-                    description=self.description, task_options=[t.to_dict() for t in self.task_options])
+                    description=self.description, taskOptions=[t.to_dict() for t in self.task_options])
 
     @staticmethod
     def from_dict(d):
-        task_option_rules = [OptionViewRules.from_dict(x) for x in d['task_options']]
+        task_option_rules = [OptionViewRules.from_dict(x) for x in d['taskOptions']]
         return PipelineTemplateViewRules(d['id'], d['name'], d['description'], task_option_rules)
 
 
