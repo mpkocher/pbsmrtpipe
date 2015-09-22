@@ -7,23 +7,19 @@ from xml.etree.cElementTree import ElementTree
 import collections
 import json
 import itertools
+
 from avro.datafile import DataFileWriter, DataFileReader
 from avro.io import DatumWriter, DatumReader
-
 import jsonschema
-from pbcommand.resolver import (ToolContractError,
-                                resolve_tool_contract,
+from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
-
 from pbcommand.models import (PipelineChunk,
                               ToolContractTask,
                               GatherToolContractTask,
                               ScatterToolContractTask)
-
 from pbcommand.models.common import REGISTERED_FILE_TYPES
 from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
-
 from xmlbuilder import XMLBuilder
 
 from pbsmrtpipe.validators import validate_provided_file_types, validate_task_type
@@ -738,7 +734,7 @@ def _to_entry_bindings(rtasks, a, b):
     file_type = _get_file_type_id(rtasks, task_id, t_in)
     etype = file_type.file_type_id
     name = "Entry Name: {i}".format(i=file_type.file_type_id)
-    return dict(file_type_id=etype, id=entry_id, name=name)
+    return dict(fileTypeId=etype, entryId=entry_id, name=name)
 
 
 def _to_pipeline_binding(s):
@@ -752,21 +748,20 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     :type pipeline: Pipeline
     """
-    version = "0.1.2"
     options = []
     task_pboptions = []
     joptions = _pipeline_to_task_options(rtasks, pipeline)
 
     for jtopt in joptions:
-            try:
-                pbopt = _option_jschema_to_pb_option(jtopt)
-                task_pboptions.append(pbopt)
-            except Exception as e:
-                sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
-                raise e
+        try:
+            pbopt = _option_jschema_to_pb_option(jtopt)
+            task_pboptions.append(pbopt)
+        except Exception as e:
+            sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
+            raise e
 
     all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
-    entry_points_d = {d['id']: d for d in all_entry_points}
+    entry_points_d = {d['entryId']: d for d in all_entry_points}
     tags = ["sa3"]
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
 
@@ -775,11 +770,11 @@ def pipeline_template_to_dict(pipeline, rtasks):
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
                 version=pipeline.version,
-                entry_points=entry_points_d.values(),
+                entryPoints=entry_points_d.values(),
                 bindings=[b.to_dict() for b in bindings],
                 tags=tags,
                 options=options,
-                task_options=[x.to_dict() for x in task_pboptions],
+                taskOptions=[x.to_dict() for x in task_pboptions],
                 description=desc)
 
 

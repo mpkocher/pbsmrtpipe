@@ -19,7 +19,7 @@
       "type": "string"
     },
     {
-      "name": "task_options",
+      "name": "taskOptions",
       "type": {
         "type": "array",
         "items": {
@@ -28,7 +28,7 @@
           "fields": [
             {
               "doc": "Tool Contract option id (e.g., pbcommand.task_options.my_option)",
-              "name": "option_id",
+              "name": "id",
               "type": "string"
             },
             {
