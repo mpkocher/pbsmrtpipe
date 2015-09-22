@@ -99,10 +99,10 @@ class PacBioOption(object):
 
     @staticmethod
     def from_dict(d):
-        return PacBioOption(d['option_id'], d['name'], d['default'], d['description'])
+        return PacBioOption(d['id'], d['name'], d['default'], d['description'])
 
     def to_dict(self):
-        return dict(option_id=self.option_id, name=self.name, default=self.default, description=self.description)
+        return dict(id=self.option_id, name=self.name, default=self.default, description=self.description)
 
 
 class IOBinding(object):
@@ -118,12 +118,12 @@ class IOBinding(object):
 
     @staticmethod
     def from_dict(d):
-        return IOBinding(d['task_type_id'], d['index'], d['instance_id'])
+        return IOBinding(d['taskTypeId'], d['index'], d['instanceId'])
 
     def to_dict(self):
-        return dict(task_type_id=self.task_type_id,
+        return dict(taskTypeId=self.task_type_id,
                     index=self.index,
-                    instance_id=self.instance_id)
+                    instanceId=self.instance_id)
 
 
 class PipelineBinding(object):
@@ -519,7 +519,7 @@ class RunnableTask(object):
 
 class Pipeline(object):
 
-    def __init__(self, idx, display_name, version, description, bindings, entry_bindings, parent_pipeline_ids=None, tags=()):
+    def __init__(self, idx, display_name, version, description, bindings, entry_bindings, parent_pipeline_ids=None, tags=(), task_options=None):
         self.idx = idx
         self.version = version
         self.display_name = display_name
@@ -534,6 +534,8 @@ class Pipeline(object):
             self.parent_pipeline_ids = []
         else:
             self.parent_pipeline_ids = parent_pipeline_ids
+        # Task Level options
+        self.task_options = {} if task_options is None else task_options
 
     @property
     def pipeline_id(self):
@@ -562,6 +564,54 @@ class Pipeline(object):
         print "[Parents]", self.parent_pipeline_ids
         if self.tags:
             print list(set(self.tags))
+
+
+class OptionViewRules(object):
+    def __init__(self, option_id, hidden):
+        self.option_id = option_id
+        self.hidden = hidden
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__, i=self.option_id, h=self.hidden)
+        return "<{k} {i} is-hidden? {h} >".format(**_d)
+
+    def to_dict(self):
+        return dict(id=self.option_id, hidden=self.hidden)
+
+    @staticmethod
+    def from_dict(d):
+        return OptionViewRules(d['id'], d['hidden'])
+
+
+class PipelineTemplateViewRules(object):
+    def __init__(self, idx, name, description, task_option_rules):
+        """
+
+        :param idx: Pipeline Template Id to apply rules to
+        :param name: Override pipeline template name
+        :param description: Override Description
+        :param task_option_rules: Option View Rules
+        :return:
+        """
+        # PipelineTemplate Id the rules will be applied to
+        self.id = idx
+        self.name = name
+        self.description = description
+        self.task_options = task_option_rules
+
+    def __repr__(self):
+        _d = dict(k=self.__class__.__name__, i=self.id, n=self.name)
+        return "<{k} {i} name:{n} >".format(**_d)
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    name=self.name,
+                    description=self.description, taskOptions=[t.to_dict() for t in self.task_options])
+
+    @staticmethod
+    def from_dict(d):
+        task_option_rules = [OptionViewRules.from_dict(x) for x in d['taskOptions']]
+        return PipelineTemplateViewRules(d['id'], d['name'], d['description'], task_option_rules)
 
 
 class ScatterChunk(object):

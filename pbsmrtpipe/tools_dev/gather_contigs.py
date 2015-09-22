@@ -33,7 +33,7 @@ def get_parser():
                            "contigset",
                            "ContigSet",
                            "Gathered ContigSet",
-                           "gathered_contigset.dataset.xml.")
+                           "gathered.contigset.xml")
 
     p.arg_parser.add_str(Constants.OPT_CHUNK_KEY,
                          "chunk_key",

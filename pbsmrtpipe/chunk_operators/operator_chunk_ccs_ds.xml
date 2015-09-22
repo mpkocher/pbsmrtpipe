@@ -18,8 +18,8 @@
                 <task-output>pbccs.tasks.ccs:0</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
-                <chunk-key>$chunk.csv_id</chunk-key>
+                <gather-task-id>pbsmrtpipe.tasks.gather_report</gather-task-id>
+                <chunk-key>$chunk.report_id</chunk-key>
                 <task-output>pbccs.tasks.ccs:1</task-output>
             </chunk>
         </chunks>

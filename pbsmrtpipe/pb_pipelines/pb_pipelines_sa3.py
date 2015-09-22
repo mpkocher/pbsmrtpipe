@@ -27,6 +27,13 @@ class Constants(object):
     ENTRY_DS_CCS = to_entry("eid_ccs")
 
 
+def _core_export_fastx(subread_ds):
+    b1 = [(subread_ds, "pbsmrtpipe.tasks.bam2fasta:0")]
+    # bam2fastq
+    b2 = [(subread_ds, "pbsmrtpipe.tasks.bam2fastq:0")]
+    return b1 + b2
+
+
 def _core_align(subread_ds, reference_ds):
     # Call blasr/pbalign
     b3 = [(subread_ds, "pbalign.tasks.pbalign:0"),
@@ -39,7 +46,9 @@ def _core_align_plus(subread_ds, reference_ds):
 
     b4 = [("pbalign.tasks.pbalign:0", "pbreports.tasks.mapping_stats:0")]
 
-    return bs + b4
+    b5 = [("pbalign.tasks.pbalign:0", "pbalign.tasks.consolidate_bam:0")]
+
+    return bs + b4 + b5
 
 
 def _core_gc(alignment_ds, reference_ds):
@@ -159,8 +168,14 @@ def _core_mod_detection(alignment_ds, reference_ds):
 @register_pipeline(to_pipeline_ns("ds_modification_detection"), 'SA3 Modification Detection', "0.1.0", tags=("modification-detection", ))
 def rs_modification_detection_1():
     """RS Modification Detection"""
-    return _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
-
+    b1 = _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
+    b2 = [
+        # basemods.gff
+        ("kinetics_tools.tasks.ipd_summary:0", "kinetics_tools.tasks.summarize_modifications:0"),
+        # alignment_summary_final.gff
+        ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.summarize_coverage:0", "kinetics_tools.tasks.summarize_modifications:1")
+    ]
+    return b1 + b2
 
 def _core_motif_analysis(ipd_gff, reference_ds):
     bs = []
@@ -223,16 +238,25 @@ def rs_site_acceptance_test_1():
     return x
 
 
+def _core_export_fastx(subread_ds):
+    b1 = [(subread_ds, "pbsmrtpipe.tasks.bam2fasta:0")]
+    b2 = [(subread_ds, "pbsmrtpipe.tasks.bam2fastq:0")]
+    return b1 + b2
+
+
+def _core_export_fastx_ccs(ccs_ds):
+    b1 = [(ccs_ds, "pbsmrtpipe.tasks.bam2fasta_ccs:0")]
+    b2 = [(ccs_ds, "pbsmrtpipe.tasks.bam2fastq_ccs:0")]
+    return b1 + b2
+
+
 def _core_ccs(subread_ds):
     # Call ccs
     b3 = [(subread_ds, "pbccs.tasks.ccs:0")]
     # CCS report
     b4 = [("pbccs.tasks.ccs:0", "pbreports.tasks.ccs_report:0")]
-    # bam2fasta
-    b5 = [("pbccs.tasks.ccs:0", "pbsmrtpipe.tasks.bam2fasta:0")]
-    # bam2fastq
-    b6 = [("pbccs.tasks.ccs:0", "pbsmrtpipe.tasks.bam2fastq:0")]
-    return b3 + b4 + b5 + b6
+    b5 = _core_export_fastx_ccs("pbccs.tasks.ccs:0")
+    return b3 + b4 + b5
 
 
 @register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads", "0.1.0", tags=("ccs", ))
@@ -241,6 +265,7 @@ def ds_ccs():
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
     """
     return _core_ccs(Constants.ENTRY_DS_SUBREAD)
+
 
 def _core_ccs_align(ccs_ds):
     # pbalign w/CCS input
@@ -267,3 +292,123 @@ def pb_align_ccs():
     ConsensusReadSet.
     """
     return _core_ccs_align(Constants.ENTRY_DS_CCS)
+
+
+def _core_isoseq_classify(ccs_ds):
+    b3 = [ # classify all CCS reads - CHUNKED (ContigSet scatter)
+        (ccs_ds, "pbtranscript.tasks.classify:0")
+    ]
+    b4 = [ # pbreports isoseq_classify
+        ("pbtranscript.tasks.classify:1", "pbreports.tasks.isoseq_classify:0"),
+        ("pbtranscript.tasks.classify:3", "pbreports.tasks.isoseq_classify:1")
+    ]
+    return b3 + b4
+
+
+def _core_isoseq_cluster(ccs_ds):
+    b5 = [ # cluster reads and get consensus isoforms
+        # full-length, non-chimeric transcripts
+        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.cluster:0"),
+        # non-full-length transcripts
+        ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.cluster:1"),
+        (ccs_ds, "pbtranscript.tasks.cluster:2"),
+        (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.cluster:3")
+    ]
+    b6 = [ # ice_partial to map non-full-lenth reads to consensus isoforms
+        # non-full-length transcripts
+        ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.ice_partial:0"),
+        # draft consensus isoforms
+        ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_partial:1"),
+        (ccs_ds, "pbtranscript.tasks.ice_partial:2"),
+    ]
+    b7 = [
+        (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.ice_quiver:0"),
+        ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_quiver:1"),
+        ("pbtranscript.tasks.cluster:3", "pbtranscript.tasks.ice_quiver:2"),
+        ("pbtranscript.tasks.ice_partial:0", "pbtranscript.tasks.ice_quiver:3")
+    ]
+    b8 = [
+        (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.ice_quiver_postprocess:0"),
+        ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_quiver_postprocess:1"),
+        ("pbtranscript.tasks.cluster:3", "pbtranscript.tasks.ice_quiver_postprocess:2"),
+        ("pbtranscript.tasks.ice_partial:0", "pbtranscript.tasks.ice_quiver_postprocess:3"),
+        ("pbtranscript.tasks.ice_quiver:0", "pbtranscript.tasks.ice_quiver_postprocess:4")
+    ]
+    b9 = [ # pbreports isoseq_cluster
+        # draft consensus isoforms
+        ("pbtranscript.tasks.cluster:0", "pbreports.tasks.isoseq_cluster:0"),
+        # json report
+        ("pbtranscript.tasks.cluster:1", "pbreports.tasks.isoseq_cluster:1"),
+    ]
+
+    return _core_isoseq_classify(ccs_ds) + b5 + b6 + b7 + b8 + b9
+
+
+ISOSEQ_TASK_OPTIONS = {
+    "pbccs.task_options.min_passes":1,
+    "pbccs.task_options.min_length":300,
+    "pbccs.task_options.min_zscore":-9999,
+    "pbccs.task_options.max_drop_fraction":1.0
+}
+
+@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify"),
+                   "SA3 IsoSeq Classify", "0.2.0",
+                   tags=("isoseq", ), task_options=ISOSEQ_TASK_OPTIONS)
+def ds_isoseq_classify():
+    """
+    Partial IsoSeq pipeline (classify step only), starting from subreads.
+    """
+    return _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+
+
+@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "SA3 IsoSeq", "0.2.0",
+                   tags=("isoseq", ), task_options=ISOSEQ_TASK_OPTIONS)
+def ds_isoseq():
+    """
+    Main IsoSeq pipeline, starting from subreads.
+    """
+    return _core_isoseq_cluster("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+
+
+@register_pipeline(to_pipeline_ns("pb_isoseq"), "Internal IsoSeq pipeline",
+                   "0.2.0", tags=("isoseq",))
+def pb_isoseq():
+    """
+    Internal IsoSeq pipeline starting from an existing CCS dataset.
+    """
+    return _core_isoseq_cluster(Constants.ENTRY_DS_CCS)
+
+
+# XXX will resurrect in the future
+#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify_align"),
+#                   "SA3 IsoSeq Classification and GMAP Alignment", "0.1.0",
+#                   tags=("isoseq", ),
+#                   task_options=ISOSEQ_TASK_OPTIONS)
+#def ds_isoseq_classify_align():
+#    b1 = _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+#    b2 = [
+#        # full-length, non-chimeric transcripts
+#        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.gmap:0"),
+#        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
+#    ]
+#    return b1 + b2
+#
+#
+#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_align"),
+#                   "SA3 IsoSeq Pipeline plus GMAP alignment", "0.1.0",
+#                   tags=("isoseq", ),
+#                   task_options=ISOSEQ_TASK_OPTIONS)
+#def ds_isoseq_align():
+#    b1 = _core_isoseq_cluster("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+#    b2 = [
+#        # use high-quality isoforms here? or something else?
+#        ("pbtranscript.tasks.ice_quiver_postprocess:2",
+#         "pbtranscript.tasks.gmap:0"),
+#        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
+#    ]
+#    return b1 + b2
+
+
+@register_pipeline(to_pipeline_ns("sa3_ds_subreads_to_fastx"), "SA3 SubreadSet to .fastx Conversion", "0.1.0", tags=("convert",))
+def ds_subreads_to_fastx():
+    return _core_export_fastx(Constants.ENTRY_DS_SUBREAD)

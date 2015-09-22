@@ -14,21 +14,22 @@ import pbsmrtpipe.tools.chunk_utils as CU
 log = logging.getLogger(__name__)
 
 TOOL_ID = "pbsmrtpipe.tasks.alignment_contig_scatter"
+MODULE_NAME = "pbsmrtpipe.tools_dev.scatter_alignments_reference"
 
 
 class Constants(object):
     DEFAULT_NCHUNKS = 12
     CHUNK_KEYS = ('$chunk.alignmentset_id', "$chunk.reference_id")
-    DRIVER = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference --resolved-tool-contract "
+    DRIVER_BASE = "python -m {module} --resolved-tool-contract "
     OPT_CHUNK_KEY = "pbsmrtpipe.task_options.dev_scatter_chunk_key"
     OPT_MAX_NCHUNKS = 'pbsmrtpipe.task_options.scatter_alignments_reference_max_nchunks'
 
 
-def get_contract_parser():
-    p = get_scatter_pbparser(TOOL_ID, "0.1.3",
+def get_contract_parser(tool_id=TOOL_ID, module_name=MODULE_NAME):
+    p = get_scatter_pbparser(tool_id, "0.1.3",
                              "Scatter AlignmentSet",
                              "Pacbio DataSet AlignmentSet",
-                             Constants.DRIVER,
+                             Constants.DRIVER_BASE.format(module=module_name),
                              Constants.CHUNK_KEYS,
                              is_distributed=False)
 
@@ -61,11 +62,12 @@ def run_main(ds_xml, reference_set_xml, output_json, max_nchunks, output_dir):
                                          reference_set_xml,
                                          max_nchunks,
                                          output_dir,
-                                         "chunk_alignmentset", 'xml')
+                                         "chunk_alignmentset",
+                                         FileTypes.DS_ALIGN.ext)
     return 0
 
 
-def _args_runner(args):
+def args_runner(args):
     # FIXME. The chunk needs to be passed directly the func
     chunk_key = args.chunk_key
     #chunk_key = "alignmentset_id"
@@ -73,7 +75,7 @@ def _args_runner(args):
     return run_main(args.alignment_ds, args.ds_reference, args.cjson_out, args.max_nchunks, output_dir)
 
 
-def _rtc_runner(rtc):
+def rtc_runner(rtc):
     return run_main(rtc.task.input_files[0],
                     rtc.task.input_files[1],
                     rtc.task.output_files[0],
@@ -85,8 +87,8 @@ def main(argv=sys.argv):
     mp = get_contract_parser()
     return pbparser_runner(argv[1:],
                            mp,
-                           _args_runner,
-                           _rtc_runner,
+                           args_runner,
+                           rtc_runner,
                            log,
                            setup_log)
 

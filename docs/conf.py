@@ -1,5 +1,22 @@
 # -*- coding: utf-8 -*-
 #
+# Mock out pbcore, h5py
+# http://docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+import sys
+from mock import Mock as MagicMock
+
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['pbcore', 'pbcore.io', 'pbcore.util', 'pbcore.util.Process',
+                'h5py', 'numpy', 'Cython', 'pysam', 'networkx',
+                'IPython', 'IPython.display']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+
 # pbsmrtpipe documentation build configuration file, created by
 # sphinx-quickstart on Thu Jun 27 19:40:16 2013.
 #

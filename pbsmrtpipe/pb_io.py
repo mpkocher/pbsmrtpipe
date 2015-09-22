@@ -7,25 +7,23 @@ from xml.etree.cElementTree import ElementTree
 import collections
 import json
 import itertools
-from avro.datafile import DataFileWriter, DataFileReader
-from avro.io import DatumWriter, DatumReader
 
+from avro.datafile import DataFileWriter, DataFileReader
+from avro.io import DatumWriter, DatumReader, validate
 import jsonschema
-from pbcommand.resolver import (ToolContractError,
-                                resolve_tool_contract,
+from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
-
 from pbcommand.models import (PipelineChunk,
                               ToolContractTask,
                               GatherToolContractTask,
                               ScatterToolContractTask)
-
 from pbcommand.models.common import REGISTERED_FILE_TYPES
 from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
-
 from xmlbuilder import XMLBuilder
 
+# For version info
+import pbsmrtpipe
 from pbsmrtpipe.validators import validate_provided_file_types, validate_task_type
 from pbsmrtpipe.exceptions import (PipelineTemplateIdNotFoundError,
                                    MalformedBindingStrError)
@@ -38,10 +36,10 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ToolContractMetaTask,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask, PacBioOption,
-                               PipelineBinding, IOBinding)
+                               PipelineBinding, IOBinding, Pipeline)
 from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
-from pbsmrtpipe.schemas import PT_SCHEMA
+from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -184,42 +182,42 @@ def validator(value):
 @register_workflow_option
 def _to_max_chunks_option():
     return OP.to_option_schema(_to_wopt_id("max_nchunks"), "integer", "Max Number of Chunks",
-                               "Max Number of chunks that a file will be scattered into", 10)
+                               "Max Number of chunks that a file will be scattered into", GlobalConstants.MAX_NCHUNKS)
 
 
 @register_workflow_option
 def _to_max_nproc_option():
     return OP.to_option_schema(_to_wopt_id("max_nproc"), "integer",
                                "Maximum Total Number of Processors Per Task",
-                               "Maximum number of Processors per Task.", 16)
+                               "Maximum number of Processors per Task.", GlobalConstants.MAX_NPROC)
 
 
 @register_workflow_option
 def _to_max_nproc_option():
     return OP.to_option_schema(_to_wopt_id("max_total_nproc"), ("integer", "null"),
                                "Maximum Total Number of Processors",
-                               "Maximum Total number of Processors/Slots the workflow engine will use (null means there is no limit).", None)
+                               "Maximum Total number of Processors/Slots the workflow engine will use (null means there is no limit).", GlobalConstants.MAX_TOTAL_NPROC)
 
 
 @register_workflow_option
 def _get_workflow_option_schema():
     return OP.to_option_schema(_to_wopt_id("max_nworkers"), "integer",
                                "Max Number of Workers",
-                               "Max Number of concurrently running tasks. (Note:  max_nproc will restrict the number of workers if max_nworkers * max_nproc > max_total_nproc)", 100)
+                               "Max Number of concurrently running tasks. (Note:  max_nproc will restrict the number of workers if max_nworkers * max_nproc > max_total_nproc)", GlobalConstants.MAX_NWORKERS)
 
 
 @register_workflow_option
 def _get_chunked_mode_schema():
     return OP.to_option_schema(_to_wopt_id("chunk_mode"), "boolean",
                                "Chunked File Mode",
-                               "Enable file splitting (chunking) mode", False)
+                               "Enable file splitting (chunking) mode", GlobalConstants.CHUNKED_MODE)
 
 
 @register_workflow_option
 def _get_distributed_mode_schema():
     return OP.to_option_schema(_to_wopt_id("distributed_mode"), "boolean",
                                "Distributed File Mode",
-                               "Enable Distributed mode to submit jobs to the cluster. (Must provide 'cluster_manager' path to cluster templates)", True)
+                               "Enable Distributed mode to submit jobs to the cluster. (Must provide 'cluster_manager' path to cluster templates)", GlobalConstants.DISTRIBUTED_MODE)
 
 
 @register_workflow_option
@@ -227,14 +225,14 @@ def _get_cluster_manager_schema():
     return OP.to_option_schema(_to_wopt_id("cluster_manager"), ("string", "null"),
                                "Cluster Template Path",
                                "Path to Cluster template files directory. The directory must contain 'start.tmpl', 'interactive.tmpl' and 'kill.tmpl' "
-                               "Or path to python module (e.g., 'pbsmrtpipe.cluster_templates.sge')", "pbsmrtpipe.cluster_templates.sge_pacbio")
+                               "Or the path can be provided to a python module (e.g., 'pbsmrtpipe.cluster_templates.sge')", "pbsmrtpipe.cluster_templates.sge_pacbio")
 
 
 @register_workflow_option
 def _get_node_tmp_dir_schema():
     return OP.to_option_schema(_to_wopt_id("tmp_dir"), ("string", "null"), "Temp directory",
                                "Temporary directory (/tmp) on the execution node. If running in distributed mode, "
-                               "the tmp directory must be on the head node too.", "/tmp")
+                               "the tmp directory must be on the head node too.", GlobalConstants.TMP_DIR)
 
 
 @register_workflow_option
@@ -246,14 +244,13 @@ def _get_process_url_schema():
 @register_workflow_option
 def _get_exit_on_failure():
     return OP.to_option_schema(_to_wopt_id("exit_on_failure"), "boolean", "Exit On Failure",
-                               "Immediately exit if a task fails (Instead of trying to run as many tasks as possible before exiting.", False)
+                               "Immediately exit if a task fails (Instead of trying to run as many tasks as possible before exiting.)", GlobalConstants.EXIT_ON_FAILIURE)
 
 
 @register_workflow_option
 def _get_exit_on_failure():
     return OP.to_option_schema(_to_wopt_id("debug_mode"), "boolean", "Enable Debug Mode",
-                               "Debug will emit debug messages to Stdout and set the level in the master log to DEBUG.", False)
-
+                               "Debug will emit debug messages to Stdout and set the level in the master log to DEBUG.", GlobalConstants.DEBUG_MODE)
 
 
 def validate_or_modify_workflow_level_options(wopts):
@@ -537,14 +534,16 @@ def __parse_template_id_to_bindings(root, registered_pipelines):
         slog.info("Loading pipeline template id {i}".format(i=template_id))
         pipeline = registered_pipelines[template_id]
 
-    return pipeline.all_bindings
+    return pipeline.all_bindings, pipeline.task_options
 
 
 def __parse_explicit_bindings(root, registered_pipelines):
     # fixme the registered pipelines are necessary to keep the interface
     bindings = parse_bindings(root)
     epoints = parse_entry_points(root)
-    return bindings + epoints
+    bs =  bindings + epoints
+    task_options = {}
+    return bs, task_options
 
 
 def __parse_pipeline_template_xml(binding_func, file_name, registered_pipelines):
@@ -552,8 +551,12 @@ def __parse_pipeline_template_xml(binding_func, file_name, registered_pipelines)
     t = ElementTree(file=file_name)
     r = t.getroot()
 
-    bindings = binding_func(r, registered_pipelines)
-    task_options = parse_task_options(r)
+    bindings, task_opts = binding_func(r, registered_pipelines)
+    # Values from XML file. Returned as a [(k, v), ] similar to the bindings
+    task_options = dict(parse_task_options(r))
+    # Override the pipeline templated defined task option defaults with
+    # the values in the XML
+    task_options.update(task_opts)
     wopts_tlist = parse_workflow_options(r)
     wopts = dict(wopts_tlist)
     workflow_options = validate_workflow_options(wopts)
@@ -574,7 +577,22 @@ def parse_pipeline_preset_xml(file_name):
     wopts_tlist = parse_workflow_options(r)
     wopts = dict(wopts_tlist)
     workflow_options = validate_workflow_options(wopts)
+    # this API is a bit funky. [(k, v), ..] is the format
     return PresetRecord(task_options, workflow_options)
+
+
+def parse_pipeline_preset_xmls(file_names):
+    task_options = {}
+    workflow_options = {}
+    prs = [parse_pipeline_preset_xml(file_name) for file_name in file_names]
+    for pr in prs:
+        task_options.update(dict(pr.task_options))
+        workflow_options.update(dict(pr.workflow_options))
+
+    def to_t(d):
+        return [(k, v) for k,v in d.iteritems()]
+
+    return PresetRecord(to_t(task_options), to_t(workflow_options))
 
 
 def parse_pipeline_template_xml(file_name, registered_pipelines):
@@ -686,16 +704,20 @@ def sanity_entry_point(e_raw):
 
 
 def _pipeline_to_task_options(rtasks, p):
+    """Returns a list of SchemaOption """
     bs = itertools.chain(*p.all_bindings)
     task_ids = [_to_task_id_and_index(b) for b in bs if not b.startswith("$entry:")]
-    tids = [x for x, y in task_ids]
+    tids = {x for x, _ in task_ids}
     rtsks = [rtasks[tid] for tid in tids]
-    options = []
+    # {id:schema-opt}
+    options = {}
     for task in rtsks:
         if task.option_schemas:
             for k, v in task.option_schemas.iteritems():
-                options.append(v)
-    return options
+                if k not in options:
+                    options[k] = v
+
+    return options.values()
 
 
 def _option_jschema_to_pb_option(opt_jschema_d):
@@ -714,7 +736,7 @@ def _to_entry_bindings(rtasks, a, b):
     file_type = _get_file_type_id(rtasks, task_id, t_in)
     etype = file_type.file_type_id
     name = "Entry Name: {i}".format(i=file_type.file_type_id)
-    return dict(file_type_id=etype, id=entry_id, name=name)
+    return dict(fileTypeId=etype, entryId=entry_id, name=name)
 
 
 def _to_pipeline_binding(s):
@@ -728,64 +750,109 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     :type pipeline: Pipeline
     """
-    version = "0.1.2"
     options = []
     task_pboptions = []
     joptions = _pipeline_to_task_options(rtasks, pipeline)
 
     for jtopt in joptions:
-            try:
-                pbopt = _option_jschema_to_pb_option(jtopt)
-                task_pboptions.append(pbopt)
-            except Exception as e:
-                sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
-                raise e
+        try:
+            pbopt = _option_jschema_to_pb_option(jtopt)
+            task_pboptions.append(pbopt)
+        except Exception as e:
+            sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
+            raise e
 
-    entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
+    all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
+    entry_points_d = {d['entryId']: d for d in all_entry_points}
     tags = ["sa3"]
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
 
-    desc = "Pipeline {i} " if pipeline.description is None else pipeline.description
-
+    desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
+    comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
-                version=version,
-                entry_points=entry_points,
+                _comment=comment,
+                version=pipeline.version,
+                entryPoints=entry_points_d.values(),
                 bindings=[b.to_dict() for b in bindings],
                 tags=tags,
                 options=options,
-                task_options=[x.to_dict() for x in task_pboptions],
+                taskOptions=[x.to_dict() for x in task_pboptions],
                 description=desc)
 
 
-def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
-
-    d = pipeline_template_to_dict(pipeline, rtasks_d)
-    f = open(output_file, 'w')
-    with DataFileWriter(f, DatumWriter(), PT_SCHEMA) as writer:
-        writer.append(d)
-
+def _write_json(d, output_file):
+    with open(output_file, 'w') as f:
+        f.write(json.dumps(d, sort_keys=True, indent=4))
     return d
 
 
-def load_pipeline_template_from_avro(path):
+def _write_avro(schema, d, output_file):
+    f = open(output_file, 'w')
+    with DataFileWriter(f, DatumWriter(), schema) as writer:
+        writer.append(d)
+    return d
+
+
+def _validate_with_schema(schema, d):
+    validate(schema, d)
+    return d
+
+
+def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
+    d = pipeline_template_to_dict(pipeline, rtasks_d)
+    return _write_avro(PT_SCHEMA, d, output_file)
+
+
+def write_pipeline_template_to_json(pipeline, rtasks_d, output_file):
+    d = pipeline_template_to_dict(pipeline, rtasks_d)
+    return _write_json(_validate_with_schema(PT_SCHEMA, d), output_file)
+
+
+def write_pipeline_template_rules_to_avro(pipeline_template_rule, output_file):
+    return _write_avro(PTVR_SCHEMA, pipeline_template_rule.to_dict(), output_file)
+
+
+def write_pipeline_template_rule_to_json(pipeline_template_rule, output_file):
+    return _write_json(_validate_with_schema(PTVR_SCHEMA, pipeline_template_rule.to_dict()), output_file)
+
+
+def read_avro_to_d(path):
     f = open(path, 'r')
     with DataFileReader(f, DatumReader()) as reader:
-        p = reader.next()
+        yield reader.next()
 
+
+def load_pipeline_template_from_avro(path):
+    gen = read_avro_to_d(path)
+    # There's only one record
+    p = gen.next()
     return p
 
 
-def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
+def _write_pipeline_templates_to_x(to_x_func, extension, pipelines, rtasks_d, output_dir):
+    """
+
+    :param to_x_func: Func(pipeline, rtasks_d, output_file)
+    :param extension: extension to use the pipeline
+    :param output_dir: base output directory
+    """
     output_files = []
     for pipeline in pipelines:
-        name = pipeline.pipeline_id + "_pipeline_template.avro"
+        name = pipeline.pipeline_id + extension
         file_name = os.path.join(output_dir, name)
-        slog.debug("writing pipeline {i} to avro".format(i=pipeline.pipeline_id))
-        write_pipeline_template_to_avro(pipeline, rtasks_d, file_name)
+        slog.debug("writing pipeline {i} to {f}".format(i=pipeline.pipeline_id, f=file_name))
+        to_x_func(pipeline, rtasks_d, file_name)
         output_files.append(file_name)
-
     return output_files
+
+
+def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
+    return _write_pipeline_templates_to_x(write_pipeline_template_to_avro, "_pipeline_template.avro", pipelines, rtasks_d, output_dir)
+
+
+def write_pipeline_templates_to_json(pipelines, rtasks_d, output_dir):
+    return _write_pipeline_templates_to_x(write_pipeline_template_to_json, "_pipeline_template.json", pipelines, rtasks_d, output_dir)
 
 
 def get_smrtanalysis_components(root):
@@ -900,8 +967,8 @@ def parse_operator_xml(f):
     return ChunkOperator(operator_id, scatter, gather)
 
 
-def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d):
-    output_file_names = []
+def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d,
+        output_file_names):
     mutable_files = []
     return ToolContractMetaTask(tc,
                                 tc.task.task_id,
@@ -971,6 +1038,8 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     # resolve strings to FileType instances
     input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
     output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
+    _spe = os.path.splitext
+    output_file_names = [ (_spe(x.default_name)[0], ft.ext) for x,ft in zip(tc.task.output_file_types, output_types) ]
 
     #
     task_type = validate_task_type(tc.task.is_distributed)
@@ -980,7 +1049,7 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     elif isinstance(tc.task, GatherToolContractTask):
         meta_task = _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d)
     elif isinstance(tc.task, ToolContractTask):
-        meta_task = _to_meta_task(tc, task_type, input_types, output_types, schema_option_d)
+        meta_task = _to_meta_task(tc, task_type, input_types, output_types, schema_option_d, output_file_names)
     else:
         raise TypeError("Unsupported Type {t} {x}".format(x=tc.task, t=type(tc.task)))
 

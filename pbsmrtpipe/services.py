@@ -4,6 +4,7 @@
 """
 import json
 import logging
+import pprint
 from collections import namedtuple
 
 from pbcore.io import DataSetMetaTypes
@@ -42,7 +43,6 @@ PbsmrtpipeLogResource = LogResource(SERVICE_LOGGER_RESOURCE_ID, "Pbsmrtpipe",
 
 
 class JobExeError(ValueError):
-
     """Service Job Failure"""
     pass
 
@@ -51,9 +51,7 @@ JobResult = namedtuple("JobResult", "job run_time errors")
 
 
 class ServiceEntryPoint(object):
-
     """Entry Points to initialize Pipelines"""
-
     def __init__(self, entry_id, dataset_type, path_or_uri):
         self.entry_id = entry_id
         self.dataset_type = dataset_type
@@ -115,6 +113,8 @@ def _process_rget(func):
     # apply the tranform func to the output of GET request if it was successful
     def wrapper(total_url):
         r = rqget(total_url)
+        if r.status_code != 200:
+            log.error("Failed ({s}) GET to {x}".format(x=total_url, s=r.status_code))
         r.raise_for_status()
         j = r.json()
         return func(j)
@@ -126,6 +126,10 @@ def _process_rpost(func):
     # apply the transform func to the output of POST request if it was successful
     def wrapper(total_url, payload_d):
         r = rqpost(total_url, payload_d)
+        if r.status_code != 200:
+            log.error("Failed ({s} to call {u}".format(u=total_url, s=r.status_code))
+            log.error("payload")
+            log.error("\n" + pprint.pformat(payload_d))
         r.raise_for_status()
         j = r.json()
         return func(j)
@@ -178,14 +182,33 @@ def _block_for_job_to_complete(sal, job_id, time_out=600):
 
     return job_result
 
+# Make this consistent somehow. Maybe defined 'shortname' in the core model?
+# Martin is doing this for the XML file names
+DATASET_METATYPES_TO_ENDPOINTS =  {
+     DataSetMetaTypes.HDF_SUBREAD: "hdfsubreads",
+     DataSetMetaTypes.SUBREAD: "subreads",
+     DataSetMetaTypes.ALIGNMENT: "alignments",
+     DataSetMetaTypes.REFERENCE: "references",
+     DataSetMetaTypes.BARCODE: "barcodes",
+     DataSetMetaTypes.CCS: "ccsreads",
+     DataSetMetaTypes.CONTIG: "contigs",
+     DataSetMetaTypes.CCS_ALIGNMENT: "css-alignments"
+     }
+
+
+def _get_endpoint_or_raise(ds_type):
+    if ds_type in DATASET_METATYPES_TO_ENDPOINTS:
+        return DATASET_METATYPES_TO_ENDPOINTS[ds_type]
+    raise KeyError("Unsupported datasettype {t}. Supported values {v}".format(t=ds_type, v=DATASET_METATYPES_TO_ENDPOINTS.keys()))
+
 
 class ServiceAccessLayer(object):
-
     """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
-
-    def __init__(self, base_url, port):
+    def __init__(self, base_url, port, debug=False):
         self.base_url = base_url
         self.port = port
+        # This will display verbose details with respect to the failed request
+        self.debug = debug
 
     @property
     def uri(self):
@@ -210,18 +233,12 @@ class ServiceAccessLayer(object):
 
     def _get_job_resource_type(self, job_type, job_id, resource_type_id):
         # grab the datastore or the reports
-        _d = dict(t=job_type, i=job_id, r=resource_type_id)
-        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
-
-    def get_job_datastore(self, job_type, job_id):
-        return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.DATASTORE)
-
-    def get_job_report_records(self, job_type, job_id):
-        return self._get_job_resource_type(job_type, job_id, ServiceResourceTypes.REPORTS)
+        _d = dict(t=job_type, i=job_id,r=resource_type_id)
+        return _process_rget(_null_func)(_to_url(self.uri,"/secondary-analysis/job-manager/jobs/{t}/{i}/{r}".format(**_d)))
 
     def _import_dataset(self, dataset_type, path):
         # This returns a job resource
-        return _import_dataset_by_type(dataset_type)("/secondary-analysis/job-manager/jobs/import-dataset", path)
+        return _import_dataset_by_type(dataset_type)(self._to_url("/secondary-analysis/job-manager/jobs/import-dataset"), path)
 
     def run_import_dataset_by_type(self, dataset_type, path_to_xml):
         job = self._import_dataset(dataset_type, path_to_xml)
@@ -230,7 +247,7 @@ class ServiceAccessLayer(object):
 
     def _run_import_and_block(self, func, path, time_out=None):
         # func while be self.import_dataset_X
-        job = func(self, path)
+        job = func(path)
         job_id = job['id']
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
@@ -252,6 +269,23 @@ class ServiceAccessLayer(object):
     def run_import_dataset_reference(self, path, time_out=60):
         return self._run_import_and_block(self.import_dataset_reference, path, time_out=time_out)
 
+    def get_dataset_by_id(self, dataset_type, int_or_uuid):
+        """Get a Dataset using the DataSetMetaType and (int|uuid) of the dataset"""
+        ds_endpoint = _get_endpoint_or_raise(dataset_type)
+        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/datasets/{t}/{i}".format(t=ds_endpoint, i=int_or_uuid)))
+
+    def get_subreadset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.SUBREAD, int_or_uuid)
+
+    def get_hdfsubreadset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.HDF_SUBREAD, int_or_uuid)
+
+    def get_referenceset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.REFERENCE, int_or_uuid)
+
+    def get_alignmentset_by_id(self, int_or_uuid):
+        return self.get_dataset_by_id(DataSetMetaTypes.ALIGNMENT, int_or_uuid)
+
     def create_logger_resource(self, idx, name, description):
         _d = dict(id=idx, name=name, description=description)
         return _process_rpost(_null_func)(_to_url(self.uri, "/loggers"), _d)
@@ -265,7 +299,7 @@ class ServiceAccessLayer(object):
         return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/pipeline-templates/{i}".format(i=pipeline_template_id)))
 
     def create_by_pipeline_template_id(self, name, pipeline_template_id, epoints):
-        """Runs a pbsmrtpipe pipeline by pipeline template id"""
+        """Creates and runs a pbsmrtpipe pipeline by pipeline template id"""
         # sanity checking to see if pipeline is valid
         _ = self.get_pipeline_template_by_id(pipeline_template_id)
 
@@ -278,11 +312,16 @@ class ServiceAccessLayer(object):
         d = dict(name=name, pipelineId=pipeline_template_id, entryPoints=seps, taskOptions=task_options, workflowOptions=workflow_options)
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{p}".format(p=JobTypes.PB_PIPE)), d)
 
-    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=600):
+    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=6000):
         """Blocks and runs a job with a timeout"""
 
-        job = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
-        job_id = job['id']
+        job_or_error = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
+        if 'errorType' in job_or_error:
+            emsg = job_or_error.get('message', "Unknown")
+            _d = dict(name=name, p=pipeline_template_id, eps=epoints)
+            raise JobExeError("Failed ({e}) to create job {n} args: {a}".format(n=name, e=emsg, a=_d))
+        else:
+            job_id = job_or_error['id']
 
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
@@ -317,3 +356,4 @@ def add_datastore_file(total_url, datastore_file, ignore_errors=True):
             log.warn("Failed Request to {u} data: {d}. {e}".format(u=total_url, d=_d, e=e))
     else:
         return func(total_url, _d)
+

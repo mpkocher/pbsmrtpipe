@@ -2,7 +2,7 @@
 <pipeline-template>
 
     <!-- Reference a workflow template defined in -->
-    <import-template id="pbsmrtpipe.pipelines.dev_05" />
+    <import-template id="pbsmrtpipe.pipelines.dev_diagnostic" />
 
     <options>
     <!-- workflow level options  -->

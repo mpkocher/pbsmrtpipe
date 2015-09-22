@@ -1,12 +1,16 @@
+
 import sys
 import argparse
 import logging
 import json
+from collections import defaultdict
 
 from functools import partial as P
 
 
 from pbcommand.cli import get_default_argparser
+from pbcommand.models.report import Report
+from pbcommand.pb_io.report import load_report_from_json
 
 from pbcore.io.FastaIO import FastaReader, FastaWriter
 from pbcore.io.FastqIO import FastqReader, FastqWriter
@@ -131,6 +135,18 @@ def gather_csv(csv_files, output_file, skip_empty=True):
     return output_file
 
 
+def gather_report(json_files, output_file):
+    """
+    Combines statistics (usually raw counts) stored as JSON files.
+    Data models: pbcommand.models.report
+    """
+    reports = [ load_report_from_json(fn) for fn in json_files ]
+    merged = Report.merge(reports)
+    with open(output_file, "w") as writer:
+        writer.write(merged.to_json())
+    return output_file
+
+
 def gather_fofn(input_files, output_file, skip_empty=True):
     """
     This should be better spec'ed and impose a tighter constraint on the FOFN
@@ -168,6 +184,13 @@ def gather_contigset(input_files, output_file, new_resource_file=None,
 
     :rtype: str
     """
+    if skip_empty:
+        _input_files = []
+        for file_name in input_files:
+            cs = ContigSet(file_name)
+            if len(cs.toExternalFiles()) > 0:
+                _input_files.append(file_name)
+        input_files = _input_files
     tbr = ContigSet(*input_files)
     if not new_resource_file:
         if output_file.endswith('xml'):
@@ -177,7 +200,8 @@ def gather_contigset(input_files, output_file, new_resource_file=None,
     return output_file
 
 
-def __gather_readset(dataset_type, input_files, output_file, skip_empty=True):
+def __gather_readset(dataset_type, input_files, output_file, skip_empty=True,
+                     consolidate=False, consolidate_n_files=1):
     """
     :param input_files: List of file paths
     :param output_file: File Path
@@ -188,6 +212,10 @@ def __gather_readset(dataset_type, input_files, output_file, skip_empty=True):
     :rtype: str
     """
     tbr = dataset_type(*input_files)
+    if consolidate:
+        new_resource_file = output_file[:-4] + ".bam"
+        tbr.consolidate(new_resource_file, numFiles=consolidate_n_files)
+        tbr._induceIndices()
     tbr.write(output_file)
     return output_file
 
@@ -217,6 +245,7 @@ add_chunk_key_ccs_alignmentset = __add_chunk_key_option(
     '$chunk.ccs_alignmentset_id')
 # TODO: change this to contigset_id once quiver emits contigsets
 add_chunk_key_contigset = __add_chunk_key_option('$chunk.fasta_id')
+add_chunk_key_report = __add_chunk_key_option('$chunk.json_id')
 
 
 def __gather_options(output_file_message, input_files_message, input_validate_func, add_chunk_key_func_):
@@ -238,6 +267,7 @@ def __add_gather_options(output_file_msg, input_file_msg, chunk_key_func):
 
 
 _gather_csv_options = __add_gather_options("Output CSV file", "input CSV file", add_chunk_key_csv)
+_gather_report_options = __add_gather_options("Output JSON file", "input JSON file", add_chunk_key_report)
 _gather_fastq_options = __add_gather_options("Output Fastq file", "Chunk input JSON file", add_chunk_key_fastq)
 _gather_fasta_options = __add_gather_options("Output Fasta file", "Chunk input JSON file", add_chunk_key_fasta)
 _gather_gff_options = __add_gather_options("Output Fasta file",
@@ -262,7 +292,7 @@ _gather_contigset_options = __add_gather_options("Output ContigSet XML file",
                                                  add_chunk_key_contigset)
 
 
-def __gather_runner(func, chunk_input_json, output_file, chunk_key):
+def __gather_runner(func, chunk_input_json, output_file, chunk_key, **kwargs):
     chunks = IO.load_pipeline_chunks_from_json(chunk_input_json)
 
     # Allow looseness
@@ -271,7 +301,7 @@ def __gather_runner(func, chunk_input_json, output_file, chunk_key):
         log.warn("Prepending chunk key with '$chunk.' to '{c}'".format(c=chunk_key))
 
     chunked_files = get_datum_from_chunks_by_chunk_key(chunks, chunk_key)
-    _ = func(chunked_files, output_file)
+    _ = func(chunked_files, output_file, **kwargs)
     return 0
 
 
@@ -296,11 +326,13 @@ _args_runner_gather_ccs_alignmentset = P(
     __args_gather_runner, gather_ccs_alignmentset)
 _args_runner_gather_contigset = P(__args_gather_runner, gather_contigset)
 _args_runner_gather_csv = P(__args_gather_runner, gather_csv)
+_args_runner_gather_report = P(__args_gather_runner, gather_report)
 
 # (chunk.json, output_file, chunk_key)
 run_main_gather_fasta = P(__gather_runner, gather_fasta)
 run_main_gather_fastq = P(__gather_runner, gather_fastq)
 run_main_gather_csv = P(__gather_runner, gather_csv)
+run_main_gather_report = P(__gather_runner, gather_report)
 run_main_gather_gff = P(__gather_runner, gather_gff)
 run_main_gather_alignmentset = P(__gather_runner, gather_alignmentset)
 run_main_gather_subreadset = P(__gather_runner, gather_subreadset)

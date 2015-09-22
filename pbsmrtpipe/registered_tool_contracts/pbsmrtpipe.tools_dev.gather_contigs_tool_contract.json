@@ -15,12 +15,12 @@
             {
                 "title": "ContigSet", 
                 "description": "Gathered ContigSet", 
-                "default_name": "gathered_contigset.dataset.xml.", 
+                "default_name": "gathered.contigset.xml", 
                 "id": "contigset", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }
         ], 
-        "_comment": "Created by v0.2.8", 
+        "_comment": "Created by v0.2.14", 
         "name": "Dev ContigSet Gather", 
         "input_types": [
             {

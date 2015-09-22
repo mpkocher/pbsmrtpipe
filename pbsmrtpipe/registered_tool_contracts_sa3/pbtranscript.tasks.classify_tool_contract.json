@@ -1,0 +1,112 @@
+{
+    "version": "0.2.0.151977", 
+    "driver": {
+        "serialization": "json", 
+        "exe": "python -m pbtranscript.tasks.classify --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbtranscript.tasks.classify", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "\nClassifies reads from a fasta/q file.  For each read, identify whether it is\nfull length, whether 5', 3' and poly A tail have been found. The input fasta/q\nfile is usually generated from RS_ReadsOfInsert protocol (e.g.,\nreads_of_insert.fasta/q).\n", 
+        "schema_options": [
+            {
+                "pb_option": {
+                    "default": 300, 
+                    "type": "integer", 
+                    "option_id": "pbtranscript.task_options.min_seq_len", 
+                    "name": "Min. seq. length", 
+                    "description": "Minimum sequence length to output (default: 300)"
+                }, 
+                "title": "JSON Schema for pbtranscript.task_options.min_seq_len", 
+                "required": [
+                    "pbtranscript.task_options.min_seq_len"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pbtranscript.task_options.min_seq_len": {
+                        "default": 300, 
+                        "type": "integer", 
+                        "description": "Minimum sequence length to output (default: 300)", 
+                        "title": "Min. seq. length"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
+                    "default": false, 
+                    "type": "boolean", 
+                    "option_id": "pbtranscript.task_options.ignore_polya", 
+                    "name": "Ignore poly-A", 
+                    "description": "FL does not require polyA tail (default: turned off)"
+                }, 
+                "title": "JSON Schema for pbtranscript.task_options.ignore_polya", 
+                "required": [
+                    "pbtranscript.task_options.ignore_polya"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pbtranscript.task_options.ignore_polya": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "FL does not require polyA tail (default: turned off)", 
+                        "title": "Ignore poly-A"
+                    }
+                }
+            }
+        ], 
+        "output_types": [
+            {
+                "title": "Output ContigSet", 
+                "description": "Output fasta file", 
+                "default_name": "isoseq_draft.contigset.xml", 
+                "id": "outReadsFN", 
+                "file_type_id": "PacBio.DataSet.ContigSet"
+            }, 
+            {
+                "title": "FASTA file", 
+                "description": "Output full-length non-chimeric reads in fasta", 
+                "default_name": "isoseq_flnc.contigset.xml", 
+                "id": "flnc", 
+                "file_type_id": "PacBio.DataSet.ContigSet"
+            }, 
+            {
+                "title": "FASTA file", 
+                "description": "Output non-full-length reads in fasta", 
+                "default_name": "isoseq_nfl.contigset.xml", 
+                "id": "nfl", 
+                "file_type_id": "PacBio.DataSet.ContigSet"
+            }, 
+            {
+                "title": "JSON summary", 
+                "description": "JSON summary", 
+                "default_name": "summary.json", 
+                "id": "json_summary", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }, 
+            {
+                "title": "CSV file", 
+                "description": "CSV file to output primer info", 
+                "default_name": "isoseq_primer_info.csv", 
+                "id": "report", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "_comment": "Created by v0.2.14", 
+        "name": "pbtranscript.tasks.classify", 
+        "input_types": [
+            {
+                "description": "Input fasta file (usually filtered_subreads.fasta or reads_of_insert.fasta)", 
+                "title": "ConsensusReadSet", 
+                "id": "readsFN", 
+                "file_type_id": "PacBio.DataSet.ConsensusReadSet"
+            }
+        ], 
+        "nproc": "$max_nproc", 
+        "is_distributed": true, 
+        "tool_contract_id": "pbtranscript.tasks.classify"
+    }
+}

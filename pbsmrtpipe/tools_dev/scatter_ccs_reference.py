@@ -59,7 +59,7 @@ def run_main(chunk_output_json, ccs_xml, reference_set_xml, max_nchunks, output_
                                           reference_set_xml,
                                           max_nchunks,
                                           output_dir,
-                                          "chunk_ccsset", 'xml')
+                                          "chunk_ccsset", FileTypes.DS_CCS.ext)
 
 
 def _args_runner(args):

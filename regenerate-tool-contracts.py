@@ -33,7 +33,7 @@ def _to_registry_cmd(input_file):
 def create_all_pbsmrtpipe_tcs(root_dir, output_dir):
     cmds = []
     for file_name in os.listdir(root_dir):
-        if not file_name.startswith('__'):
+        if not file_name.startswith('__') and not file_name.startswith('.'):
             name = os.path.splitext(file_name)[0]
             file_name = 'pbsmrtpipe.tools_dev.' + name + "_tool_contract.json"
             output_file = os.path.join(output_dir, file_name)
@@ -82,7 +82,8 @@ def create_all():
     to_cmds = [create_all_pbsmrtpipe_tcs(TASKS_ROOT, TC_DIR),
                create_pbcommand_tcs(TC_DIR),
                quick_registry(TC_DIR),
-               sa3_tool(SA3_TC_DIR)]
+               sa3_tool(SA3_TC_DIR),
+               ]
 
     cmds = itertools.chain(*to_cmds)
     p = multiprocessing.Pool(min(multiprocessing.cpu_count(), 4))

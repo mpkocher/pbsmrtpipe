@@ -8,13 +8,17 @@ from .pb_pipelines_sa3 import Constants
 log = logging.getLogger(__name__)
 
 
-def dev_register(relative_id, display_name, tags=()):
+def dev_register(relative_id, display_name, tags=(), task_options=None):
     pipeline_id = to_pipeline_ns(relative_id)
     ptags = list(set(tags + ('dev', )))
-    return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags)
+    return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags, task_options=task_options)
 
 
-@dev_register("dev_local", "Dev Local Hello Pipeline", tags=("local", ))
+def _get_example_options():
+    return {"pbsmrtpipe.task_options.dev_message": "Preset Custom Dev Message from register pipeline"}
+
+
+@dev_register("dev_local", "Dev Local Hello Pipeline", tags=("local", ), task_options=_get_example_options())
 def get_dev_local_pipeline():
     """Simple example pipeline"""
     b1 = [('$entry:e_01', 'pbsmrtpipe.tasks.dev_hello_world:0')]
@@ -29,7 +33,7 @@ def get_dev_local_pipeline():
     return b1 + b2 + b3 + b4
 
 
-@dev_register("dev_01", "Example Dev 01 pipeline")
+@dev_register("dev_01", "Example Dev 01 pipeline", task_options=_get_example_options())
 def f():
     """Simplest possible pipeline, a single Task"""
     b = [("$entry:e_01", "pbsmrtpipe.tasks.dev_hello_world:0")]
@@ -139,7 +143,7 @@ def get_dist_dev_pipeline():
     return bs + b2
 
 
-@dev_register("dev_05", "Reference Set Report", tags=('reports', "reference" ))
+@dev_register("dev_diagnostic", "Reference Set Report", tags=('reports', "reference" ))
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 

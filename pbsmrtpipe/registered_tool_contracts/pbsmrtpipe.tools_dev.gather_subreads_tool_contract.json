@@ -15,12 +15,12 @@
             {
                 "title": "SubreadSet", 
                 "description": "Gathered SubreadSet", 
-                "default_name": "gathered_subreads.dataset.xml.", 
+                "default_name": "gathered_subreads.dataset.xml", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ], 
-        "_comment": "Created by v0.2.8", 
+        "_comment": "Created by v0.2.14", 
         "name": "Dev SubreadSet Gather", 
         "input_types": [
             {

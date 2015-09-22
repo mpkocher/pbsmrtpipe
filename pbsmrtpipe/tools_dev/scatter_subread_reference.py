@@ -63,7 +63,8 @@ def run_main(chunk_output_json, subread_xml, reference_set_xml, max_nchunks, out
                                               reference_set_xml,
                                               max_nchunks,
                                               output_dir,
-                                              "chunk_subreadset", 'xml')
+                                              "chunk_subreadset",
+                                              FileTypes.DS_SUBREADS.ext)
 
 
 def _args_run_to_random_fasta_file(args):

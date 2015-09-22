@@ -82,7 +82,9 @@ def _add_entry_point_option(p):
 
 def _add_preset_xml_option(p):
     p.add_argument('--preset-xml', type=validate_file,
-                   help="Preset/Option XML file.")
+                   nargs='*',
+                   default=[],
+                   help="Preset/Option XML file. Multiple values can be provided.")
     return p
 
 
@@ -111,7 +113,8 @@ def pretty_registered_pipelines(registered_new_pipelines_d):
     max_name_len = max(len(pipeline.display_name) for pipeline in registered_new_pipelines_d.values())
     pad = 4 + max_name_len
 
-    for i, k in enumerate(registered_new_pipelines_d.values()):
+    spipelines = sorted(registered_new_pipelines_d.values(), key=lambda x: x.pipeline_id)
+    for i, k in enumerate(spipelines):
         outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.idx]))
 
     return "\n".join(outs)
@@ -142,29 +145,39 @@ def pretty_bindings(bindings):
     return "\n".join(outs)
 
 
-def run_show_templates(output_dir=None):
+def run_show_templates(avro_output_dir=None, json_output_dir=None):
     import pbsmrtpipe.loader as L
-    from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro
+    from pbsmrtpipe.pb_io import (write_pipeline_templates_to_avro,
+                                  write_pipeline_templates_to_json)
 
     rtasks_d, _, _, pts = L.load_all()
 
     print pretty_registered_pipelines(pts)
 
-    if output_dir is not None:
-        write_pipeline_templates_to_avro(pts.values(), rtasks_d, output_dir)
+    if avro_output_dir is not None:
+        write_pipeline_templates_to_avro(pts.values(), rtasks_d, avro_output_dir)
+
+    if json_output_dir is not None:
+        write_pipeline_templates_to_json(pts.values(), rtasks_d, json_output_dir)
 
     return 0
 
 
 def add_run_show_templates_options(p):
     add_log_level_option(p)
-    p.add_argument('--output-templates-avro', type=str,
-                   help="Output Registered pipeline templates to AVRO files.")
+
+    def _to_h(m):
+        return "Resolve, Validate and Output Registered pipeline templates to {m} files to output-dir".format(m=m)
+
+    p.add_argument('--output-templates-avro', type=str, help=_to_h("AVRO"))
+    p.add_argument('--output-templates-json', type=str, help=_to_h("JSON"))
+
     return p
 
 
 def _args_run_show_templates(args):
-    return run_show_templates(output_dir=args.output_templates_avro)
+    return run_show_templates(avro_output_dir=args.output_templates_avro,
+                              json_output_dir=args.output_templates_json)
 
 
 def write_task_options_to_preset_xml_and_print(opts, output_file, warning_msg):
@@ -202,10 +215,25 @@ def run_show_template_details(template_id, output_preset_xml):
                         log.warn("Unable to load task {x}".format(x=task_id))
                     else:
                         for k, v in task.option_schemas.iteritems():
-                            task_options[k] = v
+                            if k in pipeline.task_options:
+                                # this is kinda not awesome. there's the double API here
+                                # pbcommand and pbsmrtpipe need to be converted to
+                                # use a non-jsonschema model
+                                v['properties'][k]['default'] = pipeline.task_options[k]
+                                v['pb_option']['default'] = pipeline.task_options[k]
+                                task_options[k] = v
+                            else:
+                                task_options[k] = v
 
             warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
+
+        if pipeline.task_options:
+            print "Default Task Options"
+            for k, v in pipeline.task_options.iteritems():
+                print "'{k}' -> {v}".format(k=k, v=v)
+        else:
+            print "No default task options"
 
     else:
         msg = "Unable to find template id '{t}' in registered pipelines. Use the show-templates option to get a list of workflow options.".format(t=template_id)
@@ -231,7 +259,7 @@ def __dynamically_load_all():
 
     rtasks, rfile_types, roperators, rpipelines = L.load_all()
     _d = dict(n=_f(rtasks), f=_f(rfile_types), o=_f(roperators), p=_f(rpipelines))
-    print "Registry Loaded. Number of MetaTasks:{n} FileTypes:{f} ChunkOperators:{o} Pipelines:{p}".format(**_d)
+    print "Registry Loaded. Number of ToolContracts:{n} FileTypes:{f} ChunkOperators:{o} Pipelines:{p}".format(**_d)
     return rtasks, rfile_types, roperators, rpipelines
 
 
@@ -243,7 +271,7 @@ def run_show_tasks():
     max_id = max(len(t.task_id) for t in sorted_tasks)
     pad = 4
     offset = max_id + pad
-    print "Registered Tasks ({n})".format(n=len(sorted_tasks))
+    print "Registered ToolContracts ({n})".format(n=len(sorted_tasks))
     print
 
     def _to_a(klass):
@@ -343,9 +371,11 @@ def _args_run_pipeline(args):
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
+    # Validate all preset files exist
+    preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, args.preset_xml, args.preset_rc_xml, args.service_uri,
+                          ep_d, args.output_dir, preset_xmls, args.preset_rc_xml, args.service_uri,
                           force_distribute=force_distribute, force_chunk_mode=force_chunk, debug_mode=args.debug)
 
 
@@ -478,10 +508,10 @@ def _args_task_runner(args):
     ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
-
+    preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
     return D.run_single_task(registered_file_types, registered_tasks, chunk_operators,
                              ee_pd, args.task_id, args.output_dir,
-                             args.preset_xml, args.preset_rc_xml, args.service_uri,
+                             preset_xmls, args.preset_rc_xml, args.service_uri,
                              force_distribute=force_distribute,
                              force_chunk_mode=force_chunk, debug_mode=args.debug)
 
@@ -524,12 +554,12 @@ def _args_run_pipeline_id(args):
     ep_d = _cli_entry_point_args_to_dict(args.entry_points)
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
-
+    preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
     return D.run_pipeline(pipelines, registered_files_d,
                           registered_tasks_d,
                           chunk_operators,
                           pipeline,
-                          ep_d, args.output_dir, args.preset_xml,
+                          ep_d, args.output_dir, preset_xmls,
                           args.preset_rc_xml, args.service_uri,
                           force_distribute=force_distribute,
                           force_chunk_mode=force_chunk)

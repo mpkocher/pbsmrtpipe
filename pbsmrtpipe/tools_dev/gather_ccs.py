@@ -35,7 +35,7 @@ def get_parser():
                            "ds_out",
                            "ConsensusReadSet",
                            "Gathered ConsensusReadSet",
-                           "gathered_consensus_reads.dataset.xml.")
+                           "gathered.consensusreadset.xml")
     return p
 
 

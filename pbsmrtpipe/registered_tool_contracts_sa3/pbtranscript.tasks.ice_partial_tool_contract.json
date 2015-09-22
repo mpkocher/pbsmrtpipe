@@ -1,0 +1,49 @@
+{
+    "version": "0.2.0.151977", 
+    "driver": {
+        "serialization": "json", 
+        "exe": "python -m pbtranscript.tasks.ice_partial --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbtranscript.tasks.ice_partial", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "\nCalls 'ice_partial.py one'.\n", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "JSON pickle", 
+                "description": "Output pickle file", 
+                "default_name": "ice_partial_one.pickle", 
+                "id": "out_pickle", 
+                "file_type_id": "PacBio.FileTypes.pickle"
+            }
+        ], 
+        "_comment": "Created by v0.2.14", 
+        "name": "pbtranscript.tasks.ice_partial", 
+        "input_types": [
+            {
+                "description": "ContigSet of non-full-length reads", 
+                "title": "ContigSet", 
+                "id": "input_fasta", 
+                "file_type_id": "PacBio.DataSet.ContigSet"
+            }, 
+            {
+                "description": "Reference fasta file, most likely ref_consensus.fa from ICE output", 
+                "title": "Reference ContigSet", 
+                "id": "ref_fasta", 
+                "file_type_id": "PacBio.DataSet.ContigSet"
+            }, 
+            {
+                "description": "A FOFN of ccs.h5 or ccs.bam (e.g., reads_of_insert.fofn), which contain quality values of reads of insert. If not given, assume there is no QV information available.", 
+                "title": "CCS dataset", 
+                "id": "ccs_fofn", 
+                "file_type_id": "PacBio.DataSet.ConsensusReadSet"
+            }
+        ], 
+        "nproc": "$max_nproc", 
+        "is_distributed": true, 
+        "tool_contract_id": "pbtranscript.tasks.ice_partial"
+    }
+}

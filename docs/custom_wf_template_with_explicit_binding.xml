@@ -10,17 +10,17 @@
         </option>
     </options>
     <entry-points>
-	    <entry-point id="entry:entry_01" in="pbsmrtpipe.tasks.my_task_a.0">
+	    <entry-point id="$entry:entry_01" in="pbsmrtpipe.tasks.my_task_a:0">
 		    <value>/path/to/my/file.txt</value>
 	    </entry-point>
-      <entry-point id="entry:entry_02" in="pbsmrtpipe.tasks.my_task_d.0" />
+      <entry-point id="$entry:entry_02" in="pbsmrtpipe.tasks.my_task_d:0" />
     </entry-points>
     <bindings>
       <!-- Use attributes vs elements here because tasks are always referenced using ids -->
-      <binding out="pbsmrtpipe.tasks.my_task_a.0" in="pbsmrtpipe.tasks.my_task_c.0" />
-      <binding out="pbsmrtpipe.tasks.my_task_b.0" in="pbsmrtpipe.tasks.my_task_c.1" />
+      <binding out="pbsmrtpipe.tasks.my_task_a:0" in="pbsmrtpipe.tasks.my_task_c:0" />
+      <binding out="pbsmrtpipe.tasks.my_task_b:0" in="pbsmrtpipe.tasks.my_task_c:1" />
       <!-- my_task_d still needs 0 bound to it -->
-      <binding out="pbsmrtpipe.tasks.my_task_c.0" in="pbsmrtpipe.tasks.my_task_d.1" />
+      <binding out="pbsmrtpipe.tasks.my_task_c:0" in="pbsmrtpipe.tasks.my_task_d:1" />
     </bindings>
     <!-- 'P module-esque options. This should be changed in a newer format, 
     but trying to keep it very similar to current Portal XML schema -->

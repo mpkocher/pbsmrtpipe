@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <pipeline-template id="pbsmrtpipe.pipelines.rs_filter_1">
     <entry-points>
-        <entry-point id="entry:eid_input_xml" in="pbsmrtpipe.tasks.input_xml_to_fofn.0" />
+        <entry-point id="$entry:eid_input_xml" in="pbsmrtpipe.tasks.input_xml_to_fofn:0" />
     </entry-points>
     <bindings>
-        <binding in="pbsmrtpipe.tasks.movie_overview_report.0" out="pbsmrtpipe.tasks.input_xml_to_fofn.0" />
-        <binding in="pbsmrtpipe.tasks.adapter_report.0" out="pbsmrtpipe.tasks.input_xml_to_fofn.0" />
-        <binding in="pbsmrtpipe.tasks.filter_subreads.1" out="pbsmrtpipe.tasks.filter.0" />
-        <binding in="pbsmrtpipe.tasks.filter_subread_summary.0" out="pbsmrtpipe.tasks.filter.0" />
-        <binding in="pbsmrtpipe.tasks.filter_report.0" out="pbsmrtpipe.tasks.filter.1" />
-        <binding in="pbsmrtpipe.tasks.filter_subread_report.0" out="pbsmrtpipe.tasks.filter_subread_summary.0" />
-        <binding in="pbsmrtpipe.tasks.loading_report.0" out="pbsmrtpipe.tasks.filter.1" />
-        <binding in="pbsmrtpipe.tasks.filter.0" out="pbsmrtpipe.tasks.input_xml_to_fofn.0" />
-        <binding in="pbsmrtpipe.tasks.filter.1" out="pbsmrtpipe.tasks.input_xml_to_fofn.1" />
-        <binding in="pbsmrtpipe.tasks.filter_subreads.0" out="pbsmrtpipe.tasks.input_xml_to_fofn.0" />
+        <binding in="pbsmrtpipe.tasks.movie_overview_report:0" out="pbsmrtpipe.tasks.input_xml_to_fofn:0" />
+        <binding in="pbsmrtpipe.tasks.adapter_report:0" out="pbsmrtpipe.tasks.input_xml_to_fofn:0" />
+        <binding in="pbsmrtpipe.tasks.filter_subreads:1" out="pbsmrtpipe.tasks.filter:0" />
+        <binding in="pbsmrtpipe.tasks.filter_subread_summary:0" out="pbsmrtpipe.tasks.filter:0" />
+        <binding in="pbsmrtpipe.tasks.filter_report:0" out="pbsmrtpipe.tasks.filter:1" />
+        <binding in="pbsmrtpipe.tasks.filter_subread_report:0" out="pbsmrtpipe.tasks.filter_subread_summary:0" />
+        <binding in="pbsmrtpipe.tasks.loading_report:0" out="pbsmrtpipe.tasks.filter:1" />
+        <binding in="pbsmrtpipe.tasks.filter:0" out="pbsmrtpipe.tasks.input_xml_to_fofn:0" />
+        <binding in="pbsmrtpipe.tasks.filter:1" out="pbsmrtpipe.tasks.input_xml_to_fofn:1" />
+        <binding in="pbsmrtpipe.tasks.filter_subreads:0" out="pbsmrtpipe.tasks.input_xml_to_fofn:0" />
     </bindings>
 
     <!-- Workflow Level Options -->

@@ -1,6 +1,4 @@
 jinja2
-numpy
-h5py
 networkx
 # Install from github
 -e git://github.com/PacificBiosciences/pbcore.git#egg=pbcore

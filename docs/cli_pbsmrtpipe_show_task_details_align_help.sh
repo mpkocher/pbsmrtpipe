@@ -1,82 +1,70 @@
+Registry Loaded. Number of MetaTasks:94 FileTypes:43 ChunkOperators:12 Pipelines:30
 ********************
-MetaTask summary id:pbsmrtpipe.tasks.align
+ToolContractMetaTask summary id:pbalign.tasks.pbalign
 --------------------
- Input Types (4)
+Description:
+Mapping PacBio sequences to references using an algorithm selected from a
+selection of supported command-line alignment algorithms. Input can be a
+fasta, pls.h5, bas.h5 or ccs.h5 file or a fofn (file of file names). Output
+can be in CMP.H5, SAM or BAM format. If output is BAM format, aligner can
+only be blasr and QVs will be loaded automatically.
 --------------------
-  0 <FileType id=pbsmrtpipe.files.movie_fofn name=movie.fofn >
-  1 <FileType id=pbsmrtpipe.files.rgn_fofn name=region.fofn >
-  2 <FileType id=pbsmrtpipe.files.fasta name=file.fasta >
-  3 <FileType id=pbsmrtpipe.files.report name=report.json >
+ Input Types (2)
+--------------------
+  0 <FileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >
+  1 <FileType id=PacBio.DataSet.ReferenceSet name=file.referenceset.xml >
 --------------------
  Output Types (1)
 --------------------
-  0 <FileType id=pbsmrtpipe.files.alignment_cmp_h5 name=alignments.cmp.h5 >
+  0 <FileType id=PacBio.DataSet.AlignmentSet name=file.alignmentset.xml >
 --------------------
- Task Type           : pbsmrtpipe.constants.distributed_task
- nproc               : $max_nproc
- Number of Options   : 12
+ Is Distributed      : True
+ nproc               : DI list (n) items
+ Number of Options   : 6
 --------------------
  Override Output files names (1)
-   0: <FileType id=pbsmrtpipe.files.alignment_cmp_h5 name=alignments.cmp.h5 > -> aligned_reads.cmp.h5 
+   0: <FileType id=PacBio.DataSet.AlignmentSet name=file.alignmentset.xml > -> aligned.subreads.alignmentset.xml 
 --------------------
-Number of Options 12
-Option #0 Id: pbsmrtpipe.task_options.use_quality
-	Default     :  False
-	Type        :  boolean
-	Description :  Use Quality Description
-
-Option #1 Id: pbsmrtpipe.task_options.max_hits
-	Default     :  -1
-	Type        :  integer
-	Description :  Max Hits Description
-
-Option #2 Id: pbsmrtpipe.task_options.max_error
-	Default     :  -1.0
+Number of Options 6
+Option #0 Id: pbalign.task_options.min_accuracy
+	Default     :  70.0
 	Type        :  number
-	Description :  Mad Divergence description
+	Description :  Minimum required alignment accuracy (percent)
 
-Option #3 Id: pbsmrtpipe.task_options.use_subreads
-	Default     :  True
-	Type        :  boolean
-	Description :  Enable the Use Subreads mode
-
-Option #4 Id: pbsmrtpipe.task_options.pbalign_opts
-	Default     :  
+Option #1 Id: pbalign.task_options.algorithm_options
+	Default     :  -useQuality -minMatch 12 -bestn 10 -minPctIdentity 70.0
 	Type        :  string
-	Description :  PBAlign Commandline Options
+	Description :  List of space-separated arguments passed to BLASR (etc.)
 
-Option #5 Id: pbsmrtpipe.task_options.min_anchor_size
-	Default     :  -1
+Option #2 Id: pbalign.task_options.min_length
+	Default     :  50
 	Type        :  integer
-	Description :  Minimum Anchor size Description
+	Description :  Minimum required alignment length
 
-Option #6 Id: pbsmrtpipe.task_options.load_pulses_opts
+Option #3 Id: pbalign.task_options.hit_policy
+	Default     :  randombest
+	Type        :  string
+	Description :  Specify a policy for how to treat multiple hit
+  random    : selects a random hit.
+  all       : selects all hits.
+  allbest   : selects all the best score hits.
+  randombest: selects a random hit from all best score hits.
+  leftmost  : selects a hit which has the best score and the
+              smallest mapping coordinate in any reference.
+Default value is randombest.
+
+Option #4 Id: pbalign.task_options.concordant
+	Default     :  False
+	Type        :  boolean
+	Description :  Map subreads of a ZMW to the same genomic location
+
+Option #5 Id: pbalign.task_options.useccs
 	Default     :  
 	Type        :  string
-	Description :  Load Pulses Description
-
-Option #7 Id: pbsmrtpipe.task_options.concordant
-	Default     :  False
-	Type        :  boolean
-	Description :  Concordant Description
-
-Option #8 Id: pbsmrtpipe.task_options.load_pulses
-	Default     :  True
-	Type        :  boolean
-	Description :  Load Pulses Description
-
-Option #9 Id: pbsmrtpipe.task_options.place_repeats_randomly
-	Default     :  True
-	Type        :  boolean
-	Description :  Place Repeats Randomly Description
-
-Option #10 Id: pbsmrtpipe.task_options.load_pulses_metrics
-	Default     :  DeletionQV,IPD,InsertionQV,PulseWidth,QualityValue,MergeQV,SubstitutionQV,DeletionTag
-	Type        :  string
-	Description :  Load Pulses Description
-
-Option #11 Id: pbsmrtpipe.task_options.filter_adapters_only
-	Default     :  False
-	Type        :  boolean
-	Description :  Filter Adapter Only mode Description
+	Description :  Map the ccsSequence to the genome first, then align
+subreads to the interval that the CCS reads mapped to.
+  useccs: only maps subreads that span the length of
+          the template.
+  useccsall: maps all subreads.
+  useccsdenovo: maps ccs only.
 

@@ -124,7 +124,7 @@ def _load_existing_pipeline_or_raise(pipelines_d, p, p_existing_id):
     _load_existing_pipeline(p, p_existing)
 
 
-def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, version, description, bs, tags):
+def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, version, description, bs, tags, task_options):
     """
     Mutate the registered pipelines registry
 
@@ -139,7 +139,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
 
     log.debug("Processing pipeline {i}".format(i=pipeline_id))
     # str, [(in, out)] [(in, out)]
-    pipeline = Pipeline(pipeline_id, display_name, version, description, [], [], tags=tags)
+    pipeline = Pipeline(pipeline_id, display_name, version, description, [], [], tags=tags, task_options=task_options)
 
     for x in bs:
         validate_type_or_raise(x, (tuple, list))
@@ -203,7 +203,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
     return registered_pipeline_d
 
 
-def register_pipeline(pipeline_id, display_name, version, tags=()):
+def register_pipeline(pipeline_id, display_name, version, tags=(), task_options=None):
 
     def deco_wrapper(func):
 
@@ -211,7 +211,7 @@ def register_pipeline(pipeline_id, display_name, version, tags=()):
             log.warn("'{i}' has already been registered.".format(i=pipeline_id))
 
         bs = func()
-        load_pipeline_bindings(REGISTERED_PIPELINES, pipeline_id, display_name, version, func.__doc__, bs, tags)
+        load_pipeline_bindings(REGISTERED_PIPELINES, pipeline_id, display_name, version, func.__doc__, bs, tags, task_options=task_options)
 
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
@@ -235,14 +235,13 @@ class PipelineRegistry(object):
         _d = dict(k=self.__class__.__name__, n=self.namespace, p=len(self.pipelines))
         return "<{k} ns:{n} pipelines:{p} >".format(**_d)
 
-    def __call__(self, relative_pipeline_id, name, version, tags=()):
+    def __call__(self, relative_pipeline_id, name, version, tags=(), task_options=None):
         """Register a pipeline by relative id"""
         def _w(func):
             desc = func.__doc__
             bs = func()
             pipeline_id = ".".join([self.namespace, 'pipelines', relative_pipeline_id])
-            # FIXME. clean this up. Add support for TaskOptions and Pipeline Options
-            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags)
+            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags, task_options=task_options)
             return bs
 
         return _w

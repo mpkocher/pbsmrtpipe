@@ -1,0 +1,12 @@
+jinja2
+networkx
+pbcommand <= 0.2.14
+pyparsing==1.5.7
+pydot
+jsonschema
+xmlbuilder
+requests
+# this doesn't play well with the 2.3 SMRTAnalysis build
+#semantic_version
+fabric>=1.9.1
+sphinx-bootstrap-theme
