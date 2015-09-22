@@ -9,7 +9,7 @@ import json
 import itertools
 
 from avro.datafile import DataFileWriter, DataFileReader
-from avro.io import DatumWriter, DatumReader
+from avro.io import DatumWriter, DatumReader, validate
 import jsonschema
 from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
@@ -22,6 +22,8 @@ from pbcommand.models.common import REGISTERED_FILE_TYPES
 from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
 from xmlbuilder import XMLBuilder
 
+# For version info
+import pbsmrtpipe
 from pbsmrtpipe.validators import validate_provided_file_types, validate_task_type
 from pbsmrtpipe.exceptions import (PipelineTemplateIdNotFoundError,
                                    MalformedBindingStrError)
@@ -766,9 +768,10 @@ def pipeline_template_to_dict(pipeline, rtasks):
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
 
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
-
+    comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
+                _comment=comment,
                 version=pipeline.version,
                 entryPoints=entry_points_d.values(),
                 bindings=[b.to_dict() for b in bindings],
@@ -778,10 +781,21 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 description=desc)
 
 
+def _write_json(d, output_file):
+    with open(output_file, 'w') as f:
+        f.write(json.dumps(d, sort_keys=True, indent=4))
+    return d
+
+
 def _write_avro(schema, d, output_file):
     f = open(output_file, 'w')
     with DataFileWriter(f, DatumWriter(), schema) as writer:
         writer.append(d)
+    return d
+
+
+def _validate_with_schema(schema, d):
+    validate(schema, d)
     return d
 
 
@@ -790,8 +804,17 @@ def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
     return _write_avro(PT_SCHEMA, d, output_file)
 
 
+def write_pipeline_template_to_json(pipeline, rtasks_d, output_file):
+    d = pipeline_template_to_dict(pipeline, rtasks_d)
+    return _write_json(_validate_with_schema(PT_SCHEMA, d), output_file)
+
+
 def write_pipeline_template_rules_to_avro(pipeline_template_rule, output_file):
     return _write_avro(PTVR_SCHEMA, pipeline_template_rule.to_dict(), output_file)
+
+
+def write_pipeline_template_rule_to_json(pipeline_template_rule, output_file):
+    return _write_json(_validate_with_schema(PTVR_SCHEMA, pipeline_template_rule.to_dict()), output_file)
 
 
 def read_avro_to_d(path):
@@ -807,16 +830,29 @@ def load_pipeline_template_from_avro(path):
     return p
 
 
-def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
+def _write_pipeline_templates_to_x(to_x_func, extension, pipelines, rtasks_d, output_dir):
+    """
+
+    :param to_x_func: Func(pipeline, rtasks_d, output_file)
+    :param extension: extension to use the pipeline
+    :param output_dir: base output directory
+    """
     output_files = []
     for pipeline in pipelines:
-        name = pipeline.pipeline_id + "_pipeline_template.avro"
+        name = pipeline.pipeline_id + extension
         file_name = os.path.join(output_dir, name)
-        slog.debug("writing pipeline {i} to avro".format(i=pipeline.pipeline_id))
-        write_pipeline_template_to_avro(pipeline, rtasks_d, file_name)
+        slog.debug("writing pipeline {i} to {f}".format(i=pipeline.pipeline_id, f=file_name))
+        to_x_func(pipeline, rtasks_d, file_name)
         output_files.append(file_name)
-
     return output_files
+
+
+def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
+    return _write_pipeline_templates_to_x(write_pipeline_template_to_avro, "_pipeline_template.avro", pipelines, rtasks_d, output_dir)
+
+
+def write_pipeline_templates_to_json(pipelines, rtasks_d, output_dir):
+    return _write_pipeline_templates_to_x(write_pipeline_template_to_json, "_pipeline_template.json", pipelines, rtasks_d, output_dir)
 
 
 def get_smrtanalysis_components(root):
