@@ -2,32 +2,33 @@
   "id": "pbsmrtpipe.pipelines.sa3_fetch",
   "name": "Pipeline Name",
   "version": "0.1.0",
+  "tags": ["tag-01", "tag-02"],
   "description": "Pipeline Description",
   "_comment": "For the entry points, these will be distilled down to a set of entry points",
-  "entry_points": [
+  "entryPoints": [
     {
-      "id": "e_label",
-      "file_type_id": "PacBio.FileTypes.Fasta",
+      "entryId": "e_label",
+      "fileTypeId": "PacBio.FileTypes.Fasta",
       "name": "Fasta"
     }
   ],
   "bindings": [
     {
       "in": {
-        "task_type_id": "task-1",
+        "taskTypeId": "task-1",
         "index": 0,
-        "instance_id": 0
+        "instanceId": 0
       },
       "out": {
-        "task_type_id": "task-1",
+        "taskTypeId": "task-1",
         "index": 1,
-        "instance_id": 0
+        "instanceId": 0
       }
     }
   ],
-  "task_options": [
+  "taskOptions": [
     {
-      "option_id": "my_option",
+      "id": "my_option",
       "name": "My Option",
       "default": 1234,
       "description": "My Value"
@@ -35,7 +36,7 @@
   ],
   "options": [
     {
-      "option_id": "max_nchunks",
+      "id": "max_nchunks",
       "name": "Max #Chunks",
       "default": 7,
       "description": "Max Number of Chunks"

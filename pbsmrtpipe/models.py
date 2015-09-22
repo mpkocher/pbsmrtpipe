@@ -102,7 +102,7 @@ class PacBioOption(object):
         return PacBioOption(d['option_id'], d['name'], d['default'], d['description'])
 
     def to_dict(self):
-        return dict(option_id=self.option_id, name=self.name, default=self.default, description=self.description)
+        return dict(id=self.option_id, name=self.name, default=self.default, description=self.description)
 
 
 class IOBinding(object):
@@ -121,9 +121,9 @@ class IOBinding(object):
         return IOBinding(d['task_type_id'], d['index'], d['instance_id'])
 
     def to_dict(self):
-        return dict(task_type_id=self.task_type_id,
+        return dict(taskTypeId=self.task_type_id,
                     index=self.index,
-                    instance_id=self.instance_id)
+                    instanceId=self.instance_id)
 
 
 class PipelineBinding(object):

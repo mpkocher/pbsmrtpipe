@@ -20,7 +20,14 @@
       "type": "string"
     },
     {
-      "name": "entry_points",
+      "name": "tags",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "entryPoints",
       "type": {
         "type": "array",
         "items": {
@@ -29,12 +36,12 @@
           "fields": [
             {
               "doc": "Entry Id",
-              "name": "id",
+              "name": "entryId",
               "type": "string"
             },
             {
               "doc": "PacBio File Type identifier",
-              "name": "file_type_id",
+              "name": "fileTypeId",
               "type": "string"
             },
             {
@@ -63,7 +70,7 @@
                 "fields": [
                   {
                     "doc": "Task type (tool_contract_id)",
-                    "name": "task_type_id",
+                    "name": "taskTypeId",
                     "type": "string"
                   },
                   {
@@ -73,7 +80,7 @@
                   },
                   {
                     "doc": "Task Type instance id. A pipeline can have multiple instances of the same task type.",
-                    "name": "instance_id",
+                    "name": "instanceId",
                     "type": "int"
                   }
                 ]
@@ -88,7 +95,7 @@
                 "fields": [
                   {
                     "doc": "Task type (tool_contract_id)",
-                    "name": "task_type_id",
+                    "name": "taskTypeId",
                     "type": "string"
                   },
                   {
@@ -98,7 +105,7 @@
                   },
                   {
                     "doc": "Task Type instance id. A pipeline can have multiple instances of the same task type.",
-                    "name": "instance_id",
+                    "name": "instanceId",
                     "type": "int"
                   }
                 ]
@@ -109,7 +116,7 @@
       }
     },
     {
-      "name": "task_options",
+      "name": "taskOptions",
       "type": {
         "type": "array",
         "items": {
@@ -126,7 +133,7 @@
               ]
             },
             {
-              "name": "option_id",
+              "name": "id",
               "type": "string"
             },
             {
@@ -143,7 +150,7 @@
     },
     {
       "name": "options",
-     "type": {
+      "type": {
         "type": "array",
         "items": {
           "type": "record",
@@ -160,7 +167,7 @@
               ]
             },
             {
-              "name": "option_id",
+              "name": "id",
               "type": "string"
             },
             {
