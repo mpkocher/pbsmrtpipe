@@ -134,7 +134,7 @@ def ds_align():
     return _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
 
 RESEQUENCING_TASK_OPTIONS = {
-    "genomic_consensus.task_options.diploid": false
+    "genomic_consensus.task_options.diploid": False
 }
 
 @register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "SA3 Genomic Consensus", "0.1.0",
