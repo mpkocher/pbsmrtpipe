@@ -133,20 +133,26 @@ def hdf_subread_converter():
 def ds_align():
     return _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
 
+RESEQUENCING_TASK_OPTIONS = {
+    "genomic_consensus.task_options.diploid": False
+}
 
-@register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "SA3 Genomic Consensus", "0.1.0")
+@register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "SA3 Genomic Consensus", "0.1.0",
+                   task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_genomic_consenus():
     """Run Genomic Consensus"""
     return _core_gc_plus(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing", "0.1.0")
+@register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SA3 SubreadSet Resequencing", "0.1.0",
+                   task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_resequencing():
     """Core Resequencing Pipeline"""
     return _core_gc("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SA3 SubreadSet Resequencing With GC Extras and Reports", "0.1.0")
+@register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SA3 SubreadSet Resequencing With GC Extras and Reports", "0.1.0",
+                   task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_fat_resequencing():
     """DS RS + GC extras and Reports"""
 
@@ -226,7 +232,8 @@ def pb_modification_and_motif_analysis_1():
                                 Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_sat"), 'SA3 Site Acceptance Test', "0.1.0", tags=("sat", ))
+@register_pipeline(to_pipeline_ns("sa3_sat"), 'SA3 Site Acceptance Test', "0.1.0", tags=("sat", ),
+                   task_options=RESEQUENCING_TASK_OPTIONS)
 def rs_site_acceptance_test_1():
     """Site Acceptance Test"""
 
