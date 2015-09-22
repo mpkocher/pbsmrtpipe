@@ -84,25 +84,31 @@ JobResources = namedtuple("JobResources", _JOB_ATTRS)
 
 
 class PacBioOption(object):
-    def __init__(self, option_id, name, default, description):
+    def __init__(self, option_id, name, default, description, pb_option_type):
         self.option_id = option_id
         self.name = name
         self.default = default
         self.description = description
+        self.pb_option_type = pb_option_type
 
     def __repr__(self):
         _d = dict(i=self.option_id,
                   n=self.name,
                   v=self.default,
-                  k=self.__class__.__name__)
-        return "<{k} {i} name: {n} default: {v} >".format(**_d)
+                  k=self.__class__.__name__,
+                  t=self.pb_option_type)
+        return "<{k} {i} name: {n} default: {v} {t} >".format(**_d)
 
     @staticmethod
     def from_dict(d):
-        return PacBioOption(d['id'], d['name'], d['default'], d['description'])
+        return PacBioOption(d['id'], d['name'], d['default'], d['description'], d['optionTypeId'])
 
     def to_dict(self):
-        return dict(id=self.option_id, name=self.name, default=self.default, description=self.description)
+        return dict(id=self.option_id,
+                    name=self.name,
+                    default=self.default,
+                    description=self.description,
+                    optionTypeId=self.pb_option_type)
 
 
 class IOBinding(object):

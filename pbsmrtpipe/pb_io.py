@@ -11,6 +11,7 @@ import itertools
 from avro.datafile import DataFileWriter, DataFileReader
 from avro.io import DatumWriter, DatumReader, validate
 import jsonschema
+from pbcommand.models.parser import JsonSchemaTypes
 from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
@@ -720,13 +721,31 @@ def _pipeline_to_task_options(rtasks, p):
     return options.values()
 
 
+def _jschema_to_pacbio_option_type_id(jschema_type):
+    # This should get pushed down into pbcommand
+    # and eventually remove all of the JsonSchema models
+    def to_o(n):
+        return "pbsmrtpipe.option_types.{n}".format(n=n)
+
+    types_d = {JsonSchemaTypes.BOOL: to_o("boolean"),
+               JsonSchemaTypes.INT: to_o("integer"),
+               JsonSchemaTypes.STR: to_o("string"),
+               JsonSchemaTypes.NUM: to_o("float")}
+
+    if jschema_type in types_d:
+        return types_d[jschema_type]
+
+    raise KeyError("Unsupported type {t} Supported types. {d}".format(t=jschema_type, d=types_d))
+
+
 def _option_jschema_to_pb_option(opt_jschema_d):
     """Convert from JsonSchema option to PacBioOption"""
     opt_id = opt_jschema_d['required'][0]
     name = opt_jschema_d['properties'][opt_id]['title']
     default = opt_jschema_d['properties'][opt_id]['default']
     desc = opt_jschema_d['properties'][opt_id]['description']
-    pb_opt = PacBioOption(opt_id, name, default, desc)
+    jschema_type = opt_jschema_d['properties'][opt_id]['type']
+    pb_opt = PacBioOption(opt_id, name, default, desc, jschema_type)
     return pb_opt
 
 
