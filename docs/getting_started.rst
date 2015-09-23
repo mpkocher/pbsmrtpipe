@@ -165,13 +165,11 @@ the **lambdaNEB** reference genome::
     -o job_output_2
 
 The output directories will be the same as the resequencing job plus
-``pbreports.tasks.sat_report-0``.  The most important files are (assuming the
+``pbreports.tasks.sat_report-0``.  The most important file is (assuming the
 command line arguments shown above)::
 
-  job_output_2/tasks/genomic_consensus.tasks.variant_caller-0/variants.gff
   job_output_2/tasks/pbreports.tasks.sat_report-0/report.json
 
-The GFF file should be empty if the system and SMRTcell worked as intended.
 The JSON file will have several statistics, the most important of which are
 coverage and accuracy, both expected to be 1.0.
 
