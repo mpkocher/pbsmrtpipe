@@ -257,6 +257,20 @@ def _core_export_fastx_ccs(ccs_ds):
     return b1 + b2
 
 
+def _core_laa(subread_ds):
+    # Call ccs
+    b3 = [(subread_ds, "pblaa.tasks.laa:0")]
+    return b3
+
+@register_pipeline(to_pipeline_ns("sa3_ds_laa"), "SA3 Consensus Reads", "0.1.0", tags=("laa", ))
+def ds_laa():
+    """
+    Basic Long Amplicon Analysis (LAA) pipeline, starting from subreads.
+    """
+    subreadset = Constants.ENTRY_DS_SUBREAD
+    return _core_laa(subreadset)
+
+
 def _core_ccs(subread_ds):
     # Call ccs
     b3 = [(subread_ds, "pbccs.tasks.ccs:0")]
