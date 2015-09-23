@@ -11,6 +11,7 @@ import itertools
 from avro.datafile import DataFileWriter, DataFileReader
 from avro.io import DatumWriter, DatumReader, validate
 import jsonschema
+from pbcommand.models.parser import JsonSchemaTypes
 from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
@@ -37,7 +38,7 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask, PacBioOption,
                                PipelineBinding, IOBinding, Pipeline)
-from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
+from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME,to_opt_type_ns)
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
@@ -724,13 +725,29 @@ def _pipeline_to_task_options(rtasks, p):
     return options.values()
 
 
+def _jschema_to_pacbio_option_type_id(jschema_type):
+    # This should get pushed down into pbcommand
+    # and eventually remove all of the JsonSchema models
+
+    types_d = {JsonSchemaTypes.BOOL: to_opt_type_ns("boolean"),
+               JsonSchemaTypes.INT: to_opt_type_ns("integer"),
+               JsonSchemaTypes.STR: to_opt_type_ns("string"),
+               JsonSchemaTypes.NUM: to_opt_type_ns("float")}
+
+    if jschema_type in types_d:
+        return types_d[jschema_type]
+
+    raise KeyError("Unsupported type {t} Supported types. {d}".format(t=jschema_type, d=types_d))
+
+
 def _option_jschema_to_pb_option(opt_jschema_d):
     """Convert from JsonSchema option to PacBioOption"""
     opt_id = opt_jschema_d['required'][0]
     name = opt_jschema_d['properties'][opt_id]['title']
     default = opt_jschema_d['properties'][opt_id]['default']
     desc = opt_jschema_d['properties'][opt_id]['description']
-    pb_opt = PacBioOption(opt_id, name, default, desc)
+    jschema_type = opt_jschema_d['properties'][opt_id]['type']
+    pb_opt = PacBioOption(opt_id, name, default, desc, jschema_type)
     return pb_opt
 
 
@@ -768,9 +785,8 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
     entry_points_d = {d['entryId']: d for d in all_entry_points}
-    tags = ["sa3"]
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
-
+    tags = list(set(pipeline.tags))
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
     comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
     return dict(id=pipeline.pipeline_id,

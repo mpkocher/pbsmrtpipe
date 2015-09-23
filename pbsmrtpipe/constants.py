@@ -100,6 +100,8 @@ class PacBioNamespaces(object):
     PBSMRTPIPE_CONSTANTS_PREFIX = 'pbsmrtpipe.constants'
     # Pipelines
     PBSMRTPIPE_PIPELINES = "pbsmrtpipe.pipelines"
+    # OptionTypes (this should really be in pbcommand
+    OPTION_TYPE = "pbsmrtpipe.option_types"
 
 
 def __to_type(prefix, name):
@@ -112,3 +114,4 @@ to_task_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TAS
 to_task_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TASK_PREFIX)
 to_workflow_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_OPTS_PREFIX)
 to_pipeline_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_PIPELINES)
+to_opt_type_ns = functools.partial(__to_type, PacBioNamespaces.OPTION_TYPE)
