@@ -231,9 +231,10 @@ def pb_modification_and_motif_analysis_1():
     return _core_motif_analysis('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:0',
                                 Constants.ENTRY_DS_REF)
 
-
+SAT_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+SAT_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "plurality"
 @register_pipeline(to_pipeline_ns("sa3_sat"), 'SA3 Site Acceptance Test', "0.1.0", tags=("sat", ),
-                   task_options=RESEQUENCING_TASK_OPTIONS)
+                   task_options=SAT_TASK_OPTIONS)
 def rs_site_acceptance_test_1():
     """Site Acceptance Test"""
 
