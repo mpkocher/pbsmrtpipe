@@ -68,6 +68,9 @@ clarity this is omitted from the table below.
 +-------------------------------+------------------------------------------+
 |Pipeline                       | Purpose                                  |
 +===============================+==========================================+
+|sa3_sat                        | Site Acceptance Test run on all new      |
+|                               | PacBio installations                     |
++-------------------------------+------------------------------------------+
 |sa3_ds_resequencing            | Map subreads to reference genome and     |
 |                               | determine consensus sequence with Quiver |
 +-------------------------------+------------------------------------------+
@@ -85,9 +88,33 @@ clarity this is omitted from the table below.
 +-------------------------------+------------------------------------------+
 |sa3_hdfsubread_to_subread      | Import h5 basecalling files              |
 +-------------------------------+------------------------------------------+
-|sa3_sat                        | Site Acceptance Test run on all new      |
-|                               | PacBio installations                     |
+
+Nearly all of these pipelines (except for sa3_hdfsubread_to_subread) require
+a SubreadSet as input; many also require a ReferenceSet.  Output is more
+varied:
+
 +-------------------------------+------------------------------------------+
+|Pipeline                       | Essential outputs                        |
++===============================+==========================================+
+|sa3_sat                        | variants GFF, SAT report                 |
++-------------------------------+------------------------------------------+
+|sa3_ds_resequencing            | AlignmentSet, consensus ContigSet,       |
+|                               | variants GFF                             |
++-------------------------------+------------------------------------------+
+|sa3_ds_ccs                     | ConsensusReadSet, FASTA and FastQ files  |
++-------------------------------+------------------------------------------+
+|sa3_ds_ccs_mapping             | As above plus ConsensusAlignmentSet      |
++-------------------------------+------------------------------------------+
+|sa3_ds_isoseq_classify         | ContigSets of classified transcripts     |
++-------------------------------+------------------------------------------+
+|sa3_ds_isoseq                  | As above plus polished isoform ContigSet |
++-------------------------------+------------------------------------------+
+|ds_modification_motif_analysis | Resequencing output plus basemods GFF,   |
+|                               | motifs CSV                               |
++-------------------------------+------------------------------------------+
+|sa3_hdfsubread_to_subread      | SubreadSet                               |
++-------------------------------+------------------------------------------+
+
 
 
 Practical Examples
@@ -104,21 +131,49 @@ We will be using the **sa3_ds_resequencing** pipeline::
   $ pbsmrtpipe show-template-details pbsmrtpipe.pipelines.sa3_ds_resequencing
 
 Which requires two entry points: a ``SubreadSet`` and a ``ReferenceSet``.  A
-typical invocation might look like this::
+typical invocation might look like this (for a hypothetical lambda virus
+genome)::
 
   $ pbsmrtpipe pipeline-id pbsmrtpipe.pipelines.sa3_ds_resequencing \
     -e eid_subread:/data/smrt/2372215/0007/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml \
-    -e eid_ref_dataset:/data/references/lambda.referenceset.xml
+    -e eid_ref_dataset:/data/references/lambdaNEB/lambdaNEB.referenceset.xml
 
 This will run for a while and emit several directories, including tasks, logs,
 and workflow.  The tasks directory is the most useful, as it stores the
 intermediate results and resolved tool contracts (how the task was executed)
 for each task. The directory names (task_ids) should be somewhat
-self-explanatory.
+self-explanatory.  If you want to direct the output to a subdirectory in the
+current working directory, use the ``-o`` flag: ``-o job_output_1``.
 
 Other pipelines related to resequencing, such as the basemods detection
 and motif finding, have nearly identical command-line arguments except for the
 pipeline ID.
+
+
+Site Acceptance Test
+--------------------
+
+The SAT pipeline is used to validate all new PacBio systems upon installation.
+It is essentially the resequencing pipeline applied to high-coverage lambda
+virus genome data collected on a PacBio instrument, with an additional report.
+The invocation is therefore nearly identical, but you should always be using
+the **lambdaNEB** reference genome::
+
+  $ pbsmrtpipe pipeline-id pbsmrtpipe.pipelines.sa3_sat \
+    -e eid_subread:/data/smrt/2372215/0007/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml \
+    -e eid_ref_dataset:/data/references/lambdaNEB/lambdaNEB.referenceset.xml \
+    -o job_output_2
+
+The output directories will be the same as the resequencing job plus
+``pbreports.tasks.sat_report-0``.  The most important files are (assuming the
+command line arguments shown above)::
+
+  job_output_2/tasks/genomic_consensus.tasks.variant_caller-0/variants.gff
+  job_output_2/tasks/pbreports.tasks.sat_report-0/report.json
+
+The GFF file should be empty if the system and SMRTcell worked as intended.
+The JSON file will have several statistics, the most important of which are
+coverage and accuracy, both expected to be 1.0.
 
 
 Quiver (Genomic Consensus)
