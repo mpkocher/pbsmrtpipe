@@ -38,7 +38,7 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask, PacBioOption,
                                PipelineBinding, IOBinding, Pipeline)
-from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
+from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME,to_opt_type_ns)
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
@@ -724,13 +724,11 @@ def _pipeline_to_task_options(rtasks, p):
 def _jschema_to_pacbio_option_type_id(jschema_type):
     # This should get pushed down into pbcommand
     # and eventually remove all of the JsonSchema models
-    def to_o(n):
-        return "pbsmrtpipe.option_types.{n}".format(n=n)
 
-    types_d = {JsonSchemaTypes.BOOL: to_o("boolean"),
-               JsonSchemaTypes.INT: to_o("integer"),
-               JsonSchemaTypes.STR: to_o("string"),
-               JsonSchemaTypes.NUM: to_o("float")}
+    types_d = {JsonSchemaTypes.BOOL: to_opt_type_ns("boolean"),
+               JsonSchemaTypes.INT: to_opt_type_ns("integer"),
+               JsonSchemaTypes.STR: to_opt_type_ns("string"),
+               JsonSchemaTypes.NUM: to_opt_type_ns("float")}
 
     if jschema_type in types_d:
         return types_d[jschema_type]
@@ -783,9 +781,8 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
     entry_points_d = {d['entryId']: d for d in all_entry_points}
-    tags = ["sa3"]
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
-
+    tags = list(set(pipeline.tags))
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
     comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
     return dict(id=pipeline.pipeline_id,

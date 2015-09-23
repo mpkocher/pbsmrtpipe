@@ -182,6 +182,11 @@
             {
               "name": "description",
               "type": "string"
+            },
+            {
+              "name": "optionTypeId",
+              "type": "string",
+              "doc": "Explicit pacbio option type id (e.g., pacbio.option_types.boolean). This must be consistent with the 'type' field"
             }
           ]
         }
