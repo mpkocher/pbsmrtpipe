@@ -203,9 +203,11 @@ def _core_motif_analysis(ipd_gff, reference_ds):
 
     return bs
 
+BASEMODS_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+BASEMODS_TASK_OPTIONS["kinetics_tools.task_options.pvalue"] = 0.001
 
 @register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ),
-        task_options=RESEQUENCING_TASK_OPTIONS)
+        task_options=BASEMODS_TASK_OPTIONS)
 def rs_modification_and_motif_analysis_1():
     """
     Pacbio Official Modification and Motif Analysis Pipeline
@@ -214,7 +216,7 @@ def rs_modification_and_motif_analysis_1():
         'pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("pb_modification_detection"), 'SA3 Internal Modification Analysis', "0.1.0", tags=("mapping", ))
+@register_pipeline(to_pipeline_ns("pb_modification_detection"), 'SA3 Internal Modification Analysis', "0.1.0", tags=("mapping", ), task_options={"kinetics_tools.task_options.pvalue":0.001})
 def pb_modification_analysis_1():
     """
     Internal base modification analysis pipeline, starting from an existing
@@ -223,7 +225,7 @@ def pb_modification_analysis_1():
     return _core_mod_detection(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("pb_modification_motif_analysis"), 'SA3 Internal Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ))
+@register_pipeline(to_pipeline_ns("pb_modification_motif_analysis"), 'SA3 Internal Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ), task_options={"kinetics_tools.task_options.pvalue":0.001})
 def pb_modification_and_motif_analysis_1():
     """
     Internal base modification and motif analysis pipeline, starting from an
