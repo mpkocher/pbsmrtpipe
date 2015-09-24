@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
 
-TC_DIR=./pbsmrtpipe/registered_tool_contract_sa3/
+TC_DIR=./pbsmrtpipe/registered_tool_contracts_sa3
 
 # For now, all the SA tools that can emit a TC can be done here.
-python -m pbreports.report.sat --emit-tool-contract > $TC_DIR/pbreports_report_sat_tool_contract.json
-python -m pbreports.report.mapping_stats --emit-tool-contract > $TC_DIR/mapping_stats_tool_contract.json
-python -m pbreports.report.mapping_stats_ccs --emit-tool-contract > $TC_DIR/mapping_stats_ccs_tool_contract.json
-python -m pbreports.report.variants --emit-tool-contract > $TC_DIR/pbreports_report_variants_tool_contract.json
-python -m pbreports.report.top_variants --emit-tool-contract > $TC_DIR/pbreports_report_top_variants_tool_contract.json
-python -m pbreports.report.modifications --emit-tool-contract > $TC_DIR/pbreports_report_modifications_tool_contract.json
-python -m pbreports.report.motifs --emit-tool-contract > $TC_DIR/pbreports_report_motifs_tool_contract.json
-python -m pbreports.report.summarize_coverage.summarize_coverage --emit-tool-contract > $TC_DIR/pbreports_report_summarize_coverage_tool_contract.json
-python -m pbreports.report.loading_xml --emit-tool-contract > $TC_DIR/pbreports_report_loading_xml_tool_contract.json
-python -m pbreports.report.adapter_xml --emit-tool-contract > $TC_DIR/pbreports_report_adapter_xml_tool_contract.json
-python -m pbreports.report.filter_stats_xml --emit-tool-contract > $TC_DIR/pbreports_report_filter_stats_xml_tool_contract.json
-python -m pbreports.report.isoseq_classify --emit-tool-contract > $TC_DIR/pbreports_report_isoseq_classify_tool_contract.json
-python -m pbreports.report.isoseq_cluster --emit-tool-contract > $TC_DIR/pbreports_report_isoseq_cluster_tool_contract.json
-python -m pbreports.report.ccs --emit-tool-contract > $TC_DIR/pbreports_report_ccs_tool_contract.json
+python -m pbreports.report.sat --emit-tool-contract > $TC_DIR/pbreports.tasks.sat_report_tool_contract.json
+python -m pbreports.report.mapping_stats --emit-tool-contract > $TC_DIR/pbreports.tasks.mapping_stats_tool_contract.json
+python -m pbreports.report.mapping_stats_ccs --emit-tool-contract > $TC_DIR/pbreports.tasks.mapping_stats_ccs_tool_contract.json
+python -m pbreports.report.variants --emit-tool-contract > $TC_DIR/pbreports.tasks.variants_report_tool_contract.json
+python -m pbreports.report.top_variants --emit-tool-contract > $TC_DIR/pbreports.tasks.top_variants_tool_contract.json
+python -m pbreports.report.modifications --emit-tool-contract > $TC_DIR/pbreports.tasks.modifications_report_tool_contract.json
+python -m pbreports.report.motifs --emit-tool-contract > $TC_DIR/pbreports.tasks.motifs_report_tool_contract.json
+python -m pbreports.report.summarize_coverage.summarize_coverage --emit-tool-contract > $TC_DIR/pbreports.tasks.summarize_coverage_tool_contract.json
+python -m pbreports.report.loading_xml --emit-tool-contract > $TC_DIR/pbreports.tasks.loading_report_xml_tool_contract.json
+python -m pbreports.report.adapter_xml --emit-tool-contract > $TC_DIR/pbreports.tasks.adapter_report_xml_tool_contract.json
+python -m pbreports.report.filter_stats_xml --emit-tool-contract > $TC_DIR/pbreports.tasks.filter_stats_report_xml_tool_contract.json
+python -m pbreports.report.isoseq_classify --emit-tool-contract > $TC_DIR/pbreports.tasks.isoseq_classify_tool_contract.json
+python -m pbreports.report.isoseq_cluster --emit-tool-contract > $TC_DIR/pbreports.tasks.isoseq_cluster_tool_contract.json
+python -m pbreports.report.ccs --emit-tool-contract > $TC_DIR/pbreports.tasks.ccs_report_tool_contract.json
 
 pbalign --emit-tool-contract > $TC_DIR/pbalign_tool_contract.json
 python -m pbalign.ccs --emit-tool-contract > $TC_DIR/pbalign_ccs_tool_contract.json

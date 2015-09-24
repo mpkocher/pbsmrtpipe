@@ -1,6 +1,7 @@
 {
     "version": "2.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbreports.report.motifs --resolved-tool-contract", 
         "env": {}
     }, 
@@ -19,7 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-08-03T11:39:44.666877", 
+        "_comment": "Created by v0.2.14", 
+        "name": "Motif Report", 
         "input_types": [
             {
                 "description": "Path to motifs.gff.gz", 
@@ -36,6 +38,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": true, 
-        "name": "Motif Report"
+        "tool_contract_id": "pbreports.tasks.motifs_report"
     }
 }

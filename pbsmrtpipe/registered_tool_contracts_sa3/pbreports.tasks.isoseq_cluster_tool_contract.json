@@ -15,7 +15,7 @@
             {
                 "title": "Output JSON", 
                 "description": "Path to write Report json output.", 
-                "default_name": "isoseq_classify_report.json", 
+                "default_name": "isoseq_cluster_report.json", 
                 "id": "outJson", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
