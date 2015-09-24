@@ -1,25 +1,27 @@
 {
     "version": "1.1.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "summarizeConsensus --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "genomic_consensus.tasks.summarize_consensus", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nAugment the alignment_summary.gff file with consensus and variants information.\n", 
         "schema_options": [], 
         "output_types": [
             {
                 "title": "Output GFF file", 
                 "description": "New alignment summary GFF file", 
-                "default_name": "alignment_summary.gff", 
+                "default_name": "alignment_summary_variants.gff", 
                 "id": "output", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T18:05:36.462504", 
+        "_comment": "Created by v0.2.14", 
+        "name": "Summarize Consensus", 
         "input_types": [
             {
                 "description": "Alignment summary GFF file", 
@@ -35,6 +37,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "tool_contract_id": "genomic_consensus.tasks.summarize_consensus"
     }
 }

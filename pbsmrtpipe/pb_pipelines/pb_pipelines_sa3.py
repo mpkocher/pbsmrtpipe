@@ -204,7 +204,8 @@ def _core_motif_analysis(ipd_gff, reference_ds):
     return bs
 
 
-@register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ))
+@register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'SA3 Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ),
+        task_options=RESEQUENCING_TASK_OPTIONS)
 def rs_modification_and_motif_analysis_1():
     """
     Pacbio Official Modification and Motif Analysis Pipeline
