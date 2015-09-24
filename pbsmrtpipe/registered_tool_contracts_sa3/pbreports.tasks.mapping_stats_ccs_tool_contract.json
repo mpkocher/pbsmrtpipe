@@ -1,0 +1,37 @@
+{
+    "version": "0.1", 
+    "driver": {
+        "serialization": "json", 
+        "exe": "python -m pbreports.report.mapping_stats_ccs --resolved-tool-contract", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.mapping_stats_ccs", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "\nCreate a Mapping Report from a Aligned CCS BAM or ConsensusAlignment DataSet\n", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "PacBio Json Report", 
+                "description": "Output report JSON file.", 
+                "default_name": "mapping_stats_report.json", 
+                "id": "report_json", 
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            }
+        ], 
+        "_comment": "Created by v0.2.14", 
+        "name": "CCS Mapping Stats", 
+        "input_types": [
+            {
+                "description": "BAM, SAM or ConsensusAlignment DataSet", 
+                "title": "ConsensusAlignment XML DataSet", 
+                "id": "alignment_file", 
+                "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.mapping_stats_ccs"
+    }
+}

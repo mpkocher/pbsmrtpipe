@@ -20,13 +20,13 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.4", 
+        "_comment": "Created by v0.2.14", 
         "name": "ccs_report", 
         "input_types": [
             {
-                "description": "CCS h5 FOFN", 
-                "title": "CCS h5 FOFN", 
-                "id": "input_fofn", 
+                "description": "ConsensusRead DataSet file", 
+                "title": "ConsensusReadSet", 
+                "id": "ccs_in", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }
         ], 

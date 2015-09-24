@@ -1,14 +1,15 @@
 {
     "version": "0.1.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbreports.report.loading_xml --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.loading_report_xml", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": false, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nGenerate XML report on ZMW loading and productivity.\n", 
         "schema_options": [], 
         "output_types": [
             {
@@ -19,7 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:12.039495", 
+        "_comment": "Created by v0.2.14", 
+        "name": "Loading XML Report", 
         "input_types": [
             {
                 "description": "SubreadSet", 
@@ -29,6 +31,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": false, 
+        "tool_contract_id": "pbreports.tasks.loading_report_xml"
     }
 }

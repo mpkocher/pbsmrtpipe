@@ -1,20 +1,29 @@
 {
     "version": "0.1", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbreports.report.top_variants --resolved-tool-contract", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.top_variants", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": false, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nGenerates a report showing a table of top variants sorted by confidence.\n", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 100, 
+                    "type": "integer", 
+                    "option_id": "pbreports.task_options.how_many", 
+                    "name": "Number of variants", 
+                    "description": "number of top variants to show (default=100)"
+                }, 
+                "title": "JSON Schema for pbreports.task_options.how_many", 
                 "required": [
                     "pbreports.task_options.how_many"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbreports.task_options.how_many": {
@@ -23,14 +32,21 @@
                         "description": "number of top variants to show (default=100)", 
                         "title": "Number of variants"
                     }
-                }, 
-                "title": "JSON Schema for pbreports.task_options.how_many"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 10000, 
+                    "type": "integer", 
+                    "option_id": "pbreports.task_options.batch_sort_size", 
+                    "name": "Batch sort size", 
+                    "description": "Intermediate sort size parameter (default=10000)"
+                }, 
+                "title": "JSON Schema for pbreports.task_options.batch_sort_size", 
                 "required": [
                     "pbreports.task_options.batch_sort_size"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "pbreports.task_options.batch_sort_size": {
@@ -39,8 +55,7 @@
                         "description": "Intermediate sort size parameter (default=10000)", 
                         "title": "Batch sort size"
                     }
-                }, 
-                "title": "JSON Schema for pbreports.task_options.batch_sort_size"
+                }
             }
         ], 
         "output_types": [
@@ -52,7 +67,8 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:10.162609", 
+        "_comment": "Created by v0.2.14", 
+        "name": "Top Variants Report", 
         "input_types": [
             {
                 "description": "variants.gff (can be gzip'ed)", 
@@ -68,6 +84,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": false, 
+        "tool_contract_id": "pbreports.tasks.top_variants"
     }
 }
