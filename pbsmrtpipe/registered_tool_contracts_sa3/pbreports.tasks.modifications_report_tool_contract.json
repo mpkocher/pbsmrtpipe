@@ -49,7 +49,7 @@
                 "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
                 "default_name": "report.json", 
                 "id": "report", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
         "_comment": "Created by v0.2.0 at 2015-07-30T17:16:10.889788", 
