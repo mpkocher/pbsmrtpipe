@@ -85,7 +85,7 @@
             {
                 "title": "Alignment Summary GFF", 
                 "description": "Alignment Summary GFF", 
-                "default_name": "alignment_summary_final.gff", 
+                "default_name": "alignment_summary.gff", 
                 "id": "aln_summ_gff", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
