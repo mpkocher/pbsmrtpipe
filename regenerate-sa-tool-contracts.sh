@@ -15,7 +15,7 @@ python -m pbreports.report.summarize_coverage.summarize_coverage --emit-tool-con
 python -m pbreports.report.loading_xml --emit-tool-contract > $TC_DIR/pbreports.tasks.loading_report_xml_tool_contract.json
 python -m pbreports.report.adapter_xml --emit-tool-contract > $TC_DIR/pbreports.tasks.adapter_report_xml_tool_contract.json
 python -m pbreports.report.filter_stats_xml --emit-tool-contract > $TC_DIR/pbreports.tasks.filter_stats_report_xml_tool_contract.json
-python -m pbreports.report.isoseq_classify --emit-tool-contract > $TC_DIR/pbreports.tasks.sisoseq_classify_tool_contract.json
+python -m pbreports.report.isoseq_classify --emit-tool-contract > $TC_DIR/pbreports.tasks.isoseq_classify_tool_contract.json
 python -m pbreports.report.isoseq_cluster --emit-tool-contract > $TC_DIR/pbreports.tasks.isoseq_cluster_tool_contract.json
 python -m pbreports.report.ccs --emit-tool-contract > $TC_DIR/pbreports.tasks.ccs_report_tool_contract.json
 
