@@ -15,6 +15,7 @@ import signal
 import Queue
 
 from pbsmrtpipe.cluster import ClusterTemplateRender
+from pbsmrtpipe.cluster import Constants as ClusterConstants
 from pbsmrtpipe.models import TaskResult
 
 log = logging.getLogger(__name__)
@@ -363,9 +364,8 @@ class ClusterEngineWorker(multiprocessing.Process):
         with open(self.stderr, 'w+') as f:
             f.write("# stderr Running task_job_id {i}".format(i=self.task_job_id))
 
-        # Not sure how to enable the selection of start or interactive
-        template_name = 'interactive'
-        cluster_cmd = self.cluster_renderer.render(template_name, self.script_path, self.task_job_id, stdout=self.stdout, stderr=self.stderr, nproc=self.nproc)
+        # Not sure how to enable the selection of start or Stop
+        cluster_cmd = self.cluster_renderer.render(ClusterConstants.START, self.script_path, self.task_job_id, stdout=self.stdout, stderr=self.stderr, nproc=self.nproc)
         stdout_h.write("Cluster command '{c}'".format(c=cluster_cmd))
         slog.debug(cluster_cmd)
         p = subprocess.Popen(cluster_cmd, shell=True, stdin=subprocess.PIPE, stdout=stderr_h, stderr=stdout_h, close_fds=True)
