@@ -75,18 +75,22 @@ clarity this is omitted from the table below.
 |                               | determine consensus sequence with Quiver |
 +-------------------------------+------------------------------------------+
 |sa3_ds_ccs                     | Generate high-accuracy Circular          |
-|                               | Consensus Reads                          |
+|                               | Consensus Reads from subreads            |
 +-------------------------------+------------------------------------------+
-|sa3_ds_ccs_mapping             | CCS + mapping to reference genome        |
+|sa3_ds_ccs_align               | ConsensusRead (CCS) + mapping to         |
+|                               | reference genome, starting from subreads |
 +-------------------------------+------------------------------------------+
-|sa3_ds_isoseq_classify         | IsoSeq transcript analysis               |
+|sa3_ds_isoseq_classify         | IsoSeq transcript classification,        |
+|                               | starting from subreads                   |
 +-------------------------------+------------------------------------------+
 |sa3_ds_isoseq                  | Full IsoSeq with clustering and          |
 |                               | Quiver polishing (much slower)           |
 +-------------------------------+------------------------------------------+
-|ds_modification_motif_analysis | Base mod detection and motif finding     |
+|ds_modification_motif_analysis | Base modification detection and motif    |
+|                               | finding, starting from subreads          |
 +-------------------------------+------------------------------------------+
-|sa3_hdfsubread_to_subread      | Import h5 basecalling files              |
+|sa3_hdfsubread_to_subread      | Convert HdfSubreadSet to SubreadSet      |
+|                               | (import bax.h5 basecalling files         |
 +-------------------------------+------------------------------------------+
 
 Nearly all of these pipelines (except for sa3_hdfsubread_to_subread) require
