@@ -31,7 +31,7 @@ Cluster Manager
 The cluster manager configuration (**pbsmrtpipe.options.cluster_manager**) is often the first item that needs to be configured to enable distributed computing of your pipeline.
 
 
-The cluster manager configuration points to a directory of three cluster templates, **start.tmpl** and **stop.tmpl**.
+The cluster manager configuration points to a directory of two cluster templates, **start.tmpl** and **stop.tmpl**.
 
 The **start.tmpl** is the most important. It must contain a **single** bash line that exposes several template variables that will be replaced. This will often have the queue name that jobs will be submitted to.
 
