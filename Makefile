@@ -21,6 +21,8 @@ doc:
 	sphinx-apidoc -o docs/ pbsmrtpipe/ && cd docs/ && make html
 
 doc-clean:
+	rm docs/pbsmrtpipe*.rst
+	rm docs/modules.rst
 	cd docs && make clean
 
 unit-test:
