@@ -4,6 +4,7 @@ import logging
 import unittest
 
 import pbsmrtpipe.cluster as C
+from pbsmrtpipe.cluster import Constants as ClusterConstants
 
 from pbsmrtpipe.cluster import ClusterTemplate, ClusterTemplateRender
 from pbsmrtpipe.cluster_templates import CLUSTER_TEMPLATE_DIR
@@ -15,7 +16,7 @@ log = logging.getLogger(__name__)
 class TestClusterTemplate(unittest.TestCase):
 
     def test_cluster_template_str(self):
-        t = ClusterTemplate('kill', 'qdel ${JOB_ID}')
+        t = ClusterTemplate(ClusterConstants.STOP, 'qdel ${JOB_ID}')
         self.assertIsNotNone(str(t))
         self.assertIsNotNone(repr(t))
 
@@ -50,7 +51,7 @@ class TestCluster(unittest.TestCase):
         renderer = C.load_cluster_templates_from_dir(self.cluster_model_dir)
         self.assertIsNotNone(renderer)
 
-        template_name = "interactive"
+        template_name = ClusterConstants.START
         command = "python --version"
         job_id = 'c1234'
         nproc = 1

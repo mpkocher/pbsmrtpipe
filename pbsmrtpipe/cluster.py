@@ -28,12 +28,11 @@ __all__ = ['load_installed_cluster_templates',
 class Constants(object):
     # Each template must be implemented.
     START = "start"
-    INTERACTIVE = "interactive"
-    KILL = "kill"
+    STOP = "stop"
 
     @classmethod
     def all(cls):
-        return cls.START, cls.INTERACTIVE, cls.KILL
+        return cls.START, cls.STOP
 
     @classmethod
     def is_valid(cls, name):
@@ -57,7 +56,7 @@ def _get_cluster_files(template_dir, suffix='.tmpl'):
 
     for p in paths:
         if not os.path.isfile(p):
-            msg = "cluster template error. Unable to find template file '{f}'".format(f=p)
+            msg = "cluster template loading error. Unable to find template file '{f}'".format(f=p)
             log.error(msg, exc_info=True)
             raise IOError(msg)
 
@@ -74,7 +73,7 @@ def load_cluster_templates_from_dir(cluster_model_dir):
     """
     Load tmpl files from dir and return list of ClusterTemplate instances.
 
-    The directory should contain {start,interactive,kill} templates.
+    The directory should contain 'start.tmpl' and 'stop.tmpl' Cluster templates
 
     For example, /path/to/cluster_templates/my_sge
 
@@ -162,10 +161,10 @@ class ClusterTemplateRender(object):
         self._templates = {t.name: t for t in templates}
 
     def __repr__(self):
-        t = self._templates[Constants.INTERACTIVE]
+        t = self._templates[Constants.START]
         i = t.template_str
         _d = dict(k=self.__class__.__name__, i=i)
-        return "<{k} interactive:'{i}' >".format(**_d)
+        return "<{k} start:'{i}' >".format(**_d)
 
     @property
     def cluster_templates(self):
@@ -183,7 +182,7 @@ class ClusterTemplateRender(object):
 
     def render(self, template_name, shell_script, job_id, stdout=None, stderr=None, nproc=1, extras=None):
         """
-        :param template_name: (str) name of template type (e.g., start, interactive)
+        :param template_name: (str) name of template type (e.g., start, stop)
         :param shell_script: (str) path to shell script
         :param job_id: (int, str) For SGE, the job id will be correct format
         :param stdout: (str) path to stdout
@@ -230,21 +229,21 @@ def validate_cluster_manager(cluster_manager):
     If a relative path is given 'mytemplate', the code will look for
     pbsmrtpipe/cluster_templates/mytemplate
 
-    The required template files (e.g., start, kill, interactive) are also validated.
+    The required template files (e.g., start, stop) are also validated.
 
     This should be removed.
     """
     e_msg = "Unable to load cluster templates from {d}".format(d=cluster_manager)
     if os.path.isabs(cluster_manager):
         if os.path.isdir(cluster_manager):
-            cluster_templates = load_cluster_templates_from_dir(cluster_manager)
+            _ = load_cluster_templates_from_dir(cluster_manager)
             return cluster_manager
 
     resolved_cluster_manager = os.path.join(CLUSTER_TEMPLATE_DIR, cluster_manager)
 
     if os.path.exists(resolved_cluster_manager):
         if os.path.isdir(resolved_cluster_manager):
-            cluster_templates = load_cluster_templates_from_dir(resolved_cluster_manager)
+            _ = load_cluster_templates_from_dir(resolved_cluster_manager)
             return resolved_cluster_manager
     e_msg += " or from {r}".format(r=resolved_cluster_manager)
     raise IOError(e_msg)

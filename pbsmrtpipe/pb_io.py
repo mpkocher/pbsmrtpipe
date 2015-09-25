@@ -225,7 +225,7 @@ def _get_distributed_mode_schema():
 def _get_cluster_manager_schema():
     return OP.to_option_schema(_to_wopt_id("cluster_manager"), ("string", "null"),
                                "Cluster Template Path",
-                               "Path to Cluster template files directory. The directory must contain 'start.tmpl', 'interactive.tmpl' and 'kill.tmpl' "
+                               "Path to Cluster template files directory. The directory must contain 'start.tmpl', and 'stop.tmpl'"
                                "Or the path can be provided to a python module (e.g., 'pbsmrtpipe.cluster_templates.sge')", "pbsmrtpipe.cluster_templates.sge_pacbio")
 
 

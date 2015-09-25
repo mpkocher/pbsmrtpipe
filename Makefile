@@ -57,7 +57,7 @@ test-suite: test-sanity test-unit test-dev
 test-clean-suite: install test-suite
 
 clean-all:
-	find . -name "*.pyc" | xargs rm -f;\
+	find . -name "*.pyc" | xargs rm -rf;\
 	rm -rf report_unittests.log && cd testkit-data && fab cleaner
 
 build-java-classes:

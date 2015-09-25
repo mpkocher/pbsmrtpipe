@@ -58,7 +58,7 @@ class TestHelloWorldCluster(unittest.TestCase):
                 f.write("")
 
         log.info(sh_script)
-        cmd = r.render("interactive", sh_script, 'test_job_01', stdout=stdout, stderr=stderr, nproc=1)
+        cmd = r.render("start", sh_script, 'test_job_01', stdout=stdout, stderr=stderr, nproc=1)
         log.debug("Running qsub command '{c}'".format(c=cmd))
         time_out = 60 * 5
         rcode, stdout, stderr, run_time = run_command(cmd, None, None, time_out=time_out)
