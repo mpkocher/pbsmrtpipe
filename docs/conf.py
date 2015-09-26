@@ -11,7 +11,9 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return Mock()
 
-MOCK_MODULES = ['pbcore', 'pbcore.io', 'pbcore.util', 'pbcore.util.Process',
+MOCK_MODULES = ['pbcore', 'pbcore.io', 'pbcore.io.FastqIO', 'pbcore.io.FastaIO',
+                'pbcore.io.GffIO', 'pbcore.util', 'pbcore.util.Process',
+                'pbcore.io.dataset',
                 'h5py', 'numpy', 'Cython', 'pysam', 'networkx',
                 'IPython', 'IPython.display']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
