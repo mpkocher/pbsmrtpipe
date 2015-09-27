@@ -105,6 +105,7 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
     """
 
     # Launch the command as subprocess.
+    slog.info("command: `%s` in %s"%(command, os.getcwd()))
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
 
@@ -125,35 +126,51 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
 
     started_at = time.time()
 
+    def readlines(q, write):
+        while not q.empty():
+            line = q.get()
+            if line:
+                write(line.rstrip())
+    def stdout_write(line):
+        slog.info(line)
+        stdouts.append(line)
+    def stderr_write(line):
+        slog.error(line)
+        stderrs.append(line)
+
     # Check the queues if we received some output (until there is nothing
     # more to get).
     process.poll()
-    while not stdout_reader.eof() or not stderr_reader.eof() or process.returncode is None:
+    try:
+      while not stdout_reader.eof() or not stderr_reader.eof() or process.returncode is None:
         # Show what we received from standard output.
-        while not stdout_queue.empty():
-            line = stdout_queue.get()
-            if line:
-                slog.info(line.strip())
-                stdouts.append(line.strip())
+        readlines(stdout_queue, stdout_write)
 
         # Show what we received from standard error.
-        while not stderr_queue.empty():
-            line = stderr_queue.get()
-            if line:
-                slog.error(line.strip())
-                stderrs.append(line.strip())
+        readlines(stderr_queue, stderr_write)
 
         # Sleep a bit before asking the readers again.
         time.sleep(2)
         process.poll()
+    except KeyboardInterrupt as e:
+        sys.stderr.write("Received %r. Please wait...\n" %e)
+        # Try to capture a stack-trace from the process, if Python.
+        # Worst case: User can Ctrl-C again.
+        process.send_signal(signal.SIGINT)
+        process.wait()
+        slog.exception(e)  # TODO: Delete this line, when confident this is logged elsewhere.
+        raise
+    finally:
+        # Let's be tidy and join the threads we've started.
+        stdout_reader.join()
+        stderr_reader.join()
 
-    # Let's be tidy and join the threads we've started.
-    stdout_reader.join()
-    stderr_reader.join()
+        readlines(stdout_queue, stdout_write)
+        readlines(stderr_queue, stderr_write)
 
-    # Close subprocess' file descriptors.
-    process.stdout.close()
-    process.stderr.close()
+        # Close subprocess' file descriptors.
+        process.stdout.close()
+        process.stderr.close()
 
     def _write_to_fh_or_file(fh_or_file, contents):
         if hasattr(fh_or_file, 'write'):
