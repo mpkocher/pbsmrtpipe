@@ -31,7 +31,7 @@ def get_contract_parser(tool_id=TOOL_ID, module_name=MODULE_NAME):
                              "Pacbio DataSet AlignmentSet",
                              Constants.DRIVER_BASE.format(module=module_name),
                              Constants.CHUNK_KEYS,
-                             is_distributed=False)
+                             is_distributed=True)
 
     p.add_input_file_type(FileTypes.DS_ALIGN,
                           "alignment_ds",
