@@ -18,7 +18,7 @@ from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
 from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
 
-from pbcore.io import DataSet
+from pbcore.io import openDataSet
 
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
@@ -120,7 +120,7 @@ def _get_dataset_uuid_or_create_uuid(path):
     :return: uuid string
     """
     try:
-        ds = DataSet(path)
+        ds = openDataSet(path)
         ds_id = ds.uuid
         # make sure it's a validate uuid
         _ = uuid.UUID(ds_id)

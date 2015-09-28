@@ -26,7 +26,7 @@ def get_contract_parser():
     chunk_keys = ("$chunk.reference_id", "$chunk.subreadset_id")
     p = get_scatter_pbparser(TOOL_ID, "0.1.3", "SubreadSet scatter",
                              "Scatter Subread DataSet", driver, chunk_keys,
-                             is_distributed=False)
+                             is_distributed=True)
 
     p.add_input_file_type(FileTypes.DS_SUBREADS,
                           "subreads",
