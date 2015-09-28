@@ -248,15 +248,21 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
         sys.stderr.write("Received %r. Please wait...\n" %e)
         # Try to capture a stack-trace from the process, if Python.
         # Worst case: User can Ctrl-C again.
-        process.send_signal(signal.SIGINT)
+        #process.send_signal(signal.SIGINT) # Does not seem to be needed anymore.
         process.wait()
-        time.sleep(10)
         #slog.exception(e)  # TODO: Delete this line, when confident this is logged elsewhere.
         raise
     finally:
         # Let's be tidy and join the threads we've started.
         ##stdout_reader.join()
         ##stderr_reader.join()
+
+        # This will cause NFS to update the files,
+        # according to a friend at AMD. They had this problem in spades there.
+        os.listdir('.')
+        # But note that for us, missing output from the subproc is really no
+        # big deal. It's merely informative, and it's always available to
+        # the curious in the stdout/err files.
 
         readlines(stdout_queue, stdout_write)
         readlines(stderr_queue, stderr_write)
