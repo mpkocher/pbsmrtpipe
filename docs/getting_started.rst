@@ -32,6 +32,9 @@ input will be ``eid_subread``, a SubreadSet XML dataset, which contains one or
 more BAM files containing the raw unaligned subreads.  Also common is
 ``eid_ref_dataset``, for a ReferenceSet or genomic FASTA file.
 
+Note that if you are starting from PacBio's bax.h5 basecalling files, you
+will need to do an initial conversion step; see **Appendix A** for details.
+
 
 Parallelization
 ===============
@@ -205,7 +208,7 @@ individual SMRTcell ZMWs from high-coverage subreads::
 
 This pipeline is relatively simple and also parallelizes especially well.
 The essential outputs are a ConsensusRead dataset (composed of one or more
-unmapped BAM files) and corresponding FASTA and FASTQ files:
+unmapped BAM files) and corresponding FASTA and FASTQ files::
 
   job_output/tasks/pbccs.tasks.ccs-0/ccs.consensusreadset.xml
   job_output/tasks/pbsmrtpipe.tasks.bam2fasta_ccs-0/file.fasta
@@ -374,14 +377,14 @@ Alternately, the entire ``<task-options>`` block can also be copied-and-pasted
 into the equivalent level in the ``preset.xml`` that contains global options.
 
 
-Appendix A: hdfsubreadset to subreadset conversion.
-===================================================
+Appendix A: HdfSubreadSet to SubreadSet conversion
+==================================================
 
 If you have existing bax.h5 files that you would like to process with
 pbsmrtpipe, you will need to convert them to a SubreadSet before continuing.
 Bare bax.h5 files aren't directly compatible with pbsmrtpipe, but we can
 generate an HdfSubreadSet XML file from a fofn or folder of bax.h5 files
-using the python dataset xml api/cli very easily. 
+using the python dataset xml api/cli very easily.
 
 From a fofn, allTheBaxFiles.fofn::
 
