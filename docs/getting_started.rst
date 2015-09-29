@@ -28,9 +28,9 @@ Among other things, this will list the **entry points** required for the
 pipeline.  These will usually be PacBio Dataset XML files (see Appendix B
 for instructions on generating these), although single raw data files
 (BAM or FASTA format) may be acceptable for some use cases.  The most common
-input will be *eid_subread*, a SubreadSet XML dataset, which contains one or
+input will be ``eid_subread``, a SubreadSet XML dataset, which contains one or
 more BAM files containing the raw unaligned subreads.  Also common is
-*eid_ref_dataset*, for a ReferenceSet or genomic FASTA file.
+``eid_ref_dataset``, for a ReferenceSet or genomic FASTA file.
 
 
 Parallelization
@@ -442,3 +442,7 @@ FASTA files can also be indexed for increased speed using samtools, and this
 is again recommended before creating the dataset::
 
   $ samtools faidx chr1.fasta
+
+Note that `PacBio's specifications <http://pacbiofileformats.readthedocs.org/en/3.0/>`_ for BAM and FASTA files impose additional restrictions on content and
+formatting; files produce by non-PacBio software are not guaranteed to work
+as input.  The ``pbvalidate`` tool can be used to check for format compliance.
