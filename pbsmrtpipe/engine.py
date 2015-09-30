@@ -320,10 +320,12 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
             if run_time > time_out:
                 log.info("Exceeded TIMEOUT of {t}. Killing cmd '{c}'".format(t=time_out, c=cmd))
                 try:
-                    # ask for forgiveness model
+                    process.send_signal(signal.SIGINT) # Maybe get a stack-trace?
+                    time.sleep(1)
+                    process.terminate()
                     process.kill()
                 except OSError:
-                    pass
+                    log.exception('Problem while terminating sub-process.')
         if sleep_time < max_sleep_time:
             sleep_time += dt
 
