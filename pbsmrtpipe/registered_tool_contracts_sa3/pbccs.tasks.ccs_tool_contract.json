@@ -105,6 +105,29 @@
             }, 
             {
                 "pb_option": {
+                    "default": 0.9, 
+                    "type": "number", 
+                    "option_id": "pbccs.task_options.min_predicted_accuracy", 
+                    "name": "Min. predicted accuracy", 
+                    "description": "Minimum predicted accuracy in [0, 1]"
+                }, 
+                "title": "JSON Schema for pbccs.task_options.min_predicted_accuracy", 
+                "required": [
+                    "pbccs.task_options.min_predicted_accuracy"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pbccs.task_options.min_predicted_accuracy": {
+                        "default": 0.9, 
+                        "type": "number", 
+                        "description": "Minimum predicted accuracy in [0, 1]", 
+                        "title": "Min. predicted accuracy"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
                     "default": -5.0, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.min_zscore", 
