@@ -130,7 +130,7 @@ def _get_dataset_uuid_or_create_uuid(path):
         _ = uuid.UUID(ds_id)
     except ValueError as e:
         log.error("DataSet {p} uuid is malformed. {e}".format(e=e, p=path))
-        ds_id = uuid.uuid4
+        ds_id = uuid.uuid4()
     except Exception:
         # not a DataSet file
         ds_id = uuid.uuid4()
