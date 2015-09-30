@@ -1,14 +1,15 @@
 {
     "version": "0.1", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m pbreports.report.sat --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.sat_report", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": false, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "\nGenerates the SAT metric performance attributes\n", 
         "schema_options": [], 
         "output_types": [
             {
@@ -16,10 +17,11 @@
                 "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
                 "default_name": "report.json", 
                 "id": "report", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:08.514238", 
+        "_comment": "Created by v0.2.14", 
+        "name": "SAT Report", 
         "input_types": [
             {
                 "description": "AlignmentSet XML or aligned .bam file", 
@@ -41,6 +43,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": false, 
+        "tool_contract_id": "pbreports.tasks.sat_report"
     }
 }

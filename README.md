@@ -1,8 +1,8 @@
 # pbsmrtpipe
 
-(Alpha) Workflow Engine for working with PacBio data.
+(Beta) Workflow Engine for working with PacBio data.
 
-[Official Latest Documentation](http://pbsmrtpipe.readthedocs.org/en/latest/)
+[Official Latest Documentation](http://pbsmrtpipe.readthedocs.org/)
 
 [![Circle CI](https://circleci.com/gh/PacificBiosciences/pbsmrtpipe.svg?style=svg)](https://circleci.com/gh/PacificBiosciences/pbsmrtpipe)
 
@@ -11,7 +11,7 @@
 
 - Integrates natively with Pacific Biosciences sequence data
 - Runs Scatter/Gather model to scale bioinformatic analysis
-- Configurable scheduler (SGE, PBS, Slurm)
+- Configurable HPC scheduler (SGE, PBS, Slurm)
 - [pbcommand](https://github.com/PacificBiosciences/pbcommand) Python Tool Contract API to define tasks
 - Simple Bindings model to define pipelines and pipeline templates 
 - HTML Reports

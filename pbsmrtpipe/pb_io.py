@@ -11,6 +11,7 @@ import itertools
 from avro.datafile import DataFileWriter, DataFileReader
 from avro.io import DatumWriter, DatumReader, validate
 import jsonschema
+from pbcommand.models.parser import JsonSchemaTypes
 from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
@@ -37,7 +38,7 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask, PacBioOption,
                                PipelineBinding, IOBinding, Pipeline)
-from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
+from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME,to_opt_type_ns)
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
@@ -224,7 +225,7 @@ def _get_distributed_mode_schema():
 def _get_cluster_manager_schema():
     return OP.to_option_schema(_to_wopt_id("cluster_manager"), ("string", "null"),
                                "Cluster Template Path",
-                               "Path to Cluster template files directory. The directory must contain 'start.tmpl', 'interactive.tmpl' and 'kill.tmpl' "
+                               "Path to Cluster template files directory. The directory must contain 'start.tmpl', and 'stop.tmpl'"
                                "Or the path can be provided to a python module (e.g., 'pbsmrtpipe.cluster_templates.sge')", "pbsmrtpipe.cluster_templates.sge_pacbio")
 
 
@@ -567,7 +568,7 @@ _parse_pipeline_template_xml_with_template_id = functools.partial(__parse_pipeli
 _parse_pipeline_template = functools.partial(__parse_pipeline_template_xml, __parse_explicit_bindings)
 
 
-def parse_pipeline_preset_xml(file_name):
+def parse_pipeline_preset_xml(file_name, validate=True):
     if not os.path.exists(file_name):
         raise IOError("Unable to find preset in {f}".format(f=file_name))
 
@@ -576,23 +577,27 @@ def parse_pipeline_preset_xml(file_name):
     task_options = parse_task_options(r)
     wopts_tlist = parse_workflow_options(r)
     wopts = dict(wopts_tlist)
-    workflow_options = validate_workflow_options(wopts)
+    # XXX if we have multiple preset XMLs, we need to postpone this step
+    # until all of them have been collected and merged
+    if validate:
+        wopts_tlist = validate_workflow_options(wopts)
     # this API is a bit funky. [(k, v), ..] is the format
-    return PresetRecord(task_options, workflow_options)
+    return PresetRecord(task_options, wopts_tlist)
 
 
 def parse_pipeline_preset_xmls(file_names):
     task_options = {}
     workflow_options = {}
-    prs = [parse_pipeline_preset_xml(file_name) for file_name in file_names]
+    prs = [parse_pipeline_preset_xml(file_name, False) for file_name in file_names]
     for pr in prs:
         task_options.update(dict(pr.task_options))
         workflow_options.update(dict(pr.workflow_options))
+    workflow_options_t = validate_workflow_options(workflow_options)
 
     def to_t(d):
         return [(k, v) for k,v in d.iteritems()]
 
-    return PresetRecord(to_t(task_options), to_t(workflow_options))
+    return PresetRecord(to_t(task_options), workflow_options_t)
 
 
 def parse_pipeline_template_xml(file_name, registered_pipelines):
@@ -720,13 +725,29 @@ def _pipeline_to_task_options(rtasks, p):
     return options.values()
 
 
+def _jschema_to_pacbio_option_type_id(jschema_type):
+    # This should get pushed down into pbcommand
+    # and eventually remove all of the JsonSchema models
+
+    types_d = {JsonSchemaTypes.BOOL: to_opt_type_ns("boolean"),
+               JsonSchemaTypes.INT: to_opt_type_ns("integer"),
+               JsonSchemaTypes.STR: to_opt_type_ns("string"),
+               JsonSchemaTypes.NUM: to_opt_type_ns("float")}
+
+    if jschema_type in types_d:
+        return types_d[jschema_type]
+
+    raise KeyError("Unsupported type {t} Supported types. {d}".format(t=jschema_type, d=types_d))
+
+
 def _option_jschema_to_pb_option(opt_jschema_d):
     """Convert from JsonSchema option to PacBioOption"""
     opt_id = opt_jschema_d['required'][0]
     name = opt_jschema_d['properties'][opt_id]['title']
     default = opt_jschema_d['properties'][opt_id]['default']
     desc = opt_jschema_d['properties'][opt_id]['description']
-    pb_opt = PacBioOption(opt_id, name, default, desc)
+    jschema_type = opt_jschema_d['properties'][opt_id]['type']
+    pb_opt = PacBioOption(opt_id, name, default, desc, jschema_type)
     return pb_opt
 
 
@@ -764,9 +785,8 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
     entry_points_d = {d['entryId']: d for d in all_entry_points}
-    tags = ["sa3"]
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
-
+    tags = list(set(pipeline.tags))
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
     comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
     return dict(id=pipeline.pipeline_id,

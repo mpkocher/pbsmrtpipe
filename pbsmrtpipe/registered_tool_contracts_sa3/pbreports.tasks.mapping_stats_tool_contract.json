@@ -1,14 +1,15 @@
 {
     "version": "4.2.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "mapping_stats --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "pbreports.tasks.mapping_stats", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "Create a Mapping Report from a Aligned BAM or Alignment DataSet", 
         "schema_options": [], 
         "output_types": [
             {
@@ -19,7 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T17:16:09.222990", 
+        "_comment": "Created by v0.2.14", 
+        "name": "Mapping Stats", 
         "input_types": [
             {
                 "description": "BAM, SAM or Alignment DataSet", 
@@ -29,6 +31,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.mapping_stats"
     }
 }

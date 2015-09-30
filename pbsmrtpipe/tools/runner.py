@@ -14,6 +14,7 @@ from pbcommand.models.report import Attribute, Report
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
+from pbsmrtpipe.cluster import Constants as ClusterConstants
 from pbsmrtpipe.engine import run_command, backticks
 from pbsmrtpipe.models import RunnableTask, TaskStates
 from pbcommand.models import ResourceTypes, TaskTypes
@@ -358,7 +359,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     # Make +x
     os.chmod(rcmd_shell, os.stat(rcmd_shell).st_mode | stat.S_IEXEC)
 
-    cluster_cmd = render.render('interactive', rcmd_shell, job_id, qstdout, qstderr, runnable_task.task.nproc)
+    cluster_cmd = render.render(ClusterConstants.START, rcmd_shell, job_id, qstdout, qstderr, runnable_task.task.nproc)
     log.debug(cluster_cmd)
 
     with open(qshell, 'w') as f:

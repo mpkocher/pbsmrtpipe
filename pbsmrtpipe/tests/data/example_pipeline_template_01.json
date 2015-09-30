@@ -31,15 +31,17 @@
       "id": "my_option",
       "name": "My Option",
       "default": 1234,
+      "optionTypeId": "pbsmrtpipe.option_types.integer",
       "description": "My Value"
     }
   ],
   "options": [
     {
-      "id": "max_nchunks",
+      "id": "pbsmrtpipe.options.max_nchunks",
       "name": "Max #Chunks",
       "default": 7,
-      "description": "Max Number of Chunks"
+      "description": "Max Number of Chunks",
+      "optionTypeId":"pbsmrtpipe.option_types.integer"
     }
   ]
 }

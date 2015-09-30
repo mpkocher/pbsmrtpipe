@@ -15,6 +15,7 @@ import signal
 import Queue
 
 from pbsmrtpipe.cluster import ClusterTemplateRender
+from pbsmrtpipe.cluster import Constants as ClusterConstants
 from pbsmrtpipe.models import TaskResult
 
 log = logging.getLogger(__name__)
@@ -96,27 +97,123 @@ class AsynchronousFileReader(threading.Thread):
         return not self.is_alive() and self._queue.empty()
 
 
+class FileTail(object):
+    """Like 'tail -f'.
+    """
+    @staticmethod
+    def __read(ifh, pos, nbytes):
+        ifh.seek(pos, 0)
+        b = ifh.read(nbytes)
+        pos = ifh.tell()
+        return b, pos
+
+    def skip(self):
+        """Skip to end.
+        Return number of bytes skipped.
+        
+        I recommend using this after read(n) to avoid
+        reading and logging excessively large output.
+        """
+        pos = ifh.tell()
+        self.ifh.seek(0, 2)
+        self.pos = ifh.tell()
+        return self.pos - pos
+
+    def read(self, nbytes):
+        """Read contents appended since last read().
+
+        Re-open 'fn' on each call and seek to last end.
+        If the file does not exist (yet?), return ''.
+        This eliminates all sorts of async i/o problems.
+
+        Read up to 'nbytes', or all available if negative.
+
+        Side-effects:
+        * self.pos can be incremented.
+        * self.ifh has read-only operations.
+        """
+        b, self.pos = self.__read(self.ifh, self.pos, nbytes)
+        return b
+
+    def __init__(self, ifh):
+        self.ifh = ifh
+        self.pos = 0
+
+class FileTailWhenReady(object):
+    """Proxy for FileTail.
+    Waits until fn is available.
+    """
+    def skip(self):
+        return self.tail.skip()
+    def read(self, nbytes):
+        if self.fn:
+            try:
+                self.tail = FileTail(open(self.fn, 'rb'))
+                self.fn = None
+            except IOError:
+                pass
+        return self.tail.read(nbytes)
+
+    def __init__(self, fn, inittail):
+        self.fn = fn
+        self.tail = inittail
+
+class EmptyTail(object):
+    def skip(self):
+        return 0
+    def read(self, nbytes):
+        return ''
+
+def create_file_tail_reader(fn):
+    return FileTailWhenReady(fn, EmptyTail())
+
+import itertools
+_counter = itertools.count()
+# _counter.next() is thread-safe.
+
 def run_command_async(command, file_stdout=None, file_stderr=None):
     """
     Async pulling of the stdout, stderr from the subprocess without deadlocking.
 
     Modified from: http://stefaanlippens.net/python-asynchronous-subprocess-pipe-reading
     """
+    # Choose output filenames.
+    c = _counter.next()
+    fno = '%d.stdout' %c
+    fne = '%d.stderr' %c
+
+    # Delete old files.
+    def rm(fn):
+        print "RM: %r" %fn
+        if os.path.exists(fn):
+            os.unlink(fn)
+    rm(fno)
+    rm(fne)
+
+    # Create filehandles.
+    ofho = open(fno, 'w')
+    ofhe = open(fne, 'w')
 
     # Launch the command as subprocess.
-    process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    slog.info("subcommand: `%s` in %s"%(command, os.getcwd()))
+    process = subprocess.Popen(shlex.split(command), stdout=ofho,
+                               stderr=ofhe)
 
     # wait till the process has been loaded and stdout and stderr have been 'created'
-    time.sleep(10)
+    #time.sleep(1)
+    process.poll()
 
     # Launch the asynchronous readers of the process' stdout and stderr.
+    stdout_queue = create_file_tail_reader(fno)
+    stderr_queue = create_file_tail_reader(fne)
+    """
     stdout_queue = Queue.Queue()
     stdout_reader = AsynchronousFileReader(process.stdout, stdout_queue)
     stdout_reader.start()
     stderr_queue = Queue.Queue()
     stderr_reader = AsynchronousFileReader(process.stderr, stderr_queue)
     stderr_reader.start()
+    """
 
     # store the stdout and stderr
     stdouts = []
@@ -124,35 +221,57 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
 
     started_at = time.time()
 
+    def readlines(q, write):
+        for line in q.read(-1).splitlines():
+                write(line.rstrip())
+    def stdout_write(line):
+        slog.info(line)
+        stdouts.append(line)
+    def stderr_write(line):
+        slog.error(line)
+        stderrs.append(line)
+
     # Check the queues if we received some output (until there is nothing
     # more to get).
-    process.poll()
-    while not stdout_reader.eof() or not stderr_reader.eof() or process.returncode is None:
+    try:
+      while process.returncode is None:
         # Show what we received from standard output.
-        while not stdout_queue.empty():
-            line = stdout_queue.get()
-            if line:
-                slog.info(line.strip())
-                stdouts.append(line.strip())
+        readlines(stdout_queue, stdout_write)
 
         # Show what we received from standard error.
-        while not stderr_queue.empty():
-            line = stderr_queue.get()
-            if line:
-                slog.error(line.strip())
-                stderrs.append(line.strip())
+        readlines(stderr_queue, stderr_write)
 
         # Sleep a bit before asking the readers again.
-        time.sleep(2)
+        time.sleep(1)
         process.poll()
+    except KeyboardInterrupt as e:
+        sys.stderr.write("Received %r. Please wait...\n" %e)
+        # Try to capture a stack-trace from the process, if Python.
+        # Worst case: User can Ctrl-C again.
+        #process.send_signal(signal.SIGINT) # Does not seem to be needed anymore.
+        process.wait()
+        #slog.exception(e)  # TODO: Delete this line, when confident this is logged elsewhere.
+        raise
+    finally:
+        # Let's be tidy and join the threads we've started.
+        ##stdout_reader.join()
+        ##stderr_reader.join()
 
-    # Let's be tidy and join the threads we've started.
-    stdout_reader.join()
-    stderr_reader.join()
+        # This will cause NFS to update the files,
+        # according to a friend at AMD. They had this problem in spades there.
+        os.listdir('.')
+        # But note that for us, missing output from the subproc is really no
+        # big deal. It's merely informative, and it's always available to
+        # the curious in the stdout/err files.
 
-    # Close subprocess' file descriptors.
-    process.stdout.close()
-    process.stderr.close()
+        readlines(stdout_queue, stdout_write)
+        readlines(stderr_queue, stderr_write)
+
+        # Close subprocess' file descriptors.
+        ofho.close()
+        ofhe.close()
+        #process.stdout.close()
+        #process.stderr.close()
 
     def _write_to_fh_or_file(fh_or_file, contents):
         if hasattr(fh_or_file, 'write'):
@@ -363,9 +482,8 @@ class ClusterEngineWorker(multiprocessing.Process):
         with open(self.stderr, 'w+') as f:
             f.write("# stderr Running task_job_id {i}".format(i=self.task_job_id))
 
-        # Not sure how to enable the selection of start or interactive
-        template_name = 'interactive'
-        cluster_cmd = self.cluster_renderer.render(template_name, self.script_path, self.task_job_id, stdout=self.stdout, stderr=self.stderr, nproc=self.nproc)
+        # Not sure how to enable the selection of start or Stop
+        cluster_cmd = self.cluster_renderer.render(ClusterConstants.START, self.script_path, self.task_job_id, stdout=self.stdout, stderr=self.stderr, nproc=self.nproc)
         stdout_h.write("Cluster command '{c}'".format(c=cluster_cmd))
         slog.debug(cluster_cmd)
         p = subprocess.Popen(cluster_cmd, shell=True, stdin=subprocess.PIPE, stdout=stderr_h, stderr=stdout_h, close_fds=True)

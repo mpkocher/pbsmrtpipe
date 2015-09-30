@@ -31,11 +31,11 @@ Cluster Manager
 The cluster manager configuration (**pbsmrtpipe.options.cluster_manager**) is often the first item that needs to be configured to enable distributed computing of your pipeline.
 
 
-The cluster manager configuration points to a directory of three cluster templates, **start.tmpl**, **kill.tmpl**, and **interactive.tmpl**
+The cluster manager configuration points to a directory of two cluster templates, **start.tmpl** and **stop.tmpl**.
 
-The **interactive.tmpl** is the most important. It must contain a **single** bash line that exposes several template variables that will be replaced. This will often have the queue name that jobs will be submitted to.
+The **start.tmpl** is the most important. It must contain a **single** bash line that exposes several template variables that will be replaced. This will often have the queue name that jobs will be submitted to.
 
-.. literalinclude:: example_cluster_interactive_tmpl.sh
+.. literalinclude:: example_cluster_start_tmpl.sh
 
 
 Required Template Variables
@@ -48,6 +48,12 @@ Required Template Variables
 
 
 .. note:: The cluster manager configuration can point to a python package which contains the cluster templates, or an absolute path to the cluster templates. The python package model is used primarily for internal purposes.
+
+
+Stop Template example. Only JOB_ID is required.
+
+.. literalinclude:: example_cluster_stop_tmpl.sh
+
 
 
 Environment Handling

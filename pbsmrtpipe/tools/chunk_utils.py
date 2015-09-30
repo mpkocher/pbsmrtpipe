@@ -337,6 +337,56 @@ to_chunked_ccsset_files = functools.partial(_to_chunked_dataset_files,
     ConsensusReadSet)
 
 
+def _to_barcode_chunked_dataset_files(dataset_type, dataset_path,
+                                      max_total_nchunks, chunk_key, dir_name,
+                                      base_name, ext):
+    """
+    Similar to to_chunked_subreadset_files, but chunks reads by barcode lists.
+    """
+    dset = dataset_type(dataset_path, strict=True)
+    dset_chunks = dset.split(chunks=max_total_nchunks, barcodes=True)
+    d = {}
+    for i, dset in enumerate(dset_chunks):
+        chunk_id = '_'.join([base_name, str(i)])
+        chunk_name = '.'.join([chunk_id, ext])
+        chunk_path = os.path.join(dir_name, chunk_name)
+        dset.write(chunk_path)
+        d[chunk_key] = os.path.abspath(chunk_path)
+        c = PipelineChunk(chunk_id, **d)
+        yield c
+
+to_barcode_chunked_subreadset_files = functools.partial(
+    _to_barcode_chunked_dataset_files, SubreadSet)
+to_barcode_chunked_ccsset_files = functools.partial(
+    _to_barcode_chunked_dataset_files, ConsensusReadSet)
+
+
+def _write_dataset_barcode_chunks_to_file(chunk_func, chunk_key, chunk_file,
+                                          dataset_path, max_total_chunks,
+                                          dir_name, chunk_base_name,
+                                          chunk_ext):
+    """
+    Similar to write_subreadset_chunks_to_file, but chunks reads (subread or
+    CCS) by barcodes for input to pblaa.
+    """
+    chunks = list(chunk_func(
+        dataset_path=dataset_path,
+        max_total_nchunks=max_total_chunks,
+        chunk_key=chunk_key,
+        dir_name=dir_name,
+        base_name=chunk_base_name,
+        ext=chunk_ext))
+    write_chunks_to_json(chunks, chunk_file)
+    return 0
+
+write_subreadset_barcode_chunks_to_file = functools.partial(
+    _write_dataset_barcode_chunks_to_file, to_barcode_chunked_subreadset_files,
+    Constants.CHUNK_KEY_SUBSET)
+write_ccsset_barcode_chunks_to_file = functools.partial(
+    _write_dataset_barcode_chunks_to_file, to_barcode_chunked_ccsset_files,
+    Constants.CHUNK_KEY_CCSSET)
+
+
 def _to_zmw_chunked_dataset_files(dataset_type, dataset_path,
                                   max_total_nchunks, chunk_key, dir_name,
                                   base_name, ext):

@@ -21,6 +21,8 @@ doc:
 	sphinx-apidoc -o docs/ pbsmrtpipe/ && cd docs/ && make html
 
 doc-clean:
+	rm docs/pbsmrtpipe*.rst
+	rm docs/modules.rst
 	cd docs && make clean
 
 unit-test:
@@ -55,7 +57,7 @@ test-suite: test-sanity test-unit test-dev
 test-clean-suite: install test-suite
 
 clean-all:
-	find . -name "*.pyc" | xargs rm -f;\
+	find . -name "*.pyc" | xargs rm -rf;\
 	rm -rf report_unittests.log && cd testkit-data && fab cleaner
 
 build-java-classes:
