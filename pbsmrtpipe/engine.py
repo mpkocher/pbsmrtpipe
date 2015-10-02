@@ -202,6 +202,7 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
     # wait till the process has been loaded and stdout and stderr have been 'created'
     #time.sleep(1)
     process.poll()
+    slog.debug(" pid={pid}".format(pid=process.pid))
 
     # Launch the asynchronous readers of the process' stdout and stderr.
     stdout_queue = create_file_tail_reader(fno)
@@ -312,6 +313,7 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
     dt = 0.1
 
     process.poll()
+    slog.debug(" pid={pid}".format(pid=process.pid))
     while process.returncode is None:
         process.poll()
         time.sleep(sleep_time)
@@ -320,10 +322,12 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
             if run_time > time_out:
                 log.info("Exceeded TIMEOUT of {t}. Killing cmd '{c}'".format(t=time_out, c=cmd))
                 try:
-                    # ask for forgiveness model
+                    process.send_signal(signal.SIGINT) # Maybe get a stack-trace?
+                    time.sleep(1)
+                    process.terminate()
                     process.kill()
                 except OSError:
-                    pass
+                    log.exception('Problem while terminating sub-process.')
         if sleep_time < max_sleep_time:
             sleep_time += dt
 
