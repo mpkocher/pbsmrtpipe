@@ -145,7 +145,13 @@ def fasta_to_plot_group(fasta_file, output_dir):
     from pbreports.model.model import PlotGroup, Plot
     fig, ax = get_fig_axes()
 
-    ax.hist(lengths)
+    if len(lengths) == 1:
+        v = lengths[0]
+        hrange = (v -1, v + 1)
+        ax.hist(lengths, range=hrange)
+    else:
+        ax.hist(lengths)
+
     ax.set_title("Sequence Length Histogram")
     ax.set_xlabel("Sequence Length")
 
@@ -159,12 +165,15 @@ def fasta_to_plot_group(fasta_file, output_dir):
 
 def try_fasta_to_plot_group(fasta_file, output_json):
     output_dir = os.path.dirname(output_json)
+    plot_groups = []
     try:
         plot_group = fasta_to_plot_group(fasta_file, output_dir)
         plot_groups = [plot_group]
-    except Exception:
-        # matplotlib is not installed
-        plot_groups = []
+    except ImportError as ex:
+        log.warn("pbreports is not installed. Skipping plot group generation {e}".format(e=ex))
+    except Exception as ex:
+        log.error("Unhandled error {e}".format(e=ex))
+
     return plot_groups
 
 

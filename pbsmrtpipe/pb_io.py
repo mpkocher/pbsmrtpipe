@@ -747,7 +747,8 @@ def _option_jschema_to_pb_option(opt_jschema_d):
     default = opt_jschema_d['properties'][opt_id]['default']
     desc = opt_jschema_d['properties'][opt_id]['description']
     jschema_type = opt_jschema_d['properties'][opt_id]['type']
-    pb_opt = PacBioOption(opt_id, name, default, desc, jschema_type)
+    pb_option_type_id = _jschema_to_pacbio_option_type_id(jschema_type)
+    pb_opt = PacBioOption(opt_id, name, default, desc, pb_option_type_id)
     return pb_opt
 
 
