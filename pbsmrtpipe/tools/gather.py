@@ -3,6 +3,7 @@ import sys
 import argparse
 import logging
 import json
+import os.path as op
 from collections import defaultdict
 
 from functools import partial as P
@@ -171,8 +172,9 @@ def gather_fofn(input_files, output_file, skip_empty=True):
     return output_file
 
 
-def gather_contigset(input_files, output_file, new_resource_file=None,
-                     skip_empty=True):
+def __gather_contigset(resource_file_extension, input_files, output_file,
+                       new_resource_file=None,
+                       skip_empty=True):
     """
     :param input_files: List of file paths
     :param output_file: File Path
@@ -194,9 +196,18 @@ def gather_contigset(input_files, output_file, new_resource_file=None,
     tbr = ContigSet(*input_files)
     if not new_resource_file:
         if output_file.endswith('xml'):
-            new_resource_file = output_file[:-3] + 'fasta'
+            new_resource_file = output_file[:-3] + resource_file_extension
     tbr.consolidate(new_resource_file)
     tbr.write(output_file)
+    return output_file
+
+
+gather_contigset = P(__gather_contigset, "fasta")
+
+def gather_fastq_contigset(input_files, output_file):
+    contigset_name = op.splitext(output_file)[0] + ".contigset.xml"
+    __gather_contigset("fastq", input_files, contigset_name,
+        new_resource_file=output_file)
     return output_file
 
 
@@ -318,6 +329,7 @@ def __args_gather_runner(func, args):
 _args_runner_gather_fasta = P(__args_gather_runner, gather_fasta)
 _args_runner_gather_gff = P(__args_gather_runner, gather_gff)
 _args_runner_gather_fastq = P(__args_gather_runner, gather_fastq)
+_args_runner_gather_fastq_contigset = P(__args_gather_runner, gather_fastq_contigset)
 _args_runner_gather_fofn = P(__args_gather_runner, gather_fofn)
 _args_runner_gather_subreadset = P(__args_gather_runner, gather_subreadset)
 _args_runner_gather_alignmentset = P(__args_gather_runner, gather_alignmentset)
@@ -331,6 +343,7 @@ _args_runner_gather_report = P(__args_gather_runner, gather_report)
 # (chunk.json, output_file, chunk_key)
 run_main_gather_fasta = P(__gather_runner, gather_fasta)
 run_main_gather_fastq = P(__gather_runner, gather_fastq)
+run_main_gather_fastq_contigset = P(__gather_runner, gather_fastq_contigset)
 run_main_gather_csv = P(__gather_runner, gather_csv)
 run_main_gather_report = P(__gather_runner, gather_report)
 run_main_gather_gff = P(__gather_runner, gather_gff)

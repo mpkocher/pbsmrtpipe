@@ -5,7 +5,7 @@ from pbcommand.utils import setup_log
 from pbcommand.cli import pbparser_runner
 from pbcommand.models import FileTypes, get_gather_pbparser
 
-from pbsmrtpipe.tools.gather import run_main_gather_fastq
+from pbsmrtpipe.tools.gather import run_main_gather_fastq_contigset
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ def get_contract_parser():
 
 
 def args_runner(args):
-    return run_main_gather_fastq(args.cjson_in, args.fastq_out, CHUNK_KEY)
+    return run_main_gather_fastq_contigset(args.cjson_in, args.fastq_out, CHUNK_KEY)
 
 
 def rtc_runner(rtc):
@@ -41,7 +41,7 @@ def rtc_runner(rtc):
     :return:
     """
     # the input file is just a sentinel file
-    return run_main_gather_fastq(rtc.task.input_files[0], rtc.task.output_files[0], CHUNK_KEY)
+    return run_main_gather_fastq_contigset(rtc.task.input_files[0], rtc.task.output_files[0], CHUNK_KEY)
 
 
 def main(argv=sys.argv):
