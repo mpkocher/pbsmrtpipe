@@ -527,11 +527,11 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }, 
             {
-                "title": "JSON report", 
-                "description": "JSON report", 
-                "default_name": "laa_report.json", 
-                "id": "report_json", 
-                "file_type_id": "PacBio.FileTypes.JsonReport"
+                "title": "CSV report", 
+                "description": "CSV report", 
+                "default_name": "laa_report.csv", 
+                "id": "report_csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
         "_comment": "Created by v0.2.14", 

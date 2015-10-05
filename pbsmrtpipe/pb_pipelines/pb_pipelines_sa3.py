@@ -296,7 +296,12 @@ def ds_laa():
     Basic Long Amplicon Analysis (LAA) pipeline, starting from subreads.
     """
     subreadset = Constants.ENTRY_DS_SUBREAD
-    return _core_laa(subreadset)
+
+    laa = _core_laa(subreadset)
+
+    consensus_report = [("pblaa.tasks.laa:1", "pbreports.tasks.amplicon_analysis_consensus:0")]
+
+    return laa + consensus_report
 
 
 def _core_ccs(subread_ds):

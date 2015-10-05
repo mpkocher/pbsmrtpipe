@@ -1,0 +1,37 @@
+{
+    "version": "0.3.1", 
+    "driver": {
+        "serialization": "json", 
+        "exe": "python -m pbreports.report.amplicon_analysis_consensus --resolved-tool-contract ", 
+        "env": {}
+    }, 
+    "tool_contract_id": "pbreports.tasks.amplicon_analysis_consensus", 
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "Summarizes the Long Amplicon Analysis", 
+        "schema_options": [], 
+        "output_types": [
+            {
+                "title": "ConsensusReportJSON", 
+                "description": "Consensus Report JSON", 
+                "default_name": "consensus_report.json", 
+                "id": "report_json", 
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ], 
+        "_comment": "Created by v0.2.14", 
+        "name": "Amplicon Analysis Consensus", 
+        "input_types": [
+            {
+                "description": "Consensus Report CSV", 
+                "title": "ConsensusReportCSV", 
+                "id": "report_csv", 
+                "file_type_id": "PacBio.FileTypes.csv"
+            }
+        ], 
+        "nproc": 1, 
+        "is_distributed": true, 
+        "tool_contract_id": "pbreports.tasks.amplicon_analysis_consensus"
+    }
+}
