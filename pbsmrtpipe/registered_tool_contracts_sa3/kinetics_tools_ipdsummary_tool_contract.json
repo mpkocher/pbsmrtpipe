@@ -1,6 +1,7 @@
 {
     "version": "2.2", 
     "driver": {
+        "serialization": "json", 
         "exe": "python -m kineticsTools.ipdSummary --resolved-tool-contract", 
         "env": {}
     }, 
@@ -11,10 +12,18 @@
         "description": "\nTool for detecting DNA base-modifications from kinetic signatures.\n", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 0.01, 
+                    "type": "number", 
+                    "option_id": "kinetics_tools.task_options.pvalue", 
+                    "name": "P-value", 
+                    "description": "P-value cutoff"
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.pvalue", 
                 "required": [
                     "kinetics_tools.task_options.pvalue"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.pvalue": {
@@ -23,14 +32,21 @@
                         "description": "P-value cutoff", 
                         "title": "P-value"
                     }
-                }, 
-                "title": "JSON Schema for kinetics_tools.task_options.pvalue"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 3000000000000, 
+                    "type": "integer", 
+                    "option_id": "kinetics_tools.task_options.max_length", 
+                    "name": "Max sequence length", 
+                    "description": "Maximum number of bases to process per contig"
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.max_length", 
                 "required": [
                     "kinetics_tools.task_options.max_length"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.max_length": {
@@ -39,14 +55,21 @@
                         "description": "Maximum number of bases to process per contig", 
                         "title": "Max sequence length"
                     }
-                }, 
-                "title": "JSON Schema for kinetics_tools.task_options.max_length"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": "", 
+                    "type": "string", 
+                    "option_id": "kinetics_tools.task_options.identify", 
+                    "name": "Identify basemods", 
+                    "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A, m4C, m5C_TET.  Cannot be used with --control."
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.identify", 
                 "required": [
                     "kinetics_tools.task_options.identify"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.identify": {
@@ -55,14 +78,21 @@
                         "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A, m4C, m5C_TET.  Cannot be used with --control.", 
                         "title": "Identify basemods"
                     }
-                }, 
-                "title": "JSON Schema for kinetics_tools.task_options.identify"
+                }
             }, 
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": false, 
+                    "type": "boolean", 
+                    "option_id": "kinetics_tools.task_options.compute_methyl_fraction", 
+                    "name": "Compute methyl fraction", 
+                    "description": "In the --identify mode, add --methylFraction to command line to estimate the methylated fraction, along with 95%% confidence interval bounds."
+                }, 
+                "title": "JSON Schema for kinetics_tools.task_options.compute_methyl_fraction", 
                 "required": [
                     "kinetics_tools.task_options.compute_methyl_fraction"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "kinetics_tools.task_options.compute_methyl_fraction": {
@@ -71,8 +101,7 @@
                         "description": "In the --identify mode, add --methylFraction to command line to estimate the methylated fraction, along with 95%% confidence interval bounds.", 
                         "title": "Compute methyl fraction"
                     }
-                }, 
-                "title": "JSON Schema for kinetics_tools.task_options.compute_methyl_fraction"
+                }
             }
         ], 
         "output_types": [
@@ -91,7 +120,8 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-08-04T17:11:21.742450", 
+        "_comment": "Created by v0.2.15", 
+        "name": "ipdSummary", 
         "input_types": [
             {
                 "description": "BAM or Alignment DataSet", 
@@ -108,6 +138,6 @@
         ], 
         "nproc": "$max_nproc", 
         "is_distributed": true, 
-        "name": "ipdSummary"
+        "tool_contract_id": "kinetics_tools.tasks.ipd_summary"
     }
 }

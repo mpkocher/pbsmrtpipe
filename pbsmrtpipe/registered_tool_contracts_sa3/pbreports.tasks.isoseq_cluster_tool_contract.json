@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.2.15", 
         "name": "IsoSeq Cluster Report", 
         "input_types": [
             {
@@ -37,7 +37,7 @@
             }
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbreports.tasks.isoseq_cluster"
     }
 }

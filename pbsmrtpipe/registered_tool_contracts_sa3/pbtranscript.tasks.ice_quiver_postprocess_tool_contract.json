@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.151977", 
+    "version": "0.2.0.161261", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.ice_quiver_postprocess --resolved-tool-contract", 
@@ -125,7 +125,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.2.15", 
         "name": "pbtranscript.tasks.ice_quiver_postprocess", 
         "input_types": [
             {

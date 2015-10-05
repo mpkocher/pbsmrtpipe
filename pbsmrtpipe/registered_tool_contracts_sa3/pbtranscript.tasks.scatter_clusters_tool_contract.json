@@ -9,7 +9,7 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.scattered", 
         "resource_types": [], 
-        "description": "\n", 
+        "description": "\nSpecialized scatter task for pickle file containing clusters\n", 
         "schema_options": [
             {
                 "pb_option": {
@@ -44,7 +44,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.2.15", 
         "nchunks": "$max_nchunks", 
         "name": "Scatter ContigSet", 
         "input_types": [

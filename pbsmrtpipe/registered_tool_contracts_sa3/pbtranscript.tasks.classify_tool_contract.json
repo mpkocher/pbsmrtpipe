@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.151977", 
+    "version": "0.2.0.161261", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.classify --resolved-tool-contract", 
@@ -95,7 +95,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.2.15", 
         "name": "pbtranscript.tasks.classify", 
         "input_types": [
             {
