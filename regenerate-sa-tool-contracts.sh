@@ -17,7 +17,8 @@ adapter_xml
 filter_stats_xml
 isoseq_classify
 isoseq_cluster
-ccs"
+ccs
+amplicon_analysis_consensus"
 
 for REPORT in $REPORTS ; do
   MODULE="pbreports.report.${REPORT}"
