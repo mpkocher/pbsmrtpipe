@@ -3,8 +3,9 @@ import os
 import logging
 import pprint
 import shutil
+import uuid
 
-from pbcommand.models import DataStore
+from pbcommand.models import DataStore, DataStoreFile, FileTypes
 from pbcommand.models.report import Attribute, Report, Table, Column, Plot, PlotGroup
 
 import pbsmrtpipe
@@ -330,8 +331,11 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
 
     write_entry_points_json(job_resources.entry_points_json, ep_d)
 
-    # Need to map entry points to a FileType
-    ds = write_and_initialize_data_store_json(job_resources.datastore_json, [])
+    # Need to map entry points to a FileType and store in the DataStore? or
+    # does DataStore only represent outputs?
+    smrtpipe_log_df = DataStoreFile(str(uuid.uuid4()), "pbsmrtpipe::pbsmrtpipe.log", FileTypes.TXT.file_type_id, pb_log_path)
+    master_log_df = DataStoreFile(str(uuid.uuid4()), "pbsmrtpipe::master.log", FileTypes.TXT.file_type_id, master_log_path)
+    ds = write_and_initialize_data_store_json(job_resources.datastore_json, [smrtpipe_log_df, master_log_df])
     slog.info("successfully initialized datastore.")
 
     write_workflow_settings(workflow_level_opts, os.path.join(job_resources.workflow, 'options-workflow.json'))

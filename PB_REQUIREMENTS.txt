@@ -1,3 +1,5 @@
+numpy
+h5py
 jinja2
 networkx
 # Install from github
