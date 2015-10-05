@@ -1,14 +1,15 @@
 {
     "version": "3.0", 
     "driver": {
+        "serialization": "json", 
         "exe": "gffToVcf --resolved-tool-contract ", 
         "env": {}
     }, 
     "tool_contract_id": "genomic_consensus.tasks.gff2vcf", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "is_distributed": true, 
-        "name": "DisplayName", 
+        "resource_types": [], 
+        "description": "Utility for converting variant GFF3 files to 1000 Genomes VCF", 
         "schema_options": [], 
         "output_types": [
             {
@@ -19,7 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.vcf"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-07-30T18:06:21.019891", 
+        "_comment": "Created by v0.2.15", 
+        "name": "gffToVcf", 
         "input_types": [
             {
                 "description": "GFF file", 
@@ -29,6 +31,7 @@
             }
         ], 
         "nproc": 1, 
-        "resource_types": []
+        "is_distributed": true, 
+        "tool_contract_id": "genomic_consensus.tasks.gff2vcf"
     }
 }

@@ -1,6 +1,7 @@
 {
     "version": "0.1", 
     "driver": {
+        "serialization": "json", 
         "exe": "task_motifmaker_find --resolved-tool-contract ", 
         "env": {}
     }, 
@@ -11,10 +12,18 @@
         "description": "\nPython wrapper for tool contract support in MotifMaker ('find' mode).\n", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 30.0, 
+                    "type": "number", 
+                    "option_id": "motif_maker.task_options.min_score", 
+                    "name": "Minimum Qmod score", 
+                    "description": "Minimum Qmod score to use in motif finding"
+                }, 
+                "title": "JSON Schema for motif_maker.task_options.min_score", 
                 "required": [
                     "motif_maker.task_options.min_score"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "motif_maker.task_options.min_score": {
@@ -23,8 +32,7 @@
                         "description": "Minimum Qmod score to use in motif finding", 
                         "title": "Minimum Qmod score"
                     }
-                }, 
-                "title": "JSON Schema for motif_maker.task_options.min_score"
+                }
             }
         ], 
         "output_types": [
@@ -36,7 +44,8 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-08-05T16:14:34.983004", 
+        "_comment": "Created by v0.2.15", 
+        "name": "motif_maker.tasks.find_motifs", 
         "input_types": [
             {
                 "description": "GFF file containing modified bases", 
@@ -53,6 +62,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": true, 
-        "name": "motif_maker.tasks.find_motifs"
+        "tool_contract_id": "motif_maker.tasks.find_motifs"
     }
 }

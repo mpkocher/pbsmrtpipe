@@ -1,6 +1,7 @@
 {
     "version": "0.1", 
     "driver": {
+        "serialization": "json", 
         "exe": "task_motifmaker_reprocess --resolved-tool-contract ", 
         "env": {}
     }, 
@@ -11,10 +12,18 @@
         "description": "\nPython wrapper for tool contract support in MotifMaker ('reprocess' mode).\n", 
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": 30.0, 
+                    "type": "number", 
+                    "option_id": "motif_maker.task_options.min_fraction", 
+                    "name": "Minimum methylated fraction", 
+                    "description": "Minimum methylated fraction"
+                }, 
+                "title": "JSON Schema for motif_maker.task_options.min_fraction", 
                 "required": [
                     "motif_maker.task_options.min_fraction"
                 ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
                     "motif_maker.task_options.min_fraction": {
@@ -23,8 +32,7 @@
                         "description": "Minimum methylated fraction", 
                         "title": "Minimum methylated fraction"
                     }
-                }, 
-                "title": "JSON Schema for motif_maker.task_options.min_fraction"
+                }
             }
         ], 
         "output_types": [
@@ -36,7 +44,8 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.0 at 2015-08-05T16:14:44.421431", 
+        "_comment": "Created by v0.2.15", 
+        "name": "motif_maker.tasks.reprocess", 
         "input_types": [
             {
                 "description": "GFF file containing modified bases", 
@@ -59,6 +68,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": true, 
-        "name": "motif_maker.tasks.reprocess"
+        "tool_contract_id": "motif_maker.tasks.reprocess"
     }
 }
