@@ -39,7 +39,7 @@ task_motifmaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_t
 gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.json
 gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
 task_pbccs_ccs --emit-tool-contract > $TC_DIR/pbccs.tasks.ccs_tool_contract.json
-#task_pblaa_laa --emit-tool-contract > $TC_DIR/pblaa_laa_tool_contract.json
+task_pblaa_laa --emit-tool-contract > $TC_DIR/pblaa_laa_tool_contract.json
 
 # XXX slightly automated below here...
 PY_MODULES="\
