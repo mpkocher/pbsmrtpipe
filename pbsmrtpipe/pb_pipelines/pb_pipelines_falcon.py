@@ -73,7 +73,7 @@ def get_task_falcon_local_pipeline():
     i_fasta_fofn = 'falcon_ns.tasks.task_falcon_config_get_fasta:0' # output from init
     return init + _get_falcon_pipeline(i_cfg, i_fasta_fofn)
 
-@dev_register("polished_falcon", "Polished Falcon Pipeline", tags=("local", "chunking"))
+@dev_register("polished_falcon", "Polished Falcon Pipeline")
 def get_task_falcon_local_pipeline():
     """Simple polished falcon local pipeline.
     FASTA input comes from the SubreadSet.
@@ -98,3 +98,34 @@ def get_task_falcon_local_pipeline():
                                                      ref)
 
     return btf + ftfofn + falcon + faidx + polish
+
+
+@dev_register("polished_falcon_lean", "Polished Falcon Pipeline")
+def get_task_falcon_local_pipeline():
+    """Simple lean polished falcon local pipeline.
+    FASTA input comes from the SubreadSet.
+    Cfg input is built from preset.xml
+    """
+    subreadset = Constants.ENTRY_DS_SUBREAD
+
+    btf = [(subreadset, 'pbsmrtpipe.tasks.bam2fasta:0')]
+    ftfofn = [('pbsmrtpipe.tasks.bam2fasta:0', 'pbsmrtpipe.tasks.fasta2fofn:0')]
+
+    i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
+
+    gen_cfg = [(i_fasta_fofn, 'falcon_ns.tasks.task_falcon_get_config:0')]
+
+    i_cfg = 'falcon_ns.tasks.task_falcon_get_config:0'
+
+    falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+
+    ref = 'falcon_ns.tasks.task_falcon2_run_asm:0'
+
+    faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
+
+    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+
+    polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
+                                                     ref)
+
+    return btf + ftfofn + gen_cfg + falcon + faidx + polish
