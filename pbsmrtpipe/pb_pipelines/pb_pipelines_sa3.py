@@ -359,18 +359,18 @@ def _core_isoseq_classify(ccs_ds):
     return b3 + b4
 
 
-def _core_isoseq_cluster(ccs_ds):
+def _core_isoseq_cluster(ccs_ds, flnc_ds, nfl_ds):
     b5 = [ # cluster reads and get consensus isoforms
         # full-length, non-chimeric transcripts
-        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.cluster:0"),
+        (flnc_ds, "pbtranscript.tasks.cluster:0"),
         # non-full-length transcripts
-        ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.cluster:1"),
+        (nfl_ds, "pbtranscript.tasks.cluster:1"),
         (ccs_ds, "pbtranscript.tasks.cluster:2"),
         (Constants.ENTRY_DS_SUBREAD, "pbtranscript.tasks.cluster:3")
     ]
     b6 = [ # ice_partial to map non-full-lenth reads to consensus isoforms
         # non-full-length transcripts
-        ("pbtranscript.tasks.classify:2", "pbtranscript.tasks.ice_partial:0"),
+        (nfl_ds, "pbtranscript.tasks.ice_partial:0"),
         # draft consensus isoforms
         ("pbtranscript.tasks.cluster:0", "pbtranscript.tasks.ice_partial:1"),
         (ccs_ds, "pbtranscript.tasks.ice_partial:2"),
@@ -395,7 +395,7 @@ def _core_isoseq_cluster(ccs_ds):
         ("pbtranscript.tasks.cluster:1", "pbreports.tasks.isoseq_cluster:1"),
     ]
 
-    return _core_isoseq_classify(ccs_ds) + b5 + b6 + b7 + b8 + b9
+    return b5 + b6 + b7 + b8 + b9
 
 
 ISOSEQ_TASK_OPTIONS = {
@@ -422,7 +422,12 @@ def ds_isoseq():
     """
     Main IsoSeq pipeline, starting from subreads.
     """
-    return _core_isoseq_cluster("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+    b1 = _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+    b2 = _core_isoseq_cluster(
+        "pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0",
+        "pbtranscript.tasks.classify:1",
+        "pbtranscript.tasks.classify:2")
+    return b1 + b2
 
 
 @register_pipeline(to_pipeline_ns("pb_isoseq"), "Internal IsoSeq pipeline",
@@ -431,7 +436,20 @@ def pb_isoseq():
     """
     Internal IsoSeq pipeline starting from an existing CCS dataset.
     """
-    return _core_isoseq_cluster(Constants.ENTRY_DS_CCS)
+    b1 = _core_isoseq_classify(Constants.ENTRY_DS_CCS)
+    b2 = _core_isoseq_cluster(
+        Constants.ENTRY_DS_CCS,
+        "pbtranscript.tasks.classify:1",
+        "pbtranscript.tasks.classify:2")
+    return b1 + b2
+
+
+@register_pipeline(to_pipeline_ns("pb_isoseq_cluster"),
+                   "Internal IsoSeq clustering pipeline",
+                   "0.2.0", tags=("isoseq",))
+def pb_isoseq_cluster():
+    return _core_isoseq_cluster(Constants.ENTRY_DS_CCS,
+        to_entry("e_flnc_fa"), to_entry("e_nfl_fa"))
 
 
 # XXX will resurrect in the future
@@ -462,7 +480,6 @@ def pb_isoseq():
 #        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
 #    ]
 #    return b1 + b2
-
 
 @register_pipeline(to_pipeline_ns("sa3_ds_subreads_to_fastx"), "SA3 SubreadSet to .fastx Conversion", "0.1.0", tags=("convert",))
 def ds_subreads_to_fastx():
