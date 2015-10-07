@@ -10,9 +10,9 @@ log = logging.getLogger(__name__)
 def _to_entry(entry_prefix, value):
     return "".join([entry_prefix, value])
 
+to_entry = functools.partial(_to_entry, ENTRY_PREFIX)
 
 class Constants(object):
-    to_entry = functools.partial(_to_entry, ENTRY_PREFIX)
 
     ENTRY_RS_MOVIE_XML = to_entry("rs_movie_xml")
     ENTRY_INPUT_XML = to_entry("eid_input_xml")
