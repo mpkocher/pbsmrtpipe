@@ -4,8 +4,6 @@ machine:
 
 dependencies:
   pre:
-    - pip install numpy
-    - pip install h5py
     - pip install cython
     - pip install -r PB_REQUIREMENTS.txt
     - pip install -r REQUIREMENTS.txt
