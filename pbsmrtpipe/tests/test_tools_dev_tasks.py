@@ -356,8 +356,13 @@ class TextRecordsGatherBase(object):
         base, ext = op.splitext(gathered_file)
         self.assertEqual(ext, ".%s" % self.EXTENSION)
         with open(gathered_file) as f:
-            lines = self._get_lines(f.readlines())
+            lines_ = f.readlines()
+            lines = self._get_lines(lines_)
             self.assertEqual(lines, self.RECORDS)
+            self.validate_content(lines_)
+
+    def validate_content(self, lines):
+        pass
 
 
 class TestGatherGFF(TextRecordsGatherBase,
@@ -372,7 +377,7 @@ class TestGatherGFF(TextRecordsGatherBase,
         "contig1\tkinModCall\tmodified_base\t3\t3\t51\t+\t.\tcoverage=168",
         "contig1\tkinModCall\tmodified_base\t4\t4\t60\t-\t.\tcoverage=173",
     ]
-    RECORD_HEADER = None
+    RECORD_HEADER = "##gff-version 3\n##source-id ipdSummary\n"
     EXTENSION = "gff"
 
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_gff"
@@ -383,6 +388,10 @@ class TestGatherGFF(TextRecordsGatherBase,
 
     def _get_lines(self, lines):
         return [l.strip() for l in lines if l[0] != '#']
+
+    def validate_content(self, lines):
+        self.assertEqual(len(lines), 6)
+        self.assertEqual(lines[1].strip(), "##source-id ipdSummary")
 
 
 class TestGatherCSV(TextRecordsGatherBase,

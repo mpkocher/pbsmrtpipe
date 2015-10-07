@@ -50,7 +50,37 @@ def __gather_fastx(fastx_reader, fastx_writer, fastx_files, output_file):
 
 gather_fasta = P(__gather_fastx, FastaReader, FastaWriter)
 gather_fastq = P(__gather_fastx, FastqReader, FastqWriter)
-gather_gff = P(__gather_fastx, GffReader, GffWriter)
+
+
+# FIXME redundant with pbcore 1.2.4
+def gather_gff (gff_files, output_file):
+    """
+    Merge a sequence of GFF files, preserving unique headers (except for the
+    source commandline, which will usually vary).
+    """
+    def _get_headers(f):
+        with GffReader(f) as reader:
+            for h in reader.headers:
+                fields = h[2:].strip().split(" ")
+                if not fields[0] in ["source-commandline", "gff-version"]:
+                    yield fields[0], " ".join(fields[1:])
+    header_keys = [ k for (k, v) in _get_headers(gff_files[0]) ]
+    headers = defaultdict(list)
+    for gff_file in gff_files:
+        for key, value in _get_headers(gff_file):
+            if not value in headers[key]:
+                headers[key].append(value)
+    n_rec = 0
+    with GffWriter(output_file) as writer:
+        for key in header_keys:
+            for value in headers[key]:
+                writer.writeHeader("##%s %s" % (key, value))
+        for gff_file in gff_files:
+            with GffReader(gff_file) as reader:
+                for rec in reader:
+                    writer.writeRecord(rec)
+                    n_rec += 1
+    return n_rec
 
 
 def _read_header(csv_file):
