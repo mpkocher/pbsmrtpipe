@@ -95,6 +95,12 @@ clarity this is omitted from the table below.
 |sa3_hdfsubread_to_subread      | Convert HdfSubreadSet to SubreadSet      |
 |                               | (import bax.h5 basecalling files         |
 +-------------------------------+------------------------------------------+
+|sa3_ds_laa                     | Basic Long Amplicon Analysis (LAA)       |
+|                               | pipeline, from barcoded subreads         |
++-------------------------------+------------------------------------------+
+|polished_falcon                | HGAP 4 assembly pipeline starting from   |
+|                               | subreads and a configuration file        |
++-------------------------------+------------------------------------------+
 
 Nearly all of these pipelines (except for sa3_hdfsubread_to_subread) require
 a SubreadSet as input; many also require a ReferenceSet.  Output is more
@@ -120,6 +126,10 @@ varied:
 |                               | motifs CSV                               |
 +-------------------------------+------------------------------------------+
 |sa3_hdfsubread_to_subread      | SubreadSet                               |
++-------------------------------+------------------------------------------+
+|sa3_ds_laa                     | Concensus FASTA                          |
++-------------------------------+------------------------------------------+
+|polished_falcon                | ContigSet of assembled contigs           |
 +-------------------------------+------------------------------------------+
 
 
