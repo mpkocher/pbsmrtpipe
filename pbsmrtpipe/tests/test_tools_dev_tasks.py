@@ -3,13 +3,6 @@
 Unit tests for the various scatter/gather tools in pbsmrtipipe.tools_dev.
 """
 
-# TODO:
-#   pbsmrtpipe.tools_dev.scatter_alignments_reference_basemods
-#   pbsmrtpipe.tools_dev.scatter_alignments_reference
-#   pbsmrtpipe.tools_dev.scatter_ccs_reference
-#   pbsmrtpipe.tools_dev.scatter_hdfsubreads
-#   pbsmrtpipe.tools_dev.scatter_subread_reference
-
 import unittest
 import os.path as op
 import re
@@ -19,7 +12,7 @@ from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.models import PipelineChunk
 import pbcommand.testkit.core
 from pbcore.io import SubreadSet, ContigSet, FastaReader, FastqReader, \
-    ConsensusReadSet, AlignmentSet, ConsensusAlignmentSet
+    ConsensusReadSet, AlignmentSet, ConsensusAlignmentSet, HdfSubreadSet
 
 from pbsmrtpipe.tools.chunk_utils import write_chunks_to_json
 
@@ -153,10 +146,96 @@ class TestScatterCCSZMWs(CompareScatteredRecordsBase,
     RESOLVED_MAX_NCHUNKS = 8
     CHUNK_KEYS = ("$chunk.ccsset_id",)
 
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterHdfSubreads(CompareScatteredRecordsBase,
+                             pbcommand.testkit.core.PbTestScatterApp):
+
+    """
+    Test pbsmrtpipe.tools_dev.scatter_hdfsubreads
+    """
+    READER_CLASS = HdfSubreadSet
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_hdfsubreads"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.hdfsubreadset.xml"
+    ]
+    MAX_NCHUNKS = 8
+    RESOLVED_MAX_NCHUNKS = 8
+    CHUNK_KEYS = ("$chunk.hdf5subreadset_id",)
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterAlignmentsReference(pbcommand.testkit.core.PbTestScatterApp):
+    READER_CLASS = AlignmentSet
+    READER_KWARGS = {}
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Alignment_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.1.alignmentset.xml",
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda.referenceset.xml",
+    ]
+    MAX_NCHUNKS = 2
+    RESOLVED_MAX_NCHUNKS = 2
+    CHUNK_KEYS = ("$chunk.alignmentset_id", "$chunk.reference_id")
+
+    def run_after(self, rtc, output_dir):
+        json_file = rtc.task.output_files[0]
+        chunks = load_pipeline_chunks_from_json(json_file)
+        windows = []
+        for chunk in chunks:
+            d = chunk.chunk_d
+            chunked = d[self.CHUNK_KEYS[0]]
+            with self.READER_CLASS(chunked, **self.READER_KWARGS) as ds:
+                windows.append(ds.refWindows)
+        self.assertEqual(windows, [
+            [('lambda_NEB3011', 0, 24251)],
+            [('lambda_NEB3011', 24251, 48502)]
+        ])
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterAlignmentsReferenceBasemods(TestScatterAlignmentsReference):
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference_basemods"
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterSubreadReference(pbcommand.testkit.core.PbTestScatterApp):
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_reference"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml",
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda.referenceset.xml",
+    ]
+    MAX_NCHUNKS = 3
+    RESOLVED_MAX_NCHUNKS = 3
+    CHUNK_KEYS = ("$chunk.subreadset_id", "$chunk.reference_id")
+
+
+@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+class TestScatterCCSReference(pbcommand.testkit.core.PbTestScatterApp):
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_ccs_reference"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml",
+        "/mnt/secondary-siv/testdata/SA3-DS/lambda.referenceset.xml",
+    ]
+    MAX_NCHUNKS = 8
+    RESOLVED_MAX_NCHUNKS = 8
+    CHUNK_KEYS = ("$chunk.ccsset_id", "$chunk.reference_id")
+
+
+@unittest.skipUnless(op.isdir("/mnt/secondary-siv/testdata/pblaa-unittest"),
+                     "Missing /mnt/secondary-siv/testdata/pblaa-unittest")
+class TestScatterSubreadBarcodes(pbcommand.testkit.core.PbTestScatterApp):
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_barcodes"
+    INPUT_FILES = [
+        "/mnt/secondary-siv/testdata/pblaa-unittest/P6-C4/HLA_ClassI/m150724_012016_sherri_c100820352550000001823172911031521_s1_p0.class_I.haploid.bam",
+    ]
+    MAX_NCHUNKS = 8
+    RESOLVED_MAX_NCHUNKS = 8
+    CHUNK_KEYS = ("$chunk.subreadset_id", )
+
+
 ########################################################################
 # GATHER TASKS
 ########################################################################
-
 
 class CompareGatheredRecordsBase(object):
     READER_CLASS = None
@@ -210,7 +289,7 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
 
     def run_after(self, rtc, output_dir):
         super(TestGatherAlignmentSet, self).run_after(rtc,
-            output_dir)
+                                                      output_dir)
         with AlignmentSet(rtc.task.output_files[0]) as ds:
             self.assertTrue(ds.isIndexed)
             self._check_bam_count(ds.toExternalFiles())
