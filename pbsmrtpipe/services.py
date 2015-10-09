@@ -305,10 +305,14 @@ class ServiceAccessLayer(object):
 
         seps = [dict(entryId=e.entry_id, fileTypeId=e.dataset_type, datasetId=e.resource) for e in epoints]
 
-        def _to_o(opt_id, opt_value):
-            return dict(optionId=opt_id, value=opt_value)
-        task_options = [_to_o("option_01", "value_01")]
-        workflow_options = [_to_o("woption_01", "value_01")]
+        def _to_o(opt_id, opt_value, option_type_id):
+            return dict(optionId=opt_id, value=opt_value, optionTypeId=option_type_id)
+
+        # FIXME. Need to define this in the scenario IO layer.
+        # task_options = [_to_o("option_01", "value_01")]
+        # workflow_options = [_to_o("woption_01", "value_01")]
+        task_options = []
+        workflow_options = []
         d = dict(name=name, pipelineId=pipeline_template_id, entryPoints=seps, taskOptions=task_options, workflowOptions=workflow_options)
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{p}".format(p=JobTypes.PB_PIPE)), d)
 
