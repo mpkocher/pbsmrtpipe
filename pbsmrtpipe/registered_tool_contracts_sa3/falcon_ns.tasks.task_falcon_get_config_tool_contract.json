@@ -1,0 +1,498 @@
+{
+    "driver": {
+        "env": {},
+        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ",
+        "serialization": "json"
+    },
+    "tool_contract": {
+        "_comment": "Created by v0.2.14",
+        "description": "Quick tool task_falcon_get_config falcon_ns.tasks.task_falcon_get_config",
+        "input_types": [
+            {
+                "description": "description for PacBio.FileTypes.generic_fofn_0",
+                "file_type_id": "PacBio.FileTypes.generic_fofn",
+                "id": "Label PacBio.FileTypes.generic_fofn_0",
+                "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic.fofn >"
+            }
+        ],
+        "is_distributed": false,
+        "name": "Tool task_falcon_get_config",
+        "nproc": 1,
+        "output_types": [
+            {
+                "default_name": "file.txt",
+                "description": "description for <FileType id=PacBio.FileTypes.txt name=file.txt >",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "Label PacBio.FileTypes.txt_0",
+                "title": "<FileType id=PacBio.FileTypes.txt name=file.txt >"
+            }
+        ],
+        "resource_types": [],
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 32,
+                    "description": "Option pa_concurrent_jobs description",
+                    "name": "Option pa_concurrent_jobs",
+                    "option_id": "falcon_ns.task_options.pa_concurrent_jobs",
+                    "type": "integer"
+                },
+                "properties": {
+                    "falcon_ns.task_options.pa_concurrent_jobs": {
+                        "default": 32,
+                        "description": "Option pa_concurrent_jobs description",
+                        "title": "Option pa_concurrent_jobs",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.pa_concurrent_jobs"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.pa_concurrent_jobs",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 32,
+                    "description": "Option ovlp_concurrent_jobs description",
+                    "name": "Option ovlp_concurrent_jobs",
+                    "option_id": "falcon_ns.task_options.ovlp_concurrent_jobs",
+                    "type": "integer"
+                },
+                "properties": {
+                    "falcon_ns.task_options.ovlp_concurrent_jobs": {
+                        "default": 32,
+                        "description": "Option ovlp_concurrent_jobs description",
+                        "title": "Option ovlp_concurrent_jobs",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.ovlp_concurrent_jobs"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.ovlp_concurrent_jobs",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-pe smp 2 -q %(jobqueue)s",
+                    "description": "Option sge_option_pla description",
+                    "name": "Option sge_option_pla",
+                    "option_id": "falcon_ns.task_options.sge_option_pla",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_pla": {
+                        "default": "-pe smp 2 -q %(jobqueue)s",
+                        "description": "Option sge_option_pla description",
+                        "title": "Option sge_option_pla",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_pla"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_pla",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "raw",
+                    "description": "Option input_type description",
+                    "name": "Option input_type",
+                    "option_id": "falcon_ns.task_options.input_type",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.input_type": {
+                        "default": "raw",
+                        "description": "Option input_type description",
+                        "title": "Option input_type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.input_type"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.input_type",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-v -dal4 -t32 -h60 -e.96 -l500 -s1000",
+                    "description": "Option ovlp_HPCdaligner_option description",
+                    "name": "Option ovlp_HPCdaligner_option",
+                    "option_id": "falcon_ns.task_options.ovlp_HPCdaligner_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.ovlp_HPCdaligner_option": {
+                        "default": "-v -dal4 -t32 -h60 -e.96 -l500 -s1000",
+                        "description": "Option ovlp_HPCdaligner_option description",
+                        "title": "Option ovlp_HPCdaligner_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.ovlp_HPCdaligner_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.ovlp_HPCdaligner_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-x500 -s50",
+                    "description": "Option pa_DBsplit_option description",
+                    "name": "Option pa_DBsplit_option",
+                    "option_id": "falcon_ns.task_options.pa_DBsplit_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.pa_DBsplit_option": {
+                        "default": "-x500 -s50",
+                        "description": "Option pa_DBsplit_option description",
+                        "title": "Option pa_DBsplit_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.pa_DBsplit_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.pa_DBsplit_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "local",
+                    "description": "Option job_type description",
+                    "name": "Option job_type",
+                    "option_id": "falcon_ns.task_options.job_type",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.job_type": {
+                        "default": "local",
+                        "description": "Option job_type description",
+                        "title": "Option job_type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.job_type"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.job_type",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "production",
+                    "description": "Option jobqueue description",
+                    "name": "Option jobqueue",
+                    "option_id": "falcon_ns.task_options.jobqueue",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.jobqueue": {
+                        "default": "production",
+                        "description": "Option jobqueue description",
+                        "title": "Option jobqueue",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.jobqueue"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.jobqueue",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-pe smp 8 -q %(jobqueue)s",
+                    "description": "Option sge_option_cns description",
+                    "name": "Option sge_option_cns",
+                    "option_id": "falcon_ns.task_options.sge_option_cns",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_cns": {
+                        "default": "-pe smp 8 -q %(jobqueue)s",
+                        "description": "Option sge_option_cns description",
+                        "title": "Option sge_option_cns",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_cns"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_cns",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-pe smp 24 -q %(jobqueue)s",
+                    "description": "Option sge_option_fc description",
+                    "name": "Option sge_option_fc",
+                    "option_id": "falcon_ns.task_options.sge_option_fc",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_fc": {
+                        "default": "-pe smp 24 -q %(jobqueue)s",
+                        "description": "Option sge_option_fc description",
+                        "title": "Option sge_option_fc",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_fc"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_fc",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "--output_multi --min_idt 0.70 --min_cov 4 --local_match_count_threshold 2 --max_n_read 200 --n_core 6 --output_dformat",
+                    "description": "Option falcon_sense_option description",
+                    "name": "Option falcon_sense_option",
+                    "option_id": "falcon_ns.task_options.falcon_sense_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.falcon_sense_option": {
+                        "default": "--output_multi --min_idt 0.70 --min_cov 4 --local_match_count_threshold 2 --max_n_read 200 --n_core 6 --output_dformat",
+                        "description": "Option falcon_sense_option description",
+                        "title": "Option falcon_sense_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.falcon_sense_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.falcon_sense_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-pe smp 8 -q %(jobqueue)s",
+                    "description": "Option sge_option_da description",
+                    "name": "Option sge_option_da",
+                    "option_id": "falcon_ns.task_options.sge_option_da",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_da": {
+                        "default": "-pe smp 8 -q %(jobqueue)s",
+                        "description": "Option sge_option_da description",
+                        "title": "Option sge_option_da",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_da"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_da",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-v -dal4 -t16 -e.70 -l1000 -s1000",
+                    "description": "Option pa_HPCdaligner_option description",
+                    "name": "Option pa_HPCdaligner_option",
+                    "option_id": "falcon_ns.task_options.pa_HPCdaligner_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.pa_HPCdaligner_option": {
+                        "default": "-v -dal4 -t16 -e.70 -l1000 -s1000",
+                        "description": "Option pa_HPCdaligner_option description",
+                        "title": "Option pa_HPCdaligner_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.pa_HPCdaligner_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.pa_HPCdaligner_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "--max_diff 100 --max_cov 100 --min_cov 20 --bestn 10 --n_core 24",
+                    "description": "Option overlap_filtering_setting description",
+                    "name": "Option overlap_filtering_setting",
+                    "option_id": "falcon_ns.task_options.overlap_filtering_setting",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.overlap_filtering_setting": {
+                        "default": "--max_diff 100 --max_cov 100 --min_cov 20 --bestn 10 --n_core 24",
+                        "description": "Option overlap_filtering_setting description",
+                        "title": "Option overlap_filtering_setting",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.overlap_filtering_setting"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.overlap_filtering_setting",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 12000,
+                    "description": "Option length_cutoff description",
+                    "name": "Option length_cutoff",
+                    "option_id": "falcon_ns.task_options.length_cutoff",
+                    "type": "integer"
+                },
+                "properties": {
+                    "falcon_ns.task_options.length_cutoff": {
+                        "default": 12000,
+                        "description": "Option length_cutoff description",
+                        "title": "Option length_cutoff",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.length_cutoff"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.length_cutoff",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 12000,
+                    "description": "Option length_cutoff_pr description",
+                    "name": "Option length_cutoff_pr",
+                    "option_id": "falcon_ns.task_options.length_cutoff_pr",
+                    "type": "integer"
+                },
+                "properties": {
+                    "falcon_ns.task_options.length_cutoff_pr": {
+                        "default": 12000,
+                        "description": "Option length_cutoff_pr description",
+                        "title": "Option length_cutoff_pr",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.length_cutoff_pr"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.length_cutoff_pr",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-x500 -s50",
+                    "description": "Option ovlp_DBsplit_option description",
+                    "name": "Option ovlp_DBsplit_option",
+                    "option_id": "falcon_ns.task_options.ovlp_DBsplit_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.ovlp_DBsplit_option": {
+                        "default": "-x500 -s50",
+                        "description": "Option ovlp_DBsplit_option description",
+                        "title": "Option ovlp_DBsplit_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.ovlp_DBsplit_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.ovlp_DBsplit_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "None",
+                    "description": "Option input_fofn description",
+                    "name": "Option input_fofn",
+                    "option_id": "falcon_ns.task_options.input_fofn",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.input_fofn": {
+                        "default": "None",
+                        "description": "Option input_fofn description",
+                        "title": "Option input_fofn",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.input_fofn"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.input_fofn",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-pe smp 2 -q %(jobqueue)s",
+                    "description": "Option sge_option_la description",
+                    "name": "Option sge_option_la",
+                    "option_id": "falcon_ns.task_options.sge_option_la",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_la": {
+                        "default": "-pe smp 2 -q %(jobqueue)s",
+                        "description": "Option sge_option_la description",
+                        "title": "Option sge_option_la",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_la"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_la",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-pe smp 8 -q %(jobqueue)s",
+                    "description": "Option sge_option_pda description",
+                    "name": "Option sge_option_pda",
+                    "option_id": "falcon_ns.task_options.sge_option_pda",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_pda": {
+                        "default": "-pe smp 8 -q %(jobqueue)s",
+                        "description": "Option sge_option_pda description",
+                        "title": "Option sge_option_pda",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_pda"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_pda",
+                "type": "object"
+            }
+        ],
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "tool_contract_id": "falcon_ns.tasks.task_falcon_get_config"
+    },
+    "tool_contract_id": "falcon_ns.tasks.task_falcon_get_config",
+    "version": "0.0.0"
+}
