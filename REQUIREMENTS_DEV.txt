@@ -13,3 +13,4 @@ sphinx
 sphinx-bootstrap-theme
 #pygraphviz
 mock
+sphinx-bootstrap-theme
