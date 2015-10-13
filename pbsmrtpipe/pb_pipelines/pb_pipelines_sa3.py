@@ -198,7 +198,7 @@ def rs_modification_detection_1():
         # basemods.gff
         ("kinetics_tools.tasks.ipd_summary:0", "kinetics_tools.tasks.summarize_modifications:0"),
         # alignment_summary_final.gff
-        ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.summarize_coverage:0", "kinetics_tools.tasks.summarize_modifications:1")
+        ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:genomic_consensus.tasks.summarize_consensus:0", "kinetics_tools.tasks.summarize_modifications:1")
     ]
     return b1 + b2
 
