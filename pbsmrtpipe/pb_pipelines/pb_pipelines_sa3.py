@@ -164,8 +164,10 @@ def ds_resequencing():
     return _core_gc("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
+_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+_OPTIONS["pbalign.task_options.consolidate_aligned_bam"] = True
 @register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SA3 SubreadSet Resequencing With GC Extras and Reports", "0.1.0",
-                   task_options=RESEQUENCING_TASK_OPTIONS)
+                   task_options=_OPTIONS)
 def ds_fat_resequencing():
     """
     Full Resequencing Pipeline - Blasr mapping and Genomic Consensus, plus
