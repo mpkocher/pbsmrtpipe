@@ -290,7 +290,7 @@ def _core_laa(subread_ds):
     b3 = [(subread_ds, "pblaa.tasks.laa:0")]
     return b3
 
-@register_pipeline(to_pipeline_ns("sa3_ds_laa"), "SA3 Consensus Reads", "0.1.0", tags=("laa", ))
+@register_pipeline(to_pipeline_ns("sa3_ds_laa"), "Long Amplicon Analysis (LAA)", "0.1.0", tags=("laa", ))
 def ds_laa():
     """
     Basic Long Amplicon Analysis (LAA) pipeline, starting from subreads.
@@ -313,7 +313,7 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "SA3 Consensus Reads", "0.1.0", tags=("ccs", ))
+@register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "Circular Consensus Sequences (CCS)", "0.1.0", tags=("ccs", ))
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
