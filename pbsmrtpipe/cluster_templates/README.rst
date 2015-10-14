@@ -3,10 +3,9 @@ Cluster Templates
 
 Cluster templates can be specified by schedulers (e.g., SGE, PBS).
 
-The spec requires three files:
+The spec requires two files:
 
-- interactive.tmpl
-- kill.tmpl
+- stop.tmpl
 - start.tmpl
 
 Each template must specify several parameters.
