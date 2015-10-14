@@ -333,7 +333,7 @@ def _core_ccs_align(ccs_ds):
     return b3+b4
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "SA3 Consensus Read Mapping", "0.1.0", tags=("mapping", ))
+@register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "SA3 CCS Mapping", "0.1.0", tags=("mapping", ))
 def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
