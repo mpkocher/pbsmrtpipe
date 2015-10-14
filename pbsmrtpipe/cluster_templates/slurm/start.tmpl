@@ -1,0 +1,1 @@
+salloc --job-name="${JOB_ID}" --cpus-per-task=${NPROC} srun --cpus-per-task=${NPROC} -o ${STDOUT_FILE} -e ${STDERR_FILE} /bin/bash -c "${CMD}"
