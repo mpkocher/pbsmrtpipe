@@ -720,7 +720,12 @@ def _pipeline_to_task_options(rtasks, p):
         if task.option_schemas:
             for k, v in task.option_schemas.iteritems():
                 if k not in options:
-                    options[k] = v
+                    options[k] = dict(v)
+                    option_id = options[k]["required"][0]
+                    if option_id in p.task_options:
+                        default = p.task_options[option_id]
+                        options[k]["pb_option"]["default"] = default
+                        options[k]["properties"][option_id]["default"] = default
 
     return options.values()
 
