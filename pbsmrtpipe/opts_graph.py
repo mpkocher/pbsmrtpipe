@@ -399,7 +399,12 @@ def meta_task_to_task(meta_task,
             resolved_values[k] = v
 
     def _default_resolve_nproc():
-        return max_nproc if meta_task.nproc == SymbolTypes.MAX_NPROC else 1
+        if meta_task.nproc == SymbolTypes.MAX_NPROC:
+            return max_nproc
+        elif isinstance(meta_task.nproc, int):
+            return min(meta_task.nproc, max_nproc)
+        else:
+            return 1
 
     def _default_task_type():
         return meta_task.is_distributed
