@@ -19,7 +19,7 @@ class Constants(object):
 # XXX hacks to make sure tools are actually available
 HAVE_BAX2BAM = which(Constants.BAX2BAM) is not None
 HAVE_BAM2FASTX = which(Constants.BAM2FASTA) is not None
-DATA_DIR = "/mnt/secondary-siv/testdata"
+DATA_DIR = "/pbi/dept/secondary/siv/testdata"
 HAVE_DATA_DIR = op.isdir(DATA_DIR)
 
 @unittest.skipUnless(HAVE_BAX2BAM and HAVE_DATA_DIR, "Missing bax2bam")
@@ -31,7 +31,7 @@ class TestBax2Bam(PbTestApp):
     # User Provided values
     # Abspath'ed temp files will be automatically generated
     INPUT_FILES = [
-        DATA_DIR + "/SA3-RS/lambda/2372215/0007_tiny/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.hdfsubread.xml",
+        DATA_DIR + "/SA3-RS/lambda/2372215/0007_tiny/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.hdfsubreadset.xml",
     ]
     MAX_NPROC = 24
 
@@ -45,7 +45,7 @@ class TestBam2Fasta(PbTestApp):
     TASK_ID = "pbsmrtpipe.tasks.bam2fasta"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     DRIVER_RESOLVE = 'python -m pbsmrtpipe.pb_tasks.pacbio run-rtc '
-    INPUT_FILES = [ "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml" ]
+    INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml" ]
     MAX_NPROC = 24
     RESOLVED_NPROC = 1
     RESOLVED_TASK_OPTIONS = {}
@@ -72,7 +72,7 @@ class TestBam2Fastq(TestBam2Fasta):
 class TestBam2FastaCCS(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fasta_ccs"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
-    INPUT_FILES = [ "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
+    INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
     READER_CLASS = FastaReader
 
 
@@ -80,5 +80,5 @@ class TestBam2FastaCCS(TestBam2Fasta):
 class TestBam2FastqCCS(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fastq_ccs"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
-    INPUT_FILES = [ "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
+    INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml" ]
     READER_CLASS = FastqReader
