@@ -11,7 +11,7 @@ from pbcommand.utils import which
 
 TEST_DIR = os.path.dirname(__file__)
 TEST_DATA_DIR = os.path.join(TEST_DIR, 'data')
-SIV_TEST_DATA_DIR = '/mnt/secondary-siv/testdata'
+SIV_TEST_DATA_DIR = '/pbi/dept/secondary/siv/testdata'
 # this is necessary for test jobs to write a tmp shared space for jobs that
 # are submitted to the cluster
 CLUSTER_SHARED_TMP_DIR = '/mnt/secondary/Share/tmp/'

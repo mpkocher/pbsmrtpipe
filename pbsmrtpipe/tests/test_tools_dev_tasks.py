@@ -18,7 +18,7 @@ from pbsmrtpipe.tools.chunk_utils import write_chunks_to_json
 
 from base import get_temp_file
 
-MNT_DATA = "/mnt/secondary-siv/testdata/SA3-DS"
+MNT_DATA = "/pbi/dept/secondary/siv/testdata"
 
 
 def _write_fasta_or_contigset(file_name):
@@ -104,7 +104,7 @@ class TestScatterContigSetIndexed(CompareScatteredRecordsBase,
     READER_CLASS = ContigSet
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_contigset"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/transcripts.contigset.xml"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/transcripts.contigset.xml"
     ]
     MAX_NCHUNKS = 2
     RESOLVED_MAX_NCHUNKS = 2
@@ -122,7 +122,7 @@ class TestScatterSubreadZMWs(CompareScatteredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_zmws"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml"
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml"
     ]
     MAX_NCHUNKS = 12
     RESOLVED_MAX_NCHUNKS = 12
@@ -140,7 +140,7 @@ class TestScatterCCSZMWs(CompareScatteredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_ccs_zmws"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml"
     ]
     MAX_NCHUNKS = 8
     RESOLVED_MAX_NCHUNKS = 8
@@ -157,7 +157,7 @@ class TestScatterHdfSubreads(CompareScatteredRecordsBase,
     READER_CLASS = HdfSubreadSet
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_hdfsubreads"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.hdfsubreadset.xml"
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.hdfsubreadset.xml"
     ]
     MAX_NCHUNKS = 8
     RESOLVED_MAX_NCHUNKS = 8
@@ -170,8 +170,8 @@ class TestScatterAlignmentsReference(pbcommand.testkit.core.PbTestScatterApp):
     READER_KWARGS = {}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Alignment_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.1.alignmentset.xml",
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda.referenceset.xml",
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Alignment_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.1.alignmentset.xml",
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
     ]
     MAX_NCHUNKS = 2
     RESOLVED_MAX_NCHUNKS = 2
@@ -201,8 +201,8 @@ class TestScatterAlignmentsReferenceBasemods(TestScatterAlignmentsReference):
 class TestScatterSubreadReference(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_reference"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml",
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda.referenceset.xml",
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml",
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
     ]
     MAX_NCHUNKS = 3
     RESOLVED_MAX_NCHUNKS = 3
@@ -213,20 +213,20 @@ class TestScatterSubreadReference(pbcommand.testkit.core.PbTestScatterApp):
 class TestScatterCCSReference(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_ccs_reference"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml",
-        "/mnt/secondary-siv/testdata/SA3-DS/lambda.referenceset.xml",
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml",
+        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
     ]
     MAX_NCHUNKS = 8
     RESOLVED_MAX_NCHUNKS = 8
     CHUNK_KEYS = ("$chunk.ccsset_id", "$chunk.reference_id")
 
 
-@unittest.skipUnless(op.isdir("/mnt/secondary-siv/testdata/pblaa-unittest"),
-                     "Missing /mnt/secondary-siv/testdata/pblaa-unittest")
+@unittest.skipUnless(op.isdir("/pbi/dept/secondary/siv/testdata/pblaa-unittest"),
+                     "Missing /pbi/dept/secondary/siv/testdata/pblaa-unittest")
 class TestScatterSubreadBarcodes(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_barcodes"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pblaa-unittest/P6-C4/HLA_ClassI/m150724_012016_sherri_c100820352550000001823172911031521_s1_p0.class_I.haploid.bam",
+        "/pbi/dept/secondary/siv/testdata/pblaa-unittest/P6-C4/HLA_ClassI/m150724_012016_sherri_c100820352550000001823172911031521_s1_p0.class_I.haploid.bam",
     ]
     MAX_NCHUNKS = 8
     RESOLVED_MAX_NCHUNKS = 8
@@ -267,7 +267,7 @@ class TestGatherSubreads(CompareGatheredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_subreads"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/subreads_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/subreads_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.subreadset_id"
 
@@ -283,7 +283,7 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_alignments"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/alignmentset_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/alignmentset_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.alignmentset_id"
 
@@ -310,7 +310,7 @@ class TestGatherCCS(CompareGatheredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_ccs"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.ccsset_id"
 
@@ -326,7 +326,7 @@ class TestGatherCCSAlignmentSet(CompareGatheredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_ccs_alignments"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/consensusalignmentset_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/consensusalignmentset_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.ccs_alignmentset_id"
 
@@ -339,7 +339,7 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
     """
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_report"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.report_id"
 
@@ -368,7 +368,7 @@ class TestGatherContigs(CompareGatheredRecordsBase,
     READER_CLASS = ContigSet
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_contigs"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/contig_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/contig_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.contigset_id"
 
@@ -383,7 +383,7 @@ class TestGatherFasta(CompareGatheredRecordsBase,
     READER_CLASS = FastaReader
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_fasta"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/fasta_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/fasta_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.fasta_id"
 
@@ -398,7 +398,7 @@ class TestGatherFastq(CompareGatheredRecordsBase,
     READER_CLASS = FastqReader
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_fastq"
     INPUT_FILES = [
-        "/mnt/secondary-siv/testdata/pbsmrtpipe-unittest/data/chunk/fastq_gather.chunks.json"
+        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/fastq_gather.chunks.json"
     ]
     CHUNK_KEY = "$chunk.fastq_id"
 
