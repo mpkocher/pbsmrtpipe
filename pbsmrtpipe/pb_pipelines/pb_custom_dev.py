@@ -11,6 +11,8 @@ from pbcommand.utils import setup_log
 from pbsmrtpipe.core import PipelineRegistry
 from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro
 
+from .pb_pipelines_sa3 import Tags
+
 log = logging.getLogger(__name__)
 
 
@@ -25,7 +27,7 @@ def _example_topts():
     return {"pbsmrtpipe.task_options.dev_message": "Preset Custom Dev Message from register pipeline"}
 
 
-@registry("dev_a", "Example 01", "0.1.0", tags=("dev", "hello-world"), task_options=_example_topts())
+@registry("dev_a", "Example 01", "0.1.0", tags=(Tags.DEV, "hello-world"), task_options=_example_topts())
 def to_bs():
     """Custom Pipeline Registry for dev hello world tasks"""
     b1 = [('$entry:e_01', 'pbsmrtpipe.tasks.dev_hello_world:0')]
@@ -38,7 +40,7 @@ def to_bs():
     return b1 + b2 + b3
 
 
-@registry("dev_b", "Example 02", "0.1.0", tags=('reports', 'dev'))
+@registry("dev_b", "Example 02", "0.1.0", tags=(Tags.RPT, Tags.DEV))
 def to_bs():
     b3 = [("pbsmrtpipe.pipelines.dev_a:pbsmrtpipe.tasks.dev_txt_to_fasta:0", 'pbsmrtpipe.tasks.dev_filter_fasta:0')]
     return b3

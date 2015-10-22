@@ -3,14 +3,14 @@ import logging
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import to_pipeline_ns
 
-from .pb_pipelines_sa3 import Constants, _core_align, _core_gc
+from .pb_pipelines_sa3 import Constants, Tags, _core_align, _core_gc
 
 log = logging.getLogger(__name__)
 
 
 def dev_register(relative_id, display_name, tags=()):
     pipeline_id = to_pipeline_ns(relative_id)
-    ptags = list(set(tags + ('dev', )))
+    ptags = list(set(tags + (Tags.DENOVO, )))
     return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags)
 
 def _get_falcon_pipeline(i_cfg, i_fasta_fofn):

@@ -12,6 +12,7 @@ def _to_entry(entry_prefix, value):
 
 to_entry = functools.partial(_to_entry, ENTRY_PREFIX)
 
+
 class Constants(object):
 
     ENTRY_RS_MOVIE_XML = to_entry("rs_movie_xml")
@@ -27,11 +28,37 @@ class Constants(object):
     ENTRY_DS_CCS = to_entry("eid_ccs")
 
 
-def _core_export_fastx(subread_ds):
-    b1 = [(subread_ds, "pbsmrtpipe.tasks.bam2fasta:0")]
-    # bam2fastq
-    b2 = [(subread_ds, "pbsmrtpipe.tasks.bam2fastq:0")]
-    return b1 + b2
+class Tags(object):
+    # General Analysis Categories
+    MAP = "mapping"
+    CONSENSUS = "consensus"
+    RPT = "reports"
+    CCS = "ccs"
+    LAA = "laa"
+    MOD_DET = "modification-detection"
+    MOTIF = "motif-analysis"
+    ISOSEQ = "isoseq"
+    DENOVO = "denovo"
+    SAT = "sat"
+
+    # File format converters
+    CONVERTER = "converters"
+
+    # These pipelines will NOT show up in the UI
+    # Development/Diagnostic
+    DEV = "dev"
+    # Internal Analysis
+    INTERNAL = "internal"
+
+    RESEQ = (MAP, CONSENSUS)
+    RESEQ_RPT = (MAP, CONSENSUS, RPT)
+    RESEQ_MOD_DET = (MAP, CONSENSUS, MOD_DET)
+    RESEQ_MOTIF = (MAP, CONSENSUS, MOD_DET, MOTIF)
+
+
+def sa3_register(relative_id, display_name, version, tags=(), task_options=None):
+    pipeline_id = to_pipeline_ns(relative_id)
+    return register_pipeline(pipeline_id, display_name, version, tags=tags, task_options=task_options)
 
 
 def _core_align(subread_ds, reference_ds):
@@ -86,7 +113,7 @@ def _core_gc_plus(alignment_ds, reference_ds):
     return b1 + b2 + b3 + b4 + b5
 
 
-@register_pipeline(to_pipeline_ns("sa3_fetch"), "RS Movie to Subread DataSet", "0.1.0", tags=("convert", ))
+@sa3_register("sa3_fetch", "RS Movie to Subread DataSet", "0.1.0", tags=(Tags.CONVERTER, ))
 def sa3_fetch():
     """
     Convert RS movie metadata XML to Subread DataSet XML
@@ -100,7 +127,7 @@ def sa3_fetch():
     return b1 + b2
 
 
-@register_pipeline(to_pipeline_ns("sa3_align"), "RS movie Align", "0.1.0", tags=("mapping", ))
+@sa3_register("sa3_align", "RS movie Align", "0.1.0", tags=(Tags.MAP, ))
 def sa3_align():
     """
     Perform mapping to reference sequence, starting from RS movie XML
@@ -116,7 +143,7 @@ def sa3_align():
     return b1 + b2 + bxs
 
 
-@register_pipeline(to_pipeline_ns("sa3_resequencing"), "RS movie Resequencing", "0.1.0", tags=("mapping", "consensus"))
+@sa3_register("sa3_resequencing", "RS movie Resequencing", "0.1.0", tags=Tags.RESEQ)
 def sa3_resequencing():
     """
     Resequencing Pipeline - Blasr mapping and Genomic Consensus, starting from
@@ -125,7 +152,7 @@ def sa3_resequencing():
     return _core_gc("pbsmrtpipe.pipelines.sa3_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_hdfsubread_to_subread"), "Convert Hdf SubreadSet to SubreadSet", "0.1.0", tags=("convert", ))
+@sa3_register("sa3_hdfsubread_to_subread", "Convert Hdf SubreadSet to SubreadSet", "0.1.0", tags=(Tags.CONVERTER, ))
 def hdf_subread_converter():
     """
     Import HdfSubreadSet (bax.h5 basecalling files) to SubreadSet (.bam files)
@@ -135,7 +162,7 @@ def hdf_subread_converter():
     return b2
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_align"), "SubreadSet Mapping", "0.1.0", tags=("mapping", ))
+@sa3_register("sa3_ds_align", "SubreadSet Mapping", "0.1.0", tags=(Tags.MAP, ))
 def ds_align():
     """
     Perform Blasr mapping to reference sequence
@@ -146,8 +173,10 @@ RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False
 }
 
-@register_pipeline(to_pipeline_ns("sa3_ds_genomic_consensus"), "Genomic Consensus", "0.1.0",
-                   task_options=RESEQUENCING_TASK_OPTIONS)
+
+@sa3_register("sa3_ds_genomic_consensus", "Genomic Consensus", "0.1.0",
+              tags=(Tags.CONSENSUS, Tags.INTERNAL),
+            task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_genomic_consenus():
     """
     Run Genomic Consensus, starting from an existing AlignmentSet
@@ -155,8 +184,8 @@ def ds_genomic_consenus():
     return _core_gc_plus(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_resequencing"), "SubreadSet Resequencing", "0.1.0",
-                   task_options=RESEQUENCING_TASK_OPTIONS)
+@sa3_register("sa3_ds_resequencing", "SubreadSet Resequencing", "0.1.0",
+              tags=Tags.RESEQ, task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_resequencing():
     """
     Core Resequencing Pipeline - Blasr mapping and Genomic Consensus
@@ -164,10 +193,13 @@ def ds_resequencing():
     return _core_gc("pbsmrtpipe.pipelines.sa3_ds_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+_OPTIONS = RESEQUENCING_TASK_OPTIONS.copy()
 _OPTIONS["pbalign.task_options.consolidate_aligned_bam"] = True
-@register_pipeline(to_pipeline_ns("sa3_ds_resequencing_fat"), "SubreadSet Resequencing With GC Extras and Reports", "0.1.0",
-                   task_options=_OPTIONS)
+
+
+@sa3_register("sa3_ds_resequencing_fat",
+              "SubreadSet Resequencing With GC Extras and Reports", "0.1.0",
+              task_options=_OPTIONS, tags=Tags.RESEQ_RPT)
 def ds_fat_resequencing():
     """
     Full Resequencing Pipeline - Blasr mapping and Genomic Consensus, plus
@@ -189,7 +221,9 @@ def _core_mod_detection(alignment_ds, reference_ds):
     return bs
 
 
-@register_pipeline(to_pipeline_ns("ds_modification_detection"), 'Base Modification Detection', "0.1.0", tags=("modification-detection", ))
+@sa3_register("ds_modification_detection",
+                   'Base Modification Detection', "0.1.0",
+                   tags=("modification-detection", ))
 def rs_modification_detection_1():
     """
     Base Modification Analysis Pipeline - performs resequencing workflow
@@ -203,6 +237,7 @@ def rs_modification_detection_1():
         ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:genomic_consensus.tasks.summarize_consensus:0", "kinetics_tools.tasks.summarize_modifications:1")
     ]
     return b1 + b2
+
 
 def _core_motif_analysis(ipd_gff, reference_ds):
     bs = []
@@ -227,8 +262,9 @@ def _core_motif_analysis(ipd_gff, reference_ds):
 BASEMODS_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
 BASEMODS_TASK_OPTIONS["kinetics_tools.task_options.pvalue"] = 0.001
 
-@register_pipeline(to_pipeline_ns("ds_modification_motif_analysis"), 'Base Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ),
-        task_options=BASEMODS_TASK_OPTIONS)
+
+@sa3_register("ds_modification_motif_analysis", 'Base Modification and Motif Analysis', "0.1.0",
+              tags=(Tags.MOTIF, ), task_options=BASEMODS_TASK_OPTIONS)
 def rs_modification_and_motif_analysis_1():
     """
     Modification and Motif Analysis Pipeline - performs resequencing workflow,
@@ -239,7 +275,9 @@ def rs_modification_and_motif_analysis_1():
         'pbsmrtpipe.pipelines.ds_modification_detection:kinetics_tools.tasks.ipd_summary:0', Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("pb_modification_detection"), 'PacBio Internal Modification Analysis', "0.1.0", tags=("mapping", ), task_options={"kinetics_tools.task_options.pvalue":0.001})
+@sa3_register("pb_modification_detection", 'PacBio Internal Modification Analysis', "0.1.0",
+              tags=(Tags.RPT, Tags.MOD_DET, Tags.INTERNAL ),
+              task_options={"kinetics_tools.task_options.pvalue":0.001})
 def pb_modification_analysis_1():
     """
     Internal base modification analysis pipeline, starting from an existing
@@ -248,7 +286,8 @@ def pb_modification_analysis_1():
     return _core_mod_detection(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@register_pipeline(to_pipeline_ns("pb_modification_motif_analysis"), 'PacBio Internal Modification and Motif Analysis', "0.1.0", tags=("motif-analysis", ), task_options={"kinetics_tools.task_options.pvalue":0.001})
+@sa3_register("pb_modification_motif_analysis", 'PacBio Internal Modification and Motif Analysis', "0.1.0",
+              tags=Tags.RESEQ_MOTIF, task_options={"kinetics_tools.task_options.pvalue": 0.001})
 def pb_modification_and_motif_analysis_1():
     """
     Internal base modification and motif analysis pipeline, starting from an
@@ -259,8 +298,11 @@ def pb_modification_and_motif_analysis_1():
 
 SAT_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
 SAT_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "plurality"
-@register_pipeline(to_pipeline_ns("sa3_sat"), 'Site Acceptance Test', "0.1.0", tags=("sat", ),
-                   task_options=SAT_TASK_OPTIONS)
+
+
+@sa3_register("sa3_sat", 'Site Acceptance Test', "0.1.0",
+              tags=(Tags.MAP, Tags.CONSENSUS, Tags.RPT, Tags.SAT),
+              task_options=SAT_TASK_OPTIONS)
 def rs_site_acceptance_test_1():
     """
     Site Acceptance Test - lambda genome resequencing used to validate new
@@ -292,7 +334,8 @@ def _core_laa(subread_ds):
     b3 = [(subread_ds, "pblaa.tasks.laa:0")]
     return b3
 
-@register_pipeline(to_pipeline_ns("sa3_ds_laa"), "Long Amplicon Analysis (LAA)", "0.1.0", tags=("laa", ))
+
+@sa3_register("sa3_ds_laa", "Long Amplicon Analysis (LAA)", "0.1.0", tags=(Tags.LAA, ))
 def ds_laa():
     """
     Basic Long Amplicon Analysis (LAA) pipeline, starting from subreads.
@@ -315,7 +358,7 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_ccs"), "Circular Consensus Sequences (CCS)", "0.1.0", tags=("ccs", ))
+@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS)", "0.1.0", tags=(Tags.CCS, ))
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
@@ -333,7 +376,7 @@ def _core_ccs_align(ccs_ds):
     return b3+b4
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_ccs_align"), "CCS Mapping", "0.1.0", tags=("mapping", ))
+@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.1.0", tags=(Tags.CCS, Tags.MAP, ))
 def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
@@ -341,7 +384,7 @@ def ds_align_ccs():
     return _core_ccs_align("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
 
 
-@register_pipeline(to_pipeline_ns("pb_ccs_align"), "Internal Consensus Read Mapping", "0.1.0", tags=("mapping", ))
+@sa3_register("pb_ccs_align", "Internal Consensus Read Mapping", "0.1.0", tags=(Tags.MAP, Tags.CCS, Tags.INTERNAL))
 def pb_align_ccs():
     """
     Internal ConsensusRead (CCS) alignment pipeline, starting from an existing
@@ -408,9 +451,10 @@ ISOSEQ_TASK_OPTIONS = {
     "pbccs.task_options.min_predicted_accuracy":0.75
 }
 
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify"),
-                   "IsoSeq Classify", "0.2.0",
-                   tags=("isoseq", ), task_options=ISOSEQ_TASK_OPTIONS)
+
+@sa3_register("sa3_ds_isoseq_classify", "IsoSeq Classify", "0.2.0",
+              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
+              task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq_classify():
     """
     Partial IsoSeq pipeline (classify step only), starting from subreads.
@@ -418,8 +462,9 @@ def ds_isoseq_classify():
     return _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
 
 
-@register_pipeline(to_pipeline_ns("sa3_ds_isoseq"), "IsoSeq", "0.2.0",
-                   tags=("isoseq", ), task_options=ISOSEQ_TASK_OPTIONS)
+@sa3_register("sa3_ds_isoseq", "IsoSeq", "0.2.0",
+              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
+              task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq():
     """
     Main IsoSeq pipeline, starting from subreads.
@@ -432,8 +477,7 @@ def ds_isoseq():
     return b1 + b2
 
 
-@register_pipeline(to_pipeline_ns("pb_isoseq"), "Internal IsoSeq pipeline",
-                   "0.2.0", tags=("isoseq",))
+@sa3_register("pb_isoseq", "Internal IsoSeq pipeline", "0.2.0", tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ, Tags.INTERNAL))
 def pb_isoseq():
     """
     Internal IsoSeq pipeline starting from an existing CCS dataset.
@@ -446,16 +490,14 @@ def pb_isoseq():
     return b1 + b2
 
 
-@register_pipeline(to_pipeline_ns("pb_isoseq_cluster"),
-                   "Internal IsoSeq clustering pipeline",
-                   "0.2.0", tags=("isoseq",))
+@sa3_register("pb_isoseq_cluster", "Internal IsoSeq clustering pipeline", "0.2.0", tags=(Tags.ISOSEQ, Tags.INTERNAL,))
 def pb_isoseq_cluster():
     return _core_isoseq_cluster(Constants.ENTRY_DS_CCS,
         to_entry("e_flnc_fa"), to_entry("e_nfl_fa"))
 
 
 # XXX will resurrect in the future
-#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_classify_align"),
+#@sa3_register("sa3_ds_isoseq_classify_align"),
 #                   "IsoSeq Classification and GMAP Alignment", "0.1.0",
 #                   tags=("isoseq", ),
 #                   task_options=ISOSEQ_TASK_OPTIONS)
@@ -469,7 +511,7 @@ def pb_isoseq_cluster():
 #    return b1 + b2
 #
 #
-#@register_pipeline(to_pipeline_ns("sa3_ds_isoseq_align"),
+#@sa3_register("sa3_ds_isoseq_align"),
 #                   "IsoSeq Pipeline plus GMAP alignment", "0.1.0",
 #                   tags=("isoseq", ),
 #                   task_options=ISOSEQ_TASK_OPTIONS)
@@ -483,7 +525,7 @@ def pb_isoseq_cluster():
 #    ]
 #    return b1 + b2
 
-@register_pipeline(to_pipeline_ns("sa3_ds_subreads_to_fastx"), "SubreadSet to .fastx Conversion", "0.1.0", tags=("convert",))
+@sa3_register("sa3_ds_subreads_to_fastx", "SubreadSet to .fastx Conversion", "0.1.0", tags=(Tags.CONVERTER,))
 def ds_subreads_to_fastx():
     """
     Export SubreadSet to FASTA and FASTQ formats
