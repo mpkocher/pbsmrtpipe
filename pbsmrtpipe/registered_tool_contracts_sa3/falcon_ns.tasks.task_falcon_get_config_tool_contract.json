@@ -78,6 +78,29 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
+                    "default": "IGNORE2",
+                    "description": "Option sge_option_pla description",
+                    "name": "Option sge_option_pla",
+                    "option_id": "falcon_ns.task_options.sge_option_pla",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_pla": {
+                        "default": "IGNORE2",
+                        "description": "Option sge_option_pla description",
+                        "title": "Option sge_option_pla",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_pla"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_pla",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
                     "default": "1",
                     "description": "Option length_cutoff description",
                     "name": "Option length_cutoff",
@@ -165,6 +188,52 @@
                     "falcon_ns.task_options.ovlp_hpcdaligner_option"
                 ],
                 "title": "JSON Schema for falcon_ns.task_options.ovlp_hpcdaligner_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "IGNORE2",
+                    "description": "Option sge_option_cns description",
+                    "name": "Option sge_option_cns",
+                    "option_id": "falcon_ns.task_options.sge_option_cns",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_cns": {
+                        "default": "IGNORE2",
+                        "description": "Option sge_option_cns description",
+                        "title": "Option sge_option_cns",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_cns"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_cns",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "IGNORE2",
+                    "description": "Option sge_option_fc description",
+                    "name": "Option sge_option_fc",
+                    "option_id": "falcon_ns.task_options.sge_option_fc",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_fc": {
+                        "default": "IGNORE2",
+                        "description": "Option sge_option_fc description",
+                        "title": "Option sge_option_fc",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_fc"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_fc",
                 "type": "object"
             },
             {
@@ -326,6 +395,29 @@
                     "falcon_ns.task_options.pa_hpcdaligner_option"
                 ],
                 "title": "JSON Schema for falcon_ns.task_options.pa_hpcdaligner_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "IGNORE2",
+                    "description": "Option sge_option_pda description",
+                    "name": "Option sge_option_pda",
+                    "option_id": "falcon_ns.task_options.sge_option_pda",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.sge_option_pda": {
+                        "default": "IGNORE2",
+                        "description": "Option sge_option_pda description",
+                        "title": "Option sge_option_pda",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.sge_option_pda"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.sge_option_pda",
                 "type": "object"
             }
         ],
