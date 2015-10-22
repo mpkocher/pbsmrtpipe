@@ -316,7 +316,7 @@ def _to_chunked_dataset_files(dataset_type, dataset_path, reference_path,
                               max_total_nchunks, chunk_key, dir_name,
                               base_name, ext):
     dset = dataset_type(dataset_path, strict=True)
-    dset_chunks = dset.split(chunks=max_total_nchunks, ignoreSubDatasets=True)
+    dset_chunks = dset.split(zmws=True, chunks=max_total_nchunks, ignoreSubDatasets=True)
     d = {}
 
     # sanity checking
