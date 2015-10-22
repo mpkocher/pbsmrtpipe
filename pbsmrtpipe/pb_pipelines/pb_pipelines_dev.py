@@ -3,14 +3,14 @@ import logging
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import to_pipeline_ns
 
-from .pb_pipelines_sa3 import Constants
+from .pb_pipelines_sa3 import Constants, Tags
 
 log = logging.getLogger(__name__)
 
 
 def dev_register(relative_id, display_name, tags=(), task_options=None):
     pipeline_id = to_pipeline_ns(relative_id)
-    ptags = list(set(tags + ('dev', )))
+    ptags = list(set(tags + (Tags.DEV, )))
     return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags, task_options=task_options)
 
 
@@ -40,7 +40,7 @@ def f():
     return b
 
 
-@dev_register("dev_01_ds", "Example Dev 01 Subread DataSet pipeline", tags=("report", ))
+@dev_register("dev_01_ds", "Example Dev 01 Subread DataSet pipeline", tags=(Tags.RPT, ))
 def f():
     """Simplest possible pipeline, a single Task"""
     b = [("$entry:eid_subread", "pbsmrtpipe.tasks.dev_subread_report:0")]
@@ -143,7 +143,7 @@ def get_dist_dev_pipeline():
     return bs + b2
 
 
-@dev_register("dev_diagnostic", "Reference Set Report", tags=('reports', "reference" ))
+@dev_register("dev_diagnostic", "Reference Set Report", tags=(Tags.RPT, "reference"))
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 
