@@ -63,7 +63,7 @@
                     "type": "string", 
                     "option_id": "kinetics_tools.task_options.identify", 
                     "name": "Identify basemods", 
-                    "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A, m4C, m5C_TET.  Cannot be used with --control."
+                    "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A and/or m4C."
                 }, 
                 "title": "JSON Schema for kinetics_tools.task_options.identify", 
                 "required": [
@@ -75,7 +75,7 @@
                     "kinetics_tools.task_options.identify": {
                         "default": "", 
                         "type": "string", 
-                        "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A, m4C, m5C_TET.  Cannot be used with --control.", 
+                        "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A and/or m4C.", 
                         "title": "Identify basemods"
                     }
                 }
@@ -86,7 +86,7 @@
                     "type": "boolean", 
                     "option_id": "kinetics_tools.task_options.compute_methyl_fraction", 
                     "name": "Compute methyl fraction", 
-                    "description": "In the --identify mode, add --methylFraction to command line to estimate the methylated fraction, along with 95%% confidence interval bounds."
+                    "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, aling with 95%% confidence interval bounds."
                 }, 
                 "title": "JSON Schema for kinetics_tools.task_options.compute_methyl_fraction", 
                 "required": [
@@ -98,7 +98,7 @@
                     "kinetics_tools.task_options.compute_methyl_fraction": {
                         "default": false, 
                         "type": "boolean", 
-                        "description": "In the --identify mode, add --methylFraction to command line to estimate the methylated fraction, along with 95%% confidence interval bounds.", 
+                        "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, aling with 95%% confidence interval bounds.", 
                         "title": "Compute methyl fraction"
                     }
                 }
