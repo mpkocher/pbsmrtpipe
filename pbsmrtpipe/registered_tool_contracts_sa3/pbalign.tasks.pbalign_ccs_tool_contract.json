@@ -59,11 +59,11 @@
             }, 
             {
                 "pb_option": {
-                    "default": "-useQuality -minMatch 12 -bestn 10 -minPctIdentity 70.0", 
+                    "default": "-useQuality -minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
                     "type": "string", 
                     "option_id": "pbalign.task_options.algorithm_options", 
                     "name": "Algorithm options", 
-                    "description": "List of space-separated arguments passed to BLASR (etc.)"
+                    "description": "List of space-separated arguments passed to BLASR"
                 }, 
                 "title": "JSON Schema for pbalign.task_options.algorithm_options", 
                 "required": [
@@ -73,9 +73,9 @@
                 "type": "object", 
                 "properties": {
                     "pbalign.task_options.algorithm_options": {
-                        "default": "-useQuality -minMatch 12 -bestn 10 -minPctIdentity 70.0", 
+                        "default": "-useQuality -minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
                         "type": "string", 
-                        "description": "List of space-separated arguments passed to BLASR (etc.)", 
+                        "description": "List of space-separated arguments passed to BLASR", 
                         "title": "Algorithm options"
                     }
                 }

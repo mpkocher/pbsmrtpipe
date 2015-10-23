@@ -29,9 +29,9 @@ done
 
 python -m pbreports.report.summarize_coverage.summarize_coverage --emit-tool-contract > $TC_DIR/pbreports.tasks.summarize_coverage_tool_contract.json
 
-pbalign --emit-tool-contract > $TC_DIR/pbalign_tool_contract.json
-python -m pbalign.ccs --emit-tool-contract > $TC_DIR/pbalign_ccs_tool_contract.json
-python -m kineticsTools.ipdSummary --emit-tool-contract > $TC_DIR/kinetics_tools_ipdsummary_tool_contract.json
+pbalign --emit-tool-contract > $TC_DIR/pbalign.tasks.pbalign_tool_contract.json
+python -m pbalign.ccs --emit-tool-contract > $TC_DIR/pbalign.tasks.pbalign_ccs_tool_contract.json
+python -m kineticsTools.ipdSummary --emit-tool-contract > $TC_DIR/kinetics_tools.tasks.ipdsummary_tool_contract.json
 python -m kineticsTools.summarizeModifications --emit-tool-contract > $TC_DIR/kinetics_tools_summarize_modifications_tool_contract.json
 variantCaller --emit-tool-contract > $TC_DIR/genomic_consensus.tasks.variantcaller_tool_contract.json
 summarizeConsensus --emit-tool-contract > $TC_DIR/genomic_consensus.tasks.summarize_consensus_tool_contract.json
