@@ -86,7 +86,7 @@
                     "type": "boolean", 
                     "option_id": "kinetics_tools.task_options.compute_methyl_fraction", 
                     "name": "Compute methyl fraction", 
-                    "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, aling with 95%% confidence interval bounds."
+                    "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, along with 95% confidence interval bounds."
                 }, 
                 "title": "JSON Schema for kinetics_tools.task_options.compute_methyl_fraction", 
                 "required": [
@@ -98,7 +98,7 @@
                     "kinetics_tools.task_options.compute_methyl_fraction": {
                         "default": false, 
                         "type": "boolean", 
-                        "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, aling with 95%% confidence interval bounds.", 
+                        "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, along with 95% confidence interval bounds.", 
                         "title": "Compute methyl fraction"
                     }
                 }
