@@ -63,7 +63,7 @@
                     "type": "boolean", 
                     "option_id": "pbreports.task_options.force_num_regions", 
                     "name": "Force the number of regions", 
-                    "description": "If supplied, then try to use this number (max value = 40000) of regions per reference, otherwise the coverage summary report will optimize the number of regions in the case of many references.  Not compatible with a fixed region size.  (max value = 40000)"
+                    "description": "If supplied, then try to use this number (max value = 40000) of regions per reference, otherwise the coverage summary report will optimize the number of regions in the case of many references.  Not compatible with a fixed region size."
                 }, 
                 "title": "JSON Schema for pbreports.task_options.force_num_regions", 
                 "required": [
@@ -75,7 +75,7 @@
                     "pbreports.task_options.force_num_regions": {
                         "default": false, 
                         "type": "boolean", 
-                        "description": "If supplied, then try to use this number (max value = 40000) of regions per reference, otherwise the coverage summary report will optimize the number of regions in the case of many references.  Not compatible with a fixed region size.  (max value = 40000)", 
+                        "description": "If supplied, then try to use this number (max value = 40000) of regions per reference, otherwise the coverage summary report will optimize the number of regions in the case of many references.  Not compatible with a fixed region size.", 
                         "title": "Force the number of regions"
                     }
                 }
