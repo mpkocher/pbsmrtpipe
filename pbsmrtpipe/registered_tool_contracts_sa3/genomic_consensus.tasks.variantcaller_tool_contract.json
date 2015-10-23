@@ -102,29 +102,6 @@
                         "title": "Diploid mode (experimental)"
                     }
                 }
-            }, 
-            {
-                "pb_option": {
-                    "default": "auto", 
-                    "type": "string", 
-                    "option_id": "genomic_consensus.task_options.parameter_spec", 
-                    "name": "Parameter spec", 
-                    "description": "Parameter spec"
-                }, 
-                "title": "JSON Schema for genomic_consensus.task_options.parameter_spec", 
-                "required": [
-                    "genomic_consensus.task_options.parameter_spec"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "genomic_consensus.task_options.parameter_spec": {
-                        "default": "auto", 
-                        "type": "string", 
-                        "description": "Parameter spec", 
-                        "title": "Parameter spec"
-                    }
-                }
             }
         ], 
         "output_types": [
