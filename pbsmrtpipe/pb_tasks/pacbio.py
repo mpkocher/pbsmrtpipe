@@ -4,12 +4,14 @@ Tool contract wrappers for miscellaneous quick functions.
 """
 
 import functools
+import tempfile
 import logging
 import shutil
 import gzip
 import os
 import sys
 
+from pbcore.io import openDataSet
 from pbcommand.engine import run_cmd
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.models import FileTypes
@@ -35,7 +37,22 @@ def run_bax_to_bam(input_file_name, output_file_name):
     result = run_cmd(" ".join(args),
                      stdout_fh=sys.stdout,
                      stderr_fh=sys.stderr)
-    return result.exit_code
+    if result.exit_code != 0:
+        return result.exit_code
+    tmp = tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name
+    shutil.move(output_file_name, tmp)
+    # FIXME it would be better to leave this to bax2bam
+    with openDataSet(tmp) as ds:
+        if not ds.isIndexed:
+            ds._induceIndices()
+            for er in ds.externalResources:
+                bai_file = rr.resourceId + ".bai"
+                pbi_file = rr.resourceId + ".pbi"
+                assert os.path.exists(bai_file), bai_file
+                assert os.path.exists(pbi_file), pbi_file
+                er.addIndices([bai_file, pbi_file])
+        ds.write(output_file_name, validate=False) # FIXME bad XML!
+    return 0
 
 
 def run_bam_to_fastx(program_name, input_file_name, output_file_name):
