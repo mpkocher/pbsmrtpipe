@@ -166,6 +166,17 @@ Other pipelines related to resequencing, such as the basemods detection
 and motif finding, have nearly identical command-line arguments except for the
 pipeline ID.
 
+For a general overview of the resequencing results, the GFF file written by
+summarizeConsensus is the most useful::
+
+  job_output_2/tasks/genomicconsensus.tasks.summarize_consensus-0/alignment_summary_variants.gff
+
+This contains records for a complete set of sequence regions in the reference
+genome, including coverage statistics and the number of gaps, substitituions,
+insertions or deletions.  For example::
+
+  lambda_NEB3011  .       region  1       50      0.00    +       .       cov=116,190,190;cov2=183.000,14.633;gaps=0,0;cQv=20,20,20;del=0;ins=0;sub=0
+
 
 Site Acceptance Test
 --------------------
@@ -188,7 +199,10 @@ command line arguments shown above)::
   job_output_2/tasks/pbreports.tasks.sat_report-0/report.json
 
 The JSON file will have several statistics, the most important of which are
-coverage and accuracy, both expected to be 1.0.
+coverage and accuracy, both expected to be 1.0.  Also of interest is the
+final GFF file output by ``summarizeConsensus``, as described above; for this
+pipeline the number of gaps, deletions, insertions, or substitutions should
+be zero for all regions of the genome.
 
 
 Quiver (Genomic Consensus)
