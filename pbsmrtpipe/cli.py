@@ -6,6 +6,8 @@ import logging
 import urlparse
 
 from pbcommand.cli import get_default_argparser
+from pbsmrtpipe.tools.diagnostics import (run_diagnostics,
+                                          run_simple_diagnostics)
 
 from pbsmrtpipe.cli_utils import main_runner, args_executer, validate_file
 import pbsmrtpipe
@@ -565,6 +567,42 @@ def _args_run_pipeline_id(args):
                           force_chunk_mode=force_chunk)
 
 
+def _args_run_diagnostics(args):
+    f = run_diagnostics
+    if args.simple:
+        f = run_simple_diagnostics
+
+    precord = IO.parse_pipeline_preset_xml(args.preset_xml)
+    wopts = precord.to_workflow_level_opt()
+
+    if wopts.cluster_manager_path is not None and wopts.distributed_mode is True:
+        output_dir = os.path.abspath(args.output_dir)
+        return f(args.preset_xml, output_dir)
+    else:
+        sys.stderr.write("Cluster mode not enabled. Skipping cluster submission tests\n")
+        return 0
+
+
+
+def _add_required_preset_xml_option(p):
+    p.add_argument('preset_xml', type=validate_file, help="Path to Preset XML file.")
+    return p
+
+
+def _add_simple_mode_option(p):
+    # Run the Full diagnostics suite
+    p.add_argument('--simple', action='store_true', help="Perform full diagnostics tests (e.g., submit test job to cluster).")
+    return p
+
+
+def add_args_run_diagnstic(p):
+    _add_required_preset_xml_option(p)
+    TU.add_debug_option(p)
+    TU.add_output_dir_option(p)
+    _add_simple_mode_option(p)
+    return p
+
+
 def get_parser():
     desc = "Pbsmrtpipe workflow engine"
     p = get_default_argparser(pbsmrtpipe.get_version(), desc)
@@ -605,6 +643,9 @@ def get_parser():
 
     wfo_desc = "Display all workflow level options that can be set in <options /> for preset.xml"
     builder('show-workflow-options', wfo_desc, _add_output_preset_xml_option, _args_run_show_workflow_level_options)
+
+    diag_desc = "Diagnostic tests of preset.xml and cluster configuration"
+    builder('run-diagnostic', diag_desc, add_args_run_diagnstic, _args_run_diagnostics)
 
     return p
 

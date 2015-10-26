@@ -131,7 +131,7 @@ def run_rtc(rtc):
     return run_fasta_filter(rtc.task.input_files[0], rtc.task.output_files[0], min_length)
 
 
-@registry('dev_hello_distributed', '0.1.0', (FileTypes.TXT, FileTypes.TXT), FileTypes.TXT, is_distributed=False, nproc=3)
+@registry('dev_hello_distributed', '0.1.0', (FileTypes.TXT, FileTypes.TXT), FileTypes.TXT, is_distributed=True, nproc=3)
 def run_rtc(rtc):
     with open(rtc.task.output_files[0], 'w') as w:
         for input_file in rtc.task.input_files:
