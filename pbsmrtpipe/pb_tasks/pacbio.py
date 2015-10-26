@@ -44,13 +44,7 @@ def run_bax_to_bam(input_file_name, output_file_name):
     # FIXME it would be better to leave this to bax2bam
     with openDataSet(tmp) as ds:
         if not ds.isIndexed:
-            ds._induceIndices()
-            for er in ds.externalResources:
-                bai_file = er.resourceId + ".bai"
-                pbi_file = er.resourceId + ".pbi"
-                assert os.path.exists(bai_file), bai_file
-                assert os.path.exists(pbi_file), pbi_file
-                er.addIndices([bai_file, pbi_file])
+            ds.induceIndices()
         ds.write(output_file_name, validate=False) # FIXME bad XML!
     return 0
 
