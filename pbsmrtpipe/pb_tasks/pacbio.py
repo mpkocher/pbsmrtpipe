@@ -46,8 +46,8 @@ def run_bax_to_bam(input_file_name, output_file_name):
         if not ds.isIndexed:
             ds._induceIndices()
             for er in ds.externalResources:
-                bai_file = rr.resourceId + ".bai"
-                pbi_file = rr.resourceId + ".pbi"
+                bai_file = er.resourceId + ".bai"
+                pbi_file = er.resourceId + ".pbi"
                 assert os.path.exists(bai_file), bai_file
                 assert os.path.exists(pbi_file), pbi_file
                 er.addIndices([bai_file, pbi_file])
