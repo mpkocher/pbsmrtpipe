@@ -67,7 +67,7 @@ def backticks(cmd, merge_stderr=True):
     else:
         msg = "Return code {r} {e} of cmd {c}".format(r=p.returncode, e=errorMessage, c=cmd)
         log.error(msg)
-        sys.stderr.write(msg)
+        sys.stderr.write(msg + "\n")
 
     return errCode, output, errorMessage, run_time
 

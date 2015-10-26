@@ -470,14 +470,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 else:
                     # Process Non-Successful Task Result
                     B.update_task_state(bg, tnode_, state_)
-                    msg_ = "Task was not successful {r}".format(r=result)
-                    slog.error(msg_)
-                    log.error(msg_ + "\n")
-                    sys.stderr.write(msg_ + "\n")
+                    slog.error(result.error_message)
+                    log.error(result.error_message + "\n")
+                    sys.stderr.write(result.error_message + "\n")
 
-                    stderr_ = os.path.join(task_.output_dir, "stderr")
-
-                    _log_task_failure_and_call_services(stderr_, tid_)
+                    _log_task_failure_and_call_services(result.error_message, tid_)
 
                     # let the remaining running jobs continue
                     w_ = workers.pop(tid_)

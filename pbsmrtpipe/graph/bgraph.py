@@ -28,7 +28,7 @@ from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
 from pbsmrtpipe.models import MetaScatterTask, TaskStates
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.pb_io import strip_entry_prefix, binding_str_to_task_id_and_instance_id
-from pbsmrtpipe.utils import validate_type_or_raise
+from pbsmrtpipe.utils import validate_type_or_raise, nfs_refresh
 from pbsmrtpipe.graph.models import (TaskBindingNode,
                                      ConstantsNodes,
                                      BindingInFileNode,
@@ -778,9 +778,12 @@ def validate_outputs_and_update_task_to_success(g, tnode, run_time, output_files
 
     :type tnode: TaskBindingNode
     """
+    slog.debug("Validating task {t} output files {o}".format(o=output_files, t=tnode.idx))
     for output_file in output_files:
-        # Need to add NFS checks here
-        if not os.path.exists(output_file):
+        nfs_refresh(output_file)
+        if os.path.exists(output_file):
+            log.debug("Successfully validated output of task {t} -> {p}".format(t=tnode.idx, p=output_file))
+        else:
             e_msg = "Task {n} Failed to find required OUTPUT file '{c}'".format(c=output_file, n=tnode)
             raise TaskExecutionError(e_msg)
 
