@@ -21,7 +21,7 @@
                 "title": "<FileType id=PacBio.FileTypes.txt name=file.txt >"
             }
         ], 
-        "is_distributed": false, 
+        "is_distributed": true,
         "name": "Tool dev_hello_distributed", 
         "nproc": 3, 
         "output_types": [
