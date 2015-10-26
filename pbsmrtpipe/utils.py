@@ -56,7 +56,27 @@ def _nfs_exists_check(ff):
     # this is taken from Yuan
     cmd = "ls %s" % ff
     output, errCode, errMsg = backticks(cmd)
+
+    try:
+        os.path.abspath(ff)
+    except:
+        pass
+
     return errCode == 0
+
+
+def nfs_refresh(path, ntimes=3):
+    if os.path.exists(path):
+        return True
+
+    # re-try
+    for i in xrange(ntimes):
+        if _nfs_exists_check(path):
+            return True
+        #
+        time.sleep(1.0)
+    log.warn("NFS refresh failed. unable to resolve {p}".format(p=path))
+    return False
 
 
 def validate_fofn(fofn):

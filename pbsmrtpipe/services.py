@@ -274,17 +274,47 @@ class ServiceAccessLayer(object):
         ds_endpoint = _get_endpoint_or_raise(dataset_type)
         return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/datasets/{t}/{i}".format(t=ds_endpoint, i=int_or_uuid)))
 
+    def _get_datasets_by_type(self, dstype):
+        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/datasets/{i}".format(i=dstype)))
+
     def get_subreadset_by_id(self, int_or_uuid):
         return self.get_dataset_by_id(DataSetMetaTypes.SUBREAD, int_or_uuid)
+
+    def get_subreadsets(self):
+        return self._get_datasets_by_type("subreads")
 
     def get_hdfsubreadset_by_id(self, int_or_uuid):
         return self.get_dataset_by_id(DataSetMetaTypes.HDF_SUBREAD, int_or_uuid)
 
+    def get_hdfsubreadsets(self):
+        return self._get_datasets_by_type("hdfsubreads")
+
     def get_referenceset_by_id(self, int_or_uuid):
         return self.get_dataset_by_id(DataSetMetaTypes.REFERENCE, int_or_uuid)
 
+    def get_referencesets(self):
+        return self._get_datasets_by_type("references")
+
     def get_alignmentset_by_id(self, int_or_uuid):
         return self.get_dataset_by_id(DataSetMetaTypes.ALIGNMENT, int_or_uuid)
+
+    def get_alignmentsets(self):
+        return self._get_datasets_by_type("alignments")
+
+    def import_fasta(self, fasta_path, name, organism, ploidy):
+        """Convert fasta file to a ReferenceSet and Import. Returns a Job """
+        d = dict(path=fasta_path,
+                 name=name,
+                 organism=organism,
+                 ploidy=ploidy)
+
+        return _process_rpost(_null_func)(self._to_url("/secondary-analysis/job-manager/jobs/convert-fasta-reference"), d)
+
+    def run_import_fasta(self, fasta_path, name, organism, ploidy):
+        """Import a Reference into a Block"""""
+        job = self.import_fasta(fasta_path, name, organism, ploidy)
+        job_id = job['id']
+        return _block_for_job_to_complete(self, job_id)
 
     def create_logger_resource(self, idx, name, description):
         _d = dict(id=idx, name=name, description=description)

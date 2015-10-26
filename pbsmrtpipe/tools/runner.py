@@ -11,6 +11,7 @@ import functools
 import platform
 from pbcommand.cli import get_default_argparser
 from pbcommand.models.report import Attribute, Report
+from pbcommand.utils import which
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
@@ -25,7 +26,15 @@ import pbsmrtpipe.tools.utils as U
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
-__version__ = '1.0'
+__version__ = '1.0.1'
+
+
+def _resolve_exe(exe):
+    """
+    Try to resolve the abspath to the exe, default to the exe if not found
+    in path"""
+    x = which(exe)
+    return exe if x is None else os.path.abspath(x)
 
 
 def validate_file_and_load_manifest(path):
@@ -230,7 +239,9 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                 rcode, out, error, run_time = run_command(cmd, stdout_fh, stderr_fh, time_out=None)
 
                 if rcode != 0:
-                    err_msg = "Failed task {i} exit code {r} in {s:.2f} sec".format(i=runnable_task.task.task_id, r=rcode, s=run_time)
+                    err_msg_ = "Failed task {i} exit code {r} in {s:.2f} sec".format(i=runnable_task.task.task_id, r=rcode, s=run_time)
+                    t_error_msg = _extract_last_nlines(task_stderr)
+                    err_msg = "\n".join([err_msg_, t_error_msg])
                     log.error(err_msg)
                     log.error(error)
 
@@ -248,17 +259,18 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
 
             if rcode == 0:
                 # Validate output files of a successful task.
-                for output_file in runnable_task.task.output_files:
+                for ix, output_file in enumerate(runnable_task.task.output_files):
                     if os.path.exists(output_file):
-                        stdout_fh.write("Successfully validated file '{o}'\n".format(o=output_file))
+                        stdout_fh.write("Successfully validated {i} output file '{o}' on {h} \n".format(o=output_file, i=ix, h=host))
                     else:
-                        err_msg = "Unable to find file '{x}'".format(x=output_file)
+                        err_msg = "Unable to find {i} output file '{x}'. Marking task as failed.".format(x=output_file, i=ix)
                         stderr_fh.write(err_msg + "\n")
                         stdout_fh.write(err_msg + "\n")
                         sys.stderr.write(err_msg + "\n")
                         rcode = -1
 
             total_run_time = time.time() - started_at
+            # FIXME. There should be a better way to communicate warnings
             warn_msg = ""
             r = to_task_report(host, runnable_task.task.task_id, total_run_time, rcode, err_msg, warn_msg)
             task_report_path = os.path.join(output_dir, 'task-report.json')
@@ -288,6 +300,22 @@ def to_job_id(base_name, base_id):
 
 def to_random_job_id(base_name):
     return ''.join(['job.', str(random.randint(1000000, 10000000)), base_name])
+
+
+def _extract_last_nlines(path, nlines=25):
+    """Attempt to extract the last nlines from a file
+
+    If the file is not found or there's an error parsing the file,
+    an empty string is returned.
+    """
+    try:
+        n = nlines + 1
+        with open(path, 'r') as f:
+            s = f.readlines()
+            return "\n".join(s[-1: n])
+    except Exception as e:
+        log.warn("Unable to extract stderr from {p}. {e}".format(p=path, e=e))
+        return ""
 
 
 def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mode):
@@ -333,6 +361,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
 
     rcmd_shell = _to_p('run.sh')
 
+    # This needs to be flattened due to the new RTC layer
     # Task Manifest Runner output
     stdout = _to_p('stdout')
     stderr = _to_p('stderr')
@@ -343,15 +372,17 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         f.write("Creating cluster stdout for Job {i} {r}\n".format(i=job_id, r=runnable_task))
 
     debug_str = " --debug "
-    _d = dict(t=task_manifest_path,
+    exe = _resolve_exe("pbtools-runner")
+    _d = dict(x=exe,
+              t=task_manifest_path,
               o=stdout,
               e=stderr,
               d=debug_str,
-              m=mstdout,
-              n=mstderr,
+              m=stdout,
+              n=stderr,
               r=output_dir)
 
-    cmd = "pbtools-runner run {d} --output-dir=\"{r}\" --task-stderr=\"{e}\" --task-stdout=\"{o}\" \"{t}\" > \"{m}\" 2> \"{n}\"".format(**_d)
+    cmd = "{x} run {d} --output-dir=\"{r}\" --task-stderr=\"{e}\" --task-stdout=\"{o}\" \"{t}\" > \"{m}\" 2> \"{n}\"".format(**_d)
 
     with open(rcmd_shell, 'w+') as x:
         x.write(cmd + "\n")
@@ -380,8 +411,10 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         err_msg = ""
         warn_msg = ""
     else:
-        # not sure how to scrape this from the stderr/stdout
-        err_msg = "task {i} failed".format(i=runnable_task.task.task_id)
+        p_err_msg = "task {i} failed (exit-code {x}) after {r:.2f} sec".format(i=runnable_task.task.task_id, r=run_time, x=rcode)
+        raw_stderr = _extract_last_nlines(stderr)
+        cluster_raw_stderr = _extract_last_nlines(cstderr)
+        err_msg = "\n".join([p_err_msg, raw_stderr, cluster_raw_stderr])
         warn_msg = ""
 
     msg_ = "Completed running cluster command in {t:.2f} sec. Exit code {r}".format(r=rcode, t=run_time)
