@@ -226,7 +226,7 @@ def __gather_readset(dataset_type, input_files, output_file, skip_empty=True,
     if consolidate:
         new_resource_file = output_file[:-4] + ".bam"
         tbr.consolidate(new_resource_file, numFiles=consolidate_n_files)
-        tbr._induceIndices()
+        tbr.induceIndices()
     tbr.write(output_file)
     return output_file
 
