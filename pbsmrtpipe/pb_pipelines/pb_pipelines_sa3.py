@@ -52,6 +52,7 @@ class Tags(object):
 
     RESEQ = (MAP, CONSENSUS)
     RESEQ_RPT = (MAP, CONSENSUS, RPT)
+    RESEQ_IRPT = (MAP, CONSENSUS, RPT, INTERNAL)
     RESEQ_MOD_DET = (MAP, CONSENSUS, MOD_DET)
     RESEQ_MOTIF = (MAP, CONSENSUS, MOD_DET, MOTIF)
 
@@ -152,7 +153,7 @@ def sa3_resequencing():
     return _core_gc("pbsmrtpipe.pipelines.sa3_align:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
-@sa3_register("sa3_hdfsubread_to_subread", "Convert Hdf SubreadSet to SubreadSet", "0.1.0", tags=(Tags.CONVERTER, ))
+@sa3_register("sa3_hdfsubread_to_subread", "Convert RS to BAM", "0.1.0", tags=(Tags.CONVERTER, ))
 def hdf_subread_converter():
     """
     Import HdfSubreadSet (bax.h5 basecalling files) to SubreadSet (.bam files)
@@ -162,7 +163,7 @@ def hdf_subread_converter():
     return b2
 
 
-@sa3_register("sa3_ds_align", "SubreadSet Mapping", "0.1.0", tags=(Tags.MAP, ))
+@sa3_register("sa3_ds_align", "SubreadSet Mapping", "0.1.0", tags=(Tags.MAP, Tags.INTERNAL))
 def ds_align():
     """
     Perform Blasr mapping to reference sequence
@@ -184,7 +185,7 @@ def ds_genomic_consenus():
     return _core_gc_plus(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@sa3_register("sa3_ds_resequencing", "SubreadSet Resequencing", "0.1.0",
+@sa3_register("sa3_ds_resequencing", "Resequencing", "0.1.0",
               tags=Tags.RESEQ, task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_resequencing():
     """
@@ -199,7 +200,7 @@ _OPTIONS["pbalign.task_options.consolidate_aligned_bam"] = True
 
 @sa3_register("sa3_ds_resequencing_fat",
               "SubreadSet Resequencing With GC Extras and Reports", "0.1.0",
-              task_options=_OPTIONS, tags=Tags.RESEQ_RPT)
+              task_options=_OPTIONS, tags=Tags.RESEQ_IRPT)
 def ds_fat_resequencing():
     """
     Full Resequencing Pipeline - Blasr mapping and Genomic Consensus, plus
@@ -223,7 +224,7 @@ def _core_mod_detection(alignment_ds, reference_ds):
 
 @sa3_register("ds_modification_detection",
                    'Base Modification Detection', "0.1.0",
-                   tags=("modification-detection", ))
+                   tags=(Tags.MOD_DET, ))
 def rs_modification_detection_1():
     """
     Base Modification Analysis Pipeline - performs resequencing workflow
@@ -300,7 +301,7 @@ SAT_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
 SAT_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "plurality"
 
 
-@sa3_register("sa3_sat", 'Site Acceptance Test', "0.1.0",
+@sa3_register("sa3_sat", 'Site Acceptance Test (SAT)', "0.1.0",
               tags=(Tags.MAP, Tags.CONSENSUS, Tags.RPT, Tags.SAT),
               task_options=SAT_TASK_OPTIONS)
 def rs_site_acceptance_test_1():
@@ -335,7 +336,7 @@ def _core_laa(subread_ds):
     return b3
 
 
-@sa3_register("sa3_ds_laa", "Long Amplicon Analysis (LAA)", "0.1.0", tags=(Tags.LAA, ))
+@sa3_register("sa3_ds_laa", "Long Amplicon Analysis (LAA 2)", "0.1.0", tags=(Tags.LAA, ))
 def ds_laa():
     """
     Basic Long Amplicon Analysis (LAA) pipeline, starting from subreads.
@@ -358,7 +359,7 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5
 
 
-@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS)", "0.1.0", tags=(Tags.CCS, ))
+@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.1.0", tags=(Tags.CCS, ))
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
