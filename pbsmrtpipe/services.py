@@ -202,8 +202,30 @@ def _get_endpoint_or_raise(ds_type):
     raise KeyError("Unsupported datasettype {t}. Supported values {v}".format(t=ds_type, v=DATASET_METATYPES_TO_ENDPOINTS.keys()))
 
 
+def _job_id_or_error(job_or_error, custom_err_msg=None):
+    """
+    Extract job id from job creation service (by type)
+    or Raise exception from an EngineJob response
+
+    :raises: JobExeError
+    """
+    if 'id' in job_or_error:
+        job_id = job_or_error['id']
+        log.info("created job {i}".format(i=job_id))
+        return job_id
+    else:
+        emsg = job_or_error.get('message', "Unknown")
+        if custom_err_msg is not None:
+            emsg += " {f}".format(f=custom_err_msg)
+        raise JobExeError("Failed to create job. {e}. Raw Response {x}".format(e=emsg, x=job_or_error))
+
+
 class ServiceAccessLayer(object):
     """General Access Layer for interfacing with the job types on Secondary SMRT Server"""
+
+    # in sec when blocking to run a job
+    JOB_DEFAULT_TIMEOUT = 60 * 30
+
     def __init__(self, base_url, port, debug=False):
         self.base_url = base_url
         self.port = port
@@ -241,32 +263,34 @@ class ServiceAccessLayer(object):
         return _import_dataset_by_type(dataset_type)(self._to_url("/secondary-analysis/job-manager/jobs/import-dataset"), path)
 
     def run_import_dataset_by_type(self, dataset_type, path_to_xml):
-        job = self._import_dataset(dataset_type, path_to_xml)
-        job_id = job['id']
+        job_or_error = self._import_dataset(dataset_type, path_to_xml)
+        custom_err_msg = "Import {d} {p}".format(p=path_to_xml, d=dataset_type)
+        job_id = _job_id_or_error(job_or_error, custom_err_msg=custom_err_msg)
         return _block_for_job_to_complete(self, job_id)
 
     def _run_import_and_block(self, func, path, time_out=None):
         # func while be self.import_dataset_X
-        job = func(path)
-        job_id = job['id']
+        job_or_error = func(path)
+        custom_err_msg = "Import {p}".format(p=path)
+        job_id = _job_id_or_error(job_or_error, custom_err_msg=custom_err_msg)
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
     def import_dataset_subread(self, path):
         return self._import_dataset(DataSetMetaTypes.SUBREAD, path)
 
-    def run_import_dataset_subread(self, path, time_out=60):
+    def run_import_dataset_subread(self, path, time_out=10):
         return self._run_import_and_block(self.import_dataset_subread, path, time_out=time_out)
 
     def import_dataset_hdfsubread(self, path):
         return self._import_dataset(DataSetMetaTypes.HDF_SUBREAD, path)
 
-    def run_import_dataset_hdfsubread(self, path, time_out=60):
+    def run_import_dataset_hdfsubread(self, path, time_out=10):
         return self._run_import_and_block(self.import_dataset_hdfsubread, path, time_out=time_out)
 
     def import_dataset_reference(self, path):
         return self._import_dataset(DataSetMetaTypes.REFERENCE, path)
 
-    def run_import_dataset_reference(self, path, time_out=60):
+    def run_import_dataset_reference(self, path, time_out=10):
         return self._run_import_and_block(self.import_dataset_reference, path, time_out=time_out)
 
     def get_dataset_by_id(self, dataset_type, int_or_uuid):
@@ -310,11 +334,13 @@ class ServiceAccessLayer(object):
 
         return _process_rpost(_null_func)(self._to_url("/secondary-analysis/job-manager/jobs/convert-fasta-reference"), d)
 
-    def run_import_fasta(self, fasta_path, name, organism, ploidy):
+    def run_import_fasta(self, fasta_path, name, organism, ploidy, time_out=JOB_DEFAULT_TIMEOUT):
         """Import a Reference into a Block"""""
-        job = self.import_fasta(fasta_path, name, organism, ploidy)
-        job_id = job['id']
-        return _block_for_job_to_complete(self, job_id)
+        job_or_error = self.import_fasta(fasta_path, name, organism, ploidy)
+        _d = dict(f=fasta_path, n=name, o=organism, p=ploidy)
+        custom_err_msg = "Fasta-convert path:{f} name:{n} organism:{o} ploidy:{p}".format(**_d)
+        job_id = _job_id_or_error(job_or_error, custom_err_msg=custom_err_msg)
+        return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
     def create_logger_resource(self, idx, name, description):
         _d = dict(id=idx, name=name, description=description)
@@ -326,7 +352,7 @@ class ServiceAccessLayer(object):
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{t}/{i}/log".format(t=job_type_id, i=job_id)), _d)
 
     def get_pipeline_template_by_id(self, pipeline_template_id):
-        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/pipeline-templates/{i}".format(i=pipeline_template_id)))
+        return _process_rget(_null_func)(_to_url(self.uri, "/secondary-analysis/resolved-pipeline-templates/{i}".format(i=pipeline_template_id)))
 
     def create_by_pipeline_template_id(self, name, pipeline_template_id, epoints):
         """Creates and runs a pbsmrtpipe pipeline by pipeline template id"""
@@ -346,17 +372,15 @@ class ServiceAccessLayer(object):
         d = dict(name=name, pipelineId=pipeline_template_id, entryPoints=seps, taskOptions=task_options, workflowOptions=workflow_options)
         return _process_rpost(_null_func)(_to_url(self.uri, "/secondary-analysis/job-manager/jobs/{p}".format(p=JobTypes.PB_PIPE)), d)
 
-    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=6000):
+    def run_by_pipeline_template_id(self, name, pipeline_template_id, epoints, time_out=JOB_DEFAULT_TIMEOUT):
         """Blocks and runs a job with a timeout"""
 
         job_or_error = self.create_by_pipeline_template_id(name, pipeline_template_id, epoints)
-        if 'errorType' in job_or_error:
-            emsg = job_or_error.get('message', "Unknown")
-            _d = dict(name=name, p=pipeline_template_id, eps=epoints)
-            raise JobExeError("Failed ({e}) to create job {n} args: {a}".format(n=name, e=emsg, a=_d))
-        else:
-            job_id = job_or_error['id']
 
+        _d = dict(name=name, p=pipeline_template_id, eps=epoints)
+        custom_err_msg = "Job {n} args: {a}".format(n=name, a=_d)
+
+        job_id = _job_id_or_error(job_or_error, custom_err_msg=custom_err_msg)
         return _block_for_job_to_complete(self, job_id, time_out=time_out)
 
 
