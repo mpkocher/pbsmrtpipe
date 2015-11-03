@@ -32,7 +32,7 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": "\n[General]\nfalcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6\ninput_fofn = nodefault\nlength_cutoff = 1\nlength_cutoff_pr = 1\noverlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4\novlp_DBsplit_option = -x5 -s50 -a\novlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27\novlp_concurrent_jobs = 32\npa_DBsplit_option = -x5 -s50 -a\npa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27\npa_concurrent_jobs = 32\nsge_option_cns=IGNORE2\nsge_option_da=IGNORE1\nsge_option_fc=IGNORE2\nsge_option_la=IGNORE2\nsge_option_pda=IGNORE2\nsge_option_pla=IGNORE2",
+                    "default": "[General]\nfalcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6\nlength_cutoff = 1\nlength_cutoff_pr = 1\noverlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4\novlp_DBsplit_option = -x5 -s50 -a\novlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27\novlp_concurrent_jobs = 32\npa_DBsplit_option = -x5 -s50 -a\npa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27\npa_concurrent_jobs = 32",
                     "description": "Option FalconCfg_str description",
                     "name": "Option FalconCfg_str",
                     "option_id": "falcon_ns.task_options.FalconCfg_str",
@@ -40,7 +40,7 @@
                 },
                 "properties": {
                     "falcon_ns.task_options.FalconCfg_str": {
-                        "default": "\n[General]\nfalcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6\ninput_fofn = nodefault\nlength_cutoff = 1\nlength_cutoff_pr = 1\noverlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4\novlp_DBsplit_option = -x5 -s50 -a\novlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27\novlp_concurrent_jobs = 32\npa_DBsplit_option = -x5 -s50 -a\npa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27\npa_concurrent_jobs = 32\nsge_option_cns=IGNORE2\nsge_option_da=IGNORE1\nsge_option_fc=IGNORE2\nsge_option_la=IGNORE2\nsge_option_pda=IGNORE2\nsge_option_pla=IGNORE2",
+                        "default": "[General]\nfalcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6\nlength_cutoff = 1\nlength_cutoff_pr = 1\noverlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4\novlp_DBsplit_option = -x5 -s50 -a\novlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27\novlp_concurrent_jobs = 32\npa_DBsplit_option = -x5 -s50 -a\npa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27\npa_concurrent_jobs = 32",
                         "description": "Option FalconCfg_str description",
                         "title": "Option FalconCfg_str",
                         "type": "string"
