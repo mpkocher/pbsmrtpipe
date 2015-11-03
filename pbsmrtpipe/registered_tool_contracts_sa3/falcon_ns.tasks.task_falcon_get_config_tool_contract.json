@@ -32,24 +32,47 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": "[General]\nfalcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6\nlength_cutoff = 1\nlength_cutoff_pr = 1\noverlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4\novlp_DBsplit_option = -x5 -s50 -a\novlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27\novlp_concurrent_jobs = 32\npa_DBsplit_option = -x5 -s50 -a\npa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27\npa_concurrent_jobs = 32",
-                    "description": "Option FalconCfg_str description",
-                    "name": "Option FalconCfg_str",
-                    "option_id": "falcon_ns.task_options.FalconCfg_str",
+                    "default": "32",
+                    "description": "Option ovlp_concurrent_jobs description",
+                    "name": "Option ovlp_concurrent_jobs",
+                    "option_id": "falcon_ns.task_options.ovlp_concurrent_jobs",
                     "type": "string"
                 },
                 "properties": {
-                    "falcon_ns.task_options.FalconCfg_str": {
-                        "default": "[General]\nfalcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6\nlength_cutoff = 1\nlength_cutoff_pr = 1\noverlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4\novlp_DBsplit_option = -x5 -s50 -a\novlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27\novlp_concurrent_jobs = 32\npa_DBsplit_option = -x5 -s50 -a\npa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27\npa_concurrent_jobs = 32",
-                        "description": "Option FalconCfg_str description",
-                        "title": "Option FalconCfg_str",
+                    "falcon_ns.task_options.ovlp_concurrent_jobs": {
+                        "default": "32",
+                        "description": "Option ovlp_concurrent_jobs description",
+                        "title": "Option ovlp_concurrent_jobs",
                         "type": "string"
                     }
                 },
                 "required": [
-                    "falcon_ns.task_options.FalconCfg_str"
+                    "falcon_ns.task_options.ovlp_concurrent_jobs"
                 ],
-                "title": "JSON Schema for falcon_ns.task_options.FalconCfg_str",
+                "title": "JSON Schema for falcon_ns.task_options.ovlp_concurrent_jobs",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "32",
+                    "description": "Option pa_concurrent_jobs description",
+                    "name": "Option pa_concurrent_jobs",
+                    "option_id": "falcon_ns.task_options.pa_concurrent_jobs",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.pa_concurrent_jobs": {
+                        "default": "32",
+                        "description": "Option pa_concurrent_jobs description",
+                        "title": "Option pa_concurrent_jobs",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.pa_concurrent_jobs"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.pa_concurrent_jobs",
                 "type": "object"
             },
             {
@@ -96,6 +119,213 @@
                     "falcon_ns.task_options.ParallelTasksMax_int"
                 ],
                 "title": "JSON Schema for falcon_ns.task_options.ParallelTasksMax_int",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "1",
+                    "description": "Option length_cutoff description",
+                    "name": "Option length_cutoff",
+                    "option_id": "falcon_ns.task_options.length_cutoff",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.length_cutoff": {
+                        "default": "1",
+                        "description": "Option length_cutoff description",
+                        "title": "Option length_cutoff",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.length_cutoff"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.length_cutoff",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-x5 -s50 -a",
+                    "description": "Option pa_dbsplit_option description",
+                    "name": "Option pa_dbsplit_option",
+                    "option_id": "falcon_ns.task_options.pa_dbsplit_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.pa_dbsplit_option": {
+                        "default": "-x5 -s50 -a",
+                        "description": "Option pa_dbsplit_option description",
+                        "title": "Option pa_dbsplit_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.pa_dbsplit_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.pa_dbsplit_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27",
+                    "description": "Option ovlp_hpcdaligner_option description",
+                    "name": "Option ovlp_hpcdaligner_option",
+                    "option_id": "falcon_ns.task_options.ovlp_hpcdaligner_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.ovlp_hpcdaligner_option": {
+                        "default": "-v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27",
+                        "description": "Option ovlp_hpcdaligner_option description",
+                        "title": "Option ovlp_hpcdaligner_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.ovlp_hpcdaligner_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.ovlp_hpcdaligner_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "--output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6",
+                    "description": "Option falcon_sense_option description",
+                    "name": "Option falcon_sense_option",
+                    "option_id": "falcon_ns.task_options.falcon_sense_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.falcon_sense_option": {
+                        "default": "--output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6",
+                        "description": "Option falcon_sense_option description",
+                        "title": "Option falcon_sense_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.falcon_sense_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.falcon_sense_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "--max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4",
+                    "description": "Option overlap_filtering_setting description",
+                    "name": "Option overlap_filtering_setting",
+                    "option_id": "falcon_ns.task_options.overlap_filtering_setting",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.overlap_filtering_setting": {
+                        "default": "--max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4",
+                        "description": "Option overlap_filtering_setting description",
+                        "title": "Option overlap_filtering_setting",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.overlap_filtering_setting"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.overlap_filtering_setting",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "1",
+                    "description": "Option length_cutoff_pr description",
+                    "name": "Option length_cutoff_pr",
+                    "option_id": "falcon_ns.task_options.length_cutoff_pr",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.length_cutoff_pr": {
+                        "default": "1",
+                        "description": "Option length_cutoff_pr description",
+                        "title": "Option length_cutoff_pr",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.length_cutoff_pr"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.length_cutoff_pr",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "falcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6;length_cutoff = 1;length_cutoff_pr = 1;overlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4;ovlp_DBsplit_option = -x5 -s50 -a;ovlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27;ovlp_concurrent_jobs = 32;pa_DBsplit_option = -x5 -s50 -a;pa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27;pa_concurrent_jobs = 32",
+                    "description": "Option FalconCfg_str description",
+                    "name": "Option FalconCfg_str",
+                    "option_id": "falcon_ns.task_options.FalconCfg_str",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.FalconCfg_str": {
+                        "default": "falcon_sense_option = --output_multi --min_idt 0.70 --min_cov 1 --local_match_count_threshold 100 --max_n_read 20000 --n_core 6;length_cutoff = 1;length_cutoff_pr = 1;overlap_filtering_setting = --max_diff 10000 --max_cov 100000 --min_cov 0 --bestn 1000 --n_core 4;ovlp_DBsplit_option = -x5 -s50 -a;ovlp_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.99 -l40 -s1000 -t27;ovlp_concurrent_jobs = 32;pa_DBsplit_option = -x5 -s50 -a;pa_HPCdaligner_option =  -v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27;pa_concurrent_jobs = 32",
+                        "description": "Option FalconCfg_str description",
+                        "title": "Option FalconCfg_str",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.FalconCfg_str"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.FalconCfg_str",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-x5 -s50 -a",
+                    "description": "Option ovlp_dbsplit_option description",
+                    "name": "Option ovlp_dbsplit_option",
+                    "option_id": "falcon_ns.task_options.ovlp_dbsplit_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.ovlp_dbsplit_option": {
+                        "default": "-x5 -s50 -a",
+                        "description": "Option ovlp_dbsplit_option description",
+                        "title": "Option ovlp_dbsplit_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.ovlp_dbsplit_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.ovlp_dbsplit_option",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "-v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27",
+                    "description": "Option pa_hpcdaligner_option description",
+                    "name": "Option pa_hpcdaligner_option",
+                    "option_id": "falcon_ns.task_options.pa_hpcdaligner_option",
+                    "type": "string"
+                },
+                "properties": {
+                    "falcon_ns.task_options.pa_hpcdaligner_option": {
+                        "default": "-v -k25 -h35 -w5 -H1000 -e.95 -l40 -s1000 -t27",
+                        "description": "Option pa_hpcdaligner_option description",
+                        "title": "Option pa_hpcdaligner_option",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "falcon_ns.task_options.pa_hpcdaligner_option"
+                ],
+                "title": "JSON Schema for falcon_ns.task_options.pa_hpcdaligner_option",
                 "type": "object"
             }
         ],
