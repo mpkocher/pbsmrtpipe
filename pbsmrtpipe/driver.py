@@ -1,6 +1,7 @@
 from collections import deque
 import logging
 import os
+import socket
 import time
 import sys
 import random
@@ -12,6 +13,7 @@ import traceback
 import types
 import functools
 import uuid
+import platform
 
 from pbcommand.pb_io import write_resolved_tool_contract, write_tool_contract
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
@@ -39,7 +41,8 @@ from pbsmrtpipe import opts_graph as GX
 from pbsmrtpipe.graph.models import (TaskStates,
                                      TaskBindingNode,
                                      TaskChunkedBindingNode,
-                                     EntryOutBindingFileNode)
+                                     EntryOutBindingFileNode,
+                                     TaskScatterBindingNode)
 
 
 from pbsmrtpipe.models import (Pipeline, ToolContractMetaTask, MetaTask,
@@ -181,6 +184,11 @@ def _are_workers_alive(workers):
     return all(w.is_alive() for w in workers.values())
 
 
+def _is_chunked_task_node_type(tnode):
+    # Keep Gather Tasks as non-Chunked.
+    return isinstance(tnode, (TaskChunkedBindingNode, TaskScatterBindingNode))
+
+
 def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_dir,
                    workers, shutdown_event, service_uri_or_none):
     """
@@ -201,17 +209,19 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     m_ = "Distributed" if workflow_opts.distributed_mode is not None else "Local"
 
-    slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
-    log.info("exe'ing workflow Cluster renderer {c}".format(c=global_registry.cluster_renderer))
-    slog.info("Service URI: {i} {t}".format(i=service_uri_or_none, t=type(service_uri_or_none)))
-    slog.info("Max number of Chunks  {n} ".format(n=workflow_opts.max_nchunks))
-    slog.info("Max number of nproc   {n}".format(n=workflow_opts.max_nproc))
-    slog.info("Max number of workers {n}".format(n=workflow_opts.max_nworkers))
-
     # Setup logger, job directory and initialize DS
     slog.info("creating job resources in {o}".format(o=output_dir))
     job_resources, ds = DU.job_resource_create_and_setup_logs(output_dir, bg, task_opts, workflow_opts, ep_d)
     slog.info("successfully created job resources.")
+
+    slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
+    slog.info("system {m} {x} nproc:{n}".format(m=platform.system(), n=multiprocessing.cpu_count(), x=platform.node()))
+    slog.info("exe'ing workflow Cluster renderer {c}".format(c=global_registry.cluster_renderer))
+    slog.info("Service URI: {i} {t} (fqdn = {h})".format(i=service_uri_or_none, t=type(service_uri_or_none), h=socket.getfqdn()))
+    slog.info("Max number of Chunks  {n} ".format(n=workflow_opts.max_nchunks))
+    slog.info("Max number of nproc   {n}".format(n=workflow_opts.max_nproc))
+    slog.info("Max number of workers {n}".format(n=workflow_opts.max_nworkers))
+    slog.info("tmp dir               {n}".format(n=workflow_opts.tmp_dir))
 
     # Some Pre-flight checks
     # Help initialize graph/epoints
@@ -321,7 +331,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         for file_type_, path_ in zip(tnode_.meta_task.output_types, task_.output_files):
             source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
             ds_uuid = _get_dataset_uuid_or_create_uuid(path_)
-            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_)
+            is_chunked_ = _is_chunked_task_node_type(tnode_)
+            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_, is_chunked=is_chunked_)
             ds.add(ds_file_)
             ds.write_update_json(job_resources.datastore_json)
 
@@ -631,7 +642,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         was_successful = False
 
     except Exception as e:
-        slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=e.message))
+        slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=str(e)))
         # update workflow reports to failed
         write_report_(bg, TaskStates.FAILED, False)
         write_task_summary_report(bg)
