@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.generic_fofn"
             }
         ],
-        "_comment": "Created by v0.2.16",
+        "_comment": "Created by v0.2.17",
         "name": "Gather Daligner",
         "input_types": [
             {
