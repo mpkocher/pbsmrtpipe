@@ -171,7 +171,9 @@ def ds_align():
     return _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
 
 RESEQUENCING_TASK_OPTIONS = {
-    "genomic_consensus.task_options.diploid": False
+    "genomic_consensus.task_options.diploid": False,
+    "pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctIdentity 70.0",
+    "pbalign.task_options.concordant": True,
 }
 
 
@@ -222,9 +224,12 @@ def _core_mod_detection(alignment_ds, reference_ds):
     return bs
 
 
+BASEMODS_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+BASEMODS_TASK_OPTIONS["kinetics_tools.task_options.pvalue"] = 0.001
+
 @sa3_register("ds_modification_detection",
                    'Base Modification Detection', "0.1.0",
-                   tags=(Tags.MOD_DET, ))
+                   tags=(Tags.MOD_DET, ), task_options=BASEMODS_TASK_OPTIONS)
 def rs_modification_detection_1():
     """
     Base Modification Analysis Pipeline - performs resequencing workflow
@@ -260,9 +265,6 @@ def _core_motif_analysis(ipd_gff, reference_ds):
 
     return bs
 
-BASEMODS_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
-BASEMODS_TASK_OPTIONS["kinetics_tools.task_options.pvalue"] = 0.001
-
 
 @sa3_register("ds_modification_motif_analysis", 'Base Modification and Motif Analysis', "0.1.0",
               tags=(Tags.MOTIF, ), task_options=BASEMODS_TASK_OPTIONS)
@@ -297,9 +299,8 @@ def pb_modification_and_motif_analysis_1():
     return _core_motif_analysis('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:0',
                                 Constants.ENTRY_DS_REF)
 
-SAT_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+SAT_TASK_OPTIONS = RESEQUENCING_TASK_OPTIONS.copy()
 SAT_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "plurality"
-
 
 @sa3_register("sa3_sat", 'Site Acceptance Test (SAT)', "0.1.0",
               tags=(Tags.MAP, Tags.CONSENSUS, Tags.RPT, Tags.SAT),

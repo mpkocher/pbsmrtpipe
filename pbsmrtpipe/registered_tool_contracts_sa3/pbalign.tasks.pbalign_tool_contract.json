@@ -13,29 +13,6 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": "", 
-                    "type": "string", 
-                    "option_id": "pbalign.task_options.useccs", 
-                    "name": "Use CCS", 
-                    "description": "Map the ccsSequence to the genome first, then align\nsubreads to the interval that the CCS reads mapped to.\n  useccs: only maps subreads that span the length of\n          the template.\n  useccsall: maps all subreads.\n  useccsdenovo: maps ccs only."
-                }, 
-                "title": "JSON Schema for pbalign.task_options.useccs", 
-                "required": [
-                    "pbalign.task_options.useccs"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "pbalign.task_options.useccs": {
-                        "default": "", 
-                        "type": "string", 
-                        "description": "Map the ccsSequence to the genome first, then align\nsubreads to the interval that the CCS reads mapped to.\n  useccs: only maps subreads that span the length of\n          the template.\n  useccsall: maps all subreads.\n  useccsdenovo: maps ccs only.", 
-                        "title": "Use CCS"
-                    }
-                }
-            }, 
-            {
-                "pb_option": {
                     "default": false, 
                     "type": "boolean", 
                     "option_id": "pbalign.task_options.concordant", 
@@ -159,7 +136,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.2.16", 
         "name": "pbalign.tasks.pbalign", 
         "input_types": [
             {
