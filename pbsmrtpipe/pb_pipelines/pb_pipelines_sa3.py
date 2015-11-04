@@ -299,6 +299,7 @@ def pb_modification_and_motif_analysis_1():
 
 SAT_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
 SAT_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "plurality"
+SAT_TASK_OPTIONS["pbalign.task_options.algorithm_options"] = "-minMatch 12 -bestn 10 -minPctIdentity 70.0"
 
 
 @sa3_register("sa3_sat", 'Site Acceptance Test (SAT)', "0.1.0",
