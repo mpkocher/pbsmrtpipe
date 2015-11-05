@@ -144,6 +144,7 @@ def _get_last_lines_of_stderr(n, stderr_path):
     """
     lines = []
     try:
+        os.listdir(os.path.dirname(os.path.realpath(stderr_path))) # to force nfs sync
         with open(stderr_path, 'r') as f:
             lines = deque(f, n)
             lines = [l.rstrip() for l in lines]

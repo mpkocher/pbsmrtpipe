@@ -310,6 +310,7 @@ def _extract_last_nlines(path, nlines=25):
     """
     try:
         n = nlines + 1
+        os.listdir(os.path.dirname(os.path.realpath(path))) # to force nfs sync
         with open(path, 'r') as f:
             s = f.readlines()
             return "\n".join(s[-1: n])
