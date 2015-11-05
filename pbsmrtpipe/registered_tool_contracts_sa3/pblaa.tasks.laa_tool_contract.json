@@ -15,18 +15,18 @@
                 "pb_option": {
                     "default": 42, 
                     "type": "integer", 
-                    "option_id": "pblaa.task_options.rgn_seed", 
+                    "option_id": "pblaa.task_options.rng_seed", 
                     "name": "RNG seed", 
                     "description": "Modulates reservoir filtering of reads"
                 }, 
-                "title": "JSON Schema for pblaa.task_options.rgn_seed", 
+                "title": "JSON Schema for pblaa.task_options.rng_seed", 
                 "required": [
-                    "pblaa.task_options.rgn_seed"
+                    "pblaa.task_options.rng_seed"
                 ], 
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "type": "object", 
                 "properties": {
-                    "pblaa.task_options.rgn_seed": {
+                    "pblaa.task_options.rng_seed": {
                         "default": 42, 
                         "type": "integer", 
                         "description": "Modulates reservoir filtering of reads", 
@@ -77,6 +77,29 @@
                         "type": "integer", 
                         "description": "Minimum total barcode score to require of subreads.", 
                         "title": "Min total barcode score"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
+                    "default": false, 
+                    "type": "boolean", 
+                    "option_id": "pblaa.task_options.full_length", 
+                    "name": "Full Length Subreads", 
+                    "description": "Require subreads to have both flanking barcodes"
+                }, 
+                "title": "JSON Schema for pblaa.task_options.full_length", 
+                "required": [
+                    "pblaa.task_options.full_length"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pblaa.task_options.full_length": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Require subreads to have both flanking barcodes", 
+                        "title": "Full Length Subreads"
                     }
                 }
             }, 
@@ -238,29 +261,6 @@
                         "type": "number", 
                         "description": "Markov Clustering loop weight parameter", 
                         "title": "Cluster Loop Weight"
-                    }
-                }
-            }, 
-            {
-                "pb_option": {
-                    "default": 4, 
-                    "type": "integer", 
-                    "option_id": "pblaa.task_options.cluster_min_size", 
-                    "name": "Cluster Min Size", 
-                    "description": "Minimum number of members required to report cluster"
-                }, 
-                "title": "JSON Schema for pblaa.task_options.cluster_min_size", 
-                "required": [
-                    "pblaa.task_options.cluster_min_size"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "pblaa.task_options.cluster_min_size": {
-                        "default": 4, 
-                        "type": "integer", 
-                        "description": "Minimum number of members required to report cluster", 
-                        "title": "Cluster Min Size"
                     }
                 }
             }, 
@@ -534,7 +534,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.2.17", 
         "name": "laa", 
         "input_types": [
             {
