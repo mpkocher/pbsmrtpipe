@@ -36,7 +36,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": "-useQuality -minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
+                    "default": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
                     "type": "string", 
                     "option_id": "pbalign.task_options.algorithm_options", 
                     "name": "Algorithm options", 
@@ -50,7 +50,7 @@
                 "type": "object", 
                 "properties": {
                     "pbalign.task_options.algorithm_options": {
-                        "default": "-useQuality -minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
+                        "default": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
                         "type": "string", 
                         "description": "List of space-separated arguments passed to BLASR", 
                         "title": "Algorithm options"
@@ -136,7 +136,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.2.16", 
+        "_comment": "Created by v0.2.17", 
         "name": "pbalign.tasks.pbalign", 
         "input_types": [
             {
