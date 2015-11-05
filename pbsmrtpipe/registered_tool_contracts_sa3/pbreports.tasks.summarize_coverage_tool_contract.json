@@ -16,8 +16,8 @@
                     "default": 1000, 
                     "type": "integer", 
                     "option_id": "pbreports.task_options.num_regions", 
-                    "name": "Num Regions", 
-                    "description": "Desired number of regions in the summary statistics (used for guidance, not strict). Defaults to 1000"
+                    "name": "Number of regions", 
+                    "description": "Desired number of genome regions in the summary statistics (used for guidance, not strict). Defaults to 1000"
                 }, 
                 "title": "JSON Schema for pbreports.task_options.num_regions", 
                 "required": [
@@ -29,8 +29,8 @@
                     "pbreports.task_options.num_regions": {
                         "default": 1000, 
                         "type": "integer", 
-                        "description": "Desired number of regions in the summary statistics (used for guidance, not strict). Defaults to 1000", 
-                        "title": "Num Regions"
+                        "description": "Desired number of genome regions in the summary statistics (used for guidance, not strict). Defaults to 1000", 
+                        "title": "Number of regions"
                     }
                 }
             }, 
@@ -39,8 +39,8 @@
                     "default": 0, 
                     "type": "integer", 
                     "option_id": "pbreports.task_options.region_size", 
-                    "name": "Region Size", 
-                    "description": "If supplied, used a fixed region size"
+                    "name": "Region size", 
+                    "description": "If supplied, used a fixed genomic region size"
                 }, 
                 "title": "JSON Schema for pbreports.task_options.region_size", 
                 "required": [
@@ -52,8 +52,8 @@
                     "pbreports.task_options.region_size": {
                         "default": 0, 
                         "type": "integer", 
-                        "description": "If supplied, used a fixed region size", 
-                        "title": "Region Size"
+                        "description": "If supplied, used a fixed genomic region size", 
+                        "title": "Region size"
                     }
                 }
             }, 
@@ -90,7 +90,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.2.17", 
         "name": "Summarize Coverage", 
         "input_types": [
             {
