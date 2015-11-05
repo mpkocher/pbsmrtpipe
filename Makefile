@@ -50,7 +50,7 @@ test-contracts:
 test-chunk-operators:
 	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
 
-test-sanity: test-contracts test-pipelines test-chunk-operators test-loader
+test-sanity: test-contracts test-pipelines test-chunk-operators test-loader write-pipeline-templates
 
 test-suite: test-sanity test-unit test-dev
 
@@ -64,9 +64,11 @@ build-java-classes:
 	avro-tools compile schema pbsmrtpipe/schemas java-classes/
 
 write-pipeline-templates-avro:
+	mkdir -p extras/pipeline-templates-avro
 	pbsmrtpipe show-templates --output-templates-avro extras/pipeline-templates-avro
 
 write-pipeline-templates-json:
+	mkdir -p extras/pipeline-templates-json
 	pbsmrtpipe show-templates --output-templates-json extras/pipeline-templates-json
 
 write-pipeline-templates: write-pipeline-templates-avro write-pipeline-templates-json
