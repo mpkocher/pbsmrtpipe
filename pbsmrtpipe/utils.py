@@ -49,31 +49,64 @@ validate_dir = functools.partial(_validate_resource, os.path.isdir)
 validate_output_dir = functools.partial(_validate_resource, os.path.isdir)
 
 
-def _nfs_exists_check(ff):
-    """Return whether a file or a dir ff exists or not.
-    Call ls instead of python os.path.exists to eliminate NFS errors.
+def nfs_exists_check(ff):
     """
-    # this is taken from Yuan
-    cmd = "ls %s" % ff
-    output, errCode, errMsg = backticks(cmd)
+    Central place for all NFS hackery
 
+    Return whether a file or a dir ff exists or not.
+    Call listdir() instead of os.path.exists() to eliminate NFS errors.
+
+    Added try/catch black hole exception cases to help trigger an NFS refresh
+
+    :rtype bool:
+    """
     try:
-        os.path.abspath(ff)
-    except:
+        # All we really need is opendir(), but listdir() is usually fast.
+        os.listdir(os.path.dirname(os.path.realpath(ff)))
+        # But is it a file or a directory? We do not know until it actually exists.
+        if os.path.exists(ff):
+            return True
+        # Might be a directory, so refresh itself too.
+        # Not sure this is necessary, since we already ran this on parent,
+        # but it cannot hurt.
+        os.listdir(os.path.realpath(ff))
+        if os.path.exists(ff):
+            return True
+    except OSError:
         pass
 
-    return errCode == 0
+    # The rest is probably unnecessary, but it cannot hurt.
+
+    # try to trigger refresh for File case
+    try:
+        f = open(ff, 'r')
+        f.close()
+    except Exception:
+        pass
+
+    # try to trigger refresh for Directory case
+    try:
+        _ = os.stat(ff)
+        _ = os.listdir(ff)
+    except Exception:
+        pass
+
+    # Call externally
+    # this is taken from Yuan
+    cmd = "ls %s" % ff
+    _, rcode, _ = backticks(cmd)
+
+    return rcode == 0
 
 
 def nfs_refresh(path, ntimes=3):
-    if os.path.exists(path):
-        return True
-
     # re-try
-    for i in xrange(ntimes):
-        if _nfs_exists_check(path):
+    while True:
+        if nfs_exists_check(path):
             return True
-        #
+        ntimes -= 1
+        if ntimes <= 0:
+            break
         time.sleep(1.0)
     log.warn("NFS refresh failed. unable to resolve {p}".format(p=path))
     return False
@@ -104,7 +137,7 @@ def fofn_to_files(fofn):
             if not os.path.isfile(bas_file):
                 # try one more time to find the file by
                 # performing an NFS refresh
-                found = _nfs_exists_check(bas_file)
+                found = nfs_exists_check(bas_file)
                 if not found:
                     raise IOError("Unable to find Fofn file '{f}'".format(f=bas_file))
 
