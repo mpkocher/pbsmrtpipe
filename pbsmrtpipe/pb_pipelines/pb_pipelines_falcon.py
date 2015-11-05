@@ -116,9 +116,9 @@ def get_task_falcon_local_pipeline():
 
     i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
 
-    gen_cfg = [(i_fasta_fofn, 'falcon_ns.tasks.task_falcon_get_config:0')]
+    gen_cfg = [(i_fasta_fofn, 'falcon_ns.tasks.task_falcon_gen_config:0')]
 
-    i_cfg = 'falcon_ns.tasks.task_falcon_get_config:0'
+    i_cfg = 'falcon_ns.tasks.task_falcon_gen_config:0'
 
     falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
 

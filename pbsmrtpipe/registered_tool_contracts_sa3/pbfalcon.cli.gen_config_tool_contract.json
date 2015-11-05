@@ -1,0 +1,107 @@
+{
+    "version": "1.0.0",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbfalcon.cli.gen_config --resolved-tool-contract ",
+        "env": {}
+    },
+    "tool_contract_id": "falcon_ns.tasks.task_falcon_gen_config",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [],
+        "description": "Generate FALCON cfg from pbcommand options.",
+        "schema_options": [
+            {
+                "pb_option": {
+                    "default": "5000000",
+                    "type": "string",
+                    "option_id": "falcon_ns.task_options.HGAP_GenomeLength_str",
+                    "name": "Genome length (base pairs)",
+                    "description": "Approx. number of base pairs expected in the genome."
+                },
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_GenomeLength_str",
+                "required": [
+                    "falcon_ns.task_options.HGAP_GenomeLength_str"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "falcon_ns.task_options.HGAP_GenomeLength_str": {
+                        "default": "5000000",
+                        "type": "string",
+                        "description": "Approx. number of base pairs expected in the genome.",
+                        "title": "Genome length (base pairs)"
+                    }
+                }
+            },
+            {
+                "pb_option": {
+                    "default": "40",
+                    "type": "string",
+                    "option_id": "falcon_ns.task_options.HGAP_CoresMax_str",
+                    "name": "Cores Max.",
+                    "description": "Maximum number of cores to use simultaneously across the network. For any given Task, this setting might further reduce the number of 'chunks', beneather the global maximum. Note that a Task can use multiple cores in 2 ways: processes and threads. You can assume that our Tasks honestly report what they expect to consume."
+                },
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_CoresMax_str",
+                "required": [
+                    "falcon_ns.task_options.HGAP_CoresMax_str"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "falcon_ns.task_options.HGAP_CoresMax_str": {
+                        "default": "40",
+                        "type": "string",
+                        "description": "Maximum number of cores to use simultaneously across the network. For any given Task, this setting might further reduce the number of 'chunks', beneather the global maximum. Note that a Task can use multiple cores in 2 ways: processes and threads. You can assume that our Tasks honestly report what they expect to consume.",
+                        "title": "Cores Max."
+                    }
+                }
+            },
+            {
+                "pb_option": {
+                    "default": "",
+                    "type": "string",
+                    "option_id": "falcon_ns.task_options.HGAP_FalconAdvanced_str",
+                    "name": "FALCON cfg overrides",
+                    "description": "This is intended to allow support engineers to overrides the config which we will generate from other options. It is a semicolon-separated list of key=val pairs. Newlines are allowed by ignored. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual"
+                },
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_FalconAdvanced_str",
+                "required": [
+                    "falcon_ns.task_options.HGAP_FalconAdvanced_str"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "falcon_ns.task_options.HGAP_FalconAdvanced_str": {
+                        "default": "",
+                        "type": "string",
+                        "description": "This is intended to allow support engineers to overrides the config which we will generate from other options. It is a semicolon-separated list of key=val pairs. Newlines are allowed by ignored. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual",
+                        "title": "FALCON cfg overrides"
+                    }
+                }
+            }
+        ],
+        "output_types": [
+            {
+                "title": "INI File",
+                "description": "FALCON cfg (aka 'ini')",
+                "default_name": "fc_run.cfg",
+                "id": "cfg_out",
+                "file_type_id": "PacBio.FileTypes.txt"
+            }
+        ],
+        "_comment": "Created by v0.2.17",
+        "name": "Tool FalconConfigGenerator",
+        "input_types": [
+            {
+                "description": "FOFN for fasta files",
+                "title": "FileOfFileNames",
+                "id": "fofn_in",
+                "file_type_id": "PacBio.FileTypes.generic_fofn"
+            }
+        ],
+        "nproc": 1,
+        "is_distributed": false,
+        "tool_contract_id": "falcon_ns.tasks.task_falcon_gen_config"
+    }
+}
