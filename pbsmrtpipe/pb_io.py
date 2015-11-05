@@ -1,3 +1,4 @@
+import copy
 import os
 import sys
 import functools
@@ -720,7 +721,7 @@ def _pipeline_to_task_options(rtasks, p):
         if task.option_schemas:
             for k, v in task.option_schemas.iteritems():
                 if k not in options:
-                    options[k] = dict(v)
+                    options[k] = copy.deepcopy(v)
                     option_id = options[k]["required"][0]
                     if option_id in p.task_options:
                         default = p.task_options[option_id]
