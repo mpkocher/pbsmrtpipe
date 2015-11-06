@@ -312,7 +312,7 @@ def _extract_last_nlines(path, nlines=25):
         nfs_exists_check(path)
         with open(path, 'r') as f:
             s = f.readlines()
-            return "".join(s[-n: -1])
+            return "".join(s[-n:])
     except Exception as e:
         log.warn("Unable to extract stderr from {p}. {e}".format(p=path, e=e))
         return ""
