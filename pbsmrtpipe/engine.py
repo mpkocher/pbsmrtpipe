@@ -338,6 +338,8 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
     log.info("returncode is {r} in {s:.2f} sec.".format(r=process.returncode,
                                                         s=run_time))
 
+    # FIXME. There's friction with the FH model and not breaking the API
+    # In principle, the stdout can be large, hence using FH
     stdout, stderr = "", ""
     return returncode, stdout, stderr, run_time
 

@@ -651,7 +651,7 @@ def get_next_runnable_task(g):
                 # log.debug("Skipping chunkable tasks {n}".format(n=tnode))
                 pass
 
-    log.debug("Unable to find runnable task")
+    # log.debug("Unable to find runnable task")
     return None
 
 

@@ -178,6 +178,9 @@ def run_rtc(rtc):
           options=dict(dev_fasta_min_length=50))
 def run_rtc(rtc):
     min_seq_length = rtc.task.options[_to_opt_id("dev_fasta_min_length")]
+    # this is for testing failures
+    if min_seq_length < 0:
+        raise ValueError("Invalid min seq length {m}".format(m=min_seq_length))
     return run_fasta_filter(rtc.task.input_files[0], rtc.task.output_files[0], min_seq_length)
 
 if __name__ == '__main__':

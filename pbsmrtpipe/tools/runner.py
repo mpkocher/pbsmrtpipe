@@ -237,20 +237,18 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
             for i, cmd in enumerate(runnable_task.task.cmds):
                 log.debug("Running command \n" + cmd)
 
-                rcode, out, error, run_time = run_command(cmd, stdout_fh, stderr_fh, time_out=None)
+                # see run_command API for future fixes
+                rcode, _, _, run_time = run_command(cmd, stdout_fh, stderr_fh, time_out=None)
 
                 if rcode != 0:
                     err_msg_ = "Failed task {i} exit code {r} in {s:.2f} sec (See file '{f}'.)".format(i=runnable_task.task.task_id, r=rcode, s=run_time, f=task_stderr)
+                    stderr_fh.write(err_msg + "\n")
+                    stderr_fh.flush()
+
                     t_error_msg = _extract_last_nlines(task_stderr)
                     err_msg = "\n".join([err_msg_, t_error_msg])
+
                     log.error(err_msg)
-                    log.error(error)
-
-                    stderr_fh.write(str(error) + "\n")
-                    sys.stderr.write(str(error) + "\n")
-
-                    stderr_fh.write(err_msg + "\n")
-                    sys.stderr.write(err_msg + "\n")
                     break
                 else:
                     stdout_fh.write("completed running cmd {i} of {n}. exit code {x} in {s:.2f} sec on host {h}\n".format(x=rcode, s=run_time, h=host, i=i + 1, n=ncmds))
@@ -314,9 +312,9 @@ def _extract_last_nlines(path, nlines=25):
         nfs_exists_check(path)
         with open(path, 'r') as f:
             s = f.readlines()
-            return "\n".join(s[-1: n])
+            return "".join(s[-n: -1])
     except Exception as e:
-        log.exception("Unable to extract stderr from {p}. {e}".format(p=path, e=e))
+        log.warn("Unable to extract stderr from {p}. {e}".format(p=path, e=e))
         return ""
 
 
@@ -456,9 +454,13 @@ def run_task_manifest(path):
     rcode, run_time = run_task(rt, output_dir, stdout, stderr, True)
 
     state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
-    msg = "" if rcode == 0 else "Failed with exit code {r}".format(r=rcode)
+    emsg = ""
+    if rcode != 0:
+        # try to provide a hint of the exception from the stderr
+        detail_msg = _extract_last_nlines(stderr)
+        emsg = "{i} Failed with exit code {r} {x}".format(r=rcode, i=rt.task.task_id, x=detail_msg)
 
-    return state, msg, run_time
+    return state, emsg, run_time
 
 
 def run_task_manifest_on_cluster(path):
@@ -472,12 +474,21 @@ def run_task_manifest_on_cluster(path):
     os.chdir(output_dir)
     rt = RunnableTask.from_manifest_json(path)
 
+    # this needs to be updated to have explicit paths to stderr, stdout
     rcode, run_time = run_task_on_cluster(rt, path, output_dir, True)
+    cstderr = os.path.join(output_dir, "cluster.stderr")
+    stderr = os.path.join(output_dir, "stderr")
 
     state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
-    msg = "{r} failed".format(r=rt) if rcode != 0 else ""
+    # Need to update the run_task_on_cluster
+    emsg = ""
+    if rcode != 0:
+        # try to provide a hint of the exception from the stderr
+        detail_msg = _extract_last_nlines(stderr)
+        cdetails_msg = _extract_last_nlines(cstderr)
+        emsg = "{i} Failed with exit code {r} {c}\n{x}".format(r=rcode, i=rt.task.task_id, x=detail_msg, c=cdetails_msg)
 
-    return state, msg, run_time
+    return state, emsg, run_time
 
 
 def _args_run_task_manifest(args):

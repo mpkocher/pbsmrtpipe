@@ -347,15 +347,16 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 T.write_task_report(job_resources, task_.task_id, path_, DU._get_images_in_dir(task_.output_dir))
                 update_analysis_file_links(tnode_.idx, path_)
 
-    def _log_task_failure_and_call_services(path_to_stderr, task_id_):
-        """log the error messages extracted from stderr"""
-        lines = _get_last_lines_of_stderr(20, path_to_stderr)
-        for line_ in lines:
-            log.error(line_.strip())
-            # these already have newlines
-            sys.stderr.write(line_)
-            sys.stderr.write("\n")
-        services_log_update_progress("pbsmrtpipe::{i}".format(i=task_id_), WS.LogLevels.ERROR, "\n".join(lines))
+    def _log_task_failure_and_call_services(task_result, task_id_):
+        """
+        log the error messages extracted from TaskResult
+        :type task_result: TaskResult
+        """
+        mx = "Task {i} {m}".format(i=task_id_, m=task_result.error_message)
+        slog.error(mx)
+        log.error(mx)
+        sys.stderr.write(mx + "\n")
+        services_log_update_progress("pbsmrtpipe::{i}".format(i=task_id_), WS.LogLevels.ERROR, mx)
 
     def has_available_slots(n):
         if max_total_nproc is None:
@@ -483,11 +484,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 else:
                     # Process Non-Successful Task Result
                     B.update_task_state(bg, tnode_, state_)
-                    slog.error(result.error_message)
-                    log.error(result.error_message + "\n")
-                    sys.stderr.write(result.error_message + "\n")
-
-                    _log_task_failure_and_call_services(result.error_message, tid_)
+                    _log_task_failure_and_call_services(result, tid_)
 
                     # let the remaining running jobs continue
                     w_ = workers.pop(tid_)
