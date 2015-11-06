@@ -34,6 +34,10 @@
         <option id="pbsmrtpipe.task_options.dev_message">
             <value>My Custom Preset Message from preset.xml</value>
         </option>
+	<!-- This is specifically for testing failures, set to < 0 to raise ValueError -->
+        <option id="pbsmrtpipe.task_options.dev_fasta_min_length">
+            <value>25</value>
+        </option>
     </task-options>
 
 </pipeline-template-preset>

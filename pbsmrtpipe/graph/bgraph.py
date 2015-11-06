@@ -651,7 +651,7 @@ def get_next_runnable_task(g):
                 # log.debug("Skipping chunkable tasks {n}".format(n=tnode))
                 pass
 
-    log.debug("Unable to find runnable task")
+    # log.debug("Unable to find runnable task")
     return None
 
 
@@ -1449,9 +1449,9 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
                     slog.info("complete chunking task {n} chunk-group {g}".format(n=node, g=chunk_group_id))
                 else:
-                    log.warn("Chunked tasks for {n} group: {g}".format(n=node, g=chunk_group_id))
+                    log.debug("Chunked tasks not completed, or resolved for {n} group: {g}".format(n=node, g=chunk_group_id))
             else:
-                log.warn("Chunked tasks for {n} group: {g}".format(n=node, g=chunk_group_id))
+                log.debug("Chunked tasks for are not completed, or successful {n} group: {g}".format(n=node, g=chunk_group_id))
 
     resolve_successor_binding_file_path(bg)
     validate_binding_graph_integrity(bg)
