@@ -19,6 +19,7 @@ from pbcommand.pb_io import write_resolved_tool_contract, write_tool_contract
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
 from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
+from pbsmrtpipe.utils import nfs_exists_check
 
 from pbcore.io import openDataSet
 
@@ -144,11 +145,12 @@ def _get_last_lines_of_stderr(n, stderr_path):
     """
     lines = []
     try:
+        nfs_exists_check(stderr_path)
         with open(stderr_path, 'r') as f:
             lines = deque(f, n)
             lines = [l.rstrip() for l in lines]
     except Exception as e:
-        log.warn("Unable to extract stderr from {p} Error {e}".format(p=stderr_path, e=e.message))
+        log.exception("Unable to extract stderr from {p} Error {e}".format(p=stderr_path, e=e.message))
 
     return lines
 

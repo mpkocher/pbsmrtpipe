@@ -7,42 +7,13 @@ import traceback
 
 
 from pbcore.util.Process import backticks
-from pbsmrtpipe.utils import setup_log
+from pbsmrtpipe.utils import setup_log, nfs_exists_check
 
 log = logging.getLogger(__name__)
 
 
 def trigger_nfs_refresh(ff):
-    """
-    Central place for all NFS hackery
-
-    Return whether a file or a dir ff exists or not.
-    Call ls instead of python os.path.exists to eliminate NFS errors.
-
-    Added try/catch black hole exception cases to help trigger an NFS refresh
-
-    :rtype bool:
-    """
-    # try to trigger refresh for File case
-    try:
-        f = open(ff, 'r')
-        f.close()
-    except Exception:
-        pass
-
-    # try to trigger refresh for Directory case
-    try:
-        _ = os.stat(ff)
-        _ = os.listdir(ff)
-    except Exception:
-        pass
-
-    # Call externally
-    # this is taken from Yuan
-    cmd = "ls %s" % ff
-    _, rcode, _ = backticks(cmd)
-
-    return rcode == 0
+    return nfs_exists_check(ff)
 
 
 def _trigger_nfs_refresh_and_ignore(ff):

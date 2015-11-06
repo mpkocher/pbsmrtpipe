@@ -19,6 +19,7 @@ from pbsmrtpipe.cluster import Constants as ClusterConstants
 from pbsmrtpipe.engine import run_command, backticks
 from pbsmrtpipe.models import RunnableTask, TaskStates
 from pbcommand.models import ResourceTypes, TaskTypes
+from pbsmrtpipe.utils import nfs_exists_check
 import pbsmrtpipe.pb_io as IO
 
 import pbsmrtpipe.tools.utils as U
@@ -239,7 +240,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                 rcode, out, error, run_time = run_command(cmd, stdout_fh, stderr_fh, time_out=None)
 
                 if rcode != 0:
-                    err_msg_ = "Failed task {i} exit code {r} in {s:.2f} sec".format(i=runnable_task.task.task_id, r=rcode, s=run_time)
+                    err_msg_ = "Failed task {i} exit code {r} in {s:.2f} sec (See file '{f}'.)".format(i=runnable_task.task.task_id, r=rcode, s=run_time, f=task_stderr)
                     t_error_msg = _extract_last_nlines(task_stderr)
                     err_msg = "\n".join([err_msg_, t_error_msg])
                     log.error(err_msg)
@@ -310,11 +311,12 @@ def _extract_last_nlines(path, nlines=25):
     """
     try:
         n = nlines + 1
+        nfs_exists_check(path)
         with open(path, 'r') as f:
             s = f.readlines()
             return "\n".join(s[-1: n])
     except Exception as e:
-        log.warn("Unable to extract stderr from {p}. {e}".format(p=path, e=e))
+        log.exception("Unable to extract stderr from {p}. {e}".format(p=path, e=e))
         return ""
 
 
