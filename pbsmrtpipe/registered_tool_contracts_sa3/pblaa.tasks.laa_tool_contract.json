@@ -335,8 +335,8 @@
             }, 
             {
                 "pb_option": {
-                    "default": 20.0, 
-                    "type": "number", 
+                    "default": 20, 
+                    "type": "integer", 
                     "option_id": "pblaa.task_options.min_split_reads", 
                     "name": "Min Split Reads", 
                     "description": "Minimum number of reads supporting a minor phase required for split"
@@ -349,8 +349,8 @@
                 "type": "object", 
                 "properties": {
                     "pblaa.task_options.min_split_reads": {
-                        "default": 20.0, 
-                        "type": "number", 
+                        "default": 20, 
+                        "type": "integer", 
                         "description": "Minimum number of reads supporting a minor phase required for split", 
                         "title": "Min Split Reads"
                     }
