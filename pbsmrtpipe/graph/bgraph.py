@@ -1274,7 +1274,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
         # skip if not already gathered
         _was_gathered = bg.node[node][ConstantsNodes.TASK_ATTR_WAS_GATHERED]
         if _was_gathered:
-            log.info("Skipping {n} was-gathered? {g}".format(n=node, g=_was_gathered))
+            log.debug("Skipping {n} was-gathered? {g}".format(n=node, g=_was_gathered))
             continue
 
         # The Task was already scattered and Chunk.json file is being

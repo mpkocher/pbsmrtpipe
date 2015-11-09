@@ -233,9 +233,12 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
             #if runnable_task.task.resources:
             #    create_tmp_resources_ignore_error(runnable_task.task.resources)
 
-            # Run commands
+            stdout_fh.write("Starting to run {n} cmds.".format(n=len(runnable_task.task.cmds)))
+            stdout_fh.flush()
+            stderr_fh.flush()
+
             for i, cmd in enumerate(runnable_task.task.cmds):
-                log.debug("Running command \n" + cmd)
+                log.info("Running command \n" + cmd)
 
                 # see run_command API for future fixes
                 rcode, _, _, run_time = run_command(cmd, stdout_fh, stderr_fh, time_out=None)
@@ -249,6 +252,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                     err_msg = "\n".join([err_msg_, t_error_msg])
 
                     log.error(err_msg)
+                    stdout_fh.write("breaking out. Unable to run remaining commands.")
                     break
                 else:
                     stdout_fh.write("completed running cmd {i} of {n}. exit code {x} in {s:.2f} sec on host {h}\n".format(x=rcode, s=run_time, h=host, i=i + 1, n=ncmds))
@@ -257,6 +261,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
             log.debug(smsg_)
 
             if rcode == 0:
+                log.info("Core RTC runner was successful. Validating output files.")
                 # Validate output files of a successful task.
                 for ix, output_file in enumerate(runnable_task.task.output_files):
                     if os.path.exists(output_file):
