@@ -796,6 +796,10 @@ def pipeline_template_to_dict(pipeline, rtasks):
     tags = list(set(pipeline.tags))
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
     comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
+
+    # Sort the Task Options by id to group by namespace and have slightly
+    # better diffs on the json files
+    sorted_task_options_d = sorted([x.to_dict() for x in task_pboptions], key=lambda x: x['id'])
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
                 _comment=comment,
@@ -804,7 +808,7 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 bindings=[b.to_dict() for b in bindings],
                 tags=tags,
                 options=options,
-                taskOptions=[x.to_dict() for x in task_pboptions],
+                taskOptions=sorted_task_options_d,
                 description=desc)
 
 
