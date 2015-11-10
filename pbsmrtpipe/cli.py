@@ -494,7 +494,7 @@ def resolve_dist_chunk_overrides(args):
     force_chunk = None
     if args.force_chunk_mode is True:
         force_chunk = True
-    if args.disable_chunk_mode is False:
+    if args.disable_chunk_mode is True:
         force_chunk = False
 
     return force_distribute, force_chunk
