@@ -693,6 +693,17 @@ def pipeline_to_xml(p):
             _d = {"out": bout, "in": bin_}
             getattr(root, Constants.BINDING)(**_d)
 
+    # Engine level Options
+    # for completeness write this element
+    getattr(root, "options")
+
+    # Task Options
+    with getattr(root, "task-options"):
+        for key, value in p.task_options.iteritems():
+            _d = {"id": key}
+            with getattr(root, 'option')(**_d):
+                root.value(str(value))
+
     return root
 
 
