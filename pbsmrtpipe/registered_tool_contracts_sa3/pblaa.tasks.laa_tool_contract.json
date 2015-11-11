@@ -544,7 +544,7 @@
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ], 
-        "nproc": "$max_nproc", 
+        "nproc": 2, 
         "is_distributed": true, 
         "tool_contract_id": "pblaa.tasks.laa"
     }
