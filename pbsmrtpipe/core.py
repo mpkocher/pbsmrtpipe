@@ -239,9 +239,10 @@ class PipelineRegistry(object):
         """Register a pipeline by relative id"""
         def _w(func):
             desc = func.__doc__
+            t_options = {} if task_options is None else copy.deepcopy(task_options)
             bs = func()
             pipeline_id = ".".join([self.namespace, 'pipelines', relative_pipeline_id])
-            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags, task_options=task_options)
+            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags, task_options=t_options)
             return bs
 
         return _w

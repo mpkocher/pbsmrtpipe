@@ -9,7 +9,7 @@ from pbcommand.cli import get_default_argparser, pacbio_args_runner
 from pbcommand.utils import setup_log
 
 from pbsmrtpipe.core import PipelineRegistry
-from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro
+from pbsmrtpipe.pb_io import write_pipeline_templates_to_avro, pipeline_to_xml
 
 from .pb_pipelines_sa3 import Tags
 
@@ -24,7 +24,8 @@ registry = PipelineRegistry(Constants.PT_NAMESPACE)
 
 
 def _example_topts():
-    return {"pbsmrtpipe.task_options.dev_message": "Preset Custom Dev Message from register pipeline"}
+    return {"pbsmrtpipe.task_options.dev_message": "Preset Custom Dev Message from register pipeline",
+            "pbsmrtpipe.task_options.custom_alpha": 12345}
 
 
 @registry("dev_a", "Example 01", "0.1.0", tags=(Tags.DEV, "hello-world"), task_options=_example_topts())
@@ -40,7 +41,7 @@ def to_bs():
     return b1 + b2 + b3
 
 
-@registry("dev_b", "Example 02", "0.1.0", tags=(Tags.RPT, Tags.DEV))
+@registry("dev_b", "Example 02", "0.1.0", tags=(Tags.RPT, Tags.DEV), task_options=_example_topts())
 def to_bs():
     b3 = [("pbsmrtpipe.pipelines.dev_a:pbsmrtpipe.tasks.dev_txt_to_fasta:0", 'pbsmrtpipe.tasks.dev_filter_fasta:0')]
     return b3
@@ -50,10 +51,21 @@ def registry_runner(registry_, rtasks, output_dir):
     # this will emit the PTs to an output dir
     d = os.path.abspath(os.path.expanduser(output_dir))
     r = registry_
-    log.info("Writing Pipeline Templates to ")
+
+    log.info("Writing Pipeline Templates to {o}".format(o=output_dir))
     print "Emitting pipelines to output dir {d}".format(d=d)
+
     write_pipeline_templates_to_avro(r.pipelines.values(), rtasks, d)
-    log.info("Successful wrote {n} pipelines to {d}".format(n=len(r.pipelines), d=d))
+
+    for p in r.pipelines.values():
+        file_name = p.idx + "_pipeline.xml"
+        path = os.path.join(output_dir, file_name)
+        xml = pipeline_to_xml(p)
+        with open(path, 'w') as f:
+            f.write(str(xml))
+        log.info("writing pipeline {x}".format(x=path))
+
+    log.info("Successfully wrote {n} pipelines to {d}".format(n=len(r.pipelines), d=d))
     return 0
 
 
