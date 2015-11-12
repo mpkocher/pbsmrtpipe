@@ -299,6 +299,18 @@ def pb_modification_and_motif_analysis_1():
     return _core_motif_analysis('pbsmrtpipe.pipelines.pb_modification_detection:kinetics_tools.tasks.ipd_summary:0',
                                 Constants.ENTRY_DS_REF)
 
+
+def _core_sat(reseq_pipeline):
+    # AlignmentSet, GFF, mapping Report
+    x = [("{p}:pbalign.tasks.pbalign:0".format(p=reseq_pipeline),
+          "pbreports.tasks.sat_report:0"),
+         ("{p}:pbreports.tasks.variants_report:0".format(p=reseq_pipeline),
+          "pbreports.tasks.sat_report:1"),
+         ("{p}:pbreports.tasks.mapping_stats:0".format(p=reseq_pipeline),
+          "pbreports.tasks.sat_report:2")]
+    return x
+
+
 SAT_TASK_OPTIONS = RESEQUENCING_TASK_OPTIONS.copy()
 SAT_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "plurality"
 
@@ -310,13 +322,7 @@ def rs_site_acceptance_test_1():
     Site Acceptance Test - lambda genome resequencing used to validate new
     PacBio installations
     """
-
-    # AlignmentSet, GFF, mapping Report
-    x = [("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", "pbreports.tasks.sat_report:0"),
-         ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.variants_report:0", "pbreports.tasks.sat_report:1"),
-         ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbreports.tasks.mapping_stats:0", "pbreports.tasks.sat_report:2")]
-
-    return x
+    return _core_sat("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat")
 
 
 def _core_export_fastx(subread_ds):
