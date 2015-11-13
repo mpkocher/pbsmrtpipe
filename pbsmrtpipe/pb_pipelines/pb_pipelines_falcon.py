@@ -104,7 +104,7 @@ def get_task_falcon_local_pipeline():
 
 
 @dev_register("polished_falcon_lean", "Assembly (HGAP 4)")
-def get_task_falcon_local_pipeline():
+def get_falcon_pipeline():
     """Simple lean polished falcon local pipeline.
     FASTA input comes from the SubreadSet.
     Cfg input is built from preset.xml
@@ -132,3 +132,24 @@ def get_task_falcon_local_pipeline():
                                                      ref)
 
     return btf + ftfofn + gen_cfg + falcon + faidx + polish
+
+@dev_register("polished_falcon_fat", "Assembly (HGAP 4) with reports")
+def get_falcon_pipeline_fat():
+    falcon = get_falcon_pipeline()
+
+    # id's of results from falcon:
+    aln = 'pbalign.tasks.pbalign:0'
+    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+
+    # summarize the coverage:
+    sum_cov = [(aln, "pbreports.tasks.summarize_coverage:0"),
+               (ref, "pbreports.tasks.summarize_coverage:1")]
+
+    # gen polished_assembly report:
+    # takes alignment summary GFF, polished assembly fastQ
+    polished_report = [('pbreports.tasks.summarize_coverage:0', 'pbreports.tasks.polished_assembly:0'),
+                       ('genomic_consensus.tasks.variantcaller:2', 'pbreports.tasks.polished_assembly:1')]
+
+    return falcon + sum_cov + polished_report
+
+
