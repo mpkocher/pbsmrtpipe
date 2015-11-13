@@ -264,6 +264,7 @@ def validate_or_modify_workflow_level_options(wopts):
     :return:
     """
     # Check if tmp dir
+
     if not os.path.isdir(wopts.tmp_dir):
         raise IOError("Unable to find tmp dir '{t}'".format(t=wopts.tmp_dir))
 

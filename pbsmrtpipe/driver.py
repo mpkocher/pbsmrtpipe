@@ -206,6 +206,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     The function is doing way too much. This is really terrible.
     """
+    # this used for the cluster submission.
     job_id = random.randint(100000, 999999)
     started_at = time.time()
 
@@ -248,7 +249,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # This will add new nodes to the graph if necessary
     B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks, workflow_opts.max_nchunks)
 
-    # log.info(BU.to_binding_graph_summary(bg))
+    log.debug(BU.to_binding_graph_summary(bg))
 
     # "global" file type id counter {str: int} that will be
     # used to generate ids
@@ -311,8 +312,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
     def write_report_(bg_, current_state_, was_successful_):
-        return DU.write_main_workflow_report(job_id, job_resources, workflow_opts,
-                                             task_opts, bg_, current_state_, was_successful_, _to_run_time())
+        return DU.write_update_main_workflow_report(job_id, job_resources, bg_, current_state_, was_successful_, _to_run_time())
 
     def write_task_summary_report(bg_):
         task_summary_report = DU.to_task_summary_report(bg_)
@@ -369,6 +369,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     write_analysis_report(analysis_file_links)
 
     BU.write_binding_graph_images(bg, job_resources.workflow)
+
+    # write initial report.
+    DU.write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg, TaskStates.RUNNING, False, 0.0)
 
     # For book-keeping
     # task id -> tnode
@@ -480,7 +483,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     # Update Analysis Reports and Register output files to Datastore
                     _update_analysis_reports_and_datastore(tnode_, task_)
 
-                    BU.write_binding_graph_images(bg, job_resources.workflow)
+                    # BU.write_binding_graph_images(bg, job_resources.workflow)
                 else:
                     # Process Non-Successful Task Result
                     B.update_task_state(bg, tnode_, state_)
@@ -493,7 +496,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     total_nproc -= task_.nproc
                     has_failed = True
 
-                    BU.write_binding_graph_images(bg, job_resources.workflow)
+                    # BU.write_binding_graph_images(bg, job_resources.workflow)
 
                 _update_msg = _status(bg)
                 log.info(_update_msg)
@@ -603,7 +606,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 log.debug(msg_)
                 tid_to_tnode[tid] = tnode
                 services_log_update_progress("pbsmrtpipe::{i}".format(i=tnode.idx), WS.LogLevels.INFO, msg_)
-                BU.write_binding_graph_images(bg, job_resources.workflow)
+                # BU.write_binding_graph_images(bg, job_resources.workflow)
 
             elif isinstance(tnode, EntryOutBindingFileNode):
                 # Handle EntryPoint types. This is not a particularly elegant design :(

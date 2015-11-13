@@ -258,6 +258,20 @@ def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, 
     R.write_report_to_html(setting_report, os.path.join(job_resources.html, 'workflow.html'))
 
 
+def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_successful_, run_time_sec):
+    """
+    This will only update the index.html with the current state of each task
+    """
+
+    report_path = os.path.join(job_resources.workflow, 'report-tasks.json')
+    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
+    report_.write_json(report_path)
+
+    R.write_report_to_html(report_, os.path.join(job_resources.root, 'index.html'))
+
+    return True
+
+
 def write_task_manifest(manifest_path, tid, task, resource_types, task_version, python_mode_str, cluster_renderer):
     """
 
