@@ -18,6 +18,8 @@ filter_stats_xml
 isoseq_classify
 isoseq_cluster
 ccs
+preassembly
+polished_assembly
 amplicon_analysis_consensus"
 
 for REPORT in $REPORTS ; do
