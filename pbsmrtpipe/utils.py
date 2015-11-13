@@ -14,9 +14,10 @@ import functools
 from jinja2 import Environment, PackageLoader
 
 from pbcore.util.Process import backticks
-# for backward compatibility
 
-from pbcommand.utils import setup_log, compose
+# for backward compatibility
+from pbcommand.utils import setup_log, compose, nfs_exists_check, nfs_refresh
+from pbcommand.validators import (validate_file, validate_dir, validate_fofn, validate_output_dir, fofn_to_files)
 
 from pbsmrtpipe.decos import ignored
 from pbsmrtpipe.constants import SLOG_PREFIX
@@ -35,118 +36,6 @@ def validate_type_or_raise(obj, klasses, msg=None):
             emsg = " ".join([emsg, msg])
         raise TypeError(emsg)
     return obj
-
-
-def _validate_resource(func, resource):
-    """Validate the existence of a file/dir"""
-    if func(resource):
-        return os.path.abspath(resource)
-    else:
-        raise IOError("Unable to find {f}".format(f=resource))
-
-validate_file = functools.partial(_validate_resource, os.path.isfile)
-validate_dir = functools.partial(_validate_resource, os.path.isdir)
-validate_output_dir = functools.partial(_validate_resource, os.path.isdir)
-
-
-def nfs_exists_check(ff):
-    """
-    Central place for all NFS hackery
-
-    Return whether a file or a dir ff exists or not.
-    Call listdir() instead of os.path.exists() to eliminate NFS errors.
-
-    Added try/catch black hole exception cases to help trigger an NFS refresh
-
-    :rtype bool:
-    """
-    try:
-        # All we really need is opendir(), but listdir() is usually fast.
-        os.listdir(os.path.dirname(os.path.realpath(ff)))
-        # But is it a file or a directory? We do not know until it actually exists.
-        if os.path.exists(ff):
-            return True
-        # Might be a directory, so refresh itself too.
-        # Not sure this is necessary, since we already ran this on parent,
-        # but it cannot hurt.
-        os.listdir(os.path.realpath(ff))
-        if os.path.exists(ff):
-            return True
-    except OSError:
-        pass
-
-    # The rest is probably unnecessary, but it cannot hurt.
-
-    # try to trigger refresh for File case
-    try:
-        f = open(ff, 'r')
-        f.close()
-    except Exception:
-        pass
-
-    # try to trigger refresh for Directory case
-    try:
-        _ = os.stat(ff)
-        _ = os.listdir(ff)
-    except Exception:
-        pass
-
-    # Call externally
-    # this is taken from Yuan
-    cmd = "ls %s" % ff
-    _, rcode, _ = backticks(cmd)
-
-    return rcode == 0
-
-
-def nfs_refresh(path, ntimes=3):
-    # re-try
-    while True:
-        if nfs_exists_check(path):
-            return True
-        ntimes -= 1
-        if ntimes <= 0:
-            break
-        time.sleep(1.0)
-    log.warn("NFS refresh failed. unable to resolve {p}".format(p=path))
-    return False
-
-
-def validate_fofn(fofn):
-    """Validate existence of FOFN and files within the FOFN.
-
-    :param fofn: (str) Path to File of file names.
-    :raises: IOError if any file is not found.
-    :return: (str) abspath of the input fofn
-    """
-    if os.path.isfile(fofn):
-        file_names = fofn_to_files(os.path.abspath(fofn))
-        log.debug("Found {n} files in FOFN {f}.".format(n=len(file_names), f=fofn))
-        return os.path.abspath(fofn)
-    else:
-        raise IOError("Unable to find {f}".format(f=fofn))
-
-
-def fofn_to_files(fofn):
-    """Util func to convert a bas/bax fofn file to a list of bas/bax files."""
-    if os.path.exists(fofn):
-        with open(fofn, 'r') as f:
-            bas_files = [line.strip() for line in f.readlines()]
-
-        for bas_file in bas_files:
-            if not os.path.isfile(bas_file):
-                # try one more time to find the file by
-                # performing an NFS refresh
-                found = nfs_exists_check(bas_file)
-                if not found:
-                    raise IOError("Unable to find Fofn file '{f}'".format(f=bas_file))
-
-        if len(set(bas_files)) != len(bas_files):
-            raise IOError("Detected duplicate files in fofn. {n} unique, {m} total files in {f}".format(f=fofn, m=len(bas_files), n=len(set(bas_files))))
-
-        return bas_files
-    else:
-        raise IOError("Unable to find FOFN {f}".format(f=fofn))
 
 
 def log_timing(func):

@@ -1,6 +1,6 @@
 jinja2
 networkx
-pbcommand <= 0.2.14
+pbcommand <= 0.2.18
 pyparsing==1.5.7
 pydot
 jsonschema
