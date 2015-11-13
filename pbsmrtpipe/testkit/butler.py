@@ -32,6 +32,7 @@ class Constants(object):
     CFG_PREFIX_XML = 'preset_xml'
     CFG_WORKFLOW_XML = 'pipeline_xml'
     CFG_TASK_ID = 'task_id'
+    CFG_BASE_EXE = 'base_exe'
 
     CFG_OUTPUT_DIR = 'output_dir'
 
@@ -43,7 +44,7 @@ class Butler(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, job_id, output_dir, entry_points, preset_xml, debug,
-                 force_distribute=None, force_chunk=None):
+                 force_distribute=None, force_chunk=None, base_exe=EXE):
         self.output_dir = output_dir
         self.entry_points = entry_points
         self.preset_xml = preset_xml
@@ -55,6 +56,8 @@ class Butler(object):
 
         # this needs to be set in the Butler.cfg file.
         self.job_id = job_id
+
+        self.base_exe = base_exe
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, p=self.prefix)
@@ -69,13 +72,13 @@ class Butler(object):
         return _to_pbsmrtpipe_cmd(self.prefix, self.output_dir,
                                   self.entry_points, self.preset_xml,
                                   self.debug_mode, self.force_distribute,
-                                  self.force_chunk)
+                                  self.force_chunk, self.base_exe)
 
 
 class ButlerWorkflow(Butler):
 
-    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=None, force_chunk=None):
-        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk)
+    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE):
+        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe)
         self.workflow_xml = workflow_xml
 
     @property
@@ -94,7 +97,7 @@ class ButlerTask(Butler):
         return "task {i}".format(i=self.task_id)
 
 
-def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, force_distribute, force_chunk):
+def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, force_distribute, force_chunk, base_exe=EXE):
     ep_str = " ".join([' -e ' + ":".join([k, v]) for k, v in entry_points_d.iteritems()])
     d_str = '--debug' if debug else " "
     p_str = " " if preset_xml is None else "--preset-xml={p}".format(p=preset_xml)
@@ -110,7 +113,7 @@ def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debu
         m = {True: '--force-chunk-mode', False: '--disable-chunk-mode'}
         force_chunk_str = m[force_chunk]
 
-    _d = dict(x=EXE, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str,
+    _d = dict(x=base_exe, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str,
               f=force_distribute_str, c=force_chunk_str)
     cmd = "{x} {m} {c} {d} {e} {p} {k} {f} --output-dir={o}"
     return cmd.format(**_d)
@@ -188,8 +191,9 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         # FIXME. This should be defined in cfg file.
         default_job_id = os.path.basename(base_dir)
         job_id = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_JOB_ID, p, default_job_id)
+        base_exe = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_BASE_EXE, p, EXE)
 
-        return ButlerWorkflow(job_id, job_output_dir, workflow_xml, ep_d, preset_xml, d)
+        return ButlerWorkflow(job_id, job_output_dir, workflow_xml, ep_d, preset_xml, d, base_exe=base_exe)
 
     return _parse_workflow_config
 
