@@ -11,7 +11,7 @@ import gzip
 import os
 import sys
 
-from pbcore.io import openDataSet
+from pbcore.io import SubreadSet
 from pbcommand.engine import run_cmd
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.models import FileTypes
@@ -42,10 +42,10 @@ def run_bax_to_bam(input_file_name, output_file_name):
     tmp = tempfile.NamedTemporaryFile(suffix=".subreadset.xml").name
     shutil.move(output_file_name, tmp)
     # FIXME it would be better to leave this to bax2bam
-    with openDataSet(tmp) as ds:
+    with SubreadSet(tmp) as ds:
         if not ds.isIndexed:
             ds.induceIndices()
-        ds.write(output_file_name, validate=False) # FIXME bad XML!
+        ds.write(output_file_name)
     return 0
 
 
