@@ -103,7 +103,7 @@ def get_task_falcon_local_pipeline():
     return btf + ftfofn + falcon + faidx + polish
 
 
-@dev_register("polished_falcon_lean", "Assembly (HGAP 4)")
+@dev_register("polished_falcon_lean", "Assembly (HGAP 4) without reports", tags=("internal",))
 def get_falcon_pipeline():
     """Simple lean polished falcon local pipeline.
     FASTA input comes from the SubreadSet.
@@ -133,7 +133,7 @@ def get_falcon_pipeline():
 
     return btf + ftfofn + gen_cfg + falcon + faidx + polish
 
-@dev_register("polished_falcon_fat", "Assembly (HGAP 4) with reports")
+@dev_register("polished_falcon_fat", "Assembly (HGAP 4)")
 def get_falcon_pipeline_fat():
     falcon = get_falcon_pipeline()
 
