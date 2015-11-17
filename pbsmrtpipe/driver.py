@@ -204,6 +204,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     :param workers: {taskid:Worker}
     :return:
 
+    :rtype: bool
+
     The function is doing way too much. This is really terrible.
     """
     # this used for the cluster submission.
@@ -880,6 +882,7 @@ def workflow_exception_exitcode_handler(func):
 
     It will log the run time and handle exception handling and logging/stderr.
 
+    :rtype: int
     """
 
     @functools.wraps(func)
@@ -918,7 +921,7 @@ def workflow_exception_exitcode_handler(func):
             if not state:
                 sys.stderr.write(msg + "\n")
 
-        return 0 if state else -1
+        return 0 if state else 1
 
     return _wrapper
 

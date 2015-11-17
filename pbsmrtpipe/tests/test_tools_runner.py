@@ -52,7 +52,7 @@ class TestRunnableTask(TestDirBase):
 
         stdout = f("stdout")
         stderr = f("stderr")
-        rcode, run_time = R.run_task(rt, self.temp_dir, stdout, stderr, DEBUG)
+        rcode, err_msg, run_time = R.run_task(rt, self.temp_dir, stdout, stderr, DEBUG)
         # Need to generate a manifest on-the-fly otherwise there the paths
         # in the manifest will be wrong.
         self.assertIsInstance(rcode, int)
