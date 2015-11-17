@@ -195,11 +195,15 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
     :type runnable_task: RunnableTask
 
     :return: exit code, run_time
-    :rtype: (int, int)
+    :rtype: (int, string, int)
     """
     started_at = time.time()
 
-    rcode = -1
+    def get_run_time():
+        return time.time() - started_at
+
+    # Default general catch all
+    rcode = 1
     err_msg = ""
     # host = socket.getfqdn()
     host = platform.node()
@@ -249,10 +253,10 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                     stderr_fh.flush()
 
                     t_error_msg = _extract_last_nlines(task_stderr)
-                    err_msg = "\n".join([err_msg_, t_error_msg])
+                    err_msg = "\n".join([err_msg_, "Extracted from stderr", t_error_msg])
 
                     log.error(err_msg)
-                    stdout_fh.write("breaking out. Unable to run remaining commands.")
+                    stdout_fh.write("breaking out. Unable to run remaining task commands.")
                     break
                 else:
                     stdout_fh.write("completed running cmd {i} of {n}. exit code {x} in {s:.2f} sec on host {h}\n".format(x=rcode, s=run_time, h=host, i=i + 1, n=ncmds))
@@ -267,21 +271,24 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                     if os.path.exists(output_file):
                         stdout_fh.write("Successfully validated {i} output file '{o}' on {h} \n".format(o=output_file, i=ix, h=host))
                     else:
-                        err_msg = "Unable to find {i} output file '{x}'. Marking task as failed.".format(x=output_file, i=ix)
+                        rcode = 127
+                        err_msg = "Unable to find {i} output file '{x}'. Marking task as failed. Setting exit code to {r}".format(x=output_file, i=ix, r=rcode)
                         stderr_fh.write(err_msg + "\n")
                         stdout_fh.write(err_msg + "\n")
                         sys.stderr.write(err_msg + "\n")
-                        rcode = -1
 
-            total_run_time = time.time() - started_at
             # FIXME. There should be a better way to communicate warnings
             warn_msg = ""
-            r = to_task_report(host, runnable_task.task.task_id, total_run_time, rcode, err_msg, warn_msg)
+
+            # Write the task summary to a pbcommand Report object
+            r = to_task_report(host, runnable_task.task.task_id, get_run_time(), rcode, err_msg, warn_msg)
             task_report_path = os.path.join(output_dir, 'task-report.json')
+
             msg = "Writing task id {i} task report to {r}".format(r=task_report_path, i=runnable_task.task.task_id)
             log.info(msg)
             stdout_fh.write(msg + "\n")
             r.write_json(task_report_path)
+
             stderr_fh.flush()
             stdout_fh.flush()
 
@@ -294,8 +301,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
             log.error(str(e))
             log.error("failed to successfully cleanup resources. {f}".format(f=runnable_task.task.resources))
 
-    run_time = time.time() - started_at
-    return rcode, run_time
+    return rcode, err_msg, get_run_time()
 
 
 def to_job_id(base_name, base_id):
@@ -400,7 +406,11 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
 
     with open(qshell, 'w') as f:
         f.write("#!/bin/bash\n")
+        f.write("set -o errexit\n")
+        f.write("set -o pipefail\n")
+        f.write("set -o nounset\n")
         f.write(cluster_cmd + "\n")
+        f.write("exit $?")
 
     os.chmod(qshell, os.stat(qshell).st_mode | stat.S_IEXEC)
 
@@ -412,6 +422,8 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
 
     rcode, cstdout, cstderr, run_time = backticks("bash {q}".format(q=qshell))
 
+    log.info("Cluster command return code {r} in {s:.2f} sec".format(r=rcode, s=run_time))
+
     if rcode == 0:
         err_msg = ""
         warn_msg = ""
@@ -422,7 +434,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
         err_msg = "\n".join([p_err_msg, raw_stderr, cluster_raw_stderr])
         warn_msg = ""
 
-    msg_ = "Completed running cluster command in {t:.2f} sec. Exit code {r}".format(r=rcode, t=run_time)
+    msg_ = "Completed running cluster command in {t:.2f} sec. Exit code {r} (task-type {i})".format(r=rcode, t=run_time, i=runnable_task.task.task_type_id)
     log.info(msg_)
 
     with open(qstdout, 'a') as qf:
@@ -440,7 +452,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     log.info(msg)
     r.write_json(task_report_path)
 
-    return rcode, run_time
+    return rcode, err_msg, run_time
 
 
 def run_task_manifest(path):
@@ -456,7 +468,7 @@ def run_task_manifest(path):
         log.error(emsg)
         raise
 
-    rcode, run_time = run_task(rt, output_dir, stdout, stderr, True)
+    rcode, err_msg, run_time = run_task(rt, output_dir, stdout, stderr, True)
 
     state = TaskStates.SUCCESSFUL if rcode == 0 else TaskStates.FAILED
     emsg = ""
@@ -465,7 +477,7 @@ def run_task_manifest(path):
         detail_msg = _extract_last_nlines(stderr)
         emsg = "{i} Failed with exit code {r} {x}".format(r=rcode, i=rt.task.task_id, x=detail_msg)
 
-    return state, emsg, run_time
+    return state, err_msg, run_time
 
 
 def run_task_manifest_on_cluster(path):
@@ -480,7 +492,7 @@ def run_task_manifest_on_cluster(path):
     rt = RunnableTask.from_manifest_json(path)
 
     # this needs to be updated to have explicit paths to stderr, stdout
-    rcode, run_time = run_task_on_cluster(rt, path, output_dir, True)
+    rcode, err_msg, run_time = run_task_on_cluster(rt, path, output_dir, True)
     cstderr = os.path.join(output_dir, "cluster.stderr")
     stderr = os.path.join(output_dir, "stderr")
 
@@ -493,16 +505,19 @@ def run_task_manifest_on_cluster(path):
         cdetails_msg = _extract_last_nlines(cstderr)
         emsg = "{i} Failed with exit code {r} {c}\n{x}".format(r=rcode, i=rt.task.task_id, x=detail_msg, c=cdetails_msg)
 
-    return state, emsg, run_time
+    return state, err_msg, run_time
 
 
 def _args_run_task_manifest(args):
     output_dir = os.getcwd() if args.output_dir is None else args.output_dir
     task_manifest_path = args.task_manifest
 
+    log.info("Loading runnable-task from {f}".format(f=task_manifest_path))
     rt = RunnableTask.from_manifest_json(task_manifest_path)
+    log.info("loaded runnable-task")
 
-    rcode, _ = run_task(rt, output_dir, args.task_stdout, args.task_stderr, args.debug)
+    # (exit code, run_time_sec) =
+    rcode, err_msg, _ = run_task(rt, output_dir, args.task_stdout, args.task_stderr, args.debug)
 
     return rcode
 

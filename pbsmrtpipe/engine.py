@@ -331,9 +331,11 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
         if sleep_time < max_sleep_time:
             sleep_time += dt
 
+    stdout_fh.flush()
+    stderr_fh.flush()
+
     run_time = time.time() - started_at
 
-    run_time = run_time
     returncode = process.returncode
     log.info("returncode is {r} in {s:.2f} sec.".format(r=process.returncode,
                                                         s=run_time))
