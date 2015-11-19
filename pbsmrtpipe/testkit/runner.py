@@ -92,7 +92,8 @@ def run_butler(butler, test_cases, output_xml,
                log_file=None,
                log_level=logging.DEBUG,
                force_distribute=None,
-               force_chunk=None):
+               force_chunk=None,
+               ignore_test_failures=False):
     """
     Run a Butler instance.
 
@@ -169,6 +170,8 @@ def run_butler(butler, test_cases, output_xml,
     slog.info("Exiting testkit runner in {s:.2f} sec.".format(s=run_time))
 
     # Was butler successful + all the tests pass
+    if ignore_test_failures:
+        return rcode
     return rcode | trcode
 
 
@@ -190,7 +193,9 @@ def _args_run_butler(args):
         rcode = run_butler(butler, test_cases, output_xml,
                            log_file=args.log_file,
                            log_level=args.log_level,
-                           force_distribute=force_distribute, force_chunk=force_chunk)
+                           force_distribute=force_distribute,
+                           force_chunk=force_chunk,
+                           ignore_test_failures=args.ignore_test_failures)
         return rcode
 
 
@@ -204,6 +209,13 @@ def _add_config_file_option(p):
     return p
 
 
+def add_ignore_test_failures_option(p):
+    p.add_argument("--ignore-test-failures", action="store_true",
+        help="Exit with code 0 if pbsmrtpipe ran successfully, even if "+
+             "some tests fail")
+    return p
+
+
 def get_parser():
     desc = "Testkit Tool to run pbsmrtpipe jobs."
     p = get_default_argparser(__version__, desc)
@@ -214,7 +226,8 @@ def get_parser():
              add_tests_only_option,
              add_log_level_option,
              add_log_file_options,
-             TU.add_debug_option]
+             TU.add_debug_option,
+             add_ignore_test_failures_option]
 
     f = compose(*funcs)
     p = f(p)

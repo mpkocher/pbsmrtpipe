@@ -9,6 +9,7 @@ import os
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
 from pbcommand.utils import setup_log
 
+from pbsmrtpipe.testkit.runner import add_ignore_test_failures_option
 import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import validate_file, compose
 from pbsmrtpipe.engine import backticks
@@ -79,7 +80,7 @@ def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=""):
     return testkit_cfg, rcode, stdout, stderr, run_time
 
 
-def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only=False, force_chunk_mode=False, disable_chunk_mode=False):
+def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only=False, force_chunk_mode=False, disable_chunk_mode=False, ignore_test_failures=True):
     """Run all the butler cfgs in parallel or serial (nworkers=1)
 
     :param testkit_cfgs: (list of str) list of absolute paths to butler.cfgs)
@@ -102,6 +103,8 @@ def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only
         misc_opts.append("--local-only")
     elif force_distributed:
         misc_opts.append("--force-distributed")
+    if ignore_test_failures:
+        misc_opts.append("--ignore-test-failures")
     misc_opts = " ".join(misc_opts)
     if nworkers == 1:
         log.info("Running in serial mode.")
@@ -142,7 +145,8 @@ def _args_run_multi_testkit_cfg(args):
     nworkers = min(len(testkit_cfgs), args.nworkers)
 
     return run_testkit_cfgs(testkit_cfgs, nworkers, args.force_distributed,
-        args.local_only, args.force_chunk_mode, args.disable_chunk_mode)
+        args.local_only, args.force_chunk_mode, args.disable_chunk_mode,
+        args.ignore_test_failures)
 
 
 def get_parser():
@@ -150,7 +154,8 @@ def get_parser():
     p = get_default_argparser(__version__, desc)
     fs = [TU.add_debug_option,
           TU.add_override_chunked_mode,
-          TU.add_override_distribute_option]
+          TU.add_override_distribute_option,
+          add_ignore_test_failures_option]
 
     f = compose(*fs)
     p = f(p)
