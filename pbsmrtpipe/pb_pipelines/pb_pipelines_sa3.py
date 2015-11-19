@@ -460,7 +460,7 @@ ISOSEQ_TASK_OPTIONS = {
 }
 
 
-@sa3_register("sa3_ds_isoseq_classify", "IsoSeq Classify", "0.2.0",
+@sa3_register("sa3_ds_isoseq_classify", "IsoSeq Classify Only", "0.2.0",
               tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
               task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq_classify():
