@@ -1,9 +1,13 @@
+
+import tempfile
 import unittest
 import logging
 import os.path as op
 import subprocess
 
-from pbcore.io import FastaReader, FastqReader, openDataSet
+from pbcore.io import (FastaReader, FastqReader, openDataSet, HdfSubreadSet,
+    SubreadSet)
+import pbcore.data
 from pbcommand.testkit import PbTestApp
 from pbcommand.utils import which
 
@@ -28,16 +32,33 @@ class TestBax2Bam(PbTestApp):
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     DRIVER_RESOLVE = 'python -m pbsmrtpipe.pb_tasks.pacbio run-rtc '
 
-    # User Provided values
-    # Abspath'ed temp files will be automatically generated
+    # XXX we want to test that this behaves properly when multiple movies are
+    # supplied as input, so we make an HdfSubreadSet on the fly from various
+    # bax files in testdata
     INPUT_FILES = [
-        DATA_DIR + "/SA3-RS/lambda/2372215/0007_tiny/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.hdfsubreadset.xml",
+        tempfile.NamedTemporaryFile(suffix=".hdfsubreadset.xml").name,
     ]
     MAX_NPROC = 24
 
     RESOLVED_NPROC = 1
     RESOLVED_TASK_OPTIONS = {}
     RESOLVED_IS_DISTRIBUTED = True
+
+    @classmethod
+    def setUpClass(cls):
+        FILES = [
+            DATA_DIR + "/SA3-RS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.1.bax.h5",
+            pbcore.data.getBaxH5_v23()[0]
+            #DATA_DIR + "/SA3-RS/lambda/2590980/0008/Analysis_Results/m141115_075238_ethan_c100699872550000001823139203261572_s1_p0.1.bax.h5",
+        ]
+        ds = HdfSubreadSet(*FILES)
+        assert len(set([f.movieName for f in ds.resourceReaders()])) == 2
+        ds.write(cls.INPUT_FILES[0])
+
+
+    def run_after(self, rtc, output_dir):
+        with SubreadSet(rtc.task.output_files[0]) as ds_out:
+            self.assertEqual(len(ds_out.toExternalFiles()), 2)
 
 
 @unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
