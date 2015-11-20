@@ -11,7 +11,7 @@ import gzip
 import os
 import sys
 
-from pbcore.io import SubreadSet
+from pbcore.io import SubreadSet, HdfSubreadSet
 from pbcommand.engine import run_cmd
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.models import FileTypes
@@ -24,14 +24,21 @@ DRIVER_BASE = "python -m pbsmrtpipe.pb_tasks.pacbio "
 registry = registry_builder(TOOL_NAMESPACE, DRIVER_BASE)
 
 
-def run_bax_to_bam(input_file_name, output_file_name):
-    base_name = os.path.splitext(output_file_name)[0]
-    args = [
+def _run_bax_to_bam(input_file_name, output_file_name):
+    base_name = ".".join(output_file_name.split(".")[:-2])
+    input_file_name_tmp = input_file_name
+    # XXX bax2bam won't write an hdfsubreadset unless the input is XML too
+    if input_file_name.endswith(".bax.h5"):
+        input_file_name_tmp = tempfile.NamedTemporaryFile(
+            suffix=".hdfsubreadset.xml").name
+        ds_tmp = HdfSubreadSet(input_file_name)
+        ds_tmp.write(input_file_name_tmp)
+    args =[
         "bax2bam",
         "--subread",
         "-o", base_name,
         "--output-xml", output_file_name,
-        "--xml", input_file_name
+        "--xml", input_file_name_tmp
     ]
     logging.info(" ".join(args))
     result = run_cmd(" ".join(args),
@@ -46,6 +53,30 @@ def run_bax_to_bam(input_file_name, output_file_name):
         if not ds.isIndexed:
             ds.induceIndices()
         ds.write(output_file_name)
+    return 0
+
+
+def run_bax_to_bam(input_file_name, output_file_name):
+    with HdfSubreadSet(input_file_name) as ds_in:
+        movies = set()
+        for rr in ds_in.resourceReaders():
+            movies.add(rr.movieName)
+        if len(movies) > 1:
+            out_dir = os.path.dirname(output_file_name)
+            ds_out_files = []
+            for bax_file in ds_in.toExternalFiles():
+                output_file_name_tmp = os.path.join(out_dir, ".".join(
+                    os.path.basename(bax_file).split(".")[:-2]) +
+                    ".hdfsubreadset.xml")
+                rc = _run_bax_to_bam(bax_file, output_file_name_tmp)
+                if rc != 0:
+                    logging.error("bax2bam failed")
+                    return rc
+                ds_out_files.append(output_file_name_tmp)
+            ds = SubreadSet(*ds_out_files)
+            ds.write(output_file_name)
+        else:
+            return _run_bax_to_bam(input_file_name, output_file_name)
     return 0
 
 
