@@ -51,8 +51,8 @@ class Tags(object):
     INTERNAL = "internal"
 
     RESEQ = (MAP, CONSENSUS)
+    RESEQ_INTERNAL = (MAP, CONSENSUS, INTERNAL)
     RESEQ_RPT = (MAP, CONSENSUS, RPT)
-    RESEQ_IRPT = (MAP, CONSENSUS, RPT, INTERNAL)
     RESEQ_MOD_DET = (MAP, CONSENSUS, MOD_DET)
     RESEQ_MOTIF = (MAP, CONSENSUS, MOD_DET, MOTIF)
 
@@ -172,7 +172,7 @@ def ds_align():
 
 RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False,
-    "pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctIdentity 70.0 -refineConcordantAlignments",
+    "pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
     "pbalign.task_options.concordant": True,
 }
 
@@ -187,8 +187,8 @@ def ds_genomic_consenus():
     return _core_gc_plus(Constants.ENTRY_DS_ALIGN, Constants.ENTRY_DS_REF)
 
 
-@sa3_register("sa3_ds_resequencing", "Resequencing", "0.1.0",
-              tags=Tags.RESEQ, task_options=RESEQUENCING_TASK_OPTIONS)
+@sa3_register("sa3_ds_resequencing", "Basic Resequencing", "0.1.0",
+              tags=Tags.RESEQ_INTERNAL, task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_resequencing():
     """
     Core Resequencing Pipeline - Blasr mapping and Genomic Consensus
@@ -201,8 +201,8 @@ _OPTIONS["pbalign.task_options.consolidate_aligned_bam"] = True
 
 
 @sa3_register("sa3_ds_resequencing_fat",
-              "SubreadSet Resequencing With GC Extras and Reports", "0.1.0",
-              task_options=_OPTIONS, tags=Tags.RESEQ_IRPT)
+              "Resequencing", "0.1.0",
+              task_options=_OPTIONS, tags=Tags.RESEQ_RPT)
 def ds_fat_resequencing():
     """
     Full Resequencing Pipeline - Blasr mapping and Genomic Consensus, plus
