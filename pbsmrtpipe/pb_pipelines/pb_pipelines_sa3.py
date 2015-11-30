@@ -50,7 +50,8 @@ class Tags(object):
     # Internal Analysis
     INTERNAL = "internal"
 
-    RESEQ = (MAP, CONSENSUS, INTERNAL)
+    RESEQ = (MAP, CONSENSUS)
+    RESEQ_INTERNAL = (MAP, CONSENSUS, INTERNAL)
     RESEQ_RPT = (MAP, CONSENSUS, RPT)
     RESEQ_MOD_DET = (MAP, CONSENSUS, MOD_DET)
     RESEQ_MOTIF = (MAP, CONSENSUS, MOD_DET, MOTIF)
@@ -187,7 +188,7 @@ def ds_genomic_consenus():
 
 
 @sa3_register("sa3_ds_resequencing", "Basic Resequencing", "0.1.0",
-              tags=Tags.RESEQ, task_options=RESEQUENCING_TASK_OPTIONS)
+              tags=Tags.RESEQ_INTERNAL, task_options=RESEQUENCING_TASK_OPTIONS)
 def ds_resequencing():
     """
     Core Resequencing Pipeline - Blasr mapping and Genomic Consensus
