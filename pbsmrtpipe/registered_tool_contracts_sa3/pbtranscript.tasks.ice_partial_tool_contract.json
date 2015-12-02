@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.0", 
         "name": "pbtranscript.tasks.ice_partial", 
         "input_types": [
             {
@@ -36,7 +36,7 @@
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
-                "description": "A FOFN of ccs.h5 or ccs.bam (e.g., reads_of_insert.fofn), which contain quality values of reads of insert. If not given, assume there is no QV information available.", 
+                "description": "A FOFN of ccs.h5 or ccs.bam (e.g., ccs.fofn), which contain quality values of consensus (CCS) reads. If not given, assume there is no QV information available.", 
                 "title": "CCS dataset", 
                 "id": "ccs_fofn", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"

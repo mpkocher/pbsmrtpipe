@@ -9,14 +9,14 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "resource_types": [], 
-        "description": "\nClassifies reads from a fasta/q file.  For each read, identify whether it is\nfull length, whether 5', 3' and poly A tail have been found. The input fasta/q\nfile is usually generated from RS_ReadsOfInsert protocol (e.g.,\nreads_of_insert.fasta/q).\n", 
+        "description": "\nClassifies reads from a fasta/q file.  For each read, identify whether it is\nfull length, whether 5', 3' and poly A tail have been found. The input is a\nConsensusRead dataset.\n", 
         "schema_options": [
             {
                 "pb_option": {
                     "default": 300, 
                     "type": "integer", 
                     "option_id": "pbtranscript.task_options.min_seq_len", 
-                    "name": "Min. seq. length", 
+                    "name": "Minimum Sequence Length", 
                     "description": "Minimum sequence length to output (default: 300)"
                 }, 
                 "title": "JSON Schema for pbtranscript.task_options.min_seq_len", 
@@ -30,7 +30,7 @@
                         "default": 300, 
                         "type": "integer", 
                         "description": "Minimum sequence length to output (default: 300)", 
-                        "title": "Min. seq. length"
+                        "title": "Minimum Sequence Length"
                     }
                 }
             }, 
@@ -39,7 +39,7 @@
                     "default": false, 
                     "type": "boolean", 
                     "option_id": "pbtranscript.task_options.ignore_polya", 
-                    "name": "Ignore poly-A", 
+                    "name": "Ignore polyA", 
                     "description": "FL does not require polyA tail (default: turned off)"
                 }, 
                 "title": "JSON Schema for pbtranscript.task_options.ignore_polya", 
@@ -53,7 +53,7 @@
                         "default": false, 
                         "type": "boolean", 
                         "description": "FL does not require polyA tail (default: turned off)", 
-                        "title": "Ignore poly-A"
+                        "title": "Ignore polyA"
                     }
                 }
             }
@@ -61,21 +61,21 @@
         "output_types": [
             {
                 "title": "Output ContigSet", 
-                "description": "Output fasta file", 
+                "description": "Output FASTA or ContigSet file", 
                 "default_name": "isoseq_draft.contigset.xml", 
                 "id": "outReadsFN", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
-                "title": "FASTA file", 
-                "description": "Output full-length non-chimeric reads in fasta", 
+                "title": "FASTA or ContigSet file", 
+                "description": "Output full-length non-chimeric reads in FASTA or ContigSet", 
                 "default_name": "isoseq_flnc.contigset.xml", 
                 "id": "flnc", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
-                "title": "FASTA file", 
-                "description": "Output non-full-length reads in fasta", 
+                "title": "FASTA or ContigSet file", 
+                "description": "Output non-full-length reads in FASTA or ContigSet", 
                 "default_name": "isoseq_nfl.contigset.xml", 
                 "id": "nfl", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
@@ -95,11 +95,11 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.0", 
         "name": "pbtranscript.tasks.classify", 
         "input_types": [
             {
-                "description": "Input fasta file (usually filtered_subreads.fasta or reads_of_insert.fasta)", 
+                "description": "Input ccs reads file (usually reads_of_insert.fasta or ccs.bam or consensusreadset.xml)", 
                 "title": "ConsensusReadSet", 
                 "id": "readsFN", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"

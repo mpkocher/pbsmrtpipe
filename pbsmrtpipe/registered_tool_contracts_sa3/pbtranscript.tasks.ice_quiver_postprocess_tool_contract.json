@@ -16,7 +16,7 @@
                     "default": 0.99, 
                     "type": "number", 
                     "option_id": "pbtranscript.task_options.hq_quiver_min_accuracy", 
-                    "name": "Min. quiver accuracy", 
+                    "name": "Minimum Quiver Accuracy", 
                     "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality."
                 }, 
                 "title": "JSON Schema for pbtranscript.task_options.hq_quiver_min_accuracy", 
@@ -30,7 +30,7 @@
                         "default": 0.99, 
                         "type": "number", 
                         "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality.", 
-                        "title": "Min. quiver accuracy"
+                        "title": "Minimum Quiver Accuracy"
                     }
                 }
             }, 
@@ -39,7 +39,7 @@
                     "default": 100, 
                     "type": "integer", 
                     "option_id": "pbtranscript.task_options.qv_trim_5p", 
-                    "name": "Trim 5'", 
+                    "name": "Trim QVs 5'", 
                     "description": "Ignore QV of n bases in the 5' end."
                 }, 
                 "title": "JSON Schema for pbtranscript.task_options.qv_trim_5p", 
@@ -53,7 +53,7 @@
                         "default": 100, 
                         "type": "integer", 
                         "description": "Ignore QV of n bases in the 5' end.", 
-                        "title": "Trim 5'"
+                        "title": "Trim QVs 5'"
                     }
                 }
             }, 
@@ -62,7 +62,7 @@
                     "default": 30, 
                     "type": "integer", 
                     "option_id": "pbtranscript.task_options.qv_trim_3p", 
-                    "name": "Trim 3'", 
+                    "name": "Trim QVs 3'", 
                     "description": "Ignore QV of n bases in the 3' end."
                 }, 
                 "title": "JSON Schema for pbtranscript.task_options.qv_trim_3p", 
@@ -76,7 +76,7 @@
                         "default": 30, 
                         "type": "integer", 
                         "description": "Ignore QV of n bases in the 3' end.", 
-                        "title": "Trim 3'"
+                        "title": "Trim QVs 3'"
                     }
                 }
             }
@@ -125,7 +125,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.0", 
         "name": "pbtranscript.tasks.ice_quiver_postprocess", 
         "input_types": [
             {
