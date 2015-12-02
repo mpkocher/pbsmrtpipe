@@ -39,7 +39,7 @@
                     "default": 0.75, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.min_read_score", 
-                    "name": "Minimum read score", 
+                    "name": "Minimum Read Score", 
                     "description": "Minimum read score of input subreads"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.min_read_score", 
@@ -53,7 +53,7 @@
                         "default": 0.75, 
                         "type": "number", 
                         "description": "Minimum read score of input subreads", 
-                        "title": "Minimum read score"
+                        "title": "Minimum Read Score"
                     }
                 }
             }, 
@@ -62,7 +62,7 @@
                     "default": 10, 
                     "type": "integer", 
                     "option_id": "pbccs.task_options.min_length", 
-                    "name": "Minimum length", 
+                    "name": "Minimum Length", 
                     "description": "Minimum length of subreads to use for generating CCS"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.min_length", 
@@ -76,7 +76,7 @@
                         "default": 10, 
                         "type": "integer", 
                         "description": "Minimum length of subreads to use for generating CCS", 
-                        "title": "Minimum length"
+                        "title": "Minimum Length"
                     }
                 }
             }, 
@@ -85,7 +85,7 @@
                     "default": 3, 
                     "type": "integer", 
                     "option_id": "pbccs.task_options.min_passes", 
-                    "name": "Minimum passes", 
+                    "name": "Minimum Number of Passes", 
                     "description": "Minimum number of subreads required to generate CCS"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.min_passes", 
@@ -99,7 +99,7 @@
                         "default": 3, 
                         "type": "integer", 
                         "description": "Minimum number of subreads required to generate CCS", 
-                        "title": "Minimum passes"
+                        "title": "Minimum Number of Passes"
                     }
                 }
             }, 
@@ -108,7 +108,7 @@
                     "default": 0.9, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.min_predicted_accuracy", 
-                    "name": "Min. predicted accuracy", 
+                    "name": "Minimum Predicted Accuracy", 
                     "description": "Minimum predicted accuracy in [0, 1]"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.min_predicted_accuracy", 
@@ -122,7 +122,7 @@
                         "default": 0.9, 
                         "type": "number", 
                         "description": "Minimum predicted accuracy in [0, 1]", 
-                        "title": "Min. predicted accuracy"
+                        "title": "Minimum Predicted Accuracy"
                     }
                 }
             }, 
@@ -131,8 +131,8 @@
                     "default": -5.0, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.min_zscore", 
-                    "name": "Min. Z-score", 
-                    "description": "Minimum z-score to use a subread"
+                    "name": "Minimum Z Score", 
+                    "description": "Minimum Z score to use a subread"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.min_zscore", 
                 "required": [
@@ -144,8 +144,8 @@
                     "pbccs.task_options.min_zscore": {
                         "default": -5.0, 
                         "type": "number", 
-                        "description": "Minimum z-score to use a subread", 
-                        "title": "Min. Z-score"
+                        "description": "Minimum Z score to use a subread", 
+                        "title": "Minimum Z Score"
                     }
                 }
             }, 
@@ -189,7 +189,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.0", 
         "name": "ccs", 
         "input_types": [
             {
