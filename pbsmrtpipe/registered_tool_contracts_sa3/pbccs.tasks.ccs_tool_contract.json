@@ -154,7 +154,7 @@
                     "default": 0.34, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.max_drop_fraction", 
-                    "name": "Max. dropped fraction", 
+                    "name": "Maximum Dropped Fraction", 
                     "description": "Maximum fraction of subreads that can be dropped before giving up"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.max_drop_fraction", 
@@ -168,7 +168,7 @@
                         "default": 0.34, 
                         "type": "number", 
                         "description": "Maximum fraction of subreads that can be dropped before giving up", 
-                        "title": "Max. dropped fraction"
+                        "title": "Maximum Dropped Fraction"
                     }
                 }
             }
