@@ -533,7 +533,7 @@ def pb_isoseq_cluster():
 #    ]
 #    return b1 + b2
 
-@sa3_register("sa3_ds_subreads_to_fastx", "SubreadSet to .fastx Conversion", "0.1.0", tags=(Tags.CONVERTER,))
+@sa3_register("sa3_ds_subreads_to_fastx", "Convert BAM to FASTX", "0.1.0", tags=(Tags.CONVERTER,))
 def ds_subreads_to_fastx():
     """
     Export SubreadSet to FASTA and FASTQ formats
