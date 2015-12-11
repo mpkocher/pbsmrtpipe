@@ -32,7 +32,7 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "pb_option": {
-                    "default": -1, 
+                    "default": 0, 
                     "description": "Option min_subread_length description", 
                     "name": "Option min_subread_length", 
                     "option_id": "pbsmrtpipe.task_options.min_subread_length", 
@@ -40,7 +40,7 @@
                 }, 
                 "properties": {
                     "pbsmrtpipe.task_options.min_subread_length": {
-                        "default": -1, 
+                        "default": 0, 
                         "description": "Option min_subread_length description", 
                         "title": "Option min_subread_length", 
                         "type": "integer"
