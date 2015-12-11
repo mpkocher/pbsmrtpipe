@@ -15,7 +15,7 @@ import sys
 from pbcore.io import (SubreadSet, HdfSubreadSet, FastaReader, FastaWriter,
                        FastqReader, FastqWriter)
 from pbcommand.engine import run_cmd
-from pbcommand.cli import registry_builder, registry_runner
+from pbcommand.cli import registry_builder, registry_runner, QuickOpt
 from pbcommand.models import FileTypes
 
 log = logging.getLogger(__name__)
@@ -165,10 +165,13 @@ def run_bax2bam(rtc):
     return run_bax_to_bam(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
+min_subread_length_opt = QuickOpt(0, "Minimum subread length",
+    "Minimum length of subreads to write to FASTA/FASTQ")
+
 @registry("bam2fastq", "0.1.0",
           FileTypes.DS_SUBREADS,
           FileTypes.FASTQ, is_distributed=True, nproc=1,
-          options={"min_subread_length":0})
+          options={"min_subread_length":min_subread_length_opt})
 def run_bam2fastq(rtc):
     return run_bam_to_fastq(rtc.task.input_files[0], rtc.task.output_files[0],
         rtc.task.options["pbsmrtpipe.task_options.min_subread_length"])
@@ -177,10 +180,11 @@ def run_bam2fastq(rtc):
 @registry("bam2fasta", "0.1.0",
           FileTypes.DS_SUBREADS,
           FileTypes.FASTA, is_distributed=True, nproc=1,
-          options={"min_subread_length":0})
+          options={"min_subread_length":min_subread_length_opt})
 def run_bam2fasta(rtc):
     return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0],
         rtc.task.options["pbsmrtpipe.task_options.min_subread_length"])
+
 
 @registry("fasta2fofn", "0.1.0",
           FileTypes.FASTA,
@@ -188,12 +192,14 @@ def run_bam2fasta(rtc):
 def run_fasta2fofn(rtc):
     return run_fasta_to_fofn(rtc.task.input_files[0], rtc.task.output_files[0])
 
+
 @registry("fasta2referenceset", "0.1.0",
           FileTypes.FASTA,
           FileTypes.DS_REF, is_distributed=True, nproc=1)
 def run_fasta2referenceset(rtc):
     return run_fasta_to_referenceset(rtc.task.input_files[0],
                                      rtc.task.output_files[0])
+
 
 @registry("bam2fastq_ccs", "0.1.0",
           FileTypes.DS_CCS,

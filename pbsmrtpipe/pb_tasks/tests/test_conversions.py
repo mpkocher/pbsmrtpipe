@@ -69,7 +69,6 @@ class TestBam2Fasta(PbTestApp):
     INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml" ]
     MAX_NPROC = 24
     RESOLVED_NPROC = 1
-    RESOLVED_TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length":0}
     RESOLVED_IS_DISTRIBUTED = True
     READER_CLASS = FastaReader
 
