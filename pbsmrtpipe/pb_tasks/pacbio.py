@@ -132,6 +132,7 @@ def run_fasta_to_fofn(input_file_name, output_file_name):
                      stderr_fh=sys.stderr)
     return result.exit_code
 
+
 def run_fasta_to_referenceset(input_file_name, output_file_name):
     # this can be moved out to pbdataset/pbcoretools eventually
     args = ["dataset create", "--type ReferenceSet", "--generateIndices",
@@ -167,10 +168,10 @@ def run_bax2bam(rtc):
 @registry("bam2fastq", "0.1.0",
           FileTypes.DS_SUBREADS,
           FileTypes.FASTQ, is_distributed=True, nproc=1,
-          options={"bam2fastx.task_options.min_subread_length":0})
+          options={"min_subread_length":0})
 def run_bam2fastq(rtc):
     return run_bam_to_fastq(rtc.task.input_files[0], rtc.task.output_files[0],
-        rtc.task.options.get("min_subread_length", 0))
+        rtc.task.options["pbsmrtpipe.task_options.min_subread_length"])
 
 
 @registry("bam2fasta", "0.1.0",
@@ -179,7 +180,7 @@ def run_bam2fastq(rtc):
           options={"min_subread_length":0})
 def run_bam2fasta(rtc):
     return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0],
-        rtc.task.options.get("bam2fastx.task_options.min_subread_length", -1))
+        rtc.task.options["pbsmrtpipe.task_options.min_subread_length"])
 
 @registry("fasta2fofn", "0.1.0",
           FileTypes.FASTA,

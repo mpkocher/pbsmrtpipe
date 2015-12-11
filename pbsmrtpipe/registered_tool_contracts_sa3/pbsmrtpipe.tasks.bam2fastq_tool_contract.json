@@ -33,23 +33,23 @@
                 "$schema": "http://json-schema.org/draft-04/schema#", 
                 "pb_option": {
                     "default": 0, 
-                    "description": "Option bam2fastx.task_options.min_subread_length description", 
-                    "name": "Option bam2fastx.task_options.min_subread_length", 
-                    "option_id": "pbsmrtpipe.task_options.bam2fastx.task_options.min_subread_length", 
+                    "description": "Option min_subread_length description", 
+                    "name": "Option min_subread_length", 
+                    "option_id": "pbsmrtpipe.task_options.min_subread_length", 
                     "type": "integer"
                 }, 
                 "properties": {
-                    "pbsmrtpipe.task_options.bam2fastx.task_options.min_subread_length": {
+                    "pbsmrtpipe.task_options.min_subread_length": {
                         "default": 0, 
-                        "description": "Option bam2fastx.task_options.min_subread_length description", 
-                        "title": "Option bam2fastx.task_options.min_subread_length", 
+                        "description": "Option min_subread_length description", 
+                        "title": "Option min_subread_length", 
                         "type": "integer"
                     }
                 }, 
                 "required": [
-                    "pbsmrtpipe.task_options.bam2fastx.task_options.min_subread_length"
+                    "pbsmrtpipe.task_options.min_subread_length"
                 ], 
-                "title": "JSON Schema for pbsmrtpipe.task_options.bam2fastx.task_options.min_subread_length", 
+                "title": "JSON Schema for pbsmrtpipe.task_options.min_subread_length", 
                 "type": "object"
             }
         ], 
