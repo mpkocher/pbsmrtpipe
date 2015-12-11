@@ -5,14 +5,14 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.3", 
         "description": "Quick tool bam2fasta pbsmrtpipe.tasks.bam2fasta", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.SubreadSet_0", 
                 "file_type_id": "PacBio.DataSet.SubreadSet", 
                 "id": "Label PacBio.DataSet.SubreadSet_0", 
-                "title": "<FileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
+                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
             }
         ], 
         "is_distributed": true, 
@@ -28,7 +28,31 @@
             }
         ], 
         "resource_types": [], 
-        "schema_options": [], 
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "pb_option": {
+                    "default": -1, 
+                    "description": "Option min_subread_length description", 
+                    "name": "Option min_subread_length", 
+                    "option_id": "pbsmrtpipe.task_options.min_subread_length", 
+                    "type": "integer"
+                }, 
+                "properties": {
+                    "pbsmrtpipe.task_options.min_subread_length": {
+                        "default": -1, 
+                        "description": "Option min_subread_length description", 
+                        "title": "Option min_subread_length", 
+                        "type": "integer"
+                    }
+                }, 
+                "required": [
+                    "pbsmrtpipe.task_options.min_subread_length"
+                ], 
+                "title": "JSON Schema for pbsmrtpipe.task_options.min_subread_length", 
+                "type": "object"
+            }
+        ], 
         "task_type": "pbsmrtpipe.task_types.standard", 
         "tool_contract_id": "pbsmrtpipe.tasks.bam2fasta"
     }, 

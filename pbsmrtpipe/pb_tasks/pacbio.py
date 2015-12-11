@@ -11,7 +11,8 @@ import gzip
 import os
 import sys
 
-from pbcore.io import SubreadSet, HdfSubreadSet
+from pbcore.io import (SubreadSet, HdfSubreadSet, FastaReader, FastaWriter,
+                       FastqReader, FastqWriter)
 from pbcommand.engine import run_cmd
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.models import FileTypes
@@ -80,16 +81,20 @@ def run_bax_to_bam(input_file_name, output_file_name):
     return 0
 
 
-def run_bam_to_fastx(program_name, input_file_name, output_file_name):
+def run_bam_to_fastx(program_name, fastx_reader, fastx_writer,
+                     input_file_name, output_file_name,
+                     min_subread_length=-1):
     def _splitext(path):
         base, ext = os.path.splitext(path)
         if ext == ".gz":
             base, ext2 = os.path.splitext(base)
             ext = ext2 + ext
         return base, ext
+    base, ext = _splitext(output_file_name)
+    tmp_out = tempfile.NamedTemporaryFile(suffix=ext).name
     args = [
         program_name,
-        "-o", _splitext(output_file_name)[0],
+        "-o", _splitext(tmp_out)[0],
         input_file_name,
     ]
     logging.info(" ".join(args))
@@ -99,12 +104,21 @@ def run_bam_to_fastx(program_name, input_file_name, output_file_name):
     if result.exit_code != 0:
         return result.exit_code
     else:
-        if not output_file_name.endswith(".gz"):
-            output_file_name_ = output_file_name + ".gz"
-            with gzip.open(output_file_name_) as f_in:
-                with open(output_file_name, "w") as f_out:
-                    f_out.write(f_in.read())
+        def _open_file(file_name):
+            if file_name.endswith(".gz"):
+                file_name_ = file_name + ".gz"
+                return gzip.open(file_name_)
+            else:
+                return open(file_name)
+        with _get_file_reader(file_name) as raw_in:
+            with fastx_reader(raw_in) as fastx_in:
+                with fastx_writer(output_file_name) as fastx_out:
+                    for rec in fastx_in:
+                        if (min_subread_length == -1 or
+                            min_subread_length < len(rec.sequence)):
+                            fastx_out.write(rec)
     return 0
+
 
 def run_fasta_to_fofn(input_file_name, output_file_name):
     args = ["echo", input_file_name, ">", output_file_name]
@@ -132,8 +146,10 @@ def run_fasta_to_referenceset(input_file_name, output_file_name):
     return result.exit_code
 
 
-run_bam_to_fasta = functools.partial(run_bam_to_fastx, "bam2fasta")
-run_bam_to_fastq = functools.partial(run_bam_to_fastx, "bam2fastq")
+run_bam_to_fasta = functools.partial(run_bam_to_fastx, FastaReader,
+    FastaWriter, "bam2fasta")
+run_bam_to_fastq = functools.partial(run_bam_to_fastx, FastqReader,
+    FastqWriter, "bam2fastq")
 
 
 @registry("h5_subreads_to_subread", "0.1.0",
@@ -145,16 +161,20 @@ def run_bax2bam(rtc):
 
 @registry("bam2fastq", "0.1.0",
           FileTypes.DS_SUBREADS,
-          FileTypes.FASTQ, is_distributed=True, nproc=1)
+          FileTypes.FASTQ, is_distributed=True, nproc=1,
+          options={"bam2fastx.task_options.min_subread_length":-1})
 def run_bam2fastq(rtc):
-    return run_bam_to_fastq(rtc.task.input_files[0], rtc.task.output_files[0])
+    return run_bam_to_fastq(rtc.task.input_files[0], rtc.task.output_files[0],
+        rtc.task.options.get("min_subread_length", -1))
 
 
 @registry("bam2fasta", "0.1.0",
           FileTypes.DS_SUBREADS,
-          FileTypes.FASTA, is_distributed=True, nproc=1)
+          FileTypes.FASTA, is_distributed=True, nproc=1,
+          options={"min_subread_length":-1})
 def run_bam2fasta(rtc):
-    return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0])
+    return run_bam_to_fasta(rtc.task.input_files[0], rtc.task.output_files[0],
+        rtc.task.options.get("bam2fastx.task_options.min_subread_length", -1))
 
 @registry("fasta2fofn", "0.1.0",
           FileTypes.FASTA,

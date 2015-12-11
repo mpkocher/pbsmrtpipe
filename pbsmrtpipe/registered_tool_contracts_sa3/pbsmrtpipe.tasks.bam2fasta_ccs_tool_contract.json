@@ -5,14 +5,14 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.3", 
         "description": "Quick tool bam2fasta_ccs pbsmrtpipe.tasks.bam2fasta_ccs", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.ConsensusReadSet_0", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet", 
                 "id": "Label PacBio.DataSet.ConsensusReadSet_0", 
-                "title": "<FileType id=PacBio.DataSet.ConsensusReadSet name=file.consensusreadset.xml >"
+                "title": "<DataSetFileType id=PacBio.DataSet.ConsensusReadSet name=file.consensusreadset.xml >"
             }
         ], 
         "is_distributed": true, 
