@@ -285,6 +285,15 @@ def validate_or_modify_workflow_level_options(wopts):
         slog.warn("distribute_mode is False, Disabling cluster manager, running in LOCAL ONLY mode.")
         wopts.cluster_manager_path = None
 
+    if wopts.total_max_nproc is not None:
+        if wopts.max_nproc > wopts.total_max_nproc:
+            raise ValueError("Max nproc ({x}) must be <= Total Max nproc ({t})".format(x=wopts.max_nproc, t=wopts.total_max_nproc))
+
+        # total max nproc = 1 cpu/worker * max nworkers will be the upper bound of
+        # total number of processors used
+        if wopts.max_nworkers > wopts.total_max_nproc:
+            log.warn("Max workers {w} used will be <= {t}".format(w=wopts.max_nworkers, t=wopts.total_max_nproc))
+
     return wopts
 
 
