@@ -3,10 +3,9 @@ import tempfile
 import unittest
 import logging
 import os.path as op
-import subprocess
 
 from pbcore.io import (FastaReader, FastqReader, openDataSet, HdfSubreadSet,
-    SubreadSet)
+                       SubreadSet)
 import pbcore.data
 from pbcommand.testkit import PbTestApp
 from pbcommand.utils import which
@@ -39,10 +38,18 @@ SKIP_MSG_BAX2BAM = _to_skip_msg(Constants.BAX2BAM)
 HAVE_DATA_AND_BAM2FASTX = HAVE_BAM2FASTX and HAVE_DATA_DIR
 SKIP_MSG_BAM2FX = _to_skip_msg(Constants.BAM2FASTA)
 
+skip_unless_bax2bam = unittest.skipUnless(HAVE_DATA_AND_BAX2BAM, SKIP_MSG_BAX2BAM)
+skip_unless_bam2fastx = unittest.skipUnless(HAVE_DATA_AND_BAM2FASTX, SKIP_MSG_BAM2FX)
+
 
 def _get_bax2bam_inputs():
-    # Little hackery to get the setup class Inputs and to avoid calls to
-    # setupclass if skiptest is used
+    """Little hackery to get the setup class Inputs and to avoid calls to
+    setupclass if skiptest is used
+
+    Nat: we want to test that this behaves properly when multiple movies are
+    supplied as input, so we make an HdfSubreadSet on the fly from various
+    bax files in testdata
+    """
     if HAVE_DATA_AND_BAX2BAM:
         hdf_subread_xml = tempfile.NamedTemporaryFile(suffix=".hdfsubreadset.xml").name
 
@@ -54,12 +61,8 @@ def _get_bax2bam_inputs():
         ds.write(hdf_subread_xml)
         return [hdf_subread_xml]
     else:
-        # Assume the test data isn't found
-        return []
-
-
-skip_unless_bax2bam = unittest.skipUnless(HAVE_DATA_AND_BAX2BAM, SKIP_MSG_BAX2BAM)
-skip_unless_bam2fastx = unittest.skipUnless(HAVE_DATA_AND_BAM2FASTX, SKIP_MSG_BAM2FX)
+        # Assume the test data isn't found and the test won't be run
+        return ["/path/to/this-test-should-be-skipped.txt"]
 
 
 @skip_unless_bax2bam
@@ -68,9 +71,7 @@ class TestBax2Bam(PbTestApp):
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     DRIVER_RESOLVE = 'python -m pbsmrtpipe.pb_tasks.pacbio run-rtc '
 
-    # XXX we want to test that this behaves properly when multiple movies are
-    # supplied as input, so we make an HdfSubreadSet on the fly from various
-    # bax files in testdata
+    # See comments above
     INPUT_FILES = _get_bax2bam_inputs()
     MAX_NPROC = 24
 
@@ -88,18 +89,17 @@ class TestBam2Fasta(PbTestApp):
     TASK_ID = "pbsmrtpipe.tasks.bam2fasta"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     DRIVER_RESOLVE = 'python -m pbsmrtpipe.pb_tasks.pacbio run-rtc '
-    INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml" ]
+    INPUT_FILES = ["/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml"]
     MAX_NPROC = 24
     RESOLVED_NPROC = 1
     RESOLVED_IS_DISTRIBUTED = True
     READER_CLASS = FastaReader
 
     def _get_counts(self, rtc):
-        n_actual = n_expected = 0
         with openDataSet(self.INPUT_FILES[0]) as ds:
-            n_expected = len([ rec for rec in ds ])
+            n_expected = len([rec for rec in ds])
         with self.READER_CLASS(rtc.task.output_files[0]) as f:
-            n_actual = len([ rec for rec in f ])
+            n_actual = len([rec for rec in f])
         return n_expected, n_actual
 
     def run_after(self, rtc, output_dir):
@@ -116,8 +116,8 @@ class TestBam2Fastq(TestBam2Fasta):
 
 @skip_unless_bam2fastx
 class TestBam2FastqFiltered(TestBam2Fastq):
-    TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length":3000}
-    RESOLVED_TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length":3000}
+    TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length": 3000}
+    RESOLVED_TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length": 3000}
 
     def run_after(self, rtc, output_dir):
         n_expected, n_actual = self._get_counts(rtc)
@@ -128,7 +128,7 @@ class TestBam2FastqFiltered(TestBam2Fastq):
 class TestBam2FastaCCS(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fasta_ccs"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
-    INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/pbccs.tasks.ccs-1/ccs.consensusreadset.xml" ]
+    INPUT_FILES = ["/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/pbccs.tasks.ccs-1/ccs.consensusreadset.xml"]
     READER_CLASS = FastaReader
 
 
