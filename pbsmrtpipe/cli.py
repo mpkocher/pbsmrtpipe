@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import pprint
@@ -6,6 +7,7 @@ import logging
 import urlparse
 
 from pbcommand.cli import get_default_argparser
+from pbsmrtpipe.core import binding_str_is_entry_id
 from pbsmrtpipe.tools.diagnostics import (run_diagnostics,
                                           run_simple_diagnostics)
 
@@ -185,7 +187,7 @@ def _args_run_show_templates(args):
 def write_task_options_to_preset_xml_and_print(opts, output_file, warning_msg):
     if opts:
         IO.write_schema_task_options_to_xml(opts, output_file)
-        print "wrote preset to {x}".format(x=output_file)
+        print "Wrote preset to {x}".format(x=output_file)
     else:
         print warning_msg
 
@@ -209,23 +211,25 @@ def run_show_template_details(template_id, output_preset_xml):
         if isinstance(output_preset_xml, str):
             rtasks, rfiles, operators, pipelines = __dynamically_load_all()
             task_options = {}
-            for b_out, b_in, in pipeline.bindings:
+            for b_out, b_in, in pipeline.all_bindings:
                 for x in (b_out, b_in):
-                    task_id, _, _ = binding_str_to_task_id_and_instance_id(x)
-                    task = rtasks.get(task_id, None)
-                    if task is None:
-                        log.warn("Unable to load task {x}".format(x=task_id))
-                    else:
-                        for k, v in task.option_schemas.iteritems():
-                            if k in pipeline.task_options:
-                                # this is kinda not awesome. there's the double API here
-                                # pbcommand and pbsmrtpipe need to be converted to
-                                # use a non-jsonschema model
-                                v['properties'][k]['default'] = pipeline.task_options[k]
-                                v['pb_option']['default'] = pipeline.task_options[k]
-                                task_options[k] = v
-                            else:
-                                task_options[k] = v
+                    if not binding_str_is_entry_id(x):
+                        task_id, _, _ = binding_str_to_task_id_and_instance_id(x)
+                        task = rtasks.get(task_id, None)
+                        if task is None:
+                            log.warn("Unable to load task {x}".format(x=task_id))
+                        else:
+                            for k, vx in task.option_schemas.iteritems():
+                                if k in pipeline.task_options:
+                                    # this is kinda not awesome. there's the double API here
+                                    # pbcommand and pbsmrtpipe need to be converted to
+                                    # use a non-jsonschema model
+                                    v = copy.deepcopy(vx)
+                                    v['properties'][k]['default'] = pipeline.task_options[k]
+                                    v['pb_option']['default'] = pipeline.task_options[k]
+                                    task_options[k] = v
+                                else:
+                                    task_options[k] = copy.deepcopy(vx)
 
             warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
