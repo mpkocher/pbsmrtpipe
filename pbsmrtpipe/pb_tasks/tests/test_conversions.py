@@ -69,16 +69,19 @@ class TestBam2Fasta(PbTestApp):
     INPUT_FILES = [ "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml" ]
     MAX_NPROC = 24
     RESOLVED_NPROC = 1
-    RESOLVED_TASK_OPTIONS = {}
     RESOLVED_IS_DISTRIBUTED = True
     READER_CLASS = FastaReader
 
-    def run_after(self, rtc, output_dir):
+    def _get_counts(self, rtc):
         n_actual = n_expected = 0
         with openDataSet(self.INPUT_FILES[0]) as ds:
             n_expected = len([ rec for rec in ds ])
         with self.READER_CLASS(rtc.task.output_files[0]) as f:
             n_actual = len([ rec for rec in f ])
+        return n_expected, n_actual
+
+    def run_after(self, rtc, output_dir):
+        n_expected, n_actual = self._get_counts(rtc)
         self.assertEqual(n_actual, n_expected)
 
 
@@ -87,6 +90,16 @@ class TestBam2Fastq(TestBam2Fasta):
     TASK_ID = "pbsmrtpipe.tasks.bam2fastq"
     DRIVER_EMIT = 'python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contract {i} '.format(i=TASK_ID)
     READER_CLASS = FastqReader
+
+
+@unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")
+class TestBam2FastqFiltered(TestBam2Fastq):
+    TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length":3000}
+    RESOLVED_TASK_OPTIONS = {"pbsmrtpipe.task_options.min_subread_length":3000}
+
+    def run_after(self, rtc, output_dir):
+        n_expected, n_actual = self._get_counts(rtc)
+        self.assertTrue(0 < n_actual < n_expected)
 
 
 @unittest.skipUnless(HAVE_BAM2FASTX and HAVE_DATA_DIR, "Missing bam2fastx")

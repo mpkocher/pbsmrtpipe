@@ -5,14 +5,14 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.5", 
         "description": "Quick tool h5_subreads_to_subread pbsmrtpipe.tasks.h5_subreads_to_subread", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.HdfSubreadSet_0", 
                 "file_type_id": "PacBio.DataSet.HdfSubreadSet", 
                 "id": "Label PacBio.DataSet.HdfSubreadSet_0", 
-                "title": "<FileType id=PacBio.DataSet.HdfSubreadSet name=file.hdfsubreadset.xml >"
+                "title": "<DataSetFileType id=PacBio.DataSet.HdfSubreadSet name=file.hdfsubreadset.xml >"
             }
         ], 
         "is_distributed": true, 
@@ -21,10 +21,10 @@
         "output_types": [
             {
                 "default_name": "file.subreadset.xml", 
-                "description": "description for <FileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >", 
+                "description": "description for <DataSetFileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >", 
                 "file_type_id": "PacBio.DataSet.SubreadSet", 
                 "id": "Label PacBio.DataSet.SubreadSet_0", 
-                "title": "<FileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
+                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
             }
         ], 
         "resource_types": [], 
