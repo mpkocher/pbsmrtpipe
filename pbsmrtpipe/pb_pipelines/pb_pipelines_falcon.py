@@ -54,6 +54,31 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
          ]
     return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf
 
+def _get_polished_falcon_pipeline():
+    subreadset = Constants.ENTRY_DS_SUBREAD
+
+    btf = [(subreadset, 'pbsmrtpipe.tasks.bam2fasta:0')]
+    ftfofn = [('pbsmrtpipe.tasks.bam2fasta:0', 'pbsmrtpipe.tasks.fasta2fofn:0')]
+
+    i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
+
+    gen_cfg = [(i_fasta_fofn, 'falcon_ns.tasks.task_falcon_gen_config:0')]
+
+    i_cfg = 'falcon_ns.tasks.task_falcon_gen_config:0'
+
+    falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+
+    ref = 'falcon_ns.tasks.task_falcon2_run_asm:0'
+
+    faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
+
+    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+
+    polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
+                                                     ref)
+    results = dict()
+    return ((btf + ftfofn + gen_cfg + falcon + faidx + polish), results)
+
 @dev_register("pipe_falcon_with_fofn", "Falcon FOFN Pipeline",
               tags=("local", "chunking", "internal"))
 def get_task_falcon_local_pipeline():
@@ -102,40 +127,20 @@ def get_task_falcon_local_pipeline():
 
     return btf + ftfofn + falcon + faidx + polish
 
-
 @dev_register("polished_falcon_lean", "Assembly (HGAP 4) without reports", tags=("internal",))
-def get_falcon_pipeline():
-    """Simple lean polished falcon local pipeline.
+def get_falcon_pipeline_lean():
+    """Simple polished falcon local pipeline (sans reports).
     FASTA input comes from the SubreadSet.
     Cfg input is built from preset.xml
     """
-    subreadset = Constants.ENTRY_DS_SUBREAD
-
-    btf = [(subreadset, 'pbsmrtpipe.tasks.bam2fasta:0')]
-    ftfofn = [('pbsmrtpipe.tasks.bam2fasta:0', 'pbsmrtpipe.tasks.fasta2fofn:0')]
-
-    i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
-
-    gen_cfg = [(i_fasta_fofn, 'falcon_ns.tasks.task_falcon_gen_config:0')]
-
-    i_cfg = 'falcon_ns.tasks.task_falcon_gen_config:0'
-
-    falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
-
-    ref = 'falcon_ns.tasks.task_falcon2_run_asm:0'
-
-    faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
-
-    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
-
-    polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
-                                                     ref)
-
-    return btf + ftfofn + gen_cfg + falcon + faidx + polish
+    falcon, _ = _get_polished_falcon_pipeline()
+    return falcon
 
 @dev_register("polished_falcon_fat", "Assembly (HGAP 4)")
 def get_falcon_pipeline_fat():
-    falcon = get_falcon_pipeline()
+    """Same as polished_falcon_lean, but with reports.
+    """
+    falcon, results = _get_polished_falcon_pipeline()
 
     # id's of results from falcon:
     aln = 'pbalign.tasks.pbalign:0'
