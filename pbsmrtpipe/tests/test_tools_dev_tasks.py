@@ -346,7 +346,7 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
     def run_after(self, rtc, output_dir):
         report_file = rtc.task.output_files[0]
         r = load_report_from_json(report_file)
-        a = {a.name: a.value for a in r.attributes}
+        a = {a.id: a.value for a in r.attributes}
         self.assertEqual(a, {
             'num_below_min_accuracy': 0,
             'num_not_converged': 0,
