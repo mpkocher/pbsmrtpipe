@@ -346,7 +346,8 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
     def run_after(self, rtc, output_dir):
         report_file = rtc.task.output_files[0]
         r = load_report_from_json(report_file)
-        a = {a.name: a.value for a in r.attributes}
+        a = {a.id: a.value for a in r.attributes}
+        n = {a.id: a.name for a in r.attributes}
         self.assertEqual(a, {
             'num_below_min_accuracy': 0,
             'num_not_converged': 0,
@@ -356,6 +357,14 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
             'num_below_snr_threshold': 27,
             'num_ccs_reads': 52,
             'num_not_enough_full_passes': 58})
+        self.assertEqual(n['num_no_usable_subreads'], "No usable subreads")
+        keys = [str(a.id) for a in r.attributes]
+        # check that order is preserved
+        self.assertEqual(keys, [
+            'num_ccs_reads', 'num_below_snr_threshold',
+            'num_no_usable_subreads', 'num_insert_size_too_small',
+            'num_not_enough_full_passes', 'num_too_many_unusable_subreads',
+            'num_not_converged', 'num_below_min_accuracy'])
 
 
 @unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
