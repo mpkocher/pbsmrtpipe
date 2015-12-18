@@ -4,8 +4,10 @@ import sys
 import logging
 import math
 
-from pbcommand.cli import pacbio_args_runner, get_default_argparser
-from pbcommand.utils import setup_log, compose
+import xml.etree.ElementTree as ET
+
+from pbcommand.cli import get_default_argparser
+from pbcommand.utils import compose
 from pbcore.io import SubreadSet, HdfSubreadSet, AlignmentSet
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
@@ -126,14 +128,26 @@ def validate_external_non_empty_resources(ds):
 
 def _validate_dataset(dataset_class):
     def wrapper(path):
-        # FIXME. If this raises, the error is a mangled from argparse and yeilds
-        # a cryptic error message
-        ds = dataset_class(path)
-        # this should also validate index files and nested external resources
-        validate_external_non_empty_resources(ds)
-        return path
+        try:
+            ds = dataset_class(path)
+            # this should also validate index files and nested external resources
+            validate_external_non_empty_resources(ds)
+            return path
+        except Exception as e:
+            # If this raises, the error is a mangled from argparse and yields
+            # a cryptic error message
+            raise argparse.ArgumentTypeError("Invalid DataSet(s) {p} {e}".format(p=path, e=e))
 
     return wrapper
+
+
+def _validate_xml(path):
+    try:
+        p = ET.parse(path)
+        root = p.getroot()
+        return p
+    except ET.ParseError as e:
+        raise argparse.ArgumentTypeError("Invalid XML file {p} {e}".format(p=path, e=e))
 
 
 validate_subreadset = compose(_validate_dataset(SubreadSet), validate_file)
