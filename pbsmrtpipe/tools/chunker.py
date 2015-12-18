@@ -144,15 +144,16 @@ def _validate_dataset(dataset_class):
 def _validate_xml(path):
     try:
         p = ET.parse(path)
-        root = p.getroot()
-        return p
+        _ = p.getroot()
+        return path
     except ET.ParseError as e:
         raise argparse.ArgumentTypeError("Invalid XML file {p} {e}".format(p=path, e=e))
 
+validate_xml_file = compose(_validate_xml, validate_file)
 
-validate_subreadset = compose(_validate_dataset(SubreadSet), validate_file)
-valdiate_hdfsubreadset = compose(_validate_dataset(HdfSubreadSet), validate_file)
-validate_alignmentset = compose(_validate_dataset(AlignmentSet), validate_file)
+validate_subreadset = compose(_validate_dataset(SubreadSet), validate_xml_file)
+valdiate_hdfsubreadset = compose(_validate_dataset(HdfSubreadSet), validate_xml_file)
+validate_alignmentset = compose(_validate_dataset(AlignmentSet), validate_xml_file)
 
 
 # These are really 'options', but keeping the naming convention consistent
