@@ -1,10 +1,12 @@
+import argparse
 import os
 import sys
 import logging
 import math
 
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
-from pbcommand.utils import setup_log
+from pbcommand.utils import setup_log, compose
+from pbcore.io import SubreadSet, HdfSubreadSet, AlignmentSet
 
 from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 
@@ -102,14 +104,51 @@ def _add_input_file_option(file_id, type_, help_):
         return p
     return _f
 
+
+def validate_external_resources(ds):
+    not_found_paths = [r for r in ds.toExternalFiles() if not os.path.exists(r)]
+
+    if not_found_paths:
+        xs = "\n".join(not_found_paths)
+        # raising this make it work better with argparse, instead of having
+        # a giant useless stacktrace
+        raise argparse.ArgumentTypeError("Invalid Dataset(s). {p} \nUnable to find {n} external Resources\n{x}".format(x=xs, p=ds.fileNames, n=len(not_found_paths)))
+
+    return ds
+
+
+def validate_external_non_empty_resources(ds):
+    if ds.toExternalFiles():
+        return validate_external_resources(ds)
+    else:
+        raise argparse.ArgumentTypeError("Invalid DataSet(s) {p}. \nMust have at least one external resource".format(p=ds.fileNames))
+
+
+def _validate_dataset(dataset_class):
+    def wrapper(path):
+        # FIXME. If this raises, the error is a mangled from argparse and yeilds
+        # a cryptic error message
+        ds = dataset_class(path)
+        # this should also validate index files and nested external resources
+        validate_external_non_empty_resources(ds)
+        return path
+
+    return wrapper
+
+
+validate_subreadset = compose(_validate_dataset(SubreadSet), validate_file)
+valdiate_hdfsubreadset = compose(_validate_dataset(HdfSubreadSet), validate_file)
+validate_alignmentset = compose(_validate_dataset(AlignmentSet), validate_file)
+
+
 # These are really 'options', but keeping the naming convention consistent
 add_input_fofn_option = _add_input_file_option('input_fofn', validate_fofn, "Path to input.fofn (File of File names)")
 add_input_fasta_option = _add_input_file_option('fasta', validate_file, "Path to Fasta file.")
 add_input_fasta_reference_option = _add_input_file_option('fasta', validate_file, "Path to PacBio Reference Entry Fasta file.")
 add_input_fastq_option = _add_input_file_option('fastq', validate_file, "Path to Fastq file")
-add_input_alignmentset_option = _add_input_file_option('alignmentset', validate_file, "Path to AlignmentSet XML file")
-add_input_hdfsubreadset_option = _add_input_file_option('hdfsubreadset', validate_file, "Path to HdfSubreadSet XML file")
-add_input_subreadset_option = _add_input_file_option('subreadset', validate_file, "Path to SubreadSet XML file")
+add_input_alignmentset_option = _add_input_file_option('alignmentset', validate_alignmentset, "Path to AlignmentSet XML file")
+add_input_hdfsubreadset_option = _add_input_file_option('hdfsubreadset', valdiate_hdfsubreadset, "Path to HdfSubreadSet XML file")
+add_input_subreadset_option = _add_input_file_option('subreadset', validate_subreadset, "Path to SubreadSet XML file")
 add_input_csv_option = _add_input_file_option('csv', validate_file, "Path to CSV")
 add_output_chunk_json_report_option = _add_input_file_option('chunk_report_json', str, "Path to chunked JSON output")
 
