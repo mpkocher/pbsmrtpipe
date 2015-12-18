@@ -3,9 +3,12 @@
 Unit tests for the various scatter/gather tools in pbsmrtipipe.tools_dev.
 """
 
+import tempfile
 import unittest
 import os.path as op
 import re
+
+import pysam
 
 from pbcommand.pb_io.common import load_pipeline_chunks_from_json
 from pbcommand.pb_io.report import load_report_from_json
@@ -13,6 +16,7 @@ from pbcommand.models import PipelineChunk
 import pbcommand.testkit.core
 from pbcore.io import SubreadSet, ContigSet, FastaReader, FastqReader, \
     ConsensusReadSet, AlignmentSet, ConsensusAlignmentSet, HdfSubreadSet
+import pbcore.data
 
 from pbsmrtpipe.tools.chunk_utils import write_chunks_to_json
 
@@ -21,13 +25,16 @@ from base import get_temp_file
 MNT_DATA = "/pbi/dept/secondary/siv/testdata"
 
 
-def _write_fasta_or_contigset(file_name):
+def _write_fasta_or_contigset(file_name, make_faidx=False):
     fasta_file = re.sub(".contigset.xml", ".fasta", file_name)
     rec = [">chr%d\nacgtacgtacgt" % x for x in range(251)]
     with open(fasta_file, "w") as f:
         f.write("\n".join(rec))
+        f.flush()
+    if make_faidx:
+        pysam.faidx(fasta_file)
     if file_name.endswith(".xml"):
-        cs = ContigSet(fasta_file)
+        cs = ContigSet(fasta_file, strict=make_faidx)
         cs.write(file_name)
 
 
@@ -41,22 +48,21 @@ class CompareScatteredRecordsBase(object):
         chunks = load_pipeline_chunks_from_json(json_file)
         n_rec = 0
         with self.READER_CLASS(unchunked, **self.READER_KWARGS) as f:
-            n_rec = len([r for r in f])
+            n_rec = len([rec for rec in f])
         n_rec_chunked = 0
         for chunk in chunks:
             d = chunk.chunk_d
             chunked = d[self.CHUNK_KEYS[0]]
             with self.READER_CLASS(chunked, **self.READER_KWARGS) as cs:
-                n_rec_chunked += len([r for r in cs])
+                n_rec_chunked += len([rec for rec in cs])
         self.assertEqual(n_rec_chunked, n_rec)
 
 
 class ScatterSequenceBase(CompareScatteredRecordsBase):
 
-    @classmethod
-    def setUpClass(cls):
-        super(ScatterSequenceBase, cls).setUpClass()
-        _write_fasta_or_contigset(cls.INPUT_FILES[0])
+    def setUp(self):
+        super(ScatterSequenceBase, self).setUp()
+        _write_fasta_or_contigset(self.INPUT_FILES[0], make_faidx=True)
 
 
 class TestScatterFilterFasta(ScatterSequenceBase,
@@ -75,7 +81,7 @@ class TestScatterFilterFasta(ScatterSequenceBase,
     CHUNK_KEYS = ("$chunk.fasta_id",)
 
 
-class TestScatterContigSet(ScatterSequenceBase,
+class TestScatterContigSet(TestScatterFilterFasta,
                            pbcommand.testkit.core.PbTestScatterApp):
 
     """
@@ -91,27 +97,14 @@ class TestScatterContigSet(ScatterSequenceBase,
     CHUNK_KEYS = ("$chunk.contigset_id",)
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
-class TestScatterContigSetIndexed(CompareScatteredRecordsBase,
-                                  pbcommand.testkit.core.PbTestScatterApp):
-
-    """
-    Test pbsmrtpipe.tools_dev.scatter_contigset
-    Test ContigSet scatter when the underlying .fasta file is indexed
-    (requires samtools and thus stored externally).
-    """
-    # XXX validates fix for bug ticket 27977
-    READER_CLASS = ContigSet
-    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_contigset"
-    INPUT_FILES = [
-        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/transcripts.contigset.xml"
-    ]
-    MAX_NCHUNKS = 2
-    RESOLVED_MAX_NCHUNKS = 2
-    CHUNK_KEYS = ("$chunk.contigset_id",)
+def make_tmp_dataset_xml(bam_file, ds_type):
+    suffix = ".{t}.xml".format(t=ds_type.__name__.lower())
+    tmp_file = tempfile.NamedTemporaryFile(suffix=suffix).name
+    ds = ds_type(bam_file, strict=True)
+    ds.write(tmp_file)
+    return tmp_file
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterSubreadZMWs(CompareScatteredRecordsBase,
                              pbcommand.testkit.core.PbTestScatterApp):
 
@@ -122,7 +115,7 @@ class TestScatterSubreadZMWs(CompareScatteredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_zmws"
     INPUT_FILES = [
-        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_micro/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml"
+        make_tmp_dataset_xml(pbcore.data.getUnalignedBam(), READER_CLASS)
     ]
     MAX_NCHUNKS = 12
     RESOLVED_MAX_NCHUNKS = 12
@@ -164,13 +157,12 @@ class TestScatterHdfSubreads(CompareScatteredRecordsBase,
     CHUNK_KEYS = ("$chunk.hdf5subreadset_id",)
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterAlignmentsReference(pbcommand.testkit.core.PbTestScatterApp):
     READER_CLASS = AlignmentSet
     READER_KWARGS = {}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference"
     INPUT_FILES = [
-        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Alignment_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.1.alignmentset.xml",
+        pbcore.data.getBamAndCmpH5()[0],
         "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
     ]
     MAX_NCHUNKS = 2
@@ -192,16 +184,14 @@ class TestScatterAlignmentsReference(pbcommand.testkit.core.PbTestScatterApp):
         ])
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterAlignmentsReferenceBasemods(TestScatterAlignmentsReference):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference_basemods"
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterSubreadReference(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_reference"
     INPUT_FILES = [
-        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda/2372215/0007_tiny/Analysis_Results/m150404_101626_42267_c100807920800000001823174110291514_s1_p0.all.subreadset.xml",
+        pbcore.data.getUnalignedBam(),
         "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
     ]
     MAX_NCHUNKS = 3
