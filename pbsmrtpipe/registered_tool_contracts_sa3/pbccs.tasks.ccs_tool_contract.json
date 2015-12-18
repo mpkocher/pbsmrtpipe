@@ -13,7 +13,7 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": 4.0, 
+                    "default": 3.75, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.min_snr", 
                     "name": "Minimum SNR", 
@@ -27,7 +27,7 @@
                 "type": "object", 
                 "properties": {
                     "pbccs.task_options.min_snr": {
-                        "default": 4.0, 
+                        "default": 3.75, 
                         "type": "number", 
                         "description": "Minimum SNR of input subreads", 
                         "title": "Minimum SNR"
@@ -189,7 +189,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.0", 
+        "_comment": "Created by v0.3.6", 
         "name": "ccs", 
         "input_types": [
             {
