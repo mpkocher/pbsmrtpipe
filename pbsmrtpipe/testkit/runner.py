@@ -116,17 +116,19 @@ def run_butler(butler, test_cases, output_xml,
     if not os.path.exists(butler.output_dir):
         os.mkdir(butler.output_dir)
 
-    b_log = os.path.join(butler.output_dir, 'butler.log')
-    # b_err = os.path.join(butler.output_dir, 'butler.stderr')
-    b_out = os.path.join(butler.output_dir, 'butler.stdout')
+    # Testkit log file, always set to debug
+    b_log = os.path.join(butler.output_dir, 'testkit.log')
+    setup_log(log,
+              level=logging.DEBUG,
+              file_name=b_log)
 
-    setup_log(log, level=log_level, file_name=b_log)
-
-    # Butler stdout log
+    # Testkit stdout
+    # FIXME. add Filter once pbcommand supports it.
+    # log_filter=StdOutStatusLogFilter()
+    # making the message terse, because it's reading from pbsmrtpipe stdout
     str_formatter = '[%(levelname)s] %(message)s'
     setup_log(slog, level=log_level,
-              file_name=b_out,
-              log_filter=StdOutStatusLogFilter(),
+              file_name=None,
               str_formatter=str_formatter)
 
     if log_file is not None:
@@ -211,8 +213,8 @@ def _add_config_file_option(p):
 
 def add_ignore_test_failures_option(p):
     p.add_argument("--ignore-test-failures", action="store_true",
-        help="Exit with code 0 if pbsmrtpipe ran successfully, even if "+
-             "some tests fail")
+                   help="Exit with code 0 if pbsmrtpipe ran successfully, even if " +
+                        "some tests fail")
     return p
 
 
