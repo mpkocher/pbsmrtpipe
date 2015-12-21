@@ -208,6 +208,9 @@ def gather_fastq_contigset(input_files, output_file):
     contigset_name = op.splitext(output_file)[0] + ".contigset.xml"
     __gather_contigset("fastq", input_files, contigset_name,
         new_resource_file=output_file)
+    # FIXME this will fail under certain circumstances - need to debug further
+    # (possibly just an artifact of unit test setup)
+    assert op.isfile(output_file)
     return output_file
 
 
