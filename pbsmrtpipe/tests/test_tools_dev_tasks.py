@@ -15,7 +15,8 @@ from pbcommand.pb_io.report import load_report_from_json
 from pbcommand.models import PipelineChunk
 import pbcommand.testkit.core
 from pbcore.io import SubreadSet, ContigSet, FastaReader, FastqReader, \
-    ConsensusReadSet, AlignmentSet, ConsensusAlignmentSet, HdfSubreadSet
+    ConsensusReadSet, AlignmentSet, ConsensusAlignmentSet, HdfSubreadSet, \
+    ReferenceSet
 import pbcore.data
 
 from pbsmrtpipe.tools.chunk_utils import write_chunks_to_json
@@ -23,6 +24,8 @@ from pbsmrtpipe.tools.chunk_utils import write_chunks_to_json
 from base import get_temp_file
 
 MNT_DATA = "/pbi/dept/secondary/siv/testdata"
+skip_if_missing_testdata = unittest.skipUnless(op.isdir(MNT_DATA),
+    "Missing {d}".format(d=MNT_DATA))
 
 
 def _write_fasta_or_contigset(file_name, make_faidx=False):
@@ -122,7 +125,6 @@ class TestScatterSubreadZMWs(CompareScatteredRecordsBase,
     CHUNK_KEYS = ("$chunk.subreadset_id",)
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterCCSZMWs(CompareScatteredRecordsBase,
                          pbcommand.testkit.core.PbTestScatterApp):
 
@@ -133,14 +135,14 @@ class TestScatterCCSZMWs(CompareScatteredRecordsBase,
     READER_KWARGS = {'strict': True}
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_ccs_zmws"
     INPUT_FILES = [
-        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml"
+        make_tmp_dataset_xml(pbcore.data.getCCSBAM(), READER_CLASS)
     ]
-    MAX_NCHUNKS = 8
-    RESOLVED_MAX_NCHUNKS = 8
+    MAX_NCHUNKS = 6
+    RESOLVED_MAX_NCHUNKS = 6
     CHUNK_KEYS = ("$chunk.ccsset_id",)
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestScatterHdfSubreads(CompareScatteredRecordsBase,
                              pbcommand.testkit.core.PbTestScatterApp):
 
@@ -199,20 +201,18 @@ class TestScatterSubreadReference(pbcommand.testkit.core.PbTestScatterApp):
     CHUNK_KEYS = ("$chunk.subreadset_id", "$chunk.reference_id")
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
 class TestScatterCCSReference(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_ccs_reference"
     INPUT_FILES = [
-        "/pbi/dept/secondary/siv/testdata/pbsmrtpipe-unittest/data/chunk/ccs.consensusreadset.xml",
-        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
+        make_tmp_dataset_xml(pbcore.data.getCCSBAM(), ConsensusReadSet),
+        make_tmp_dataset_xml(pbcore.data.getLambdaFasta(), ReferenceSet)
     ]
     MAX_NCHUNKS = 8
     RESOLVED_MAX_NCHUNKS = 8
     CHUNK_KEYS = ("$chunk.ccsset_id", "$chunk.reference_id")
 
 
-@unittest.skipUnless(op.isdir("/pbi/dept/secondary/siv/testdata/pblaa-unittest"),
-                     "Missing /pbi/dept/secondary/siv/testdata/pblaa-unittest")
+@skip_if_missing_testdata
 class TestScatterSubreadBarcodes(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_barcodes"
     INPUT_FILES = [
@@ -246,7 +246,7 @@ class CompareGatheredRecordsBase(object):
         self.assertEqual(n_rec_chunked, n_rec)
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherSubreads(CompareGatheredRecordsBase,
                          pbcommand.testkit.core.PbTestGatherApp):
 
@@ -262,7 +262,7 @@ class TestGatherSubreads(CompareGatheredRecordsBase,
     CHUNK_KEY = "$chunk.subreadset_id"
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherAlignmentSet(CompareGatheredRecordsBase,
                              pbcommand.testkit.core.PbTestGatherApp):
 
@@ -289,7 +289,7 @@ class TestGatherAlignmentSet(CompareGatheredRecordsBase,
         self.assertNotEqual(len(files), 1)
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherCCS(CompareGatheredRecordsBase,
                     pbcommand.testkit.core.PbTestGatherApp):
 
@@ -305,7 +305,7 @@ class TestGatherCCS(CompareGatheredRecordsBase,
     CHUNK_KEY = "$chunk.ccsset_id"
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherCCSAlignmentSet(CompareGatheredRecordsBase,
                                 pbcommand.testkit.core.PbTestGatherApp):
 
@@ -321,7 +321,7 @@ class TestGatherCCSAlignmentSet(CompareGatheredRecordsBase,
     CHUNK_KEY = "$chunk.ccs_alignmentset_id"
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
 
     """
@@ -357,7 +357,7 @@ class TestGatherReport(pbcommand.testkit.core.PbTestGatherApp):
             'num_not_converged', 'num_below_min_accuracy'])
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherContigs(CompareGatheredRecordsBase,
                         pbcommand.testkit.core.PbTestGatherApp):
 
@@ -372,7 +372,7 @@ class TestGatherContigs(CompareGatheredRecordsBase,
     CHUNK_KEY = "$chunk.contigset_id"
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherFasta(CompareGatheredRecordsBase,
                       pbcommand.testkit.core.PbTestGatherApp):
 
@@ -387,7 +387,7 @@ class TestGatherFasta(CompareGatheredRecordsBase,
     CHUNK_KEY = "$chunk.fasta_id"
 
 
-@unittest.skipUnless(op.isdir(MNT_DATA), "Missing %s" % MNT_DATA)
+@skip_if_missing_testdata
 class TestGatherFastq(CompareGatheredRecordsBase,
                       pbcommand.testkit.core.PbTestGatherApp):
 
