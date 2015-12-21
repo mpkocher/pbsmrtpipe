@@ -40,7 +40,7 @@ def _to_fastq_record(header, seq):
     return FastqRecord(header, seq, quality=quality)
 
 
-def __to_fastx_records(n, _to_seq_func, _to_record_func):
+def __to_fastx_records(n, _to_seq_func, _to_record_func, prefix="record"):
     """
 
     :param n:
@@ -49,18 +49,20 @@ def __to_fastx_records(n, _to_seq_func, _to_record_func):
     :return: Fastq/Fasta Record
     """
     for i in xrange(n):
-        header = "record_{i}".format(i=i)
+        header = "{p}_{i}".format(p=prefix, i=i)
         seq = _to_seq_func()
         r = _to_record_func(header, seq)
         yield r
 
 
-def to_fasta_records(n):
-    return __to_fastx_records(n, _random_dna_sequence, _to_fasta_record)
+def to_fasta_records(n, prefix="record"):
+    return __to_fastx_records(n, _random_dna_sequence, _to_fasta_record,
+        prefix=prefix)
 
 
-def to_fastq_records(n):
-    return __to_fastx_records(n, _random_dna_sequence, _to_fastq_record)
+def to_fastq_records(n, prefix="record"):
+    return __to_fastx_records(n, _random_dna_sequence, _to_fastq_record,
+        prefix=prefix)
 
 
 def write_fastx_records(fastx_writer_klass, records, path):
@@ -74,12 +76,14 @@ def write_fastx_records(fastx_writer_klass, records, path):
     return 0
 
 
-def write_random_fasta_records(path, nrecords=100):
-    return write_fastx_records(FastaWriter, to_fasta_records(nrecords), path)
+def write_random_fasta_records(path, nrecords=100, prefix="record"):
+    return write_fastx_records(FastaWriter, to_fasta_records(nrecords,
+        prefix=prefix), path)
 
 
-def write_random_fastq_records(path, nrecords=100):
-    return write_fastx_records(FastqWriter, to_fastq_records(nrecords), path)
+def write_random_fastq_records(path, nrecords=100, prefix="record"):
+    return write_fastx_records(FastqWriter, to_fastq_records(nrecords,
+        prefix=prefix), path)
 
 
 def _to_random_tmp_fofn(nrecords):
