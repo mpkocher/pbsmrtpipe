@@ -165,7 +165,7 @@ class TestScatterAlignmentsReference(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_alignments_reference"
     INPUT_FILES = [
         pbcore.data.getBamAndCmpH5()[0],
-        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
+        pbcore.data.getLambdaFasta()
     ]
     MAX_NCHUNKS = 2
     RESOLVED_MAX_NCHUNKS = 2
@@ -194,7 +194,7 @@ class TestScatterSubreadReference(pbcommand.testkit.core.PbTestScatterApp):
     DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.scatter_subread_reference"
     INPUT_FILES = [
         pbcore.data.getUnalignedBam(),
-        "/pbi/dept/secondary/siv/testdata/SA3-DS/lambda.referenceset.xml",
+        pbcore.data.getLambdaFasta()
     ]
     MAX_NCHUNKS = 3
     RESOLVED_MAX_NCHUNKS = 3
