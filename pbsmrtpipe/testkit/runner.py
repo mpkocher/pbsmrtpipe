@@ -8,14 +8,18 @@ import time
 import unittest
 
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
-# the pbcommand version raise OSError for some reason
-from pbsmrtpipe.cli_utils import validate_file
 
-from pbsmrtpipe.engine import run_command, run_command_async
-from pbsmrtpipe.cli import (add_log_file_options, add_log_level_option,
-                            LOG_LEVELS, resolve_dist_chunk_overrides)
+# the pbcommand version raise OSError for some reason
+from pbcommand.utils import setup_console_and_file_logger, Constants, compose
+from pbcommand.common_options import (add_debug_option,
+                                      add_log_file_option,
+                                      add_log_level_option)
+
+from pbsmrtpipe.cli_utils import validate_file
+from pbsmrtpipe.engine import run_command_async
+from pbsmrtpipe.cli import (LOG_LEVELS, resolve_dist_chunk_overrides)
 from pbsmrtpipe.constants import SLOG_PREFIX
-from pbsmrtpipe.utils import compose
+
 import pbsmrtpipe.testkit.butler as B
 import pbsmrtpipe.testkit.loader as L
 import pbsmrtpipe.testkit.xunit as X
@@ -26,7 +30,7 @@ from pbsmrtpipe.utils import setup_log, StdOutStatusLogFilter
 log = logging.getLogger()
 slog = logging.getLogger(SLOG_PREFIX + __name__)
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 def _patch_test_cases_with_job_dir(test_cases, job_dir):
@@ -89,7 +93,7 @@ def run_butler_tests(test_cases, output_dir, output_xml, job_id):
 
 
 def run_butler(butler, test_cases, output_xml,
-               log_file=None,
+               log_file,
                log_level=logging.DEBUG,
                force_distribute=None,
                force_chunk=None,
@@ -116,30 +120,16 @@ def run_butler(butler, test_cases, output_xml,
     if not os.path.exists(butler.output_dir):
         os.mkdir(butler.output_dir)
 
-    # Testkit log file, always set to debug
-    b_log = os.path.join(butler.output_dir, 'testkit.log')
-    setup_log(log,
-              level=logging.DEBUG,
-              file_name=b_log)
+    if isinstance(log_level, str):
+        log_levels_d = {attr: getattr(logging, attr) for attr in LOG_LEVELS}
+        console_level = log_levels_d[log_level]
+    else:
+        console_level = log_level
 
-    # Testkit stdout
-    # FIXME. add Filter once pbcommand supports it.
-    # log_filter=StdOutStatusLogFilter()
-    # making the message terse, because it's reading from pbsmrtpipe stdout
-    str_formatter = '[%(levelname)s] %(message)s'
-    setup_log(slog, level=log_level,
-              file_name=None,
-              str_formatter=str_formatter)
+    # Always Write the log will full debug mode.
+    setup_console_and_file_logger(console_level, Constants.LOG_FMT_MIN, log_file, logging.DEBUG, Constants.LOG_FMT_LVL)
 
-    if log_file is not None:
-        if isinstance(log_level, str):
-            log_levels_d = {attr: getattr(logging, attr) for attr in LOG_LEVELS}
-            level = log_levels_d[log_level]
-        else:
-            level = logging.DEBUG
-        setup_log(log, level=level, file_name=log_file)
-
-    # log.debug(pprint.pformat(butler.__dict__))
+    slog.info("completed setting up log to console and {f}".format(f=log_file))
     slog.info("Running butler with test id {i}".format(i=butler.job_id))
     slog.info("Running cmd '{c}'".format(c=cmd))
 
@@ -164,6 +154,7 @@ def run_butler(butler, test_cases, output_xml,
                 slog.info(msg)
 
         if test_cases is not None:
+            slog.info("Running in test-only mode")
             trcode = run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
         else:
             trcode = 0
@@ -187,13 +178,17 @@ def _args_run_butler(args):
 
     output_xml = os.path.join(butler.output_dir, 'testkit_xunit.xml')
 
+    if args.log_file is None:
+        log_file = os.path.join(butler.output_dir, 'testkit.log')
+    else:
+        log_file = args.log_file
+
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
     if args.only_tests:
         return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
     else:
-        rcode = run_butler(butler, test_cases, output_xml,
-                           log_file=args.log_file,
+        rcode = run_butler(butler, test_cases, output_xml, log_file,
                            log_level=args.log_level,
                            force_distribute=force_distribute,
                            force_chunk=force_chunk,
@@ -227,8 +222,8 @@ def get_parser():
              _add_config_file_option,
              add_tests_only_option,
              add_log_level_option,
-             add_log_file_options,
-             TU.add_debug_option,
+             add_log_file_option,
+             add_debug_option,
              add_ignore_test_failures_option]
 
     f = compose(*funcs)
@@ -237,11 +232,6 @@ def get_parser():
     return p
 
 
-def setup_minimal_log(alog, **kwargs):
-    kwargs['str_formatter'] = '%(message)s'
-    setup_log(alog, **kwargs)
-
-
 def main(argv=sys.argv):
     parser = get_parser()
-    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_minimal_log)
+    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_log_func=None)

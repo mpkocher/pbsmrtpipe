@@ -52,7 +52,7 @@ test-chunk-operators:
 
 test-sanity: test-contracts test-pipelines test-chunk-operators test-loader write-pipeline-templates
 
-test-suite: test-sanity test-unit test-dev
+test-suite: test-sanity test-unit test-dev write-pipeline-templates
 
 test-clean-suite: install test-suite
 
