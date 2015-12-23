@@ -37,7 +37,8 @@ def _validate_preset_xml(path):
 
 
 def add_log_file_options(p):
-    p.add_argument('--log-file', type=str, help="Path to log file")
+    p.add_argument('--log-file', type=str, default=None, help="Path to log file")
+    p.add_argument('--log-file', type=str, default=None, help="Path to log file")
     return p
 
 LOG_LEVELS = ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')

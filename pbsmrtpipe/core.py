@@ -197,7 +197,9 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
         else:
             raise MalformedPipelineError("Unhandled binding case '{o}' -> '{i}'".format(o=b_out, i=b_in))
 
-        log.info("registering pipeline {i}".format(i=pipeline.pipeline_id))
+        if pipeline.pipeline_id not in registered_pipeline_d:
+            log.debug("registering pipeline {i}".format(i=pipeline.pipeline_id))
+
         registered_pipeline_d[pipeline.pipeline_id] = pipeline
 
     return registered_pipeline_d
