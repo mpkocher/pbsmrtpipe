@@ -1,0 +1,43 @@
+{
+    "driver": {
+        "env": {},
+        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ",
+        "serialization": "json"
+    },
+    "tool_contract": {
+        "_comment": "Created by v0.3.9",
+        "description": "Quick tool task_falconx falcon_ns.tasks.task_falconx",
+        "input_types": [
+            {
+                "description": "description for PacBio.FileTypes.json_0",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "Label PacBio.FileTypes.json_0",
+                "title": "<FileType id=PacBio.FileTypes.json name=file.json >"
+            },
+            {
+                "description": "description for PacBio.FileTypes.generic_fofn_1",
+                "file_type_id": "PacBio.FileTypes.generic_fofn",
+                "id": "Label PacBio.FileTypes.generic_fofn_1",
+                "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic.fofn >"
+            }
+        ],
+        "is_distributed": false,
+        "name": "Tool task_falconx",
+        "nproc": 1,
+        "output_types": [
+            {
+                "default_name": "file.fasta",
+                "description": "description for <FileType id=PacBio.FileTypes.Fasta name=file.fasta >",
+                "file_type_id": "PacBio.FileTypes.Fasta",
+                "id": "Label PacBio.FileTypes.Fasta_0",
+                "title": "<FileType id=PacBio.FileTypes.Fasta name=file.fasta >"
+            }
+        ],
+        "resource_types": [],
+        "schema_options": [],
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "tool_contract_id": "falcon_ns.tasks.task_falconx"
+    },
+    "tool_contract_id": "falcon_ns.tasks.task_falconx",
+    "version": "0.0.0"
+}
