@@ -72,16 +72,20 @@ def _get_polished_falcon_pipeline():
 
     faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
 
+    aln = 'pbalign.tasks.pbalign:0'
     ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
 
-    polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
+    polish = _core_align(subreadset, ref) + _core_gc(aln,
                                                      ref)
     results = dict()
+    results['aln'] = aln
+    results['ref'] = ref
+
     return ((btf + ftfofn + gen_cfg + falcon + faidx + polish), results)
 
 @dev_register("pipe_falcon_with_fofn", "Falcon FOFN Pipeline",
               tags=("local", "chunking", "internal"))
-def get_task_falcon_local_pipeline():
+def get_task_falcon_local_pipeline2():
     """Simple falcon local pipeline.
     Use an entry-point for FASTA input.
     """
@@ -89,7 +93,7 @@ def get_task_falcon_local_pipeline():
 
 @dev_register("pipe_falcon", "Falcon Pipeline",
               tags=("local", "chunking", "internal"))
-def get_task_falcon_local_pipeline():
+def get_task_falcon_local_pipeline1():
     """Simple falcon local pipeline.
     FASTA input comes from config file.
     """
@@ -102,7 +106,7 @@ def get_task_falcon_local_pipeline():
 
 @dev_register("polished_falcon", "Polished Falcon Pipeline",
               tags=("chunking", "internal"))
-def get_task_falcon_local_pipeline():
+def get_task_polished_falcon_pipeline():
     """Simple polished falcon local pipeline.
     FASTA input comes from the SubreadSet.
     """
@@ -156,5 +160,3 @@ def get_falcon_pipeline_fat():
                        ('genomic_consensus.tasks.variantcaller:2', 'pbreports.tasks.polished_assembly:1')]
 
     return falcon + sum_cov + polished_report
-
-
