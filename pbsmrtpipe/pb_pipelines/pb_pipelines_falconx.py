@@ -9,6 +9,8 @@ log = logging.getLogger(__name__)
 
 
 def dev_register(relative_id, display_name, tags=()):
+    relative_id = 'x_' + relative_id
+    display_name = 'x_' + display_name
     pipeline_id = to_pipeline_ns(relative_id)
     ptags = list(set(tags + (Tags.DENOVO, )))
     return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags)
