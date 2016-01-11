@@ -23,39 +23,13 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
           (i_fasta_fofn, 'falcon_ns.tasks.task_falcon_config:1'),
           ('falcon_ns.tasks.task_falcon_config:0', 'falcon_ns.tasks.task_falcon_make_fofn_abs:0'),
     ]
-    br0 = [
-          ('falcon_ns.tasks.task_falcon_config:0',        'falcon_ns.tasks.task_falcon0_build_rdb:0'),
-          ('falcon_ns.tasks.task_falcon_make_fofn_abs:0', 'falcon_ns.tasks.task_falcon0_build_rdb:1'),
-         ]
-    br1 = [
-          ('falcon_ns.tasks.task_falcon_config:0',     'falcon_ns.tasks.task_falcon0_run_daligner_jobs:0'),
-          ('falcon_ns.tasks.task_falcon0_build_rdb:0', 'falcon_ns.tasks.task_falcon0_run_daligner_jobs:1'),
-         ]
-    br2 = [
-          ('falcon_ns.tasks.task_falcon_config:0',             'falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:0'),
-          ('falcon_ns.tasks.task_falcon0_build_rdb:0',         'falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:1'),
-          ('falcon_ns.tasks.task_falcon0_run_daligner_jobs:0', 'falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:2'),
-         ]
-    bp0 = [
-          ('falcon_ns.tasks.task_falcon_config:0',                    'falcon_ns.tasks.task_falcon1_build_pdb:0'),
-          ('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon1_build_pdb:1'),
-         ]
-    bp1 = [
-          ('falcon_ns.tasks.task_falcon_config:0',     'falcon_ns.tasks.task_falcon1_run_daligner_jobs:0'),
-          ('falcon_ns.tasks.task_falcon1_build_pdb:0', 'falcon_ns.tasks.task_falcon1_run_daligner_jobs:1'),
-         ]
-    bp2 = [
-          ('falcon_ns.tasks.task_falcon_config:0',             'falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0'),
-          ('falcon_ns.tasks.task_falcon1_build_pdb:0',         'falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:1'),
-          ('falcon_ns.tasks.task_falcon1_run_daligner_jobs:0', 'falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:2'),
-         ]
-    bf = [
-            ('falcon_ns.tasks.task_falcon_config:0',                    'falcon_ns.tasks.task_falcon2_run_asm:0'),
-            ('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon2_run_asm:1'),
+    bfx = [
+          ('falcon_ns.tasks.task_falcon_config:0',        'falcon_ns.tasks.task_falconx:0'),
+          ('falcon_ns.tasks.task_falcon_make_fofn_abs:0', 'falcon_ns.tasks.task_falconx:1'),
          ]
     results = dict()
-    results['asm'] = 'falcon_ns.tasks.task_falcon2_run_asm:0'
-    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf, results
+    results['asm'] = 'falcon_ns.tasks.task_falconx:0'
+    return b0 + bfx, results
 
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
