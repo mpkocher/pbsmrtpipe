@@ -25,7 +25,6 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
           ('falcon_ns.tasks.task_falcon_config:0',        'falcon_ns.tasks.task_falcon0_build_rdb:0'),
           ('falcon_ns.tasks.task_falcon_make_fofn_abs:0', 'falcon_ns.tasks.task_falcon0_build_rdb:1'),
          ]
-
     br1 = [
           ('falcon_ns.tasks.task_falcon_config:0',     'falcon_ns.tasks.task_falcon0_run_daligner_jobs:0'),
           ('falcon_ns.tasks.task_falcon0_build_rdb:0', 'falcon_ns.tasks.task_falcon0_run_daligner_jobs:1'),
@@ -52,7 +51,9 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
             ('falcon_ns.tasks.task_falcon_config:0',                    'falcon_ns.tasks.task_falcon2_run_asm:0'),
             ('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon2_run_asm:1'),
          ]
-    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf
+    results = dict()
+    results['asm'] = 'falcon_ns.tasks.task_falcon2_run_asm:0'
+    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf, results
 
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
@@ -66,9 +67,9 @@ def _get_polished_falcon_pipeline():
 
     i_cfg = 'falcon_ns.tasks.task_falcon_gen_config:0'
 
-    falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+    falcon, falcon_results = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
 
-    ref = 'falcon_ns.tasks.task_falcon2_run_asm:0'
+    ref = falcon_results['asm']
 
     faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
 
@@ -89,7 +90,7 @@ def get_task_falcon_local_pipeline2():
     """Simple falcon local pipeline.
     Use an entry-point for FASTA input.
     """
-    return _get_falcon_pipeline('$entry:e_01', '$entry:e_02')
+    return _get_falcon_pipeline('$entry:e_01', '$entry:e_02')[0]
 
 @dev_register("pipe_falcon", "Falcon Pipeline",
               tags=("local", "chunking", "internal"))
@@ -102,7 +103,7 @@ def get_task_falcon_local_pipeline1():
           (i_cfg, 'falcon_ns.tasks.task_falcon_config_get_fasta:0'),
            ]
     i_fasta_fofn = 'falcon_ns.tasks.task_falcon_config_get_fasta:0' # output from init
-    return init + _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+    return init + _get_falcon_pipeline(i_cfg, i_fasta_fofn)[0]
 
 @dev_register("polished_falcon", "Polished Falcon Pipeline",
               tags=("chunking", "internal"))
@@ -118,9 +119,9 @@ def get_task_polished_falcon_pipeline():
 
     i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
 
-    falcon = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
+    falcon, falcon_results = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
 
-    ref = 'falcon_ns.tasks.task_falcon2_run_asm:0'
+    ref = falcon_results['asm']
 
     faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
 
