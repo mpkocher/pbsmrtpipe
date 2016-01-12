@@ -195,11 +195,13 @@ def _args_run_butler(args):
     if args.debug:
         log_level = logging.DEBUG
 
+    if log_level == logging.DEBUG:
+        # The logger isn't setup yet
+        print "Args", args
+
     if args.only_tests:
         # in test only mode, only emit to stdout (to avoid overwritten the
         # log file
-        print args
-        setup_logger(None, level=log_level)
         setup_logger(None, level=log_level)
         return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
     else:
