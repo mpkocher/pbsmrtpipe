@@ -10,7 +10,8 @@ import unittest
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
 
 # the pbcommand version raise OSError for some reason
-from pbcommand.utils import setup_console_and_file_logger, Constants, compose
+from pbcommand.utils import (setup_console_and_file_logger, setup_logger,
+                             Constants, compose)
 from pbcommand.common_options import (add_debug_option,
                                       add_log_file_option,
                                       add_log_level_option)
@@ -43,16 +44,17 @@ def _patch_test_cases_with_job_dir(test_cases, job_dir):
 
 
 def _write_xunit_output(test_cases, result, output_xml, job_id):
+    """Returns a XunitTestSuite instance"""
     xml = X.convert_suite_and_result_to_xunit(test_cases, result)
 
-    log.info("Writing Xunit XML output to {f}".format(f=output_xml))
+    log.debug("Writing Xunit XML output to {f}".format(f=output_xml))
     with open(output_xml, 'w+') as f:
         f.write(str(xml))
 
-    # give the user some feedback that tests were run.
     xsuite = X.XunitTestSuite.from_xml(output_xml)
-    slog.info(str(xsuite))
-    slog.info(xsuite)
+    # give the user some feedback that tests were run.
+    # slog.info(str(xsuite))
+    # slog.info(xsuite)
     nfailed_tests = xsuite.nfailure
     nerrors = xsuite.nerrors
     nskipped = xsuite.nskipped
@@ -68,6 +70,7 @@ def _write_xunit_output(test_cases, result, output_xml, job_id):
         f.write(str(jenkins_xml))
     
     log.info("Completed running {t} tests. {s} skipped, {e} errors, and {n} failed tests.".format(e=nerrors, n=nfailed_tests, s=nskipped, t=len(xsuite)))
+    return xsuite
 
 
 def run_butler_tests(test_cases, output_dir, output_xml, job_id):
@@ -81,13 +84,14 @@ def run_butler_tests(test_cases, output_dir, output_xml, job_id):
 
     # This is the API to run directly from Unittest
     slog.info("Running test cases")
-    slog.info(test_cases)
+    log.debug(test_cases)
     result = unittest.TestResult()
     test_suite = unittest.TestSuite(test_cases)
     test_suite.run(result)
-    log.debug(result)
+    #log.debug(result)
 
-    _write_xunit_output(test_cases, result, output_xml, job_id)
+    xml = _write_xunit_output(test_cases, result, output_xml, job_id)
+    log.info(str(xml))
 
     return 0 if result.wasSuccessful() else 1
 
@@ -127,7 +131,7 @@ def run_butler(butler, test_cases, output_xml,
         console_level = log_level
 
     # Always Write the log will full debug mode.
-    setup_console_and_file_logger(console_level, Constants.LOG_FMT_MIN, log_file, logging.DEBUG, Constants.LOG_FMT_LVL)
+    setup_console_and_file_logger(console_level, Constants.LOG_FMT_SIMPLE, log_file, logging.DEBUG, Constants.LOG_FMT_STD)
 
     slog.info("completed setting up log to console and {f}".format(f=log_file))
     slog.info("Running butler with test id {i}".format(i=butler.job_id))
@@ -185,11 +189,24 @@ def _args_run_butler(args):
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
 
+    log_level = args.log_level
+
+    # Short hand for --log-level=DEBUG
+    if args.debug:
+        log_level = logging.DEBUG
+
+    if log_level == logging.DEBUG:
+        # The logger isn't setup yet
+        print "Args", args
+
     if args.only_tests:
+        # in test only mode, only emit to stdout (to avoid overwritten the
+        # log file
+        setup_logger(None, level=log_level)
         return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
     else:
         rcode = run_butler(butler, test_cases, output_xml, log_file,
-                           log_level=args.log_level,
+                           log_level=log_level,
                            force_distribute=force_distribute,
                            force_chunk=force_chunk,
                            ignore_test_failures=args.ignore_test_failures)

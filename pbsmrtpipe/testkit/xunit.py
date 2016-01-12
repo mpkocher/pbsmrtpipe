@@ -224,7 +224,7 @@ def _parser(file_name):
         log.error(msg)
         raise ValueError(msg)
 
-    log.debug(xunit_test_suite)
+    # log.debug(xunit_test_suite)
     return xunit_test_suite
 
 

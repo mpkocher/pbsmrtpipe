@@ -660,8 +660,12 @@ def _pbsmrtipe_setup_log(alog, **kwargs):
 
     This should only emit 'status.*' messages.
     """
+    # This is a essentially just a bootstrapping step before the job-dir/logs
+    # can be created and proper log files (pbsmrtpipe.log, master.log) will
+    # be setup for this to work with the new global dict setup model would have to
+    # extended to support adding a custom filter.
 
-    str_formatter = '[%(levelname)s] %(asctime)-15s %(message)s'
+    str_formatter = '%(message)s'
 
     level = kwargs.get('level', logging.INFO)
     setup_log(alog,
