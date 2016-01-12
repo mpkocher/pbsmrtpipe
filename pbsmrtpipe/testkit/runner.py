@@ -131,7 +131,7 @@ def run_butler(butler, test_cases, output_xml,
         console_level = log_level
 
     # Always Write the log will full debug mode.
-    setup_console_and_file_logger(console_level, '%(message)s', log_file, logging.DEBUG, Constants.LOG_FMT_LVL)
+    setup_console_and_file_logger(console_level, Constants.LOG_FMT_SIMPLE, log_file, logging.DEBUG, Constants.LOG_FMT_STD)
 
     slog.info("completed setting up log to console and {f}".format(f=log_file))
     slog.info("Running butler with test id {i}".format(i=butler.job_id))

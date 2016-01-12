@@ -78,7 +78,7 @@ def get_default_logging_config_dict(master_log, master_level, pb_log, stdout_lev
         'disable_existing_loggers': False,  # this fixes the problem
         'formatters': {
             'console': {
-                'format': '[%(levelname)s] %(asctime)-15sZ %(message)s'
+                'format': '%(message)s'
             },
             'standard': {
                 'format': '[%(levelname)s] %(asctime)-15sZ [%(name)s] %(message)s'
