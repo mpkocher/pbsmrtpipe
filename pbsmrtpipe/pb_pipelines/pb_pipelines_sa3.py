@@ -235,14 +235,18 @@ def rs_modification_detection_1():
     Base Modification Analysis Pipeline - performs resequencing workflow
     and detects methylated bases from kinetic data
     """
-    b1 = _core_mod_detection("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
-    b2 = [
+    b1 = _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
+    b2 = _core_mod_detection("pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
+    b3 = [("pbalign.tasks.pbalign:0", "pbreports.tasks.summarize_coverage:0"),
+          (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage:1")]
+
+    b4 = [
         # basemods.gff
         ("kinetics_tools.tasks.ipd_summary:0", "kinetics_tools.tasks.summarize_modifications:0"),
-        # alignment_summary_final.gff
-        ("pbsmrtpipe.pipelines.sa3_ds_resequencing_fat:genomic_consensus.tasks.summarize_consensus:0", "kinetics_tools.tasks.summarize_modifications:1")
+        # alignment_summary.gff
+        ("pbreports.tasks.summarize_coverage:0", "kinetics_tools.tasks.summarize_modifications:1")
     ]
-    return b1 + b2
+    return b1 + b2 + b3 + b4
 
 
 def _core_motif_analysis(ipd_gff, reference_ds):
