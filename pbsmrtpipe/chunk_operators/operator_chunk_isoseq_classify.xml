@@ -28,7 +28,7 @@
                 <task-output>pbtranscript.tasks.classify:2</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_report</gather-task-id>
+                <gather-task-id>pbtranscript.tasks.gather_isoseq_classify_report</gather-task-id>
                 <chunk-key>$chunk.report_id</chunk-key>
                 <task-output>pbtranscript.tasks.classify:3</task-output>
             </chunk>
