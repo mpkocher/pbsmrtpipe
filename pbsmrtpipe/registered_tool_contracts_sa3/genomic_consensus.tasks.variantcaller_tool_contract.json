@@ -1,5 +1,5 @@
 {
-    "version": "1.1.0", 
+    "version": "2.0.0", 
     "driver": {
         "serialization": "json", 
         "exe": "variantCaller --resolved-tool-contract ", 
@@ -127,7 +127,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.10", 
         "name": "variantCaller", 
         "input_types": [
             {

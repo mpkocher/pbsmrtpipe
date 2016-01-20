@@ -44,7 +44,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.10", 
         "name": "motif_maker.tasks.reprocess", 
         "input_types": [
             {

@@ -136,7 +136,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.2.17", 
+        "_comment": "Created by v0.3.10", 
         "name": "pbalign.tasks.pbalign", 
         "input_types": [
             {

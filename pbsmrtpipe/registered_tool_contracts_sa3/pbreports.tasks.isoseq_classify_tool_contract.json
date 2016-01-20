@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.10", 
         "name": "IsoSeq Classify Report", 
         "input_types": [
             {
@@ -30,10 +30,10 @@
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
-                "description": "A summary produced by IsoSeq Classify, e.g. classify_summary.txt", 
+                "description": "A summary produced by IsoSeq Classify, e.g. classify_summary.json", 
                 "title": "Summary file", 
                 "id": "inSummaryFN", 
-                "file_type_id": "PacBio.FileTypes.JsonReport"
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
         "nproc": 1, 

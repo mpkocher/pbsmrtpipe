@@ -44,7 +44,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.10", 
         "nchunks": "$max_nchunks", 
         "name": "Scatter ContigSet", 
         "input_types": [
@@ -73,7 +73,7 @@
             "$chunk.ccsset_id"
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbtranscript.tasks.scatter_contigset"
     }
 }

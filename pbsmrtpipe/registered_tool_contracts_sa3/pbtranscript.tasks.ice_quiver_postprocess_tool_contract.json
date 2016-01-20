@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.161261", 
+    "version": "0.2.0.171126", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.ice_quiver_postprocess --resolved-tool-contract", 
@@ -87,7 +87,7 @@
                 "description": "JSON summary", 
                 "default_name": "summary.json", 
                 "id": "json_summary", 
-                "file_type_id": "PacBio.FileTypes.JsonReport"
+                "file_type_id": "PacBio.FileTypes.json"
             }, 
             {
                 "title": "CSV file", 
@@ -125,7 +125,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.3.0", 
+        "_comment": "Created by v0.3.10", 
         "name": "pbtranscript.tasks.ice_quiver_postprocess", 
         "input_types": [
             {
@@ -156,7 +156,7 @@
                 "description": "Sentinel file from ice_quiver task", 
                 "title": "JSON file", 
                 "id": "json_in", 
-                "file_type_id": "PacBio.FileTypes.JsonReport"
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
         "nproc": "$max_nproc", 

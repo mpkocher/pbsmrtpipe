@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.18", 
+        "_comment": "Created by v0.3.10", 
         "name": "Polished Assembly", 
         "input_types": [
             {

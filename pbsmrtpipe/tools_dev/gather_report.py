@@ -16,26 +16,27 @@ class Constants(object):
     VERSION = "0.1.0"
     DRIVER = "python -m pbsmrtpipe.tools_dev.gather_report --resolved-tool-contract "
     OPT_CHUNK_KEY = 'pbsmrtpipe.task_options.gather_report_chunk_key'
+    REPORT_TYPE = FileTypes.REPORT
 
 
-def get_parser():
-    p = get_gather_pbparser(Constants.TOOL_ID,
-                            Constants.VERSION,
+def get_parser(constants=Constants):
+    p = get_gather_pbparser(constants.TOOL_ID,
+                            constants.VERSION,
                             "Dev JSON Gather",
                             "General Chunk JSON Statistics Gather",
-                            Constants.DRIVER,
+                            constants.DRIVER,
                             is_distributed=False)
     p.add_input_file_type(FileTypes.CHUNK, "cjson_in", "GCHUNK Json",
                           "Gathered CHUNK Json with Json chunk key")
 
-    p.add_output_file_type(FileTypes.REPORT, "json_out",
+    p.add_output_file_type(constants.REPORT_TYPE, "json_out",
                            "JSON",
                            "Gathered JSON", "gathered.json")
 
     # Only need to add to argparse layer for the commandline
-    p.arg_parser.add_str(Constants.OPT_CHUNK_KEY,
+    p.arg_parser.add_str(constants.OPT_CHUNK_KEY,
                          "chunk_key",
-                         Constants.CHUNK_KEY,
+                         constants.CHUNK_KEY,
                          "Chunk key",
                          "Chunk key to use (format $chunk.{chunk-key}")
 

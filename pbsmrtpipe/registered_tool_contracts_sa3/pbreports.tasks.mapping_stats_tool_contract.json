@@ -20,8 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
-        "name": "Mapping Stats", 
+        "_comment": "Created by v0.3.10", 
+        "name": "Mapping Statistics", 
         "input_types": [
             {
                 "description": "BAM, SAM or Alignment DataSet", 

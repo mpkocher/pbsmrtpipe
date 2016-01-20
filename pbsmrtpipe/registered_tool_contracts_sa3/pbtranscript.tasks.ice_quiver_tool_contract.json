@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.161261", 
+    "version": "0.2.0.171126", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.ice_quiver --resolved-tool-contract", 
@@ -17,10 +17,10 @@
                 "description": "JSON sentinel file", 
                 "default_name": "quiver_out.json", 
                 "id": "json_out", 
-                "file_type_id": "PacBio.FileTypes.JsonReport"
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.3.0", 
+        "_comment": "Created by v0.3.10", 
         "name": "pbtranscript.tasks.ice_quiver", 
         "input_types": [
             {

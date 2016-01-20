@@ -171,26 +171,26 @@
                         "title": "Maximum Dropped Fraction"
                     }
                 }
-            },
+            }, 
             {
                 "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pbccs.task_options.no_polish",
-                    "name": "No Polish CCS",
+                    "default": false, 
+                    "type": "boolean", 
+                    "option_id": "pbccs.task_options.no_polish", 
+                    "name": "No Polish CCS", 
                     "description": "Only output the initial template derived from the POA"
-                },
-                "title": "JSON Schema for pbccs.task_options.no_polish",
+                }, 
+                "title": "JSON Schema for pbccs.task_options.no_polish", 
                 "required": [
                     "pbccs.task_options.no_polish"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
                 "properties": {
                     "pbccs.task_options.no_polish": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Only output the initial template derived from the POA",
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Only output the initial template derived from the POA", 
                         "title": "No Polish CCS"
                     }
                 }
@@ -212,7 +212,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.6", 
+        "_comment": "Created by v0.3.10", 
         "name": "ccs", 
         "input_types": [
             {

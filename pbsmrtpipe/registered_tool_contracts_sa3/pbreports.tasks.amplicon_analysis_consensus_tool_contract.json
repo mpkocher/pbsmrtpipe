@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.10", 
         "name": "Amplicon Analysis Consensus", 
         "input_types": [
             {
