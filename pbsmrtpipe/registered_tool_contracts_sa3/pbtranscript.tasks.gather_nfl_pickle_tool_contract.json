@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ], 
-        "_comment": "Created by v0.2.15", 
+        "_comment": "Created by v0.3.10", 
         "name": "Dev Pickle Gather", 
         "input_types": [
             {
@@ -31,7 +31,7 @@
             }
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbtranscript.tasks.gather_nfl_pickle"
     }
 }
