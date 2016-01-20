@@ -267,6 +267,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     max_nproc = workflow_opts.max_nproc
     max_nchunks = workflow_opts.max_nchunks
     tmp_dir = workflow_opts.tmp_dir
+    # Is the workflow distributable
+    is_workflow_distributable = global_registry.cluster_renderer is not None
 
     q_out = multiprocessing.Queue()
 
@@ -301,13 +303,13 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # factories for getting a Worker instance
     # utils for getting the running func and worker type
-    def _to_worker(w_is_distributed, wid, task_id, manifest_path_):
-        # the IO loading will forceful set this to None
+    def _to_worker(task_is_distributable, wid, task_id, manifest_path_):
+        # the IO loading will forceful set this to None, which means the workflow is local only
         # if the cluster manager not defined or cluster_mode is False
-        if global_registry.cluster_renderer is None or not w_is_distributed:
-            r_func = T.run_task_manifest
-        else:
+        if is_workflow_distributable and task_is_distributable:
             r_func = T.run_task_manifest_on_cluster
+        else:
+            r_func = T.run_task_manifest
         return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
                                   r_func, task_id, manifest_path_, name=wid)
 
@@ -565,12 +567,12 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
                     if isinstance(tnode.meta_task, ToolContractMetaTask):
-                        rtc = IO.static_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc)
+                        rtc = IO.static_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, is_workflow_distributable)
                     elif isinstance(tnode.meta_task, ScatterToolContractMetaTask):
-                        rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, max_nchunks, tnode.meta_task.chunk_keys)
+                        rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, max_nchunks, tnode.meta_task.chunk_keys, is_workflow_distributable)
                     elif isinstance(tnode.meta_task, GatherToolContractMetaTask):
                         # this should always be a TaskGatherBindingNode which will have a .chunk_key
-                        rtc = IO.static_gather_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, tnode.chunk_key)
+                        rtc = IO.static_gather_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, tnode.chunk_key, is_workflow_distributable)
                     else:
                         raise TypeError("Unsupported task type {t}".format(t=tnode.meta_task))
 
