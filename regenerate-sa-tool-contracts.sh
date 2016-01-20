@@ -49,6 +49,7 @@ PY_MODULES="\
 pbtranscript.tasks.scatter_clusters
 pbtranscript.tasks.scatter_contigset
 pbtranscript.tasks.gather_nfl_pickle
+pbtranscript.tasks.gather_isoseq_classify_report
 pbtranscript.tasks.classify
 pbtranscript.tasks.cluster
 pbtranscript.tasks.ice_partial

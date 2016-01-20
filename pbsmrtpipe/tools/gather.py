@@ -357,6 +357,10 @@ run_main_gather_ccsset = P(__gather_runner, gather_ccsset)
 run_main_gather_ccs_alignmentset = P(__gather_runner, gather_ccs_alignmentset)
 
 
+def get_main_runner(gather_func):
+    return P(__gather_runner, gather_func)
+
+
 def get_parser():
 
     desc = "Gathering File Tool used within pbsmrtpipe on chunk.json files."
