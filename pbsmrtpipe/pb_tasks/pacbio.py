@@ -75,6 +75,10 @@ def run_bax_to_bam(input_file_name, output_file_name):
                     return rc
                 ds_out_files.append(output_file_name_tmp)
             ds = SubreadSet(*ds_out_files)
+            ds.name = ds_in.name
+            if 'Description' in ds_in.objMetadata:
+                ds.objMetadata['Description'] = ds_in.objMetadata['Description']
+                ds.metadata.merge(ds_in.metadata)
             ds.write(output_file_name)
         else:
             return _run_bax_to_bam(input_file_name, output_file_name)

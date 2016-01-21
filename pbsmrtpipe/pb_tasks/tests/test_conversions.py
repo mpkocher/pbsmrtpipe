@@ -57,6 +57,7 @@ def _get_bax2bam_inputs():
                      pbcore.data.getBaxH5_v23()[0])
 
         ds = HdfSubreadSet(*bax_files)
+        ds.name = "lambda_rsii"
         assert len(set([f.movieName for f in ds.resourceReaders()])) == 2
         ds.write(hdf_subread_xml)
         return [hdf_subread_xml]
@@ -82,6 +83,7 @@ class TestBax2Bam(PbTestApp):
     def run_after(self, rtc, output_dir):
         with SubreadSet(rtc.task.output_files[0]) as ds_out:
             self.assertEqual(len(ds_out.toExternalFiles()), 2)
+            self.assertEqual(ds_out.name, "lambda_rsii")
 
 
 @skip_unless_bam2fastx
