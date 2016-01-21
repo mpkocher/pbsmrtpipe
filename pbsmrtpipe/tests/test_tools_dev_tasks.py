@@ -407,6 +407,10 @@ class TestGatherReport(_SetupGatherApp):
                                 "mock_attr_3", "mock_attr_4"])
 
 
+class TestGatherJson(TestGatherReport):
+    DRIVER_BASE = "python -m pbsmrtpipe.tools_dev.gather_json"
+
+
 class TestGatherContigs(_SetupGatherApp):
 
     """
