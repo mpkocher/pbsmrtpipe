@@ -49,7 +49,10 @@ setup(
                                       'pbtools-runner = pbsmrtpipe.tools.runner:main',
                                       'pbtestkit-runner = pbsmrtpipe.testkit.runner:main',
                                       'pbtestkit-multirunner = pbsmrtpipe.testkit.multirunner:main',
-                                      'pbtools-report = pbsmrtpipe.tools.report_to_html:main']},
+                                      'pbtools-report = pbsmrtpipe.tools.report_to_html:main',
+                                      'pbtestkit-service-runner = pbsmrtpipe.testkit.service_runner:main',
+                                      'pbtestkit-service-multirunner = pbsmrtpipe.testkit.service_multirunner:main'
+    ]},
     install_requires=_get_requirements(_get_local_file(_REQUIREMENTS_FILE)),
     tests_require=['nose'],
     long_description=_get_description(_get_local_file(_README)),
