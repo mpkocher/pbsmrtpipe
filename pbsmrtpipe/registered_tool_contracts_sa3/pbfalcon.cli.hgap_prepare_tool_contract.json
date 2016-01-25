@@ -1,0 +1,68 @@
+{
+    "version": "1.0.0",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbfalcon.cli.hgap_prepare --resolved-tool-contract ",
+        "env": {}
+    },
+    "tool_contract_id": "falcon_ns.tasks.task_hgap_prepare",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [],
+        "description": "Generate HGAP config from pbcommand options.",
+        "schema_options": [
+            {
+                "pb_option": {
+                    "default": "\n",
+                    "type": "string",
+                    "option_id": "falcon_ns.task_options.HGAP_Options_JSON",
+                    "name": "Config overrides",
+                    "description": "This is intended to allow support engineers to override the config which we will generate from other options. It is a 2-level JSON dictionary, just like hgap-cfg.json. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual"
+                },
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_Options_JSON",
+                "required": [
+                    "falcon_ns.task_options.HGAP_Options_JSON"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "falcon_ns.task_options.HGAP_Options_JSON": {
+                        "default": "\n",
+                        "type": "string",
+                        "description": "This is intended to allow support engineers to override the config which we will generate from other options. It is a 2-level JSON dictionary, just like hgap-cfg.json. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual",
+                        "title": "Config overrides"
+                    }
+                }
+            }
+        ],
+        "output_types": [
+            {
+                "title": "HGAP JSON file",
+                "description": "Output: Actual configuration to be used by HGAP, in a 2-level dictionary.",
+                "default_name": "hgap-cfg.json",
+                "id": "hgap-cfg-out",
+                "file_type_id": "PacBio.FileTypes.json"
+            },
+            {
+                "title": "Python logging.config JSON file",
+                "description": "Output: Standard Python logging.config (for the task, not pbsmrtpipe)",
+                "default_name": "logging-cfg.json",
+                "id": "logging-cfg-out",
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ],
+        "_comment": "Created by v0.3.10",
+        "name": "Tool HgapConfigGenerator",
+        "input_types": [
+            {
+                "description": "Input: Probably BAM files",
+                "title": "DataSet-SubreadSet",
+                "id": "subreads-in",
+                "file_type_id": "PacBio.DataSet.SubreadSet"
+            }
+        ],
+        "nproc": "$max_nproc",
+        "is_distributed": true,
+        "tool_contract_id": "falcon_ns.tasks.task_hgap_prepare"
+    }
+}

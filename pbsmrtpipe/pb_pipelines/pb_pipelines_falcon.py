@@ -161,3 +161,37 @@ def get_falcon_pipeline_fat():
                        ('genomic_consensus.tasks.variantcaller:2', 'pbreports.tasks.polished_assembly:1')]
 
     return falcon + sum_cov + polished_report
+
+def _get_hgap_pypeflow(i_cfg, i_logging_cfg, i_subreadset):
+    return [
+            (i_cfg,         'falcon_ns.tasks.task_hgap_run:0'),
+            (i_logging_cfg, 'falcon_ns.tasks.task_hgap_run:1'),
+            (i_subreadset,  'falcon_ns.tasks.task_hgap_run:2'),
+           ]
+
+@dev_register("hgap_cmd", "Assembly (HGAP 5) without reports, from hgap-cfg.json, logging-cfg.json, and subreads-dataset", tags=("internal",))
+def hgap_cmd():
+    """Simple polished HGAP pipeline (sans reports).
+    BAM input comes from the SubreadSet.
+    hgap-cfg.json comes from $entry:e_01
+    logging-cfg.json comes from $entry:e_02
+    """
+    subreadset = Constants.ENTRY_DS_SUBREAD
+    hgap_cfg = '$entry:e_01'
+    logging_cfg = '$entry:e_02'
+    return _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
+
+@dev_register("hgap_lean", "Assembly (HGAP 5) without reports", tags=("internal",))
+def hgap_lean():
+    """GUI polished HGAP pipeline (sans reports).
+    (TODO: Add hgap_fat for reports.)
+    BAM input comes from the SubreadSet.
+    .cfg inputs are based on pbsmrtpipe options, via task_hgap_prepare
+    """
+    subreadset = Constants.ENTRY_DS_SUBREAD
+    hgap_prepare = [(subreadset,
+                   'falcon_ns.tasks.task_hgap_prepare:0')]
+    hgap_cfg =     'falcon_ns.tasks.task_hgap_prepare:0'
+    logging_cfg =  'falcon_ns.tasks.task_hgap_prepare:1'
+    hgap_run = _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
+    return hgap_prepare + hgap_run
