@@ -9,15 +9,15 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard",
         "resource_types": [],
-        "description": "Generate HGAP config from pbcommand options.",
+        "description": "XXX Experimental HGAP.5",
         "schema_options": [
             {
                 "pb_option": {
-                    "default": "\n",
+                    "default": "",
                     "type": "string",
                     "option_id": "falcon_ns.task_options.HGAP_Options_JSON",
-                    "name": "Config overrides",
-                    "description": "This is intended to allow support engineers to override the config which we will generate from other options. It is a 2-level JSON dictionary, just like hgap-cfg.json. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual"
+                    "name": "Experimental HGAP.5 config overrides.",
+                    "description": "Experimental HGAP.5 config overrides are experimental."
                 },
                 "title": "JSON Schema for falcon_ns.task_options.HGAP_Options_JSON",
                 "required": [
@@ -27,10 +27,10 @@
                 "type": "object",
                 "properties": {
                     "falcon_ns.task_options.HGAP_Options_JSON": {
-                        "default": "\n",
+                        "default": "",
                         "type": "string",
-                        "description": "This is intended to allow support engineers to override the config which we will generate from other options. It is a 2-level JSON dictionary, just like hgap-cfg.json. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual",
-                        "title": "Config overrides"
+                        "description": "Experimental HGAP.5 config overrides are experimental.",
+                        "title": "Experimental HGAP.5 config overrides."
                     }
                 }
             }
@@ -52,7 +52,7 @@
             }
         ],
         "_comment": "Created by v0.3.10",
-        "name": "Tool HgapConfigGenerator",
+        "name": "XXX Experimental HgapConfigGenerator",
         "input_types": [
             {
                 "description": "Input: Probably BAM files",
