@@ -16,7 +16,7 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_report</gather-task-id>
+                <gather-task-id>pbsmrtpipe.tasks.gather_json</gather-task-id>
                 <chunk-key>$chunk.report_id</chunk-key>
                 <task-output>pbtranscript.tasks.ice_quiver:0</task-output>
             </chunk>
