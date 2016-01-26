@@ -69,7 +69,8 @@ def job_id_from_testkit_cfg(testkit_cfg):
 
 def run_services_testkit_job(host, port, testkit_cfg,
                              xml_out="test-output.xml",
-                             ignore_test_failures=False):
+                             ignore_test_failures=False,
+                             time_out=1800):
     """
     Given a testkit.cfg and host/port parameters:
         1. convert the .cfg to a JSON file
@@ -93,7 +94,8 @@ def run_services_testkit_job(host, port, testkit_cfg,
         sal.run_import_local_dataset(dataset_xml)
     log.info("starting anaylsis job...")
     engine_job = run_analysis_job(sal, job_id, pipeline_id,
-                                  service_entrypoints, block=True)
+                                  service_entrypoints, block=True,
+                                  time_out=time_out)
     job_output_path = engine_job.path
     log.info("running tests...")
     exit_code = run_butler_tests(
@@ -112,7 +114,8 @@ def args_runner(args):
         port=args.port,
         testkit_cfg=args.testkit_cfg,
         xml_out=args.xml_out,
-        ignore_test_failures=args.ignore_test_failures)
+        ignore_test_failures=args.ignore_test_failures,
+        time_out=args.time_out)
 
 
 def _get_parser():
@@ -126,6 +129,8 @@ def _get_parser():
                    default=8081, help="Port number")
     p.add_argument("-x", "--xunit", dest="xml_out", default="test-output.xml",
                    help="Output XUnit test results")
+    p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
+                   help="Timeout for blocking after job submission")
     p.add_argument("--ignore-test-failures", dest="ignore_test_failures",
                    action="store_true",
                    help="Only exit with non-zero return code if the job "+
