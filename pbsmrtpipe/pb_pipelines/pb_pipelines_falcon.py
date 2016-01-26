@@ -181,7 +181,7 @@ def hgap_cmd():
     logging_cfg = '$entry:e_02'
     return _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
 
-@dev_register("hgap_lean", "Assembly (HGAP 5) without reports", tags=("internal",))
+@dev_register("hgap_lean", "Assembly (HGAP 5) without reports")
 def hgap_lean():
     """GUI polished HGAP pipeline (sans reports).
     (TODO: Add hgap_fat for reports.)
