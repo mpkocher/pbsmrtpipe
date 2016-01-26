@@ -449,7 +449,7 @@ def _core_isoseq_cluster(ccs_ds, flnc_ds, nfl_ds):
         # draft consensus isoforms
         ("pbtranscript.tasks.cluster:0", "pbreports.tasks.isoseq_cluster:0"),
         # json report
-        ("pbtranscript.tasks.cluster:1", "pbreports.tasks.isoseq_cluster:1"),
+        ("pbtranscript.tasks.ice_quiver_postprocess:0", "pbreports.tasks.isoseq_cluster:1"),
     ]
 
     return b5 + b6 + b7 + b8 + b9
