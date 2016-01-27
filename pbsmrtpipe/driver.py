@@ -381,6 +381,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # tnode -> Task instance
     tnode_to_task = {}
 
+    is_workflow_distributable = global_registry.cluster_renderer is not None
     # local loop for adjusting sleep time, this will get reset after each new
     # task is created
     niterations = 0
@@ -565,7 +566,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
                     if isinstance(tnode.meta_task, ToolContractMetaTask):
-                        rtc = IO.static_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc)
+                        rtc = IO.static_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, is_distributed=is_workflow_distributable)
                     elif isinstance(tnode.meta_task, ScatterToolContractMetaTask):
                         rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, max_nchunks, tnode.meta_task.chunk_keys)
                     elif isinstance(tnode.meta_task, GatherToolContractMetaTask):
