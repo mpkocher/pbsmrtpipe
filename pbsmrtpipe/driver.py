@@ -568,10 +568,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     if isinstance(tnode.meta_task, ToolContractMetaTask):
                         rtc = IO.static_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, is_distributed=is_workflow_distributable)
                     elif isinstance(tnode.meta_task, ScatterToolContractMetaTask):
-                        rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, max_nchunks, tnode.meta_task.chunk_keys)
+                        rtc = IO.static_scatter_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, max_nchunks, tnode.meta_task.chunk_keys, is_distributed=is_workflow_distributable)
                     elif isinstance(tnode.meta_task, GatherToolContractMetaTask):
                         # this should always be a TaskGatherBindingNode which will have a .chunk_key
-                        rtc = IO.static_gather_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, tnode.chunk_key)
+                        rtc = IO.static_gather_meta_task_to_rtc(tnode.meta_task, task, task_opts, task_dir, tmp_dir, max_nproc, tnode.chunk_key, is_distributed=is_workflow_distributable)
                     else:
                         raise TypeError("Unsupported task type {t}".format(t=tnode.meta_task))
 

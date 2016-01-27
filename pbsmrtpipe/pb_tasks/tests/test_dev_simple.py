@@ -26,7 +26,8 @@ class TestDevSimpleTaskDefaults(PbTestApp):
 
     RESOLVED_NPROC = 1
     RESOLVED_TASK_OPTIONS = {}
-    RESOLVED_IS_DISTRIBUTED = True
+    IS_DISTRIBUTED = True
+    RESOLVED_IS_DISTRIBUTED = False
 
 
 class TestTestDevSimpleTask(TestDevSimpleTaskDefaults):
