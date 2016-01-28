@@ -17,7 +17,7 @@
                 "description": "Consensus Report JSON", 
                 "default_name": "consensus_report.json", 
                 "id": "report_json", 
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
         "_comment": "Created by v0.3.10", 
