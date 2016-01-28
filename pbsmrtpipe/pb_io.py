@@ -1125,7 +1125,7 @@ def write_tool_contract(tc, path):
     return tc
 
 
-def static_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc):
+def static_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, is_distributed):
     """
 
     Shim layer to converts a static metatask to ResolvedToolContract
@@ -1135,31 +1135,31 @@ def static_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_
     :param static_meta_task:
     :return: dict representation of driver manifest
     """
-    rtc = resolve_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options)
+    rtc = resolve_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, is_distributable=is_distributed)
     # this is a hack because the 'resolving' is done in meta_task_to_task
     # for python defined tasks. This code path will be deleted shortly
     rtc.task.output_files = task.output_files
-    rtc.task.is_distributed = static_meta_task.is_distributed
+    #rtc.task.is_distributed = static_meta_task.is_distributed
     rtc.task.nproc = task.nproc
     task.resources = task.resources
 
     return rtc
 
 
-def static_scatter_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, max_nchunks, chunk_keys):
-    rtc = resolve_scatter_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, max_nchunks, chunk_keys)
+def static_scatter_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, max_nchunks, chunk_keys, is_distributed):
+    rtc = resolve_scatter_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, max_nchunks, chunk_keys, is_distributed)
     # See the above comment for this
     rtc.task.output_files = task.output_files
-    rtc.task.is_distributed = static_meta_task.is_distributed
+    #rtc.task.is_distributed = static_meta_task.is_distributed
     rtc.task.nproc = task.nproc
     task.resources = task.resources
 
     return rtc
 
 
-def static_gather_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, chunk_key):
+def static_gather_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_dir, max_nproc, chunk_key, is_distributed):
 
-    rtc = resolve_gather_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, chunk_key)
+    rtc = resolve_gather_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, chunk_key, is_distributed)
     # See the above comment for this
     rtc.task.output_files = task.output_files
     rtc.task.is_distributed = static_meta_task.is_distributed

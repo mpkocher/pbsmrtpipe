@@ -4,6 +4,7 @@ import random
 import shutil
 import unittest
 import functools
+import tempfile
 
 from nose.plugins.attrib import attr
 
@@ -61,7 +62,9 @@ class TestHelloWorldCluster(unittest.TestCase):
         cmd = r.render("start", sh_script, 'test_job_01', stdout=stdout, stderr=stderr, nproc=1)
         log.debug("Running qsub command '{c}'".format(c=cmd))
         time_out = 60 * 5
-        rcode, stdout, stderr, run_time = run_command(cmd, None, None, time_out=time_out)
+        with tempfile.TemporaryFile() as stdout_tmp:
+            with tempfile.TemporaryFile() as stderr_tmp:
+                rcode, stdout, stderr, run_time = run_command(cmd, stdout_tmp, stderr_tmp, time_out=time_out)
         log.debug((rcode, stdout, stderr, run_time))
 
         if rcode != 0:
