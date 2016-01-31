@@ -59,6 +59,29 @@
             }, 
             {
                 "pb_option": {
+                    "default": 7000, 
+                    "type": "integer", 
+                    "option_id": "pbccs.task_options.max_length", 
+                    "name": "Maximum Length", 
+                    "description": "Maximum length of subreads to use for generating CCS"
+                }, 
+                "title": "JSON Schema for pbccs.task_options.max_length", 
+                "required": [
+                    "pbccs.task_options.max_length"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pbccs.task_options.max_length": {
+                        "default": 7000, 
+                        "type": "integer", 
+                        "description": "Maximum length of subreads to use for generating CCS", 
+                        "title": "Maximum Length"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
                     "default": 10, 
                     "type": "integer", 
                     "option_id": "pbccs.task_options.min_length", 
@@ -198,9 +221,9 @@
         ], 
         "output_types": [
             {
-                "title": ".bam file", 
-                "description": "Output .bam file", 
-                "default_name": "ccs.bam", 
+                "title": "ConsensusReadSet", 
+                "description": "Output DataSet XML file", 
+                "default_name": "ccs.consensusreadset.xml", 
                 "id": "bam_output", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }, 
@@ -212,7 +235,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.11", 
         "name": "ccs", 
         "input_types": [
             {
