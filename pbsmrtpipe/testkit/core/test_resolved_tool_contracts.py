@@ -23,6 +23,8 @@ class TestResolvedToolContracts(TestBase):
         distributed_mode = workflow_options["pbsmrtpipe.options.distributed_mode"]
         tasks_dir = os.path.join(self.job_dir, "tasks")
         for task_dir in os.listdir(tasks_dir):
+            if task_dir.startswith("."):
+                continue
             tc_file = os.path.join(tasks_dir, task_dir, "tool-contract.json")
             tc = load_tool_contract_from(tc_file)
             rtc_file = os.path.join(tasks_dir, task_dir,
