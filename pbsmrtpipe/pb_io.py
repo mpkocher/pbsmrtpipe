@@ -1139,7 +1139,6 @@ def static_meta_task_to_rtc(static_meta_task, task, task_options, task_dir, tmp_
     # this is a hack because the 'resolving' is done in meta_task_to_task
     # for python defined tasks. This code path will be deleted shortly
     rtc.task.output_files = task.output_files
-    #rtc.task.is_distributed = static_meta_task.is_distributed
     rtc.task.nproc = task.nproc
     task.resources = task.resources
 
@@ -1150,7 +1149,6 @@ def static_scatter_meta_task_to_rtc(static_meta_task, task, task_options, task_d
     rtc = resolve_scatter_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, max_nchunks, chunk_keys, is_distributed)
     # See the above comment for this
     rtc.task.output_files = task.output_files
-    #rtc.task.is_distributed = static_meta_task.is_distributed
     rtc.task.nproc = task.nproc
     task.resources = task.resources
 
@@ -1162,7 +1160,6 @@ def static_gather_meta_task_to_rtc(static_meta_task, task, task_options, task_di
     rtc = resolve_gather_tool_contract(static_meta_task.tool_contract, task.input_files, task_dir, tmp_dir, max_nproc, task_options, chunk_key, is_distributed)
     # See the above comment for this
     rtc.task.output_files = task.output_files
-    rtc.task.is_distributed = static_meta_task.is_distributed
     rtc.task.nproc = task.nproc
     task.resources = task.resources
 
