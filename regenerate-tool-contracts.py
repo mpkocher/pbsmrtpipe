@@ -62,13 +62,6 @@ def create_pbcommand_tcs(output_dir):
     return cmds
 
 
-def sa3_tool(output_dir):
-    cmds = []
-    x = cmds.append
-    x('python -m pbsmrtpipe.pb_tasks.pacbio emit-tool-contracts -o {o}'.format(o=output_dir))
-    return cmds
-
-
 def _run_cmd(cmd):
     print cmd
     result = run_cmd(cmd, sys.stdout, sys.stderr)
@@ -82,7 +75,6 @@ def create_all():
     to_cmds = [#create_all_pbsmrtpipe_tcs(TASKS_ROOT, TC_DIR),
                create_pbcommand_tcs(TC_DIR),
                quick_registry(TC_DIR),
-               sa3_tool(SA3_TC_DIR),
                ]
 
     cmds = itertools.chain(*to_cmds)

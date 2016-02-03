@@ -58,10 +58,10 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
 
-    btf = [(subreadset, 'pbsmrtpipe.tasks.bam2fasta:0')]
-    ftfofn = [('pbsmrtpipe.tasks.bam2fasta:0', 'pbsmrtpipe.tasks.fasta2fofn:0')]
+    btf = [(subreadset, 'pbcoretools.tasks.bam2fasta:0')]
+    ftfofn = [('pbcoretools.tasks.bam2fasta:0', 'pbcoretools.tasks.fasta2fofn:0')]
 
-    i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
+    i_fasta_fofn = 'pbcoretools.tasks.fasta2fofn:0'
 
     gen_cfg = [(i_fasta_fofn, 'falcon_ns.tasks.task_falcon_gen_config:0')]
 
@@ -71,10 +71,10 @@ def _get_polished_falcon_pipeline():
 
     ref = falcon_results['asm']
 
-    faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
+    faidx = [(ref, 'pbcoretools.tasks.fasta2referenceset:0')]
 
     aln = 'pbalign.tasks.pbalign:0'
-    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+    ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
     polish = _core_align(subreadset, ref) + _core_gc(aln,
                                                      ref)
@@ -114,18 +114,18 @@ def get_task_polished_falcon_pipeline():
     i_cfg = '$entry:e_01'
     subreadset = Constants.ENTRY_DS_SUBREAD
 
-    btf = [(subreadset, 'pbsmrtpipe.tasks.bam2fasta:0')]
-    ftfofn = [('pbsmrtpipe.tasks.bam2fasta:0', 'pbsmrtpipe.tasks.fasta2fofn:0')]
+    btf = [(subreadset, 'pbcoretools.tasks.bam2fasta:0')]
+    ftfofn = [('pbcoretools.tasks.bam2fasta:0', 'pbcoretools.tasks.fasta2fofn:0')]
 
-    i_fasta_fofn = 'pbsmrtpipe.tasks.fasta2fofn:0'
+    i_fasta_fofn = 'pbcoretools.tasks.fasta2fofn:0'
 
     falcon, falcon_results = _get_falcon_pipeline(i_cfg, i_fasta_fofn)
 
     ref = falcon_results['asm']
 
-    faidx = [(ref, 'pbsmrtpipe.tasks.fasta2referenceset:0')]
+    faidx = [(ref, 'pbcoretools.tasks.fasta2referenceset:0')]
 
-    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+    ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
     polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
                                                      ref)
@@ -149,7 +149,7 @@ def get_falcon_pipeline_fat():
 
     # id's of results from falcon:
     aln = 'pbalign.tasks.pbalign:0'
-    ref = 'pbsmrtpipe.tasks.fasta2referenceset:0'
+    ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
     # summarize the coverage:
     sum_cov = [(aln, "pbreports.tasks.summarize_coverage:0"),

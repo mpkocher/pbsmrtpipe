@@ -123,7 +123,7 @@ def sa3_fetch():
     # convert to RS dataset
     b1 = [(Constants.ENTRY_RS_MOVIE_XML, "pbscala.tasks.rs_movie_to_ds_rtc:0")]
 
-    b2 = [("pbscala.tasks.rs_movie_to_ds_rtc:0", "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
+    b2 = [("pbscala.tasks.rs_movie_to_ds_rtc:0", "pbcoretools.tasks.h5_subreads_to_subread:0")]
 
     return b1 + b2
 
@@ -137,9 +137,9 @@ def sa3_align():
     b1 = [(Constants.ENTRY_RS_MOVIE_XML, "pbscala.tasks.rs_movie_to_ds_rtc:0")]
 
     # h5 dataset to subread dataset via bax2bam
-    b2 = [("pbscala.tasks.rs_movie_to_ds_rtc:0", "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
+    b2 = [("pbscala.tasks.rs_movie_to_ds_rtc:0", "pbcoretools.tasks.h5_subreads_to_subread:0")]
 
-    bxs = _core_align_plus("pbsmrtpipe.tasks.h5_subreads_to_subread:0", Constants.ENTRY_DS_REF)
+    bxs = _core_align_plus("pbcoretools.tasks.h5_subreads_to_subread:0", Constants.ENTRY_DS_REF)
 
     return b1 + b2 + bxs
 
@@ -158,7 +158,7 @@ def hdf_subread_converter():
     """
     Import HdfSubreadSet (bax.h5 basecalling files) to SubreadSet (.bam files)
     """
-    b2 = [(Constants.ENTRY_DS_HDF, "pbsmrtpipe.tasks.h5_subreads_to_subread:0")]
+    b2 = [(Constants.ENTRY_DS_HDF, "pbcoretools.tasks.h5_subreads_to_subread:0")]
 
     return b2
 
@@ -330,14 +330,14 @@ def rs_site_acceptance_test_1():
 
 
 def _core_export_fastx(subread_ds):
-    b1 = [(subread_ds, "pbsmrtpipe.tasks.bam2fasta:0")]
-    b2 = [(subread_ds, "pbsmrtpipe.tasks.bam2fastq:0")]
+    b1 = [(subread_ds, "pbcoretools.tasks.bam2fasta:0")]
+    b2 = [(subread_ds, "pbcoretools.tasks.bam2fastq:0")]
     return b1 + b2
 
 
 def _core_export_fastx_ccs(ccs_ds):
-    b1 = [(ccs_ds, "pbsmrtpipe.tasks.bam2fasta_ccs:0")]
-    b2 = [(ccs_ds, "pbsmrtpipe.tasks.bam2fastq_ccs:0")]
+    b1 = [(ccs_ds, "pbcoretools.tasks.bam2fasta_ccs:0")]
+    b2 = [(ccs_ds, "pbcoretools.tasks.bam2fastq_ccs:0")]
     return b1 + b2
 
 

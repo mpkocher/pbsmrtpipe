@@ -1,12 +1,12 @@
 {
     "driver": {
         "env": {}, 
-        "exe": "python -m pbsmrtpipe.pb_tasks.pacbio  run-rtc  ", 
+        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ", 
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.5", 
-        "description": "Quick tool h5_subreads_to_subread pbsmrtpipe.tasks.h5_subreads_to_subread", 
+        "_comment": "Created by v0.3.12", 
+        "description": "Quick tool h5_subreads_to_subread pbcoretools.tasks.h5_subreads_to_subread", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.HdfSubreadSet_0", 
@@ -30,8 +30,8 @@
         "resource_types": [], 
         "schema_options": [], 
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "tool_contract_id": "pbsmrtpipe.tasks.h5_subreads_to_subread"
+        "tool_contract_id": "pbcoretools.tasks.h5_subreads_to_subread"
     }, 
-    "tool_contract_id": "pbsmrtpipe.tasks.h5_subreads_to_subread", 
+    "tool_contract_id": "pbcoretools.tasks.h5_subreads_to_subread", 
     "version": "0.1.0"
 }

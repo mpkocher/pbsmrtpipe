@@ -1,12 +1,12 @@
 {
     "driver": {
         "env": {}, 
-        "exe": "python -m pbsmrtpipe.pb_tasks.pacbio  run-rtc  ", 
+        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ", 
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.5", 
-        "description": "Quick tool fasta2fofn pbsmrtpipe.tasks.fasta2fofn", 
+        "_comment": "Created by v0.3.12", 
+        "description": "Quick tool fasta2fofn pbcoretools.tasks.fasta2fofn", 
         "input_types": [
             {
                 "description": "description for PacBio.FileTypes.Fasta_0", 
@@ -30,8 +30,8 @@
         "resource_types": [], 
         "schema_options": [], 
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "tool_contract_id": "pbsmrtpipe.tasks.fasta2fofn"
+        "tool_contract_id": "pbcoretools.tasks.fasta2fofn"
     }, 
-    "tool_contract_id": "pbsmrtpipe.tasks.fasta2fofn", 
+    "tool_contract_id": "pbcoretools.tasks.fasta2fofn", 
     "version": "0.1.0"
 }
