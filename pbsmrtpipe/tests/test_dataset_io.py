@@ -2,7 +2,7 @@ import logging
 import os
 import unittest
 
-import pbcommand.mock as M
+import pbsmrtpipe.mock as M
 from pbcommand.models import FileTypes
 from pbsmrtpipe.dataset_io import dispatch_metadata_resolver, DatasetMetadata
 

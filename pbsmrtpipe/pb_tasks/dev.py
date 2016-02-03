@@ -10,7 +10,7 @@ import sys
 from pbcore.io import (readFofn, ReferenceSet, FastqReader, FastaWriter,
                        FastaRecord, FastaReader)
 
-from pbcommand.mock import write_random_fasta_records
+from pbsmrtpipe.mock import write_random_fasta_records
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.tools.dev import (subread_dataset_report,
                                   run_random_fofn,

@@ -12,7 +12,7 @@ import pbcore.io.dataset as DIO
 from pbcommand.cli.utils import main_runner_default
 from pbcommand.models.report import Report, Attribute
 import pbcommand.cli.utils as U
-import pbcommand.mock as M
+import pbsmrtpipe.mock as M
 from pbsmrtpipe.utils import compose
 
 __version__ = '0.1.0'
