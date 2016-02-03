@@ -605,7 +605,7 @@ def _add_simple_mode_option(p):
 def add_args_run_diagnstic(p):
     _add_required_preset_xml_option(p)
     add_debug_option(p)
-    add_output_dir_option(p)
+    _add_output_dir_option(p)
     _add_simple_mode_option(p)
     return p
 
