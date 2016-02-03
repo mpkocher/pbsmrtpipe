@@ -1,12 +1,12 @@
 {
     "driver": {
         "env": {}, 
-        "exe": "python -m pbsmrtpipe.pb_tasks.pacbio  run-rtc  ", 
+        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ", 
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.5", 
-        "description": "Quick tool bam2fastq pbsmrtpipe.tasks.bam2fastq", 
+        "_comment": "Created by v0.3.12", 
+        "description": "Quick tool bam2fasta pbcoretools.tasks.bam2fasta", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.SubreadSet_0", 
@@ -16,15 +16,15 @@
             }
         ], 
         "is_distributed": true, 
-        "name": "Tool bam2fastq", 
+        "name": "Tool bam2fasta", 
         "nproc": 1, 
         "output_types": [
             {
-                "default_name": "file.fastq", 
-                "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file.fastq >", 
-                "file_type_id": "PacBio.FileTypes.Fastq", 
-                "id": "Label PacBio.FileTypes.Fastq_0", 
-                "title": "<FileType id=PacBio.FileTypes.Fastq name=file.fastq >"
+                "default_name": "file.fasta", 
+                "description": "description for <FileType id=PacBio.FileTypes.Fasta name=file.fasta >", 
+                "file_type_id": "PacBio.FileTypes.Fasta", 
+                "id": "Label PacBio.FileTypes.Fasta_0", 
+                "title": "<FileType id=PacBio.FileTypes.Fasta name=file.fasta >"
             }
         ], 
         "resource_types": [], 
@@ -35,11 +35,11 @@
                     "default": 0, 
                     "description": "Minimum length of subreads to write to FASTA/FASTQ", 
                     "name": "Minimum subread length", 
-                    "option_id": "pbsmrtpipe.task_options.min_subread_length", 
+                    "option_id": "pbcoretools.task_options.min_subread_length", 
                     "type": "integer"
                 }, 
                 "properties": {
-                    "pbsmrtpipe.task_options.min_subread_length": {
+                    "pbcoretools.task_options.min_subread_length": {
                         "default": 0, 
                         "description": "Minimum length of subreads to write to FASTA/FASTQ", 
                         "title": "Minimum subread length", 
@@ -47,15 +47,15 @@
                     }
                 }, 
                 "required": [
-                    "pbsmrtpipe.task_options.min_subread_length"
+                    "pbcoretools.task_options.min_subread_length"
                 ], 
-                "title": "JSON Schema for pbsmrtpipe.task_options.min_subread_length", 
+                "title": "JSON Schema for pbcoretools.task_options.min_subread_length", 
                 "type": "object"
             }
         ], 
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "tool_contract_id": "pbsmrtpipe.tasks.bam2fastq"
+        "tool_contract_id": "pbcoretools.tasks.bam2fasta"
     }, 
-    "tool_contract_id": "pbsmrtpipe.tasks.bam2fastq", 
+    "tool_contract_id": "pbcoretools.tasks.bam2fasta", 
     "version": "0.1.0"
 }
