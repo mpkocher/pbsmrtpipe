@@ -7,6 +7,7 @@ import sys
 import os
 
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
+from pbcommand.common_options import add_debug_option
 from pbcommand.validators import validate_file
 from pbcommand.utils import setup_log
 
@@ -153,7 +154,7 @@ def _args_run_multi_testkit_cfg(args):
 def get_parser():
     desc = "Run multiple testkit.cfg files in parallel"
     p = get_default_argparser(__version__, desc)
-    fs = [TU.add_debug_option,
+    fs = [add_debug_option,
           TU.add_override_chunked_mode,
           TU.add_override_distribute_option,
           add_ignore_test_failures_option]
