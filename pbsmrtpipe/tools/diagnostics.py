@@ -10,20 +10,19 @@ run-diagnostics preset.xml --simple --output-dir=./test-output # run the simples
 run-diagnostics preset.xml --output-dir=./test-output # run dev_diagnostic pipeline
 """
 import os
-
+import shutil
 import sys
 import logging
 import argparse
 
+from pbcommand.cli.utils import main_runner_default
+from pbcommand.validators import validate_file
 from pbcommand.cli import get_default_argparser
-import shutil
-from pbsmrtpipe.engine import run_command
-from pbsmrtpipe.pb_io import parse_pipeline_preset_xml
 
 import pbsmrtpipe
-from pbsmrtpipe.cli_utils import main_runner_default, validate_file
+from pbsmrtpipe.engine import run_command
+from pbsmrtpipe.pb_io import parse_pipeline_preset_xml
 from pbsmrtpipe.cluster import load_cluster_templates
-import pbsmrtpipe.tools.utils as U
 
 
 log = logging.getLogger(__name__)

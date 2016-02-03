@@ -2,8 +2,8 @@ import sys
 import logging
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
 from pbcommand.utils import setup_log
-
-from pbsmrtpipe.cli_utils import main_runner_default, validate_file
+from pbcommand.cli.utils import main_runner_default
+from pbcommand.validators import validate_file
 
 import pbsmrtpipe.report_renderer as R
 import pbsmrtpipe.tools.utils as U

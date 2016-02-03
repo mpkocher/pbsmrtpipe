@@ -15,8 +15,8 @@ from pbcommand.utils import (setup_console_and_file_logger, setup_logger,
 from pbcommand.common_options import (add_debug_option,
                                       add_log_file_option,
                                       add_log_level_option)
+from pbcommand.validators import validate_file
 
-from pbsmrtpipe.cli_utils import validate_file
 from pbsmrtpipe.engine import run_command_async
 from pbsmrtpipe.cli import (LOG_LEVELS, resolve_dist_chunk_overrides)
 from pbsmrtpipe.constants import SLOG_PREFIX

@@ -3,13 +3,13 @@ import os
 import shutil
 
 from pbcommand.cli import registry_builder, registry_runner
+from pbcommand.pb_io.report import fofn_to_report
 from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
 import sys
 
 from pbcore.io import (readFofn, ReferenceSet, FastqReader, FastaWriter,
                        FastaRecord, FastaReader)
 
-from pbsmrtpipe.legacy.input_xml import fofn_to_report
 from pbsmrtpipe.mock import write_random_fasta_records
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.tools.dev import (subread_dataset_report,

@@ -950,20 +950,6 @@ def write_env_to_json(json_file):
     return True
 
 
-def write_pipeline_chunks(chunks, output_json_file, comment):
-
-    _d = dict(nchunks=len(chunks), _version="0.1.0",
-              chunks=[c.to_dict() for c in chunks])
-
-    if comment is not None:
-        _d['_comment'] = comment
-
-    with open(output_json_file, 'w') as f:
-        f.write(json.dumps(_d, indent=4))
-
-    log.debug("Write {n} chunks to {o}".format(n=len(chunks), o=output_json_file))
-
-
 def load_pipeline_chunks_from_json(path):
     """Returns a list of Pipeline Chunks
 

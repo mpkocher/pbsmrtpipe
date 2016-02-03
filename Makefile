@@ -15,6 +15,8 @@ clean: doc-clean
 	rm -rf dist/;\
 	find . -name "*.pyc" | xargs rm -f;
 	find . -name "job_output" | xargs rm -rf;
+	find . -name "0.stdout" | xargs rm -rf;
+	find . -name "0.stderr" | xargs rm -rf;
 	rm -f nosetests.xml
 
 doc:

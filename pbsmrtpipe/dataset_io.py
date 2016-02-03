@@ -1,10 +1,10 @@
 import logging
 
 from pbcore.io import FastaReader, FastqReader
-
+from pbcommand.validators import fofn_to_files, validate_file
 from pbcommand.models import FileTypes
+
 import pbsmrtpipe.legacy.reference_utils as RU
-from pbsmrtpipe.utils import fofn_to_files, validate_file
 
 
 log = logging.getLogger(__name__)

@@ -4,7 +4,7 @@
     <task-id>pbalign.tasks.pbalign_ccs</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.ccsset_align_scatter</scatter-task-id>
+        <scatter-task-id>pbcoretools.tasks.ccsset_align_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.ccsset_id" in="pbalign.tasks.pbalign_ccs:0"/>
             <chunk out="$chunk.reference_id" in="pbalign.tasks.pbalign_ccs:1"/>
@@ -14,7 +14,7 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_ccs_alignmentset</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_ccs_alignmentset</gather-task-id>
                 <chunk-key>$chunk.ccs_alignmentset_id</chunk-key>
                 <task-output>pbalign.tasks.pbalign_ccs:0</task-output>
             </chunk>

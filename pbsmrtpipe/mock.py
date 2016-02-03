@@ -8,18 +8,7 @@ import tempfile
 from pbcore.io import FastaRecord, FastqRecord, FastaWriter, FastqWriter
 from pbcommand.models.report import Report, Attribute
 
-import pbsmrtpipe.pb_io as IO
-
 log = logging.getLogger(__name__)
-
-
-def _load_env_preset(env_var):
-    path = os.environ.get(env_var, None)
-
-    if path is None:
-        return None
-    else:
-        return IO.parse_pipeline_preset_xml(path)
 
 
 class Constants(object):

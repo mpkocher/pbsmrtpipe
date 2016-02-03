@@ -6,18 +6,20 @@ import sys
 import logging
 import urlparse
 
+from pbcommand.cli.utils import main_runner, args_executer, subparser_builder
+from pbcommand.common_options import add_debug_option
 from pbcommand.cli import get_default_argparser
+from pbcommand.validators import validate_file
 from pbsmrtpipe.core import binding_str_is_entry_id
 from pbsmrtpipe.tools.diagnostics import (run_diagnostics,
                                           run_simple_diagnostics)
 
-from pbsmrtpipe.cli_utils import main_runner, args_executer, validate_file
 import pbsmrtpipe
+import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.exceptions import MalformedEntryStrError
 from pbsmrtpipe.models import MetaTask, MetaScatterTask, MetaGatherTask
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.driver as D
-import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import StdOutStatusLogFilter, setup_log, compose
 
 from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY, ENV_TC_DIR)
@@ -444,7 +446,7 @@ def __add_pipeline_parser_options(p):
              _add_preset_xml_option,
              _add_output_dir_option,
              _add_entry_point_option,
-             TU.add_debug_option]
+             add_debug_option]
 
     f = compose(*funcs)
     return f(p)
@@ -481,7 +483,7 @@ def add_task_parser_options(p):
         _add_output_dir_option,
         _add_entry_point_option,
         _add_task_id_option,
-        TU.add_debug_option]
+        add_debug_option]
 
     f = compose(*funcs)
     return f(p)
@@ -602,8 +604,8 @@ def _add_simple_mode_option(p):
 
 def add_args_run_diagnstic(p):
     _add_required_preset_xml_option(p)
-    TU.add_debug_option(p)
-    TU.add_output_dir_option(p)
+    add_debug_option(p)
+    _add_output_dir_option(p)
     _add_simple_mode_option(p)
     return p
 
@@ -615,7 +617,7 @@ def get_parser():
     sp = p.add_subparsers(help='commands')
 
     def builder(subparser_id, description, options_func, exe_func):
-        TU.subparser_builder(sp, subparser_id, description, options_func, exe_func)
+        subparser_builder(sp, subparser_id, description, options_func, exe_func)
 
     wf_desc = "Run a pipeline using a pipeline template or with explict Bindings and EntryPoints."
     builder('pipeline', wf_desc, add_pipline_parser_options, _args_run_pipeline)
