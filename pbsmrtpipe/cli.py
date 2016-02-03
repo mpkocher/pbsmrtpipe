@@ -6,18 +6,19 @@ import sys
 import logging
 import urlparse
 
+import pbcommand.cli.utils as TU
+from pbcommand.cli.utils import main_runner, args_executer
 from pbcommand.cli import get_default_argparser
+from pbcommand.validators import validate_file
 from pbsmrtpipe.core import binding_str_is_entry_id
 from pbsmrtpipe.tools.diagnostics import (run_diagnostics,
                                           run_simple_diagnostics)
 
-from pbsmrtpipe.cli_utils import main_runner, args_executer, validate_file
 import pbsmrtpipe
 from pbsmrtpipe.exceptions import MalformedEntryStrError
 from pbsmrtpipe.models import MetaTask, MetaScatterTask, MetaGatherTask
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.driver as D
-import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import StdOutStatusLogFilter, setup_log, compose
 
 from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY, ENV_TC_DIR)

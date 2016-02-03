@@ -4,7 +4,7 @@
     <task-id>pblaa.tasks.laa</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.subreadset_barcode_scatter</scatter-task-id>
+        <scatter-task-id>pbcoretools.tasks.subreadset_barcode_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.subreadset_id" in="pblaa.tasks.laa:0"/>
         </chunks>
@@ -13,12 +13,12 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_fasta</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_fasta</gather-task-id>
                 <chunk-key>$chunk.fasta_id</chunk-key>
                 <task-output>pblaa.tasks.laa:0</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_csv</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_csv</gather-task-id>
                 <chunk-key>$chunk.csv_id</chunk-key>
                 <task-output>pblaa.tasks.laa:1</task-output>
             </chunk>

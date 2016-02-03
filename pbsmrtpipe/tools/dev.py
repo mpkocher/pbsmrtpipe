@@ -9,10 +9,10 @@ from pbcore.io import (FastaWriter, FastaReader, ReferenceSet)
 
 import pbcore.io.dataset as DIO
 
-from pbsmrtpipe.cli_utils import main_runner_default
+from pbcommand.cli.utils import main_runner_default
 from pbcommand.models.report import Report, Attribute
-import pbsmrtpipe.tools.utils as U
-import pbsmrtpipe.mock as M
+import pbcommand.cli.utils as U
+import pbcommand.mock as M
 from pbsmrtpipe.utils import compose
 
 __version__ = '0.1.0'

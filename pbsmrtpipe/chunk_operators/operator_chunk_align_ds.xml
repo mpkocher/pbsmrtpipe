@@ -4,7 +4,7 @@
     <task-id>pbalign.tasks.pbalign</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.subreadset_align_scatter</scatter-task-id>
+        <scatter-task-id>pbcoretools.tasks.subreadset_align_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.subreadset_id" in="pbalign.tasks.pbalign:0"/>
             <chunk out="$chunk.reference_id" in="pbalign.tasks.pbalign:1"/>
@@ -14,7 +14,7 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_alignmentset</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_alignmentset</gather-task-id>
                 <chunk-key>$chunk.alignmentset_id</chunk-key>
                 <task-output>pbalign.tasks.pbalign:0</task-output>
             </chunk>

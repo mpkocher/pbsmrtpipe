@@ -6,7 +6,7 @@ import tempfile
 import unittest
 import pprint
 
-import pbsmrtpipe.mock as M
+import pbcommand.mock as M
 
 import pbsmrtpipe.loader
 

@@ -16,6 +16,7 @@ import uuid
 import networkx as nx
 from xmlbuilder import XMLBuilder
 from pbcommand.models import ResourceTypes
+from pbcommand.pb_io.common import write_pipeline_chunks
 
 from pbsmrtpipe.exceptions import (TaskIdNotFound, MalformedBindingError,
                                    InvalidEntryPointError,
@@ -1388,7 +1389,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
                     comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
                     gathered_json = os.path.join(tasks_root_dir, ".{t}-{u}-gathered-pipeline.chunks.json".format(t=node.meta_task.task_id, u=uuid.uuid4()))
-                    IO.write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
+                    write_pipeline_chunks(gathered_pipeline_chunks_d.values(), gathered_json, comment)
 
                     # Create New Gathered InFile Node
                     # Create all Gathered Tasks

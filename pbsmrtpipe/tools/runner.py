@@ -12,17 +12,18 @@ import platform
 from pbcommand.cli import get_default_argparser
 from pbcommand.models.report import Attribute, Report
 from pbcommand.utils import which
+from pbcommand.validators import validate_file
+from pbcommand.cli.utils import main_runner_default
 
-from pbsmrtpipe.cli_utils import main_runner_default, validate_file
 from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
 from pbsmrtpipe.cluster import Constants as ClusterConstants
 from pbsmrtpipe.engine import run_command, backticks
 from pbsmrtpipe.models import RunnableTask, TaskStates
 from pbcommand.models import ResourceTypes, TaskTypes
 from pbsmrtpipe.utils import nfs_exists_check
+import pbcommand.cli.utils as U
 import pbsmrtpipe.pb_io as IO
 
-import pbsmrtpipe.tools.utils as U
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)

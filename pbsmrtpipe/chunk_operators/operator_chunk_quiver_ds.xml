@@ -4,7 +4,7 @@
     <task-id>genomic_consensus.tasks.variantcaller</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.alignment_contig_scatter</scatter-task-id>
+        <scatter-task-id>pbcoretools.tasks.alignment_contig_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.reference_id" in="genomic_consensus.tasks.variantcaller:1" />
             <chunk out="$chunk.alignmentset_id" in="genomic_consensus.tasks.variantcaller:0"/>
@@ -14,17 +14,17 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_gff</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_gff</gather-task-id>
                 <chunk-key>$chunk.gff_id</chunk-key>
                 <task-output>genomic_consensus.tasks.variantcaller:0</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_contigset</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_id</chunk-key>
                 <task-output>genomic_consensus.tasks.variantcaller:1</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_fastq</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
                 <chunk-key>$chunk.fastq_id</chunk-key>
                 <task-output>genomic_consensus.tasks.variantcaller:2</task-output>
             </chunk>

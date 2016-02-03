@@ -4,7 +4,7 @@
     <task-id>pbsmrtpipe.tasks.h5_subreads_to_subread</task-id>
 
     <scatter>
-        <scatter-task-id>pbsmrtpipe.tasks.h5_subreadset_scatter</scatter-task-id>
+        <scatter-task-id>pbcoretools.tasks.h5_subreadset_scatter</scatter-task-id>
         <chunks>
             <chunk out="$chunk.hdf5subreadset_id" in="pbsmrtpipe.tasks.h5_subreads_to_subread:0"/>
         </chunks>
@@ -13,7 +13,7 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbsmrtpipe.tasks.gather_subreadset</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_subreadset</gather-task-id>
                 <!-- This should be hdfsubreadset -->
                 <chunk-key>$chunk.subreadset_id</chunk-key>
                 <task-output>pbsmrtpipe.tasks.h5_subreads_to_subread:0</task-output>

@@ -7,11 +7,12 @@ import sys
 import os
 
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
+from pbcommand.validators import validate_file
 from pbcommand.utils import setup_log
 
 from pbsmrtpipe.testkit.runner import add_ignore_test_failures_option
 import pbsmrtpipe.tools.utils as TU
-from pbsmrtpipe.utils import validate_file, compose
+from pbsmrtpipe.utils import compose
 from pbsmrtpipe.engine import backticks
 
 __version__ = '0.1.0'
