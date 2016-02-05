@@ -172,6 +172,7 @@ def ds_align():
 
 RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False,
+    "genomic_consensus.task_options.algorithm": "arrow",
     "pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
     "pbalign.task_options.concordant": True,
 }
