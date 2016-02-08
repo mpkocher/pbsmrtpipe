@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.3.10",
+        "_comment": "Created by v0.3.12",
         "description": "Quick tool task_falcon1_run_daligner_jobs falcon_ns.tasks.task_falcon1_run_daligner_jobs",
         "input_types": [
             {
