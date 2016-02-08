@@ -169,7 +169,7 @@ def _get_hgap_pypeflow(i_cfg, i_logging_cfg, i_subreadset):
             (i_subreadset,  'falcon_ns.tasks.task_hgap_run:2'),
            ]
 
-@dev_register("hgap_cmd", "Assembly (HGAP 5) without reports, from hgap-cfg.json, logging-cfg.json, and subreads-dataset", tags=("internal",))
+@dev_register("hgap_cmd", "X - Experimental Assembly (HGAP 5) without reports, from hgap-cfg.json, logging-cfg.json, and subreads-dataset", tags=("internal",))
 def hgap_cmd():
     """Simple polished HGAP pipeline (sans reports).
     BAM input comes from the SubreadSet.
@@ -181,7 +181,7 @@ def hgap_cmd():
     logging_cfg = '$entry:e_02'
     return _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
 
-@dev_register("hgap_lean", "Assembly (HGAP 5) without reports")
+@dev_register("hgap_lean", "X - Experimental Assembly (HGAP 5) without reports")
 def hgap_lean():
     """GUI polished HGAP pipeline (sans reports).
     (TODO: Add hgap_fat for reports.)
