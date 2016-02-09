@@ -13,7 +13,7 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": "", 
+                    "default": "variants", 
                     "type": "string", 
                     "option_id": "genomic_consensus.task_options.gff2bed_purpose", 
                     "name": "Purpose", 
@@ -27,7 +27,7 @@
                 "type": "object", 
                 "properties": {
                     "genomic_consensus.task_options.gff2bed_purpose": {
-                        "default": "", 
+                        "default": "variants", 
                         "type": "string", 
                         "description": "Run mode ('variants' or 'coverage')", 
                         "title": "Purpose"
@@ -113,7 +113,7 @@
                 "file_type_id": "PacBio.FileTypes.bed"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.12", 
         "name": "gffToBed", 
         "input_types": [
             {

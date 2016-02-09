@@ -39,8 +39,8 @@ variantCaller --emit-tool-contract > $TC_DIR/genomic_consensus.tasks.variantcall
 summarizeConsensus --emit-tool-contract > $TC_DIR/genomic_consensus.tasks.summarize_consensus_tool_contract.json
 task_motifmaker_find --emit-tool-contract > $TC_DIR/motif_maker_find_tool_contract.json
 task_motifmaker_reprocess --emit-tool-contract > $TC_DIR/motif_maker_reprocess_tool_contract.json
-gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus_gff2bed_tool_contract.json
-gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus_gff2vcf_tool_contract.json
+gffToBed --emit-tool-contract > $TC_DIR/genomic_consensus.tasks.gff2bed_tool_contract.json
+gffToVcf --emit-tool-contract > $TC_DIR/genomic_consensus.tasks.gff2vcf_tool_contract.json
 task_pbccs_ccs --emit-tool-contract > $TC_DIR/pbccs.tasks.ccs_tool_contract.json
 task_pblaa_laa --emit-tool-contract > $TC_DIR/pblaa.tasks.laa_tool_contract.json
 
