@@ -16,6 +16,7 @@ from pbcommand.services import ServiceAccessLayer, ServiceEntryPoint
 from pbcommand.services.cli import run_analysis_job
 import pbcommand.services
 
+from pbsmrtpipe.pb_io import parse_pipeline_preset_xml
 from pbsmrtpipe.testkit.butler import config_parser_to_butler
 from pbsmrtpipe.testkit.loader import parse_cfg_file
 from pbsmrtpipe.testkit.runner import run_butler_tests
@@ -36,6 +37,37 @@ def dtype_and_uuid_from_dataset_xml(dataset_xml):
     metatype = root.attrib['MetaType']
     unique_id = root.attrib['UniqueId']
     return metatype, unique_id
+
+
+def get_task_and_workflow_options(testkit_cfg):
+    parsed_cfg = config_parser_to_butler(testkit_cfg)
+    workflow_options, task_options = [], []
+    def __get_option_type(val):
+        option_type = "pbsmrtpipe.option_types.string"
+        if isinstance(val, bool):
+            option_type = "pbsmrtpipe.option_types.boolean"
+        elif isinstance(val, int):
+            option_type = "pbsmrtpipe.option_types.integer"
+        elif isinstance(val, float):
+            option_type = "pbsmrtpipe.option_types.float"
+        return option_type
+    if not parsed_cfg.preset_xml in [None, '']:
+        presets = parse_pipeline_preset_xml(parsed_cfg.preset_xml)
+        for option_id, option_value in presets.task_options:
+            log.info("task_option: {i} = {v}".format(i=option_id,
+                                                     v=option_value))
+            task_options.append(dict(
+                optionId=option_id,
+                value=option_value,
+                optionTypeId=__get_option_type(option_value)))
+        for option_id, option_value in presets.workflow_options:
+            log.info("workflow_option: {i} = {v}".format(i=option_id,
+                                                         v=option_value))
+            workflow_options.append(dict(
+                optionId=option_id,
+                value=option_value,
+                optionTypeId=__get_option_type(option_value)))
+    return task_options, workflow_options
 
 
 def entrypoints_dicts(entrypoints):
@@ -86,6 +118,7 @@ def run_services_testkit_job(host, port, testkit_cfg,
     log.info("job_id = {j}".format(j=job_id))
     log.info("pipeline_id = {p}".format(p=pipeline_id))
     log.info("url = {h}:{p}".format(h=host, p=port))
+    task_options, workflow_options = get_task_and_workflow_options(testkit_cfg)
     sal = ServiceAccessLayer(host, port)
     service_entrypoints = [ServiceEntryPoint.from_d(x) for x in
                            entrypoints_dicts(entrypoints)]
@@ -93,9 +126,11 @@ def run_services_testkit_job(host, port, testkit_cfg,
         log.info("Importing {x}".format(x=dataset_xml))
         sal.run_import_local_dataset(dataset_xml)
     log.info("starting anaylsis job...")
+    # XXX note that workflow options are currently ignored
     engine_job = run_analysis_job(sal, job_id, pipeline_id,
                                   service_entrypoints, block=True,
-                                  time_out=time_out)
+                                  time_out=time_out,
+                                  task_options=task_options)
     job_output_path = engine_job.path
     log.info("running tests...")
     exit_code = run_butler_tests(
