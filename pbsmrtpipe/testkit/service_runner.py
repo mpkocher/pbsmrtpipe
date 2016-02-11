@@ -102,7 +102,7 @@ def job_id_from_testkit_cfg(testkit_cfg):
 def run_services_testkit_job(host, port, testkit_cfg,
                              xml_out="test-output.xml",
                              ignore_test_failures=False,
-                             time_out=1800):
+                             time_out=1800, sleep_time=2):
     """
     Given a testkit.cfg and host/port parameters:
         1. convert the .cfg to a JSON file
@@ -119,7 +119,7 @@ def run_services_testkit_job(host, port, testkit_cfg,
     log.info("pipeline_id = {p}".format(p=pipeline_id))
     log.info("url = {h}:{p}".format(h=host, p=port))
     task_options, workflow_options = get_task_and_workflow_options(testkit_cfg)
-    sal = ServiceAccessLayer(host, port)
+    sal = ServiceAccessLayer(host, port, sleep_time=sleep_time)
     service_entrypoints = [ServiceEntryPoint.from_d(x) for x in
                            entrypoints_dicts(entrypoints)]
     for ep, dataset_xml in entrypoints.iteritems():
@@ -150,7 +150,8 @@ def args_runner(args):
         testkit_cfg=args.testkit_cfg,
         xml_out=args.xml_out,
         ignore_test_failures=args.ignore_test_failures,
-        time_out=args.time_out)
+        time_out=args.time_out,
+        sleep_time=args.sleep)
 
 
 def _get_parser():
@@ -166,6 +167,8 @@ def _get_parser():
                    help="Output XUnit test results")
     p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
                    help="Timeout for blocking after job submission")
+    p.add_argument("-s", "--sleep", dest="sleep", type=int, default=2,
+                   help="Sleep time after job submission")
     p.add_argument("--ignore-test-failures", dest="ignore_test_failures",
                    action="store_true",
                    help="Only exit with non-zero return code if the job "+

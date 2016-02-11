@@ -45,7 +45,8 @@ def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=Constants.MISC_OPTS):
 
 
 def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
-                              ignore_test_failures=False, time_out=1800):
+                              ignore_test_failures=False, time_out=1800,
+                              sleep_time=2):
     testkit_cfgs = testkit_cfg_fofn_to_files(testkit_cfg_fofn)
     nworkers = min(len(testkit_cfgs), nworkers)
     results = []
@@ -54,6 +55,7 @@ def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
         "--host", host,
         "--port", str(port),
         "--timeout", str(time_out),
+        "--sleep", str(sleep_time)
     ]
     if ignore_test_failures:
         misc_opts.append("--ignore-test-failures")
@@ -94,7 +96,8 @@ def args_runner(args):
         testkit_cfg_fofn=args.testkit_cfg_fofn,
         nworkers=args.nworkers,
         ignore_test_failures=args.ignore_test_failures,
-        time_out=args.time_out)
+        time_out=args.time_out,
+        sleep_time=args.sleep)
 
 
 def get_parser():
@@ -111,6 +114,8 @@ def get_parser():
                    help="Number of jobs to concurrently run.")
     p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
                    help="Timeout for blocking after job submission")
+    p.add_argument("-s", "--sleep", dest="sleep", type=int, default=2,
+                   help="Sleep time after job submission")
     p.add_argument("--ignore-test-failures", dest="ignore_test_failures",
                    action="store_true",
                    help="Only exit with non-zero return code if the job "+

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SubreadSet xmlns="http://pacificbiosciences.com/PacBioDataModel.xsd" MetaType="PacBio.DataSet.SubreadSet" Name="DataSet_SubreadSet" Tags="barcode moreTags mapping mytags" UniqueId="b095d0a3-94b8-4918-b3af-a3f81bbe519c" Version="2.3.0" CreatedAt="2015-01-27T09:00:01" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pacificbiosciences.com/PacBioDataModel.xsd" >
     <ExternalResources>
-        <ExternalResource Name="First Subreads BAM" Description="Points to an example Subreads BAM file." MetaType="SubreadFile.SubreadBamFile" ResourceId="file:///mnt/path/to/subreads0.bam" Tags="Example">
+        <ExternalResource Name="First Subreads BAM" Description="Points to an example Subreads BAM file." MetaType="SubreadFile.SubreadBamFile" ResourceId="subreads0.bam" Tags="Example">
             <FileIndices>
-                <FileIndex ResourceId="file:///mnt/path/to/subreads0.pbi"/>
+                <FileIndex ResourceId="subreads0.bam.pbi"/>
             </FileIndices>
         </ExternalResource>
-        <ExternalResource Name="Second Subreads BAM" Description="Points to another example Subreads BAM file." MetaType="SubreadFile.SubreadBamFile" ResourceId="file:///mnt/path/to/subreads1.bam" Tags="Example">
+        <ExternalResource Name="Second Subreads BAM" Description="Points to another example Subreads BAM file." MetaType="SubreadFile.SubreadBamFile" ResourceId="subreads1.bam" Tags="Example">
             <FileIndices>
-                <FileIndex ResourceId="file:///mnt/path/to/subreads0.pbi"/>
+                <FileIndex ResourceId="subreads0.bam.pbi"/>
             </FileIndices>
         </ExternalResource>
     </ExternalResources>
@@ -20,7 +20,7 @@
         </Filter>
         <Filter>
             <Properties>
-                <Property Name="QNAME" Value="100/0/0_100" Operator="=="/>
+                <Property Name="QNAME" Value="m140905_042212_sidney_c100564852550000001823085912221377_s1_X0/15641/3452_3567" Operator="=="/>
             </Properties>
         </Filter>
     </Filters>
