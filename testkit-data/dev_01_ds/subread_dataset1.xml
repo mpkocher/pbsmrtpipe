@@ -3,12 +3,12 @@
     <ExternalResources>
         <ExternalResource Name="First Subreads BAM" Description="Points to an example Subreads BAM file." MetaType="SubreadFile.SubreadBamFile" ResourceId="subreads0.bam" Tags="Example">
             <FileIndices>
-                <FileIndex ResourceId="subreads0.pbi"/>
+                <FileIndex ResourceId="subreads0.bam.pbi"/>
             </FileIndices>
         </ExternalResource>
         <ExternalResource Name="Second Subreads BAM" Description="Points to another example Subreads BAM file." MetaType="SubreadFile.SubreadBamFile" ResourceId="subreads1.bam" Tags="Example">
             <FileIndices>
-                <FileIndex ResourceId="subreads0.pbi"/>
+                <FileIndex ResourceId="subreads0.bam.pbi"/>
             </FileIndices>
         </ExternalResource>
     </ExternalResources>
