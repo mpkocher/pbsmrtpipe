@@ -9,4 +9,3 @@ testkit-data/*/job_output
 testkit-data/*/run.sh
 nosetests.xml
 java-classes
-extras/pipeline-templates-json/*
