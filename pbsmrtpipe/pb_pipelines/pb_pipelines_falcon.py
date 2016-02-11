@@ -8,10 +8,10 @@ from .pb_pipelines_sa3 import Constants, Tags, _core_align, _core_gc
 log = logging.getLogger(__name__)
 
 
-def dev_register(relative_id, display_name, tags=()):
+def dev_register(relative_id, display_name, tags=(), task_options=None):
     pipeline_id = to_pipeline_ns(relative_id)
     ptags = list(set(tags + (Tags.DENOVO, )))
-    return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags)
+    return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags, task_options=task_options)
 
 def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
     """Basic falcon pipeline components.
@@ -141,7 +141,15 @@ def get_falcon_pipeline_lean():
     falcon, _ = _get_polished_falcon_pipeline()
     return falcon
 
-@dev_register("polished_falcon_fat", "Assembly (HGAP 4)")
+# Copied from pb_pipelines_sa3.py
+RESEQUENCING_TASK_OPTIONS = {
+    #"genomic_consensus.task_options.diploid": False,
+    "genomic_consensus.task_options.algorithm": "arrow",
+    #"pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
+    #"pbalign.task_options.concordant": True,
+}
+@dev_register("polished_falcon_fat", "Assembly (HGAP 4)",
+        task_options=RESEQUENCING_TASK_OPTIONS)
 def get_falcon_pipeline_fat():
     """Same as polished_falcon_lean, but with reports.
     """
