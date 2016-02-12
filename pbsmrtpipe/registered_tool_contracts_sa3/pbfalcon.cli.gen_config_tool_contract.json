@@ -13,7 +13,7 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": "8000",
+                    "default": "5000000",
                     "type": "string",
                     "option_id": "falcon_ns.task_options.HGAP_GenomeLength_str",
                     "name": "Genome length (base pairs) REQUIRED",
@@ -27,7 +27,7 @@
                 "type": "object",
                 "properties": {
                     "falcon_ns.task_options.HGAP_GenomeLength_str": {
-                        "default": "8000",
+                        "default": "5000000",
                         "type": "string",
                         "description": "Approx. number of base pairs expected in the genome. We choose other settings automatically, based on this. (To learn what we generate, see fc_*.cfg, currently called 'falcon_ns.tasks.task_falcon0_build_rdb-PacBio.FileTypes.txt' amongst output files.)",
                         "title": "Genome length (base pairs) REQUIRED"
@@ -90,7 +90,7 @@
                 "file_type_id": "PacBio.FileTypes.txt"
             }
         ],
-        "_comment": "Created by v0.3.12",
+        "_comment": "Created by v0.3.13",
         "name": "Tool FalconConfigGenerator",
         "input_types": [
             {
