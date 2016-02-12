@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.3.12",
+        "_comment": "Created by v0.3.13",
         "description": "Quick tool task_falcon_make_fofn_abs falcon_ns.tasks.task_falcon_make_fofn_abs",
         "input_types": [
             {
