@@ -227,6 +227,7 @@ def _core_mod_detection(alignment_ds, reference_ds):
 
 
 BASEMODS_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
+BASEMODS_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "quiver"
 BASEMODS_TASK_OPTIONS["kinetics_tools.task_options.pvalue"] = 0.001
 
 @sa3_register("ds_modification_detection",
