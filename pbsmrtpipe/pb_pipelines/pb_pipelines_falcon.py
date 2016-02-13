@@ -58,7 +58,8 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
 
-    btf = [(subreadset, 'pbcoretools.tasks.bam2fasta:0')]
+    filt = [(subreadset, 'pbcoretools.tasks.filterdataset:0')]
+    btf = [('pbcoretools.tasks.filterdataset:0', 'pbcoretools.tasks.bam2fasta:0')]
     ftfofn = [('pbcoretools.tasks.bam2fasta:0', 'pbcoretools.tasks.fasta2fofn:0')]
 
     i_fasta_fofn = 'pbcoretools.tasks.fasta2fofn:0'
@@ -82,7 +83,7 @@ def _get_polished_falcon_pipeline():
     results['aln'] = aln
     results['ref'] = ref
 
-    return ((btf + ftfofn + gen_cfg + falcon + faidx + polish), results)
+    return ((filt + btf + ftfofn + gen_cfg + falcon + faidx + polish), results)
 
 @dev_register("pipe_falcon_with_fofn", "Falcon FOFN Pipeline",
               tags=("local", "chunking", "internal"))
@@ -145,6 +146,7 @@ def get_falcon_pipeline_lean():
 RESEQUENCING_TASK_OPTIONS = {
     #"genomic_consensus.task_options.diploid": False,
     "genomic_consensus.task_options.algorithm": "arrow",
+    "pbcoretools.task_options.other_filters": "rq >= 0.7",
     #"pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
     #"pbalign.task_options.concordant": True,
 }
