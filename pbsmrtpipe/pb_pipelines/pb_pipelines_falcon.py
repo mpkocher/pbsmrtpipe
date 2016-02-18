@@ -133,15 +133,6 @@ def get_task_polished_falcon_pipeline():
 
     return btf + ftfofn + falcon + faidx + polish
 
-@dev_register("polished_falcon_lean", "Assembly (HGAP 4) without reports", tags=("internal",))
-def get_falcon_pipeline_lean():
-    """Simple polished falcon local pipeline (sans reports).
-    FASTA input comes from the SubreadSet.
-    Cfg input is built from preset.xml
-    """
-    falcon, _ = _get_polished_falcon_pipeline()
-    return falcon
-
 # Copied from pb_pipelines_sa3.py
 RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False,
@@ -150,6 +141,17 @@ RESEQUENCING_TASK_OPTIONS = {
     #"pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
     #"pbalign.task_options.concordant": True,
 }
+
+@dev_register("polished_falcon_lean", "Assembly (HGAP 4) without reports", tags=("internal",),
+        task_options=RESEQUENCING_TASK_OPTIONS)
+def get_falcon_pipeline_lean():
+    """Simple polished falcon local pipeline (sans reports).
+    FASTA input comes from the SubreadSet.
+    Cfg input is built from preset.xml
+    """
+    falcon, _ = _get_polished_falcon_pipeline()
+    return falcon
+
 @dev_register("polished_falcon_fat", "Assembly (HGAP 4)",
         task_options=RESEQUENCING_TASK_OPTIONS)
 def get_falcon_pipeline_fat():
