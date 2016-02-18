@@ -82,7 +82,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": true, 
+                    "default": false, 
                     "type": "boolean", 
                     "option_id": "genomic_consensus.task_options.diploid", 
                     "name": "Diploid mode (experimental)", 
@@ -96,7 +96,7 @@
                 "type": "object", 
                 "properties": {
                     "genomic_consensus.task_options.diploid": {
-                        "default": true, 
+                        "default": false, 
                         "type": "boolean", 
                         "description": "Enable detection of heterozygous variants (experimental)", 
                         "title": "Diploid mode (experimental)"
