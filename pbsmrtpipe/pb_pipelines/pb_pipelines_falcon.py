@@ -144,7 +144,7 @@ def get_falcon_pipeline_lean():
 
 # Copied from pb_pipelines_sa3.py
 RESEQUENCING_TASK_OPTIONS = {
-    #"genomic_consensus.task_options.diploid": False,
+    "genomic_consensus.task_options.diploid": False,
     "genomic_consensus.task_options.algorithm": "arrow",
     "pbcoretools.task_options.other_filters": "rq >= 0.7",
     #"pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
