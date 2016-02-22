@@ -100,19 +100,23 @@ def _core_gc_plus(alignment_ds, reference_ds):
     b2 = [(alignment_ds, "pbreports.tasks.summarize_coverage:0"),
           (reference_ds, "pbreports.tasks.summarize_coverage:1")]
 
-    b3 = [("pbreports.tasks.summarize_coverage:0", "genomic_consensus.tasks.summarize_consensus:0"),
+    b3 = [(reference_ds, "pbreports.tasks.coverage_report:0"),
+          ("pbreports.tasks.summarize_coverage:0",
+           "pbreports.tasks.coverage_report:1")]
+
+    b4 = [("pbreports.tasks.summarize_coverage:0", "genomic_consensus.tasks.summarize_consensus:0"),
           ("genomic_consensus.tasks.variantcaller:0", "genomic_consensus.tasks.summarize_consensus:1")]
 
     # Consensus Reports - variants
-    b4 = [(reference_ds, "pbreports.tasks.variants_report:0"),
+    b5 = [(reference_ds, "pbreports.tasks.variants_report:0"),
           ("genomic_consensus.tasks.summarize_consensus:0", "pbreports.tasks.variants_report:1"),
           ("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.variants_report:2")]
 
     # Consensus Reports - top variants
-    b5 = [("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
+    b6 = [("genomic_consensus.tasks.variantcaller:0", "pbreports.tasks.top_variants:0"),
           (reference_ds, "pbreports.tasks.top_variants:1")]
 
-    return b1 + b2 + b3 + b4 + b5
+    return b1 + b2 + b3 + b4 + b5 + b6
 
 
 @sa3_register("sa3_fetch", "RS Movie to Subread DataSet", "0.1.0", tags=(Tags.CONVERTER, ))

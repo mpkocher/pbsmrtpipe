@@ -20,7 +20,8 @@ isoseq_cluster
 ccs
 preassembly
 polished_assembly
-amplicon_analysis_consensus"
+amplicon_analysis_consensus
+coverage"
 
 for REPORT in $REPORTS ; do
   MODULE="pbreports.report.${REPORT}"
