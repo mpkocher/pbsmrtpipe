@@ -36,7 +36,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": 0.75, 
+                    "default": 0.65, 
                     "type": "number", 
                     "option_id": "pbccs.task_options.min_read_score", 
                     "name": "Minimum Read Score", 
@@ -50,7 +50,7 @@
                 "type": "object", 
                 "properties": {
                     "pbccs.task_options.min_read_score": {
-                        "default": 0.75, 
+                        "default": 0.65, 
                         "type": "number", 
                         "description": "Minimum read score of input subreads", 
                         "title": "Minimum Read Score"
@@ -62,7 +62,7 @@
                     "default": 7000, 
                     "type": "integer", 
                     "option_id": "pbccs.task_options.max_length", 
-                    "name": "Maximum Length", 
+                    "name": "Maximum Subread Length", 
                     "description": "Maximum length of subreads to use for generating CCS"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.max_length", 
@@ -76,7 +76,7 @@
                         "default": 7000, 
                         "type": "integer", 
                         "description": "Maximum length of subreads to use for generating CCS", 
-                        "title": "Maximum Length"
+                        "title": "Maximum Subread Length"
                     }
                 }
             }, 
@@ -85,7 +85,7 @@
                     "default": 10, 
                     "type": "integer", 
                     "option_id": "pbccs.task_options.min_length", 
-                    "name": "Minimum Length", 
+                    "name": "Minimum Subread Length", 
                     "description": "Minimum length of subreads to use for generating CCS"
                 }, 
                 "title": "JSON Schema for pbccs.task_options.min_length", 
@@ -99,7 +99,7 @@
                         "default": 10, 
                         "type": "integer", 
                         "description": "Minimum length of subreads to use for generating CCS", 
-                        "title": "Minimum Length"
+                        "title": "Minimum Subread Length"
                     }
                 }
             }, 
@@ -235,7 +235,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.11", 
+        "_comment": "Created by v0.3.13", 
         "name": "ccs", 
         "input_types": [
             {
