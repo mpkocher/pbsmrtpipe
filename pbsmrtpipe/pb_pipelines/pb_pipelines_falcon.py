@@ -51,9 +51,17 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
             ('falcon_ns.tasks.task_falcon_config:0',                    'falcon_ns.tasks.task_falcon2_run_asm:0'),
             ('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon2_run_asm:1'),
          ]
+    report_pay = [
+          ('falcon_ns.tasks.task_falcon_config:0',
+                        'falcon_ns.tasks.task_report_preassembly_yield:0'),
+          ('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:0',
+                        'falcon_ns.tasks.task_report_preassembly_yield:1'),
+          (i_fasta_fofn,
+                        'falcon_ns.tasks.task_report_preassembly_yield:2'),
+    ]
     results = dict()
     results['asm'] = 'falcon_ns.tasks.task_falcon2_run_asm:0'
-    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf, results
+    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf + report_pay, results
 
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
