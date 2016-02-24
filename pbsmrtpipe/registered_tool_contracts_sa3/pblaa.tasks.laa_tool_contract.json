@@ -223,7 +223,7 @@
                     "default": 2.0, 
                     "type": "number", 
                     "option_id": "pblaa.task_options.cluster_inflation", 
-                    "name": "Cluster Infaltion", 
+                    "name": "Cluster Inflation", 
                     "description": "Markov Clustering inflation parameter"
                 }, 
                 "title": "JSON Schema for pblaa.task_options.cluster_inflation", 
@@ -237,7 +237,7 @@
                         "default": 2.0, 
                         "type": "number", 
                         "description": "Markov Clustering inflation parameter", 
-                        "title": "Cluster Infaltion"
+                        "title": "Cluster Inflation"
                     }
                 }
             }, 
@@ -353,6 +353,29 @@
                         "type": "integer", 
                         "description": "Minimum number of reads supporting a minor phase required for split", 
                         "title": "Min Split Reads"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
+                    "default": 3000, 
+                    "type": "integer", 
+                    "option_id": "pblaa.task_options.min_split_score", 
+                    "name": "Min Split Score", 
+                    "description": "Minimum score supporting a minor phase required for split"
+                }, 
+                "title": "JSON Schema for pblaa.task_options.min_split_score", 
+                "required": [
+                    "pblaa.task_options.min_split_score"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pblaa.task_options.min_split_score": {
+                        "default": 3000, 
+                        "type": "integer", 
+                        "description": "Minimum score supporting a minor phase required for split", 
+                        "title": "Min Split Score"
                     }
                 }
             }, 
@@ -520,21 +543,28 @@
         ], 
         "output_types": [
             {
-                "title": "consensus_fasta_file", 
-                "description": "Resulting consensus fasta file", 
-                "default_name": "laa.fasta", 
-                "id": "consensus_fasta", 
-                "file_type_id": "PacBio.FileTypes.Fasta"
+                "title": "consensus_fastq_file", 
+                "description": "Resulting consensus fastq file", 
+                "default_name": "amplicon_analysis.fastq", 
+                "id": "consensus_fastq", 
+                "file_type_id": "PacBio.FileTypes.Fastq"
+            }, 
+            {
+                "title": "chimera_fastq_file", 
+                "description": "Resulting chimera/noise fastq file", 
+                "default_name": "amplicon_analysis_chimeras_noise.fastq", 
+                "id": "chimera_fastq", 
+                "file_type_id": "PacBio.FileTypes.Fastq"
             }, 
             {
                 "title": "CSV report", 
                 "description": "CSV report", 
-                "default_name": "laa_report.csv", 
+                "default_name": "amplicon_analysis.csv", 
                 "id": "report_csv", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.2.17", 
+        "_comment": "Created by v0.3.14", 
         "name": "laa", 
         "input_types": [
             {
