@@ -51,9 +51,17 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
             ('falcon_ns.tasks.task_falcon_config:0',                    'falcon_ns.tasks.task_falcon2_run_asm:0'),
             ('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon2_run_asm:1'),
          ]
+    report_pay = [
+          ('falcon_ns.tasks.task_falcon_config:0',
+                        'falcon_ns.tasks.task_report_preassembly_yield:0'),
+          ('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:0',
+                        'falcon_ns.tasks.task_report_preassembly_yield:1'),
+          (i_fasta_fofn,
+                        'falcon_ns.tasks.task_report_preassembly_yield:2'),
+    ]
     results = dict()
     results['asm'] = 'falcon_ns.tasks.task_falcon2_run_asm:0'
-    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf, results
+    return b0 + br0 + br1 + br2 + bp0 + bp1 + bp2 + bf + report_pay, results
 
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
@@ -133,15 +141,6 @@ def get_task_polished_falcon_pipeline():
 
     return btf + ftfofn + falcon + faidx + polish
 
-@dev_register("polished_falcon_lean", "Assembly (HGAP 4) without reports", tags=("internal",))
-def get_falcon_pipeline_lean():
-    """Simple polished falcon local pipeline (sans reports).
-    FASTA input comes from the SubreadSet.
-    Cfg input is built from preset.xml
-    """
-    falcon, _ = _get_polished_falcon_pipeline()
-    return falcon
-
 # Copied from pb_pipelines_sa3.py
 RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False,
@@ -150,6 +149,17 @@ RESEQUENCING_TASK_OPTIONS = {
     #"pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
     #"pbalign.task_options.concordant": True,
 }
+
+@dev_register("polished_falcon_lean", "Assembly (HGAP 4) without reports", tags=("internal",),
+        task_options=RESEQUENCING_TASK_OPTIONS)
+def get_falcon_pipeline_lean():
+    """Simple polished falcon local pipeline (sans reports).
+    FASTA input comes from the SubreadSet.
+    Cfg input is built from preset.xml
+    """
+    falcon, _ = _get_polished_falcon_pipeline()
+    return falcon
+
 @dev_register("polished_falcon_fat", "Assembly (HGAP 4)",
         task_options=RESEQUENCING_TASK_OPTIONS)
 def get_falcon_pipeline_fat():
@@ -179,8 +189,9 @@ def _get_hgap_pypeflow(i_cfg, i_logging_cfg, i_subreadset):
             (i_subreadset,  'falcon_ns.tasks.task_hgap_run:2'),
            ]
 
-@dev_register("hgap_cmd", "X - Experimental Assembly (HGAP 5) without reports, from hgap-cfg.json, logging-cfg.json, and subreads-dataset", tags=("internal",))
+@dev_register("hgap_cmd", "XI- Experimental Assembly (HGAP 5) without reports", tags=("internal",))
 def hgap_cmd():
+    # from hgap-cfg.json, logging-cfg.json, and subreads-dataset
     """Simple polished HGAP pipeline (sans reports).
     BAM input comes from the SubreadSet.
     hgap-cfg.json comes from $entry:e_01
@@ -191,7 +202,7 @@ def hgap_cmd():
     logging_cfg = '$entry:e_02'
     return _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
 
-@dev_register("hgap_lean", "X - Experimental Assembly (HGAP 5) without reports")
+@dev_register("hgap_lean", "X - Experimental Assembly (HGAP 5) without reports", tags=("internal",))
 def hgap_lean():
     """GUI polished HGAP pipeline (sans reports).
     (TODO: Add hgap_fat for reports.)
