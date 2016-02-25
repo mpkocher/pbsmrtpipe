@@ -215,7 +215,9 @@ def ds_fat_resequencing():
     additional reports
     """
 
-    return _core_gc_plus("pbsmrtpipe.pipelines.sa3_ds_resequencing:pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
+    filt = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.filterdataset:0")]
+    aln = _core_align_plus("pbcoretools.tasks.filterdataset:0", Constants.ENTRY_DS_REF)
+    return filt + aln + _core_gc_plus("pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
 
 def _core_mod_detection(alignment_ds, reference_ds):
