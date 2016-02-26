@@ -13,14 +13,19 @@
     <gather>
         <chunks>
             <chunk>
-                <gather-task-id>pbcoretools.tasks.gather_fasta</gather-task-id>
-                <chunk-key>$chunk.fasta_id</chunk-key>
+                <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
+                <chunk-key>$chunk.fastq_id</chunk-key>
                 <task-output>pblaa.tasks.laa:0</task-output>
+            </chunk>
+            <chunk>
+                <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
+                <chunk-key>$chunk.fastq_id</chunk-key>
+                <task-output>pblaa.tasks.laa:1</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_csv</gather-task-id>
                 <chunk-key>$chunk.csv_id</chunk-key>
-                <task-output>pblaa.tasks.laa:1</task-output>
+                <task-output>pblaa.tasks.laa:2</task-output>
             </chunk>
         </chunks>
     </gather>
