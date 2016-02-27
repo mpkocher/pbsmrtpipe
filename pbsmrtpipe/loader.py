@@ -148,7 +148,6 @@ def _load_pipelines_from_python_module_name(name):
         import pbsmrtpipe.pb_pipelines.pb_pipelines_dev
         import pbsmrtpipe.pb_pipelines.pb_pipelines_sa3
         import pbsmrtpipe.pb_pipelines.pb_pipelines_falcon
-        import pbsmrtpipe.pb_pipelines.pb_pipelines_falconx
         from pbsmrtpipe.models import REGISTERED_PIPELINES
         _REGISTERED_PIPELINES = REGISTERED_PIPELINES
 
