@@ -365,7 +365,7 @@ def ds_laa():
 
     laa = _core_laa(subreadset)
 
-    consensus_report = [("pblaa.tasks.laa:1", "pbreports.tasks.amplicon_analysis_consensus:0")]
+    consensus_report = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
 
     return laa + consensus_report
 
