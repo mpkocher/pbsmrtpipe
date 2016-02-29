@@ -720,6 +720,13 @@ def validate_operator(op, registered_tasks):
             gchunk = _gchunks[task_input]
             log.debug("Workflow will map {i} using {c}".format(i=task_input, c=gchunk))
 
+    _ckeys = [c.chunk_key for c in op.gather.chunks]
+    _counts = {k:_ckeys.count(k) for k in _ckeys}
+    for k,v in _counts.iteritems():
+        if v > 1:
+            _raise_msg("gather chunk key {k} occurs {v} times".format(
+                k=k, v=v))
+
     return True
 
 
