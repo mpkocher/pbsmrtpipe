@@ -14,12 +14,12 @@
         <chunks>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
-                <chunk-key>$chunk.fastq_id</chunk-key>
+                <chunk-key>$chunk.consensus_fastq_id</chunk-key>
                 <task-output>pblaa.tasks.laa:0</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
-                <chunk-key>$chunk.fastq_id</chunk-key>
+                <chunk-key>$chunk.chimera_fastq_id</chunk-key>
                 <task-output>pblaa.tasks.laa:1</task-output>
             </chunk>
             <chunk>
