@@ -8,7 +8,9 @@
     "tool_contract_id": "pbalign.tasks.pbalign", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "resource_types": [], 
+        "resource_types": [
+            "$tmpdir"
+        ], 
         "description": "Mapping PacBio sequences to references using an algorithm selected from a\nselection of supported command-line alignment algorithms. Input can be a\nfasta, pls.h5, bas.h5 or ccs.h5 file or a fofn (file of file names). Output\ncan be in CMP.H5, SAM or BAM format. If output is BAM format, aligner can\nonly be blasr and QVs will be loaded automatically.", 
         "schema_options": [
             {
@@ -136,7 +138,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.16", 
         "name": "pbalign.tasks.pbalign", 
         "input_types": [
             {
