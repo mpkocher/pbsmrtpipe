@@ -7,7 +7,7 @@ import logging
 import urlparse
 
 from pbcommand.cli.utils import main_runner, args_executer, subparser_builder
-from pbcommand.common_options import add_debug_option
+from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli import get_default_argparser
 from pbcommand.validators import validate_file
 from pbsmrtpipe.core import binding_str_is_entry_id
@@ -446,7 +446,7 @@ def __add_pipeline_parser_options(p):
              _add_preset_xml_option,
              _add_output_dir_option,
              _add_entry_point_option,
-             add_debug_option]
+             add_log_debug_option]
 
     f = compose(*funcs)
     return f(p)
@@ -483,7 +483,7 @@ def add_task_parser_options(p):
         _add_output_dir_option,
         _add_entry_point_option,
         _add_task_id_option,
-        add_debug_option]
+        add_log_debug_option]
 
     f = compose(*funcs)
     return f(p)
@@ -604,7 +604,7 @@ def _add_simple_mode_option(p):
 
 def add_args_run_diagnstic(p):
     _add_required_preset_xml_option(p)
-    add_debug_option(p)
+    add_log_debug_option(p)
     _add_output_dir_option(p)
     _add_simple_mode_option(p)
     return p

@@ -9,6 +9,7 @@ from pbcore.io import (FastaWriter, FastaReader, ReferenceSet)
 
 import pbcore.io.dataset as DIO
 
+from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli.utils import main_runner_default
 from pbcommand.models.report import Report, Attribute
 import pbcommand.cli.utils as U
@@ -21,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 def _add_run_random_fasta_file(p):
-    U.add_debug_option(p)
+    add_log_debug_option(p)
     p.add_argument('--max-records', type=int, default=25000, help="Max number of Fasta record to write.")
     U.add_fasta_output(p)
     return p
@@ -33,7 +34,7 @@ def _args_run_to_random_fasta_file(args):
 
 
 def _add_run_fasta_filter_options(p):
-    U.add_debug_option(p)
+    add_log_debug_option(p)
     p.add_argument('--min-length', type=int, default=150, help='Min Length of Sequence to filter')
     U.add_fasta_input(p)
     U.add_fasta_output(p)
@@ -55,7 +56,7 @@ def _args_run_fasta_filter(args):
 
 
 def _add_run_random_fastq_options(p):
-    U.add_debug_option(p)
+    add_log_debug_option(p)
     p.add_argument('--max-records', type=int, default=1000, help="Max number of Fasta record to write.")
     U.add_fastq_output(p)
     return p
@@ -67,7 +68,7 @@ def _args_run_random_fastq_file(args):
 
 
 def _add_run_random_fofn_options(p):
-    U.add_debug_option(p)
+    add_log_debug_option(p)
     U.add_output_dir_option(p)
     p.add_argument('--nfofns', type=int, default=10, help="Number of mock/random Fofns to write.")
     U.add_fofn_output(p)
@@ -125,7 +126,7 @@ def subread_dataset_report(subread_path, report_path):
 
 
 def _add_run_dataset_report(p):
-    U.add_debug_option(p)
+    add_log_debug_option(p)
     U.add_subread_input(p)
     U.add_report_output(p)
     return p
@@ -231,7 +232,7 @@ def _args_run_reference_dataset_report(args):
 
 
 def _add_run_reference_dataset_report(p):
-    opts = [U.add_debug_option,
+    opts = [add_log_debug_option,
             U.add_report_output,
             U.add_ds_reference_input]
 

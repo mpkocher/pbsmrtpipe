@@ -9,6 +9,8 @@ import time
 import datetime
 import functools
 import platform
+
+from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli import get_default_argparser
 from pbcommand.models.report import Attribute, Report
 from pbcommand.utils import which
@@ -64,7 +66,7 @@ def _add_stdout_file(p):
 
 
 def _add_base_options(p):
-    return _add_manifest_json_option(U.add_debug_option(p))
+    return _add_manifest_json_option(add_log_debug_option(p))
 
 
 def _add_run_on_cluster_option(p):
