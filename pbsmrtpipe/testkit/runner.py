@@ -12,7 +12,7 @@ from pbcommand.cli import pacbio_args_runner, get_default_argparser
 # the pbcommand version raise OSError for some reason
 from pbcommand.utils import (setup_console_and_file_logger, setup_logger,
                              Constants, compose)
-from pbcommand.common_options import (add_debug_option,
+from pbcommand.common_options import (add_log_debug_option,
                                       add_log_file_option,
                                       add_log_level_option)
 from pbcommand.validators import validate_file
@@ -240,7 +240,7 @@ def get_parser():
              add_tests_only_option,
              add_log_level_option,
              add_log_file_option,
-             add_debug_option,
+             add_log_debug_option,
              add_ignore_test_failures_option]
 
     f = compose(*funcs)

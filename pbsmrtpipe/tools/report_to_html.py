@@ -1,5 +1,7 @@
 import sys
 import logging
+
+from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
 from pbcommand.utils import setup_log
 from pbcommand.cli.utils import main_runner_default
@@ -46,7 +48,7 @@ def _args_to_render_report(args):
 def get_parser():
     desc = "Transform pbreport Report to HTML file."
     p = get_default_argparser(__version__, desc)
-    U.add_debug_option(p)
+    add_log_debug_option(p)
     U.add_output_dir_option(p)
     _add_report_option(p)
     _add_output_file_option(p)
