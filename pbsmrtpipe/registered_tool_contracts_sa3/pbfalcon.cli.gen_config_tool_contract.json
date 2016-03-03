@@ -16,8 +16,8 @@
                     "default": "5000000",
                     "type": "string",
                     "option_id": "falcon_ns.task_options.HGAP_GenomeLength_str",
-                    "name": "Genome length (base pairs) REQUIRED",
-                    "description": "Approx. number of base pairs expected in the genome. We choose other settings automatically, based on this. (To learn what we generate, see fc_*.cfg, currently called 'falcon_ns.tasks.task_falcon0_build_rdb-PacBio.FileTypes.txt' amongst output files.)"
+                    "name": "Genome length",
+                    "description": "Approx. number of base pairs expected in the genome. We choose many hidden settings automatically, based on this. (To learn what we generate, see fc_*.cfg, currently called 'falcon_ns.tasks.task_falcon0_build_rdb-PacBio.FileTypes.txt' amongst output files.)"
                 },
                 "title": "JSON Schema for falcon_ns.task_options.HGAP_GenomeLength_str",
                 "required": [
@@ -29,31 +29,54 @@
                     "falcon_ns.task_options.HGAP_GenomeLength_str": {
                         "default": "5000000",
                         "type": "string",
-                        "description": "Approx. number of base pairs expected in the genome. We choose other settings automatically, based on this. (To learn what we generate, see fc_*.cfg, currently called 'falcon_ns.tasks.task_falcon0_build_rdb-PacBio.FileTypes.txt' amongst output files.)",
-                        "title": "Genome length (base pairs) REQUIRED"
+                        "description": "Approx. number of base pairs expected in the genome. We choose many hidden settings automatically, based on this. (To learn what we generate, see fc_*.cfg, currently called 'falcon_ns.tasks.task_falcon0_build_rdb-PacBio.FileTypes.txt' amongst output files.)",
+                        "title": "Genome length"
                     }
                 }
             },
             {
                 "pb_option": {
-                    "default": "40",
+                    "default": "20",
                     "type": "string",
-                    "option_id": "falcon_ns.task_options.HGAP_CoresMax_str",
-                    "name": "Cores Max IGNORED.",
-                    "description": "IGNORE - not currently used"
+                    "option_id": "falcon_ns.task_options.HGAP_SeedCoverage_str",
+                    "name": "Seed coverage",
+                    "description": "A target for the total # of bases in the 'raw' (post primary) reads, divided by the total number in the 'seed' reads."
                 },
-                "title": "JSON Schema for falcon_ns.task_options.HGAP_CoresMax_str",
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_SeedCoverage_str",
                 "required": [
-                    "falcon_ns.task_options.HGAP_CoresMax_str"
+                    "falcon_ns.task_options.HGAP_SeedCoverage_str"
                 ],
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "type": "object",
                 "properties": {
-                    "falcon_ns.task_options.HGAP_CoresMax_str": {
-                        "default": "40",
+                    "falcon_ns.task_options.HGAP_SeedCoverage_str": {
+                        "default": "20",
                         "type": "string",
-                        "description": "IGNORE - not currently used",
-                        "title": "Cores Max IGNORED."
+                        "description": "A target for the total # of bases in the 'raw' (post primary) reads, divided by the total number in the 'seed' reads.",
+                        "title": "Seed coverage"
+                    }
+                }
+            },
+            {
+                "pb_option": {
+                    "default": "-1",
+                    "type": "string",
+                    "option_id": "falcon_ns.task_options.HGAP_SeedLengthCutoff_str",
+                    "name": "Seed length cutoff",
+                    "description": "Only reads as long as this will be used as 'seeds' for the draft assembly. (Shorter reads will be used for correction and polishing, if they pass the dataset filters.) If '-1', then this will be calculated automatically, such that the total number of seed bases nearly equals GenomeLength*SeedCoverage."
+                },
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_SeedLengthCutoff_str",
+                "required": [
+                    "falcon_ns.task_options.HGAP_SeedLengthCutoff_str"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "falcon_ns.task_options.HGAP_SeedLengthCutoff_str": {
+                        "default": "-1",
+                        "type": "string",
+                        "description": "Only reads as long as this will be used as 'seeds' for the draft assembly. (Shorter reads will be used for correction and polishing, if they pass the dataset filters.) If '-1', then this will be calculated automatically, such that the total number of seed bases nearly equals GenomeLength*SeedCoverage.",
+                        "title": "Seed length cutoff"
                     }
                 }
             },
