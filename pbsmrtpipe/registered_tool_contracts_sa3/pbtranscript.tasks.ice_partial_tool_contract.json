@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.171126", 
+    "version": "1.0.0.174838", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.ice_partial --resolved-tool-contract", 
@@ -8,7 +8,9 @@
     "tool_contract_id": "pbtranscript.tasks.ice_partial", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "resource_types": [], 
+        "resource_types": [
+            "$tmpdir"
+        ], 
         "description": "\nCalls 'ice_partial.py one'.\n", 
         "schema_options": [], 
         "output_types": [
@@ -20,7 +22,7 @@
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.18", 
         "name": "pbtranscript.tasks.ice_partial", 
         "input_types": [
             {
@@ -30,7 +32,7 @@
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
-                "description": "Reference fasta file, most likely ref_consensus.fa from ICE output", 
+                "description": "Reference fasta file, most likely ref_consensus.fasta from ICE output", 
                 "title": "Reference ContigSet", 
                 "id": "ref_fasta", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
