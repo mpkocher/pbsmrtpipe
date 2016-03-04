@@ -175,6 +175,26 @@ def ds_align():
     """
     return _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
 
+
+UNROLLED_TASK_OPTIONS = {
+    "pbalign.task_options.no_split_subreads": True,
+    "pbalign.task_options.hit_policy": "leftmost",
+    "pbalign.task_options.concordant": False,
+    "pbalign.task_options.algorithm_options": "-bestn 1 -forwardOnly -fastMaxInterval -maxAnchorsPerPosition 30000 -ignoreHQRegions -minPctIdentity 60"
+}
+
+# XXX this is identical to sa3_ds_align but with modified task options
+@sa3_register("sa3_ds_align_unrolled", "Unrolled Template SubreadSet Mapping",
+              "0.1.0", tags=(Tags.MAP, Tags.INTERNAL),
+              task_options=UNROLLED_TASK_OPTIONS)
+def ds_align_unrolled():
+    """
+    Perform Blasr mapping to reference sequence, using entire unsplit
+    polymerase reads implicit in the SubreadSet (with scraps).
+    """
+    return _core_align_plus(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
+
+
 RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False,
     "genomic_consensus.task_options.algorithm": "arrow",
