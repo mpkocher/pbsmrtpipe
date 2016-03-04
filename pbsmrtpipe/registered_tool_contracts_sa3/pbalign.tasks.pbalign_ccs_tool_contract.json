@@ -15,29 +15,6 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": false, 
-                    "type": "boolean", 
-                    "option_id": "pbalign.task_options.concordant", 
-                    "name": "Concordant alignment", 
-                    "description": "Map subreads of a ZMW to the same genomic location"
-                }, 
-                "title": "JSON Schema for pbalign.task_options.concordant", 
-                "required": [
-                    "pbalign.task_options.concordant"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
-                "properties": {
-                    "pbalign.task_options.concordant": {
-                        "default": false, 
-                        "type": "boolean", 
-                        "description": "Map subreads of a ZMW to the same genomic location", 
-                        "title": "Concordant alignment"
-                    }
-                }
-            }, 
-            {
-                "pb_option": {
                     "default": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0", 
                     "type": "string", 
                     "option_id": "pbalign.task_options.algorithm_options", 
@@ -138,7 +115,7 @@
                 "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.16", 
+        "_comment": "Created by v0.3.18", 
         "name": "pbalign.tasks.pbalign_ccs", 
         "input_types": [
             {

@@ -17,6 +17,29 @@
                 "pb_option": {
                     "default": false, 
                     "type": "boolean", 
+                    "option_id": "pbalign.task_options.no_split_subreads", 
+                    "name": "Align unsplit polymerase reads", 
+                    "description": "Do not split reads into subreads even if subread \nregions are available. Default value is False."
+                }, 
+                "title": "JSON Schema for pbalign.task_options.no_split_subreads", 
+                "required": [
+                    "pbalign.task_options.no_split_subreads"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pbalign.task_options.no_split_subreads": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "Do not split reads into subreads even if subread \nregions are available. Default value is False.", 
+                        "title": "Align unsplit polymerase reads"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
+                    "default": false, 
+                    "type": "boolean", 
                     "option_id": "pbalign.task_options.concordant", 
                     "name": "Concordant alignment", 
                     "description": "Map subreads of a ZMW to the same genomic location"
@@ -138,7 +161,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.16", 
+        "_comment": "Created by v0.3.18", 
         "name": "pbalign.tasks.pbalign", 
         "input_types": [
             {
