@@ -102,7 +102,7 @@ def job_id_from_testkit_cfg(testkit_cfg):
 def run_services_testkit_job(host, port, testkit_cfg,
                              xml_out="test-output.xml",
                              ignore_test_failures=False,
-                             time_out=1800, sleep_time=2):
+                             time_out=1800, sleep_time=2, import_only=False):
     """
     Given a testkit.cfg and host/port parameters:
         1. convert the .cfg to a JSON file
@@ -125,6 +125,9 @@ def run_services_testkit_job(host, port, testkit_cfg,
     for ep, dataset_xml in entrypoints.iteritems():
         log.info("Importing {x}".format(x=dataset_xml))
         sal.run_import_local_dataset(dataset_xml)
+    if import_only:
+        log.info("Skipping job execution")
+        return 0
     log.info("starting anaylsis job...")
     # XXX note that workflow options are currently ignored
     engine_job = run_analysis_job(sal, job_id, pipeline_id,
@@ -151,7 +154,8 @@ def args_runner(args):
         xml_out=args.xml_out,
         ignore_test_failures=args.ignore_test_failures,
         time_out=args.time_out,
-        sleep_time=args.sleep)
+        sleep_time=args.sleep,
+        import_only=args.import_only)
 
 
 def _get_parser():
@@ -173,6 +177,8 @@ def _get_parser():
                    action="store_true",
                    help="Only exit with non-zero return code if the job "+
                         "itself failed, regardless of test outcome")
+    p.add_argument("--import-only", dest="import_only", action="store_true",
+                   help="Import datasets without running pipeline")
     return p
 
 

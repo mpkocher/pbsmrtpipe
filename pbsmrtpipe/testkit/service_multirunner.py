@@ -46,7 +46,7 @@ def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=Constants.MISC_OPTS):
 
 def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
                               ignore_test_failures=False, time_out=1800,
-                              sleep_time=2):
+                              sleep_time=2, import_only=False):
     testkit_cfgs = testkit_cfg_fofn_to_files(testkit_cfg_fofn)
     nworkers = min(len(testkit_cfgs), nworkers)
     results = []
@@ -59,6 +59,8 @@ def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
     ]
     if ignore_test_failures:
         misc_opts.append("--ignore-test-failures")
+    if import_only:
+        misc_opts.append("--import-only")
     misc_opts = " ".join(misc_opts)
     if nworkers == 1:
         log.info("Running in serial mode.")
@@ -97,7 +99,8 @@ def args_runner(args):
         nworkers=args.nworkers,
         ignore_test_failures=args.ignore_test_failures,
         time_out=args.time_out,
-        sleep_time=args.sleep)
+        sleep_time=args.sleep,
+        import_only=args.import_only)
 
 
 def get_parser():
@@ -120,6 +123,8 @@ def get_parser():
                    action="store_true",
                    help="Only exit with non-zero return code if the job "+
                         "itself failed, regardless of test outcome")
+    p.add_argument("--import-only", dest="import_only", action="store_true",
+                   help="Import datasets without running pipelines")
     return p
 
 
