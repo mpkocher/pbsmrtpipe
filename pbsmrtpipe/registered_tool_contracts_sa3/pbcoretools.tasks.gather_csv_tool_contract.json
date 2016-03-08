@@ -15,12 +15,12 @@
             {
                 "title": "CSV", 
                 "description": "Gathered CSV", 
-                "default_name": "gathered.csv", 
+                "default_name": "gathered", 
                 "id": "csv_out", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Dev CSV Gather", 
         "input_types": [
             {

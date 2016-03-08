@@ -110,12 +110,12 @@
             {
                 "title": "XML DataSet", 
                 "description": "Output AlignmentSet file", 
-                "default_name": "aligned.ccs.xml", 
+                "default_name": "mapped", 
                 "id": "outputFileName", 
                 "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.18", 
+        "_comment": "Created by v0.3.20", 
         "name": "pbalign.tasks.pbalign_ccs", 
         "input_types": [
             {

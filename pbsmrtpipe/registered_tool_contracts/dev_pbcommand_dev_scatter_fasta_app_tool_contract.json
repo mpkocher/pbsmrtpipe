@@ -39,12 +39,12 @@
             {
                 "title": "Chunk JSON", 
                 "description": "Scattered/Chunked Fasta Chunk.json", 
-                "default_name": "fasta.chunks.json", 
+                "default_name": "fasta.chunks", 
                 "id": "cjson", 
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.20", 
         "nchunks": "$max_nchunks", 
         "name": "Fasta Scatter", 
         "input_types": [

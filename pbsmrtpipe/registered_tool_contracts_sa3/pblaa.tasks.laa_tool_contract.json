@@ -545,26 +545,26 @@
             {
                 "title": "consensus_fastq_file", 
                 "description": "Resulting consensus fastq file", 
-                "default_name": "amplicon_analysis.fastq", 
+                "default_name": "amplicon_analysis", 
                 "id": "consensus_fastq", 
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }, 
             {
                 "title": "chimera_fastq_file", 
                 "description": "Resulting chimera/noise fastq file", 
-                "default_name": "amplicon_analysis_chimeras_noise.fastq", 
+                "default_name": "amplicon_analysis_chimeras_noise", 
                 "id": "chimera_fastq", 
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }, 
             {
                 "title": "CSV report", 
                 "description": "CSV report", 
-                "default_name": "amplicon_analysis.csv", 
+                "default_name": "amplicon_analysis", 
                 "id": "report_csv", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.14", 
+        "_comment": "Created by v0.3.20", 
         "name": "laa", 
         "input_types": [
             {

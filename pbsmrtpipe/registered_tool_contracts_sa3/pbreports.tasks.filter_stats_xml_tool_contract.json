@@ -15,12 +15,12 @@
             {
                 "title": "JSON report", 
                 "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
-                "default_name": "report.json", 
+                "default_name": "report", 
                 "id": "report", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Filtering Statistics XML Report", 
         "input_types": [
             {

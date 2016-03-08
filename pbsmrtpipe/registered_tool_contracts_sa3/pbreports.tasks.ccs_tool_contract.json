@@ -9,18 +9,18 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "resource_types": [], 
-        "description": "\nGenerate CCS report.\n", 
+        "description": "\nGenerate a report summarizing Circular Consensus Read (CCS) results.\n", 
         "schema_options": [], 
         "output_types": [
             {
                 "title": "JSON report", 
                 "description": "Path to write Report json output.", 
-                "default_name": "ccs_report.json", 
+                "default_name": "ccs_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "ccs_report", 
         "input_types": [
             {

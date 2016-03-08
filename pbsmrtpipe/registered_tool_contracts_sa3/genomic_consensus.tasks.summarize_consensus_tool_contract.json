@@ -15,12 +15,12 @@
             {
                 "title": "Output GFF file", 
                 "description": "New alignment summary GFF file", 
-                "default_name": "alignment_summary_variants.gff", 
+                "default_name": "alignment_summary_variants", 
                 "id": "output", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Summarize Consensus", 
         "input_types": [
             {

@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.171126", 
+    "version": "1.0.0.174838", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.ice_quiver --resolved-tool-contract", 
@@ -8,19 +8,21 @@
     "tool_contract_id": "pbtranscript.tasks.ice_quiver", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "resource_types": [], 
+        "resource_types": [
+            "$tmpdir"
+        ], 
         "description": "\nCalls the ICE algorithm, which stands for 'Iteratively Clustering and Error\ncorrection', to identify de novo consensus isoforms.\n", 
         "schema_options": [], 
         "output_types": [
             {
                 "title": "JSON file", 
                 "description": "JSON sentinel file", 
-                "default_name": "quiver_out.json", 
+                "default_name": "quiver_out", 
                 "id": "json_out", 
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "pbtranscript.tasks.ice_quiver", 
         "input_types": [
             {

@@ -62,12 +62,12 @@
             {
                 "title": "Chunk ConsensusReadSet", 
                 "description": "PacBio Chunked JSON ConsensusReadSet", 
-                "default_name": "ccsset_chunked.json", 
+                "default_name": "ccsset_chunked", 
                 "id": "chunk_report_json", 
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "nchunks": "$max_nchunks", 
         "name": "ConsensusReadSet ZMW scatter", 
         "input_types": [

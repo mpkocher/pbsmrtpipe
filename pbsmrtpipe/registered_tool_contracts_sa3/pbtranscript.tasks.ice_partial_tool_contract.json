@@ -17,12 +17,12 @@
             {
                 "title": "JSON pickle", 
                 "description": "Output pickle file", 
-                "default_name": "ice_partial_one.pickle", 
+                "default_name": "ice_partial_one", 
                 "id": "out_pickle", 
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ], 
-        "_comment": "Created by v0.3.18", 
+        "_comment": "Created by v0.3.20", 
         "name": "pbtranscript.tasks.ice_partial", 
         "input_types": [
             {

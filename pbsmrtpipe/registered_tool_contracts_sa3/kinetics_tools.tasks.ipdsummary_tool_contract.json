@@ -108,19 +108,19 @@
             {
                 "title": "GFF file", 
                 "description": "GFF file of modified bases", 
-                "default_name": "basemods.gff", 
+                "default_name": "basemods", 
                 "id": "gff", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }, 
             {
                 "title": "CSV file", 
                 "description": "CSV file of per-nucleotide information", 
-                "default_name": "basemods.csv", 
+                "default_name": "basemods", 
                 "id": "csv", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "ipdSummary", 
         "input_types": [
             {

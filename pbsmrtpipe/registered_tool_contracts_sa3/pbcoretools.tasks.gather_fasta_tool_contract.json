@@ -15,12 +15,12 @@
             {
                 "title": "Fasta Gathered", 
                 "description": "Fasta Gathered", 
-                "default_name": "file_gathered.fasta", 
+                "default_name": "gathered", 
                 "id": "fasta_out", 
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Gather Fasta", 
         "input_types": [
             {

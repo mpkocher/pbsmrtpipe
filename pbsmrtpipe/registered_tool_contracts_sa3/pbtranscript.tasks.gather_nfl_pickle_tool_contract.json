@@ -15,12 +15,12 @@
             {
                 "title": "Pickle", 
                 "description": "Gathered Pickle", 
-                "default_name": "gathered.pickle", 
+                "default_name": "gathered", 
                 "id": "pickle_out", 
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Dev Pickle Gather", 
         "input_types": [
             {

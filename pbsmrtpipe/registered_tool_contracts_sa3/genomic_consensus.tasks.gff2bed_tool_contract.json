@@ -108,12 +108,12 @@
             {
                 "title": "BED file", 
                 "description": "BED file", 
-                "default_name": "output.bed", 
+                "default_name": "output", 
                 "id": "bed", 
                 "file_type_id": "PacBio.FileTypes.bed"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "gffToBed", 
         "input_types": [
             {

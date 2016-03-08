@@ -15,12 +15,12 @@
             {
                 "title": "AlignmentSet", 
                 "description": "Gathered AlignmentSet", 
-                "default_name": "gathered.consensusalignmentset.xml", 
+                "default_name": "gathered", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Dev Alignments Gather", 
         "input_types": [
             {

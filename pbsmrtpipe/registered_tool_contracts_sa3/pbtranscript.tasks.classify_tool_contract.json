@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.171126", 
+    "version": "1.0.0.174838", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.classify --resolved-tool-contract", 
@@ -8,7 +8,9 @@
     "tool_contract_id": "pbtranscript.tasks.classify", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "resource_types": [], 
+        "resource_types": [
+            "$tmpdir"
+        ], 
         "description": "\nClassifies reads from a fasta/q file.  For each read, identify whether it is\nfull length, whether 5', 3' and poly A tail have been found. The input is a\nConsensusRead dataset.\n", 
         "schema_options": [
             {
@@ -62,40 +64,40 @@
             {
                 "title": "Output ContigSet", 
                 "description": "Output FASTA or ContigSet file", 
-                "default_name": "isoseq_draft.contigset.xml", 
+                "default_name": "isoseq_draft", 
                 "id": "outReadsFN", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "FASTA or ContigSet file", 
                 "description": "Output full-length non-chimeric reads in FASTA or ContigSet", 
-                "default_name": "isoseq_flnc.contigset.xml", 
+                "default_name": "isoseq_flnc", 
                 "id": "flnc", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "FASTA or ContigSet file", 
                 "description": "Output non-full-length reads in FASTA or ContigSet", 
-                "default_name": "isoseq_nfl.contigset.xml", 
+                "default_name": "isoseq_nfl", 
                 "id": "nfl", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "JSON summary", 
                 "description": "JSON summary", 
-                "default_name": "summary.json", 
+                "default_name": "summary", 
                 "id": "json_summary", 
                 "file_type_id": "PacBio.FileTypes.json"
             }, 
             {
                 "title": "CSV file", 
                 "description": "CSV file to output primer info", 
-                "default_name": "isoseq_primer_info.csv", 
+                "default_name": "isoseq_primer_info", 
                 "id": "report", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "pbtranscript.tasks.classify", 
         "input_types": [
             {

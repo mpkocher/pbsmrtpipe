@@ -108,26 +108,26 @@
             {
                 "title": "Consensus GFF", 
                 "description": "Consensus GFF", 
-                "default_name": "variants.gff", 
+                "default_name": "variants", 
                 "id": "variants", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }, 
             {
                 "title": "Consensus ContigSet", 
                 "description": "Consensus sequence in Fasta format", 
-                "default_name": "consensus.contigset.xml", 
+                "default_name": "consensus", 
                 "id": "consensus", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "Consensus fastq", 
                 "description": "Consensus fastq", 
-                "default_name": "consensus.fastq", 
+                "default_name": "consensus", 
                 "id": "consensus_fastq", 
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "variantCaller", 
         "input_types": [
             {

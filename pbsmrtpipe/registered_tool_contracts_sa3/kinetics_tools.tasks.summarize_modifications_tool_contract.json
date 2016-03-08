@@ -15,12 +15,12 @@
             {
                 "title": "GFF file", 
                 "description": "Modified alignment summary file", 
-                "default_name": "alignment_summary_with_basemods.gff", 
+                "default_name": "alignment_summary_with_basemods", 
                 "id": "gff_out", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "kinetics_tools.tasks.summarize_modifications", 
         "input_types": [
             {

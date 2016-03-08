@@ -15,12 +15,12 @@
             {
                 "title": "ConsensusReportJSON", 
                 "description": "Consensus Report JSON", 
-                "default_name": "consensus_report.json", 
+                "default_name": "consensus_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Amplicon Analysis Consensus", 
         "input_types": [
             {

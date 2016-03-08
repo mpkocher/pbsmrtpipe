@@ -8,7 +8,11 @@
     "tool_contract_id": "pbcommand.tasks.dev_txt_app", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "resource_types": [], 
+        "resource_types": [
+            "$tmpfile", 
+            "$tmpfile", 
+            "$tmpdir"
+        ], 
         "description": "Dev app for Testing that supports emitting tool contracts", 
         "schema_options": [
             {
@@ -39,12 +43,12 @@
             {
                 "title": "Txt outfile", 
                 "description": "Generic Output Txt file", 
-                "default_name": "output.txt", 
+                "default_name": "output", 
                 "id": "txt_out", 
                 "file_type_id": "PacBio.FileTypes.txt"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.20", 
         "name": "Txt App", 
         "input_types": [
             {

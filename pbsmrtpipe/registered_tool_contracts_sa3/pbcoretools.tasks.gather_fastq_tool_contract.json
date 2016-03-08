@@ -39,12 +39,12 @@
             {
                 "title": "Fastq Gathered", 
                 "description": "Fastq Gathered", 
-                "default_name": "file_gathered.fastq", 
+                "default_name": "gathered", 
                 "id": "fastq_out", 
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Gather Fastq", 
         "input_types": [
             {
@@ -55,7 +55,7 @@
             }
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbcoretools.tasks.gather_fastq"
     }
 }
