@@ -44,7 +44,6 @@ def get_report_json_attribute(report_file, attribute_id):
                 return value
     except (ValueError, IOError, KeyError) as e:
         msg = "Unable to load report attribute '{a}' from {p}".format(a=attribute_id, p=report_file)
-        sys.stderr.write(msg + "\n")
         log.error(msg)
         raise
 

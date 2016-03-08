@@ -233,7 +233,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                 else:
                     err_msg = "Unable to find INPUT file '{i}".format(i=input_file)
                     stderr_fh.write(err_msg + "\n")
-                    sys.stderr.write(err_msg + "\n")
+                    log.error(err_msg)
                     break
 
             # Create resources if necessary
@@ -278,7 +278,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
                         err_msg = "Unable to find {i} output file '{x}'. Marking task as failed. Setting exit code to {r}".format(x=output_file, i=ix, r=rcode)
                         stderr_fh.write(err_msg + "\n")
                         stdout_fh.write(err_msg + "\n")
-                        sys.stderr.write(err_msg + "\n")
+                        log.error(err_msg)
 
             # FIXME. There should be a better way to communicate warnings
             warn_msg = ""

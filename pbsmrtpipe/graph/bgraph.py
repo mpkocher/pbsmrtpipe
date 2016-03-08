@@ -336,7 +336,6 @@ def _to_objs_from_binding_str(registered_tasks_d, b_out, b_in):
     def _log_error(msg):
         emsg = "Failed to process bindings {o} -> {i}. {e}".format(o=b_out, i=b_in, e=msg)
         log.error(emsg)
-        sys.stderr.write(emsg)
         return emsg
 
     def _get_index_or_raise(desc, task_id_, in_out_types_, index_):

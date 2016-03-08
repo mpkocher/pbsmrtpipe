@@ -363,7 +363,7 @@ def _cli_entry_point_args_to_dict(args_entry_points):
     for elist in args_entry_points:
         for k, v in elist:
             if k in ep_d:
-                sys.stderr.write(pprint.pformat(args_entry_points) + "\n")
+                log.info(pprint.pformat(args_entry_points))
                 raise ValueError("entry point id '{i}' was given multiple times ".format(i=k))
             ep_d[k] = v
     return ep_d
@@ -586,7 +586,7 @@ def _args_run_diagnostics(args):
         output_dir = os.path.abspath(args.output_dir)
         return f(args.preset_xml, output_dir)
     else:
-        sys.stderr.write("Cluster mode not enabled. Skipping cluster submission tests\n")
+        log.warning("Cluster mode not enabled. Skipping cluster submission tests")
         return 0
 
 

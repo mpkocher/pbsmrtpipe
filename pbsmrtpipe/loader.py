@@ -58,7 +58,6 @@ def _load_all_tool_contracts(module_name, registered_tasks_d, filter_filename_fu
                 registered_tasks_d[meta_task.task_id] = meta_task
             except Exception as e:
                 log.error("Failed loading Static Task from '{x}'".format(x=json_file))
-                sys.stderr.write(e.message + "\n")
                 log.error(e.message)
                 raise
 

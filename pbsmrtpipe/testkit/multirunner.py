@@ -45,7 +45,6 @@ def _testkit_cfg_fofn_to_files(butler_fofn, root_dir):
                 else:
                     # Don't want the tests to not run if there's an error here
                     msg = "Unable to find {f} from butler fofn {x}".format(f=p, x=butler_fofn)
-                    sys.stderr.write(msg + "\n")
                     log.error(msg)
 
     log.info("Parsed file {f}. Found {n} configs.".format(f=butler_fofn, n=len(testkit_cfgs)))
