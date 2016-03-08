@@ -631,7 +631,7 @@ class TaskManifestWorker(multiprocessing.Process):
                 self.q_out.put(TaskResult(self.task_id, "failed", emsg, round(run_time, 2)))
         except Exception as ex:
             emsg = "Unhandled exception in Worker {n} running task {i}. Exception {e}".format(n=self.name, i=self.task_id, e=ex.message)
-            log.error(emsg, exc_info=True)
+            log.exception(emsg)
             self.q_out.put(TaskResult(self.task_id, "failed", emsg, 0.0))
 
         log.info("exiting Worker {i} (pid {p}) {k}.run".format(k=self.__class__.__name__, i=self.name, p=self.pid))

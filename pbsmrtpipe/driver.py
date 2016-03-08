@@ -863,7 +863,7 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
         else:
             emsg = "Unexpected exception. shutting down."
 
-        log.error(emsg, exc_info=True)
+        log.exception(emsg)
         raise
 
     finally:
@@ -892,7 +892,7 @@ def workflow_exception_exitcode_handler(func):
             state = func(*args, **kwargs)
         except Exception as e:
             emsg = "Error executing function {f}".format(f=func.__name__)
-            log.error(emsg, exc_info=True)
+            log.exception(emsg)
             slog.error(e)
 
             type_, value_, traceback_ = sys.exc_info()
