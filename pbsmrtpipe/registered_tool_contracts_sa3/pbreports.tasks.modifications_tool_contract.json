@@ -15,12 +15,12 @@
             {
                 "title": "JSON report", 
                 "description": "Filename of JSON output report", 
-                "default_name": "report.json", 
+                "default_name": "report", 
                 "id": "report", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Modifications Report", 
         "input_types": [
             {

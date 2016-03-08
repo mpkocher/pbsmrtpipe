@@ -2,6 +2,8 @@
 #
 # For now, all the SA tools that can emit a TC can be done here.
 
+set -xe
+
 TC_DIR=./pbsmrtpipe/registered_tool_contracts_sa3
 
 REPORTS="\
@@ -26,7 +28,6 @@ coverage"
 for REPORT in $REPORTS ; do
   MODULE="pbreports.report.${REPORT}"
   TC_FILE="pbreports.tasks.${REPORT}_tool_contract.json"
-  echo "python -m ${MODULE} --emit-tool-contract > ${TC_DIR}/${TC_FILE}"
   python -m ${MODULE} --emit-tool-contract > ${TC_DIR}/${TC_FILE}
 done
 

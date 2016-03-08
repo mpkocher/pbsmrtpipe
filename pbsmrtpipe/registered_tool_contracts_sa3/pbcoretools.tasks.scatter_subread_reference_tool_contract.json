@@ -39,12 +39,12 @@
             {
                 "title": "Chunk SubreadSet", 
                 "description": "PacBio Chunked JSON SubreadSet", 
-                "default_name": "subreadset_chunked.json", 
+                "default_name": "subreadset_chunked", 
                 "id": "cjson_out", 
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "nchunks": "$max_nchunks", 
         "name": "SubreadSet scatter", 
         "input_types": [

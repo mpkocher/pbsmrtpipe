@@ -39,12 +39,12 @@
             {
                 "title": "Preassembly Report", 
                 "description": "Preassembly Report", 
-                "default_name": "preassembly_report.json", 
+                "default_name": "preassembly_report", 
                 "id": "output_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Preassembly", 
         "input_types": [
             {

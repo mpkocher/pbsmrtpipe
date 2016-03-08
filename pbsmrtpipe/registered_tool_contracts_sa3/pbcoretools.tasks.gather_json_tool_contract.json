@@ -15,12 +15,12 @@
             {
                 "title": "JSON", 
                 "description": "Gathered JSON", 
-                "default_name": "gathered.json", 
+                "default_name": "gathered", 
                 "id": "json_out", 
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Dev JSON Gather", 
         "input_types": [
             {

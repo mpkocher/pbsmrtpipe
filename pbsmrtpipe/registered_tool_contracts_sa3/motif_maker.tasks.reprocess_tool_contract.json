@@ -39,12 +39,12 @@
             {
                 "title": "GFF file", 
                 "description": "GFF file of modified bases in motifs only", 
-                "default_name": "motifs.gff", 
+                "default_name": "motifs", 
                 "id": "gff_out", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "motif_maker.tasks.reprocess", 
         "input_types": [
             {

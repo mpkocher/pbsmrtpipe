@@ -223,19 +223,19 @@
             {
                 "title": "ConsensusReadSet", 
                 "description": "Output DataSet XML file", 
-                "default_name": "ccs.consensusreadset.xml", 
+                "default_name": "ccs", 
                 "id": "bam_output", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }, 
             {
                 "title": "JSON report", 
                 "description": "JSON report", 
-                "default_name": "ccs_report.json", 
+                "default_name": "ccs_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.13", 
+        "_comment": "Created by v0.3.20", 
         "name": "ccs", 
         "input_types": [
             {

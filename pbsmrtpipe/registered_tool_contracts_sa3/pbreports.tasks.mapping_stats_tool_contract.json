@@ -15,12 +15,12 @@
             {
                 "title": "PacBio Json Report", 
                 "description": "Output report JSON file.", 
-                "default_name": "mapping_stats_report.json", 
+                "default_name": "mapping_stats_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Mapping Statistics", 
         "input_types": [
             {

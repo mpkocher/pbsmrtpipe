@@ -15,12 +15,12 @@
             {
                 "title": "Gff", 
                 "description": "Gathered Gff", 
-                "default_name": "gathered.gff", 
+                "default_name": "gathered", 
                 "id": "gff_out", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Dev Gff Gather", 
         "input_types": [
             {

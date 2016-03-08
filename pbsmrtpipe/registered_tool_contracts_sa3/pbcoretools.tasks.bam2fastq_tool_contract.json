@@ -5,14 +5,14 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.13", 
+        "_comment": "Created by v0.3.20", 
         "description": "Quick tool bam2fastq pbcoretools.tasks.bam2fastq", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.SubreadSet_0", 
                 "file_type_id": "PacBio.DataSet.SubreadSet", 
                 "id": "Label PacBio.DataSet.SubreadSet_0", 
-                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
+                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file >"
             }
         ], 
         "is_distributed": true, 
@@ -20,11 +20,11 @@
         "nproc": 1, 
         "output_types": [
             {
-                "default_name": "file.fastq", 
-                "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file.fastq >", 
+                "default_name": "file", 
+                "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file >", 
                 "file_type_id": "PacBio.FileTypes.Fastq", 
                 "id": "Label PacBio.FileTypes.Fastq_0", 
-                "title": "<FileType id=PacBio.FileTypes.Fastq name=file.fastq >"
+                "title": "<FileType id=PacBio.FileTypes.Fastq name=file >"
             }
         ], 
         "resource_types": [], 

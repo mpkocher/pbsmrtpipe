@@ -15,12 +15,12 @@
             {
                 "title": "Polished Assembly Report", 
                 "description": "Polished Assembly Report", 
-                "default_name": "polished_assembly_report.json", 
+                "default_name": "polished_assembly_report", 
                 "id": "polished_assembly_rpt", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Polished Assembly", 
         "input_types": [
             {

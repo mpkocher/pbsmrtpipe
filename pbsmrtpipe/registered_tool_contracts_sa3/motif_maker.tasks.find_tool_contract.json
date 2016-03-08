@@ -39,12 +39,12 @@
             {
                 "title": "CSV file", 
                 "description": "CSV file of motifs", 
-                "default_name": "motifs.csv", 
+                "default_name": "motifs", 
                 "id": "csv", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "motif_maker.tasks.find_motifs", 
         "input_types": [
             {

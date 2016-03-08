@@ -15,12 +15,12 @@
             {
                 "title": "Alignments", 
                 "description": "BAM alignments file", 
-                "default_name": "gmap_alignments.bam", 
+                "default_name": "gmap_alignments", 
                 "id": "aln_out", 
                 "file_type_id": "PacBio.FileTypes.bam"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.20", 
         "name": "pbtranscript.tasks.gmap", 
         "input_types": [
             {

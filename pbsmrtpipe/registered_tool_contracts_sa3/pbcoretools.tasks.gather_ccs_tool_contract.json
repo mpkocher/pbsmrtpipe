@@ -15,12 +15,12 @@
             {
                 "title": "ConsensusReadSet", 
                 "description": "Gathered ConsensusReadSet", 
-                "default_name": "gathered.consensusreadset.xml", 
+                "default_name": "gathered", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }
         ], 
-        "_comment": "Created by v0.3.12", 
+        "_comment": "Created by v0.3.20", 
         "name": "Dev CCS Gather", 
         "input_types": [
             {

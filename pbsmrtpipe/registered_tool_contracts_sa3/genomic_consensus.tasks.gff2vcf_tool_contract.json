@@ -15,12 +15,12 @@
             {
                 "title": "VCF file", 
                 "description": "VCF file", 
-                "default_name": "output.vcf", 
+                "default_name": "output", 
                 "id": "vcf", 
                 "file_type_id": "PacBio.FileTypes.vcf"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "gffToVcf", 
         "input_types": [
             {

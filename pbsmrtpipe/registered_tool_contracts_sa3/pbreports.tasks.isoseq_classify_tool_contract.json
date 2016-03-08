@@ -9,18 +9,18 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "resource_types": [], 
-        "description": "\nGenerate a report for a IsoSeq Classify run, given both\nprimer-trimmed, non-chimeric, full-length reads and a\nclassify summary.\n", 
+        "description": "\nGenerate a report for a IsoSeq Classify run, given both primer-trimmed,\nnon-chimeric, full-length reads and a classify summary.\n", 
         "schema_options": [], 
         "output_types": [
             {
                 "title": "JSON file", 
                 "description": "Path to write report JSON output", 
-                "default_name": "isoseq_classify_report.json", 
+                "default_name": "isoseq_classify_report", 
                 "id": "outJson", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "IsoSeq Classify Report", 
         "input_types": [
             {

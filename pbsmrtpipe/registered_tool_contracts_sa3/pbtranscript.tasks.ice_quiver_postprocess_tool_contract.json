@@ -1,5 +1,5 @@
 {
-    "version": "0.2.0.171126", 
+    "version": "1.0.0.174838", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.ice_quiver_postprocess --resolved-tool-contract", 
@@ -8,7 +8,9 @@
     "tool_contract_id": "pbtranscript.tasks.ice_quiver_postprocess", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "resource_types": [], 
+        "resource_types": [
+            "$tmpdir"
+        ], 
         "description": "\nCalls the ICE algorithm, which stands for 'Iteratively Clustering and Error\ncorrection', to identify de novo consensus isoforms.\n", 
         "schema_options": [
             {
@@ -85,47 +87,47 @@
             {
                 "title": "JSON summary", 
                 "description": "JSON summary", 
-                "default_name": "summary.json", 
+                "default_name": "summary", 
                 "id": "json_summary", 
                 "file_type_id": "PacBio.FileTypes.json"
             }, 
             {
                 "title": "CSV file", 
                 "description": "TXT file to output cluster summary (default: *.cluster_summary.txt)", 
-                "default_name": "cluster_report.csv", 
+                "default_name": "cluster_report", 
                 "id": "cluster_report", 
                 "file_type_id": "PacBio.FileTypes.csv"
             }, 
             {
                 "title": "ContigSet", 
                 "description": "High-quality isoform sequences", 
-                "default_name": "hq_isoforms.contigset.xml", 
+                "default_name": "hq_isoforms", 
                 "id": "hq_isoforms_fa", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "FASTQ", 
                 "description": "High-quality isoform sequences with quality scores", 
-                "default_name": "hq_isoforms.fastq", 
+                "default_name": "hq_isoforms", 
                 "id": "hq_isoforms_fq", 
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }, 
             {
                 "title": "ContigSet", 
                 "description": "Low-quality isoform sequences", 
-                "default_name": "lq_isoforms.contigset.xml", 
+                "default_name": "lq_isoforms", 
                 "id": "lq_isoforms_fa", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
                 "title": "FASTQ", 
                 "description": "Low-quality isoform sequences with quality scores", 
-                "default_name": "lq_isoforms.fastq", 
+                "default_name": "lq_isoforms", 
                 "id": "lq_isoforms_fq", 
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "pbtranscript.tasks.ice_quiver_postprocess", 
         "input_types": [
             {

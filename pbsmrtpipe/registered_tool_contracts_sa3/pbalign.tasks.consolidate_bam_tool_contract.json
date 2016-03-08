@@ -62,12 +62,12 @@
             {
                 "title": "AlignmentSet", 
                 "description": "Consolidated AlignmentSet", 
-                "default_name": "final.alignmentset.xml", 
+                "default_name": "combined", 
                 "id": "ds_out", 
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.2.14", 
+        "_comment": "Created by v0.3.19", 
         "name": "AlignmentSet consolidate", 
         "input_types": [
             {

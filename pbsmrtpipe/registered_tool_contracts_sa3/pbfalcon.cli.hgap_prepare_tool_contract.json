@@ -1,68 +1,68 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.0", 
     "driver": {
-        "serialization": "json",
-        "exe": "python -m pbfalcon.cli.hgap_prepare --resolved-tool-contract ",
+        "serialization": "json", 
+        "exe": "python -m pbfalcon.cli.hgap_prepare --resolved-tool-contract ", 
         "env": {}
-    },
-    "tool_contract_id": "falcon_ns.tasks.task_hgap_prepare",
+    }, 
+    "tool_contract_id": "falcon_ns.tasks.task_hgap_prepare", 
     "tool_contract": {
-        "task_type": "pbsmrtpipe.task_types.standard",
-        "resource_types": [],
-        "description": "XXX Experimental HGAP.5",
+        "task_type": "pbsmrtpipe.task_types.standard", 
+        "resource_types": [], 
+        "description": "XXX Experimental HGAP.5", 
         "schema_options": [
             {
                 "pb_option": {
-                    "default": "",
-                    "type": "string",
-                    "option_id": "falcon_ns.task_options.HGAP_Options_JSON",
-                    "name": "Experimental HGAP.5 config overrides.",
+                    "default": "", 
+                    "type": "string", 
+                    "option_id": "falcon_ns.task_options.HGAP_Options_JSON", 
+                    "name": "Experimental HGAP.5 config overrides.", 
                     "description": "Experimental HGAP.5 config overrides are experimental."
-                },
-                "title": "JSON Schema for falcon_ns.task_options.HGAP_Options_JSON",
+                }, 
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_Options_JSON", 
                 "required": [
                     "falcon_ns.task_options.HGAP_Options_JSON"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
                 "properties": {
                     "falcon_ns.task_options.HGAP_Options_JSON": {
-                        "default": "",
-                        "type": "string",
-                        "description": "Experimental HGAP.5 config overrides are experimental.",
+                        "default": "", 
+                        "type": "string", 
+                        "description": "Experimental HGAP.5 config overrides are experimental.", 
                         "title": "Experimental HGAP.5 config overrides."
                     }
                 }
             }
-        ],
+        ], 
         "output_types": [
             {
-                "title": "HGAP JSON file",
-                "description": "Output: Actual configuration to be used by HGAP, in a 2-level dictionary.",
-                "default_name": "hgap-cfg.json",
-                "id": "hgap-cfg-out",
+                "title": "HGAP JSON file", 
+                "description": "Output: Actual configuration to be used by HGAP, in a 2-level dictionary.", 
+                "default_name": "hgap-cfg", 
+                "id": "hgap-cfg-out", 
                 "file_type_id": "PacBio.FileTypes.json"
-            },
+            }, 
             {
-                "title": "Python logging.config JSON file",
-                "description": "Output: Standard Python logging.config (for the task, not pbsmrtpipe)",
-                "default_name": "logging-cfg.json",
-                "id": "logging-cfg-out",
+                "title": "Python logging.config JSON file", 
+                "description": "Output: Standard Python logging.config (for the task, not pbsmrtpipe)", 
+                "default_name": "logging-cfg", 
+                "id": "logging-cfg-out", 
                 "file_type_id": "PacBio.FileTypes.json"
             }
-        ],
-        "_comment": "Created by v0.3.13",
-        "name": "XXX Experimental HgapConfigGenerator",
+        ], 
+        "_comment": "Created by v0.3.20", 
+        "name": "XXX Experimental HgapConfigGenerator", 
         "input_types": [
             {
-                "description": "Input: Probably BAM files",
-                "title": "DataSet-SubreadSet",
-                "id": "subreads-in",
+                "description": "Input: Probably BAM files", 
+                "title": "DataSet-SubreadSet", 
+                "id": "subreads-in", 
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
-        ],
-        "nproc": "$max_nproc",
-        "is_distributed": true,
+        ], 
+        "nproc": "$max_nproc", 
+        "is_distributed": true, 
         "tool_contract_id": "falcon_ns.tasks.task_hgap_prepare"
     }
 }

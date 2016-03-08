@@ -9,18 +9,18 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "resource_types": [], 
-        "description": "\nCreate a Mapping Report from a Aligned CCS BAM or ConsensusAlignment DataSet\n", 
+        "description": "\nGenerates a report of statistics for CCS reads mapped to a reference genome\nwith Blasr/pbalign.\n", 
         "schema_options": [], 
         "output_types": [
             {
                 "title": "PacBio Json Report", 
                 "description": "Output report JSON file.", 
-                "default_name": "mapping_stats_report.json", 
+                "default_name": "mapping_stats_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "CCS Mapping Statistics", 
         "input_types": [
             {

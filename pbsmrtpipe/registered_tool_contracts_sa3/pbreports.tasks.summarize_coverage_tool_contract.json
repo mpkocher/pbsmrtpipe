@@ -85,12 +85,12 @@
             {
                 "title": "Alignment Summary GFF", 
                 "description": "Alignment Summary GFF", 
-                "default_name": "alignment_summary.gff", 
+                "default_name": "alignment_summary", 
                 "id": "aln_summ_gff", 
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.3.10", 
+        "_comment": "Created by v0.3.20", 
         "name": "Summarize Coverage", 
         "input_types": [
             {

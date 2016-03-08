@@ -1,49 +1,49 @@
 {
     "driver": {
-        "env": {},
-        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ",
+        "env": {}, 
+        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ", 
         "serialization": "json"
-    },
+    }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.13",
-        "description": "Quick tool task_hgap_run falcon_ns.tasks.task_hgap_run",
+        "_comment": "Created by v0.3.20", 
+        "description": "Quick tool task_hgap_run falcon_ns.tasks.task_hgap_run", 
         "input_types": [
             {
-                "description": "description for PacBio.FileTypes.json_0",
-                "file_type_id": "PacBio.FileTypes.json",
-                "id": "Label PacBio.FileTypes.json_0",
-                "title": "<FileType id=PacBio.FileTypes.json name=file.json >"
-            },
+                "description": "description for PacBio.FileTypes.json_0", 
+                "file_type_id": "PacBio.FileTypes.json", 
+                "id": "Label PacBio.FileTypes.json_0", 
+                "title": "<FileType id=PacBio.FileTypes.json name=file >"
+            }, 
             {
-                "description": "description for PacBio.FileTypes.json_1",
-                "file_type_id": "PacBio.FileTypes.json",
-                "id": "Label PacBio.FileTypes.json_1",
-                "title": "<FileType id=PacBio.FileTypes.json name=file.json >"
-            },
+                "description": "description for PacBio.FileTypes.json_1", 
+                "file_type_id": "PacBio.FileTypes.json", 
+                "id": "Label PacBio.FileTypes.json_1", 
+                "title": "<FileType id=PacBio.FileTypes.json name=file >"
+            }, 
             {
-                "description": "description for PacBio.DataSet.SubreadSet_2",
-                "file_type_id": "PacBio.DataSet.SubreadSet",
-                "id": "Label PacBio.DataSet.SubreadSet_2",
-                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file.subreadset.xml >"
+                "description": "description for PacBio.DataSet.SubreadSet_2", 
+                "file_type_id": "PacBio.DataSet.SubreadSet", 
+                "id": "Label PacBio.DataSet.SubreadSet_2", 
+                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file >"
             }
-        ],
-        "is_distributed": false,
-        "name": "Tool task_hgap_run",
-        "nproc": 1,
+        ], 
+        "is_distributed": false, 
+        "name": "Tool task_hgap_run", 
+        "nproc": 1, 
         "output_types": [
             {
-                "default_name": "file.fasta",
-                "description": "description for <FileType id=PacBio.FileTypes.Fasta name=file.fasta >",
-                "file_type_id": "PacBio.FileTypes.Fasta",
-                "id": "Label PacBio.FileTypes.Fasta_0",
-                "title": "<FileType id=PacBio.FileTypes.Fasta name=file.fasta >"
+                "default_name": "file", 
+                "description": "description for <FileType id=PacBio.FileTypes.Fasta name=file >", 
+                "file_type_id": "PacBio.FileTypes.Fasta", 
+                "id": "Label PacBio.FileTypes.Fasta_0", 
+                "title": "<FileType id=PacBio.FileTypes.Fasta name=file >"
             }
-        ],
-        "resource_types": [],
-        "schema_options": [],
-        "task_type": "pbsmrtpipe.task_types.standard",
+        ], 
+        "resource_types": [], 
+        "schema_options": [], 
+        "task_type": "pbsmrtpipe.task_types.standard", 
         "tool_contract_id": "falcon_ns.tasks.task_hgap_run"
-    },
-    "tool_contract_id": "falcon_ns.tasks.task_hgap_run",
+    }, 
+    "tool_contract_id": "falcon_ns.tasks.task_hgap_run", 
     "version": "0.0.0"
 }
