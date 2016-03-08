@@ -496,7 +496,6 @@ def validate_workflow_options(d):
     for option_id in d:
         if option_id not in REGISTERED_WORKFLOW_OPTIONS:
             msg = "Unknown option. Ignoring workflow option '{i}'.".format(i=option_id)
-            sys.stderr.write(msg + "\n")
             log.warn(msg)
 
     wopts = []
@@ -808,7 +807,7 @@ def pipeline_template_to_dict(pipeline, rtasks):
             pbopt = _option_jschema_to_pb_option(jtopt)
             task_pboptions.append(pbopt)
         except Exception as e:
-            sys.stderr.write("Failed to convert {p}\n".format(p=jtopt))
+            log.error("Failed to convert {p}\n".format(p=jtopt))
             raise e
 
     all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
@@ -970,7 +969,7 @@ def load_pipeline_chunks_from_json(path):
     except Exception:
         msg = "Unable to load pipeline chunks from {f}".format(f=path)
         slog.error(msg)
-        sys.stderr.write(msg + "\n")
+        log.error(msg)
         raise
 
     return chunks

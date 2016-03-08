@@ -357,7 +357,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         mx = "Task {i} {m}".format(i=task_id_, m=task_result.error_message)
         slog.error(mx)
         log.error(mx)
-        sys.stderr.write(mx + "\n")
         services_log_update_progress("pbsmrtpipe::{i}".format(i=task_id_), WS.LogLevels.ERROR, mx)
 
     def has_available_slots(n):
@@ -664,11 +663,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
 def _write_final_results_message(state):
     if state is True:
-        msg = " Successfully completed workflow."
-        sys.stdout.write(msg + "\n")
+        log.info(" Successfully completed workflow.")
     else:
         msg = " Failed to run workflow."
-        sys.stderr.write(msg + "\n")
+        log.error(msg)
 
 
 def _validate_entry_points_or_raise(entry_points_d):
@@ -865,8 +863,7 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
         else:
             emsg = "Unexpected exception. shutting down."
 
-        log.error(emsg, exc_info=True)
-        sys.stderr.write(emsg + "\n")
+        log.exception(emsg)
         raise
 
     finally:
@@ -895,14 +892,9 @@ def workflow_exception_exitcode_handler(func):
             state = func(*args, **kwargs)
         except Exception as e:
             emsg = "Error executing function {f}".format(f=func.__name__)
-
-            log.error(emsg)
-            sys.stderr.write(emsg + "\n")
-
+            log.exception(emsg)
             slog.error(e)
 
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            traceback.print_exception(exc_type, exc_value, exc_tb, file=sys.stderr)
             type_, value_, traceback_ = sys.exc_info()
 
             log_traceback(slog, e, traceback_)
@@ -919,8 +911,6 @@ def workflow_exception_exitcode_handler(func):
 
             slog.info(msg)
             log.info(msg)
-            if not state:
-                sys.stderr.write(msg + "\n")
 
         return 0 if state else 1
 

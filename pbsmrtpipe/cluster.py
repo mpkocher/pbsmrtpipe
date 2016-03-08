@@ -57,7 +57,7 @@ def _get_cluster_files(template_dir, suffix='.tmpl'):
     for p in paths:
         if not os.path.isfile(p):
             msg = "cluster template loading error. Unable to find template file '{f}'".format(f=p)
-            log.error(msg, exc_info=True)
+            log.exception(msg)
             raise IOError(msg)
 
     return dict(zip(Constants.all(), paths))

@@ -67,7 +67,6 @@ def backticks(cmd, merge_stderr=True):
     else:
         msg = "Return code {r} {e} of cmd {c}".format(r=p.returncode, e=errorMessage, c=cmd)
         log.error(msg)
-        sys.stderr.write(msg + "\n")
 
     return errCode, output, errorMessage, run_time
 
@@ -246,7 +245,7 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
         time.sleep(1)
         process.poll()
     except KeyboardInterrupt as e:
-        sys.stderr.write("Received %r. Please wait...\n" %e)
+        log.critical("Received %r. Please wait...\n" %e)
         # Try to capture a stack-trace from the process, if Python.
         # Worst case: User can Ctrl-C again.
         #process.send_signal(signal.SIGINT) # Does not seem to be needed anymore.
@@ -468,7 +467,7 @@ class ClusterEngineWorker(multiprocessing.Process):
         if not os.path.exists(self.script_path):
             msg = "Unable to run task {t}. Unable to find script '{s}'".format(t=self.task_job_id, s=self.script_path)
             slog.error(msg)
-            sys.stderr.write(msg + "\n")
+            log.error(msg)
             return
 
         if self.shutdown_event.is_set():
@@ -631,9 +630,8 @@ class TaskManifestWorker(multiprocessing.Process):
                 run_time = 1
                 self.q_out.put(TaskResult(self.task_id, "failed", emsg, round(run_time, 2)))
         except Exception as ex:
-            traceback.print_exc(file=sys.stderr)
             emsg = "Unhandled exception in Worker {n} running task {i}. Exception {e}".format(n=self.name, i=self.task_id, e=ex.message)
-            log.error(emsg)
+            log.exception(emsg)
             self.q_out.put(TaskResult(self.task_id, "failed", emsg, 0.0))
 
         log.info("exiting Worker {i} (pid {p}) {k}.run".format(k=self.__class__.__name__, i=self.name, p=self.pid))
