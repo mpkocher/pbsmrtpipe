@@ -1,49 +1,49 @@
 {
     "driver": {
-        "env": {}, 
-        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ", 
+        "env": {},
+        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ",
         "serialization": "json"
-    }, 
+    },
     "tool_contract": {
-        "_comment": "Created by v0.3.20", 
-        "description": "Quick tool task_report_preassembly_yield falcon_ns.tasks.task_report_preassembly_yield", 
+        "_comment": "Created by v0.3.20",
+        "description": "Quick tool task_report_preassembly_yield falcon_ns.tasks.task_report_preassembly_yield",
         "input_types": [
             {
-                "description": "description for PacBio.FileTypes.json_0", 
-                "file_type_id": "PacBio.FileTypes.json", 
-                "id": "Label PacBio.FileTypes.json_0", 
+                "description": "description for PacBio.FileTypes.json_0",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "Label PacBio.FileTypes.json_0",
                 "title": "<FileType id=PacBio.FileTypes.json name=file >"
-            }, 
+            },
             {
-                "description": "description for PacBio.FileTypes.generic_fofn_1", 
-                "file_type_id": "PacBio.FileTypes.generic_fofn", 
-                "id": "Label PacBio.FileTypes.generic_fofn_1", 
+                "description": "description for PacBio.FileTypes.generic_fofn_1",
+                "file_type_id": "PacBio.FileTypes.generic_fofn",
+                "id": "Label PacBio.FileTypes.generic_fofn_1",
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
-            }, 
+            },
             {
-                "description": "description for PacBio.FileTypes.generic_fofn_2", 
-                "file_type_id": "PacBio.FileTypes.generic_fofn", 
-                "id": "Label PacBio.FileTypes.generic_fofn_2", 
+                "description": "description for PacBio.FileTypes.generic_fofn_2",
+                "file_type_id": "PacBio.FileTypes.generic_fofn",
+                "id": "Label PacBio.FileTypes.generic_fofn_2",
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
             }
-        ], 
-        "is_distributed": false, 
-        "name": "Tool task_report_preassembly_yield", 
-        "nproc": 1, 
+        ],
+        "is_distributed": false,
+        "name": "Tool task_report_preassembly_yield",
+        "nproc": 1,
         "output_types": [
             {
-                "default_name": "preassembly_yield", 
-                "description": "description for <FileType id=PacBio.FileTypes.json name=file >", 
-                "file_type_id": "PacBio.FileTypes.json", 
-                "id": "Label PacBio.FileTypes.json", 
+                "default_name": "preassembly_yield",
+                "description": "description for <FileType id=PacBio.FileTypes.json name=file >",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "Label PacBio.FileTypes.json",
                 "title": "<FileType id=PacBio.FileTypes.json name=file >"
             }
-        ], 
-        "resource_types": [], 
-        "schema_options": [], 
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        ],
+        "resource_types": [],
+        "schema_options": [],
+        "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "falcon_ns.tasks.task_report_preassembly_yield"
-    }, 
-    "tool_contract_id": "falcon_ns.tasks.task_report_preassembly_yield", 
+    },
+    "tool_contract_id": "falcon_ns.tasks.task_report_preassembly_yield",
     "version": "0.0.0"
 }

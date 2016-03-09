@@ -1,37 +1,37 @@
 {
     "driver": {
-        "env": {}, 
-        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ", 
+        "env": {},
+        "exe": "python -m pbfalcon.tasks.basic  run-rtc  ",
         "serialization": "json"
-    }, 
+    },
     "tool_contract": {
-        "_comment": "Created by v0.3.20", 
-        "description": "Quick tool task_falcon_make_fofn_abs falcon_ns.tasks.task_falcon_make_fofn_abs", 
+        "_comment": "Created by v0.3.20",
+        "description": "Quick tool task_falcon_make_fofn_abs falcon_ns.tasks.task_falcon_make_fofn_abs",
         "input_types": [
             {
-                "description": "description for PacBio.FileTypes.generic_fofn_0", 
-                "file_type_id": "PacBio.FileTypes.generic_fofn", 
-                "id": "Label PacBio.FileTypes.generic_fofn_0", 
+                "description": "description for PacBio.FileTypes.generic_fofn_0",
+                "file_type_id": "PacBio.FileTypes.generic_fofn",
+                "id": "Label PacBio.FileTypes.generic_fofn_0",
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
             }
-        ], 
-        "is_distributed": false, 
-        "name": "Tool task_falcon_make_fofn_abs", 
-        "nproc": 1, 
+        ],
+        "is_distributed": false,
+        "name": "Tool task_falcon_make_fofn_abs",
+        "nproc": 1,
         "output_types": [
             {
-                "default_name": "generic", 
-                "description": "description for <FileType id=PacBio.FileTypes.generic_fofn name=generic >", 
-                "file_type_id": "PacBio.FileTypes.generic_fofn", 
-                "id": "Label PacBio.FileTypes.generic_fofn_0", 
+                "default_name": "generic",
+                "description": "description for <FileType id=PacBio.FileTypes.generic_fofn name=generic >",
+                "file_type_id": "PacBio.FileTypes.generic_fofn",
+                "id": "Label PacBio.FileTypes.generic_fofn_0",
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
             }
-        ], 
-        "resource_types": [], 
-        "schema_options": [], 
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        ],
+        "resource_types": [],
+        "schema_options": [],
+        "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "falcon_ns.tasks.task_falcon_make_fofn_abs"
-    }, 
-    "tool_contract_id": "falcon_ns.tasks.task_falcon_make_fofn_abs", 
+    },
+    "tool_contract_id": "falcon_ns.tasks.task_falcon_make_fofn_abs",
     "version": "0.0.0"
 }
