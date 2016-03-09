@@ -74,7 +74,7 @@ def _core_align_plus(subread_ds, reference_ds):
 
     b4 = [("pbalign.tasks.pbalign:0", "pbreports.tasks.mapping_stats:0")]
 
-    b5 = [("pbalign.tasks.pbalign:0", "pbalign.tasks.consolidate_bam:0")]
+    b5 = [("pbalign.tasks.pbalign:0", "pbalign.tasks.consolidate_alignments:0")]
 
     return bs + b4 + b5
 
