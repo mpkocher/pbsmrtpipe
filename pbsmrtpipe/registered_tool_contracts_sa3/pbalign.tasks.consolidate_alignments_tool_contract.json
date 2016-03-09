@@ -2,10 +2,10 @@
     "version": "0.1.0", 
     "driver": {
         "serialization": "json", 
-        "exe": "python -m pbalign.tasks.consolidate_bam --resolved-tool-contract ", 
+        "exe": "python -m pbalign.tasks.consolidate_alignments --resolved-tool-contract ", 
         "env": {}
     }, 
-    "tool_contract_id": "pbalign.tasks.consolidate_bam", 
+    "tool_contract_id": "pbalign.tasks.consolidate_alignments", 
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "resource_types": [], 
@@ -67,7 +67,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.19", 
+        "_comment": "Created by v0.3.21", 
         "name": "AlignmentSet consolidate", 
         "input_types": [
             {
@@ -79,6 +79,6 @@
         ], 
         "nproc": 1, 
         "is_distributed": true, 
-        "tool_contract_id": "pbalign.tasks.consolidate_bam"
+        "tool_contract_id": "pbalign.tasks.consolidate_alignments"
     }
 }
