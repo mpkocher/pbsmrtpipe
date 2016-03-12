@@ -52,10 +52,12 @@ BuilderRecord = namedtuple("BuilderRecord", ['bindings', 'task_options', 'workfl
 
 class PresetRecord(object):
 
-    def __init__(self, task_options, workflow_options):
+    def __init__(self, task_options, workflow_options, pipeline_id=None):
         # this is a list of tuples (task_id, value)
         self.task_options = task_options
         self.workflow_options = workflow_options
+        # this is optional for some use cases
+        self.pipeline_id = pipeline_id
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__)
@@ -584,6 +586,7 @@ def parse_pipeline_preset_xml(file_name, validate=True):
 
     t = ElementTree(file=file_name)
     r = t.getroot()
+    pipeline_id = r.get("pipeline-id")
     task_options = parse_task_options(r)
     wopts_tlist = parse_workflow_options(r)
     wopts = dict(wopts_tlist)
@@ -592,7 +595,7 @@ def parse_pipeline_preset_xml(file_name, validate=True):
     if validate:
         wopts_tlist = validate_workflow_options(wopts)
     # this API is a bit funky. [(k, v), ..] is the format
-    return PresetRecord(task_options, wopts_tlist)
+    return PresetRecord(task_options, wopts_tlist, pipeline_id)
 
 
 def parse_pipeline_preset_xmls(file_names):
