@@ -33,10 +33,10 @@
         "output_types": [
             {
                 "default_name": "preassembly_yield",
-                "description": "description for <FileType id=PacBio.FileTypes.json name=file >",
-                "file_type_id": "PacBio.FileTypes.json",
-                "id": "Label PacBio.FileTypes.json",
-                "title": "<FileType id=PacBio.FileTypes.json name=file >"
+                "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
+                "file_type_id": "PacBio.FileTypes.JsonReport",
+                "id": "Label PacBio.FileTypes.JsonReport",
+                "title": "<FileType id=PacBio.FileTypes.JsonReport name=report >"
             }
         ],
         "resource_types": [],
