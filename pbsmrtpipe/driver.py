@@ -21,7 +21,7 @@ from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
 from pbsmrtpipe.utils import nfs_exists_check
 
-from pbcore.io import openDataSet
+from pbcore.io import openDataSet, isDataSet
 
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
@@ -128,14 +128,14 @@ def _get_dataset_uuid_or_create_uuid(path):
         ds_id = ds.uuid
         # make sure it's a validate uuid
         _ = uuid.UUID(ds_id)
+        return ds_id
     except ValueError as e:
         log.error("DataSet {p} uuid is malformed. {e}".format(e=e, p=path))
-        ds_id = uuid.uuid4
     except Exception:
-        # not a DataSet file
-        ds_id = uuid.uuid4()
+        if isDataSet(path):
+            log.exception("DataSet {p}".format(p=path))
 
-    return ds_id
+    return uuid.uuid4()
 
 
 def _get_last_lines_of_stderr(n, stderr_path):
