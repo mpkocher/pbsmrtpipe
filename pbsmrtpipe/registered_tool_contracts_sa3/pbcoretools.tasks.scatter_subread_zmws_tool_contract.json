@@ -67,7 +67,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.21", 
         "nchunks": "$max_nchunks", 
         "name": "SubreadSet ZMW scatter", 
         "input_types": [

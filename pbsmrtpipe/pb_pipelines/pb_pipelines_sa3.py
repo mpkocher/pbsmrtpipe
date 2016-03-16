@@ -20,7 +20,7 @@ class Constants(object):
     ENTRY_REF_FASTA = to_entry("eid_ref_fasta")
 
     ENTRY_DS_REF = to_entry("eid_ref_dataset")
-    ENTRY_BARCODE_FASTA = to_entry("eid_barcode_fasta")
+    ENTRY_DS_BARCODE = to_entry("eid_barcode")
     ENTRY_BAM_ALIGNMENT = to_entry("eid_bam_alignment")
     ENTRY_DS_HDF = to_entry("eid_hdfsubread")
     ENTRY_DS_SUBREAD = to_entry("eid_subread")
@@ -40,6 +40,8 @@ class Tags(object):
     ISOSEQ = "isoseq"
     DENOVO = "denovo"
     SAT = "sat"
+
+    BARCODE = "barcode"
 
     # File format converters
     CONVERTER = "converters"
@@ -388,6 +390,19 @@ def ds_laa():
     consensus_report = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
 
     return laa + consensus_report
+
+
+@sa3_register("sa3_ds_laa_barcode", "Long Amplicon Analysis with Barcoding", "0.1.0", tags=(Tags.LAA, Tags.INTERNAL, Tags.BARCODE))
+def ds_laa_barcode():
+    subreadset = Constants.ENTRY_DS_SUBREAD
+    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.bam2bam_barcode:0"),
+          (Constants.ENTRY_DS_BARCODE, "pbcoretools.tasks.bam2bam_barcode:1")]
+    # FIXME these will have incompatible types eventually
+    b2 = _core_laa("pbcoretools.tasks.bam2bam_barcode:0")
+    b3 = [("pbcoretools.tasks.bam2bam_barcode:0", "pbreports.tasks.barcode_report:0"),
+          (Constants.ENTRY_DS_BARCODE, "pbreports.tasks.barcode_report:1")]
+    b4 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
+    return b1 + b2 + b3 + b4
 
 
 def _core_ccs(subread_ds):
