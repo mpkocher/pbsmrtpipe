@@ -392,17 +392,34 @@ def ds_laa():
     return laa + consensus_report
 
 
-@sa3_register("sa3_ds_laa_barcode", "Long Amplicon Analysis with Barcoding", "0.1.0", tags=(Tags.LAA, Tags.INTERNAL, Tags.BARCODE))
-def ds_laa_barcode():
-    subreadset = Constants.ENTRY_DS_SUBREAD
-    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.bam2bam_barcode:0"),
-          (Constants.ENTRY_DS_BARCODE, "pbcoretools.tasks.bam2bam_barcode:1")]
-    # FIXME these will have incompatible types eventually
-    b2 = _core_laa("pbcoretools.tasks.bam2bam_barcode:0")
-    b3 = [("pbcoretools.tasks.bam2bam_barcode:0", "pbreports.tasks.barcode_report:0"),
-          (Constants.ENTRY_DS_BARCODE, "pbreports.tasks.barcode_report:1")]
-    b4 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
-    return b1 + b2 + b3 + b4
+def _core_barcode():
+    return [
+        (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.bam2bam_barcode:0"),
+        (Constants.ENTRY_DS_BARCODE, "pbcoretools.tasks.bam2bam_barcode:1"),
+        ("pbcoretools.tasks.bam2bam_barcode:0", "pbreports.tasks.barcode_report:0"),
+        (Constants.ENTRY_DS_BARCODE, "pbreports.tasks.barcode_report:1")
+    ]
+
+
+@sa3_register("sa3_ds_barcode", "SubreadSet Barcoding", "0.1.0",
+              tags=(Tags.INTERNAL, Tags.BARCODE)) # FIXME remove INTERNAL
+def ds_barcode():
+    """
+    SubreadSet barcoding pipeline
+    """
+    return _core_barcode()
+
+
+@sa3_register("pb_ds_barcode_laa", "Internal LAA Pipeline with SubreadSet Barcoding", "0.1.0", tags=(Tags.INTERNAL, Tags.BARCODE, Tags.LAA))
+def pb_barcode_laa():
+    """
+    Internal pipeline for testing barcoding in combination with LAA
+    """
+    b1  = _core_barcode()
+    subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
+    b2 = _core_laa(subreadset)
+    b3 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
+    return b1 + b2 + b3
 
 
 def _core_ccs(subread_ds):
