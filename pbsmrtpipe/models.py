@@ -204,7 +204,9 @@ class MetaTask(object):
                  output_file_names,
                  mutable_files,
                  description,
-                 display_name, version=None):
+                 display_name, version=None,
+                 output_file_display_names=None,
+                 output_file_descriptions=None):
         """These may be specified as the DI version"""
         self.task_id = task_id
         self.input_types = input_types
@@ -219,6 +221,10 @@ class MetaTask(object):
         self.description = description
         self.display_name = display_name
         self.version = version if version is not None else "UNKNOWN"
+        self.output_file_display_names = output_file_display_names if \
+            output_file_display_names is not None else ["" for x in output_file_names]
+        self.output_file_descriptions = output_file_descriptions if \
+            output_file_descriptions is not None else ["" for x in output_file_names]
 
     def __eq__(self, other):
         # need to rethink this.
@@ -811,7 +817,7 @@ class _ToolContractAble(object):
 class ToolContractMetaTask(MetaTask, _ToolContractAble):
 
     def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
-                 nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA"):
+                 nproc, resource_types, output_file_names, mutable_files, description, display_name, version="NA", output_file_display_names=None, output_file_descriptions=None):
         """
         :type tool_contract: pbcommand.models.ToolContract
 
@@ -819,7 +825,7 @@ class ToolContractMetaTask(MetaTask, _ToolContractAble):
         # this is naughty and terrible. to_cmd should not be here!!!
         to_cmd_func = None
         super(ToolContractMetaTask, self).__init__(task_id, is_distributed, input_types, output_types, options_schema,
-                                                   nproc, resource_types, to_cmd_func, output_file_names, mutable_files, description, display_name, version=version)
+                                                   nproc, resource_types, to_cmd_func, output_file_names, mutable_files, description, display_name, version=version, output_file_display_names=output_file_display_names, output_file_descriptions=output_file_descriptions)
         # Adding in a bit of duplication here. Once everything uses TC, then
         # then the entire system can dramatically be simplify
         self.tool_contract = tool_contract
