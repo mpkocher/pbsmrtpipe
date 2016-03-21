@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import re
 
 from .base import TestBase
 from pbsmrtpipe.testkit.base import monkey_patch
@@ -36,3 +37,18 @@ class TestDataStoreFiles(TestBase):
     """
 
     DATASTORE_FILE_VALIDATORS = (ValidateFasta, ValidateJsonReport)
+
+
+@monkey_patch
+class TestDataStoreFileLabels(TestBase):
+
+    def test_datastore_file_name_and_description(self):
+        """
+        Make sure output files have non-blank name and description.
+        """
+        p = os.path.join(self.job_dir, "workflow", "datastore.json")
+        with open(p, 'r') as r:
+            d = json.loads(r.read())
+            for fd in d["files"]:
+                self.assertTrue(re.search("[a-zA-Z0-9]{1,}", fd["name"]))
+                self.assertTrue(re.search("[a-zA-Z0-9]{1,}", fd["description"]))
