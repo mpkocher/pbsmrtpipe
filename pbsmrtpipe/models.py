@@ -351,14 +351,17 @@ class MetaScatterTask(MetaTask):
     def __init__(self, task_id, is_distributed, input_types, output_types,
                  opt_schema, nproc, resource_types, cmd_func, chunk_di,
                  chunk_keys, output_file_names, mutable_files, description,
-                 display_name, version=None):
+                 display_name, version=None,
+                 output_file_display_names=None,
+                 output_file_descriptions=None):
         super(MetaScatterTask, self).__init__(task_id, is_distributed,
                                               input_types, output_types,
                                               opt_schema, nproc,
                                               resource_types, cmd_func,
                                               output_file_names, mutable_files,
                                               description, display_name,
-                                              version=version)
+                                              version=version,
+                                              output_file_display_names=output_file_display_names, output_file_descriptions=output_file_descriptions)
         # this can be a primitive value or a DI model list
         self.chunk_di = chunk_di
         self.chunk_keys = chunk_keys
@@ -371,13 +374,15 @@ class MetaGatherTask(MetaTask):
     def __init__(self, task_id, is_distributed, input_types, output_types,
                  opt_schema, nproc, resource_types, cmd_func,
                  output_file_names, mutable_files, description, display_name,
-                 version=None):
+                 version=None, output_file_display_names=None,
+                 output_file_descriptions=None):
         super(MetaGatherTask, self).__init__(task_id, is_distributed,
                                              input_types, output_types,
                                              opt_schema, nproc, resource_types,
                                              cmd_func, output_file_names,
                                              mutable_files, description,
-                                             display_name, version=version)
+                                             display_name, version=version,
+                                             output_file_display_names=output_file_display_names, output_file_descriptions=output_file_descriptions)
 
 
 class Task(object):
@@ -847,27 +852,30 @@ class ToolContractMetaTask(MetaTask, _ToolContractAble):
 class ScatterToolContractMetaTask(MetaScatterTask, _ToolContractAble):
 
     def __init__(self, tool_contract, task_id, is_distributed, input_types, output_types, options_schema,
-                 nproc, resource_types, output_file_names, mutable_files, description, display_name, max_nchunks, chunk_keys, version="NA"):
+                 nproc, resource_types, output_file_names, mutable_files, description, display_name, max_nchunks, chunk_keys, version="NA", output_file_display_names=None, output_file_descriptions=None):
         """
         :type tool_contract: pbcommand.models.ToolContract
 
         """
         to_cmd_func = None
-        super(ScatterToolContractMetaTask, self).__init__(task_id,
-                                                          is_distributed,
-                                                          input_types,
-                                                          output_types,
-                                                          options_schema,
-                                                          nproc,
-                                                          resource_types,
-                                                          to_cmd_func,
-                                                          max_nchunks,
-                                                          chunk_keys,
-                                                          output_file_names,
-                                                          mutable_files,
-                                                          description,
-                                                          display_name,
-                                                          version=version)
+        super(ScatterToolContractMetaTask, self).__init__(
+            task_id,
+            is_distributed,
+            input_types,
+            output_types,
+            options_schema,
+            nproc,
+            resource_types,
+            to_cmd_func,
+            max_nchunks,
+            chunk_keys,
+            output_file_names,
+            mutable_files,
+            description,
+            display_name,
+            version=version,
+            output_file_display_names=output_file_display_names,
+            output_file_descriptions=output_file_descriptions)
         self.tool_contract = tool_contract
 
     @property
@@ -888,7 +896,8 @@ class GatherToolContractMetaTask(MetaGatherTask, _ToolContractAble):
     def __init__(self, tool_contract, task_id, is_distributed, input_types,
                  output_types, options_schema,
                  nproc, resource_types, output_file_names, mutable_files,
-                 description, display_name, version="NA"):
+                 description, display_name, version="NA",
+                 output_file_display_names=None, output_file_descriptions=None):
         """
 
         :type driver: ToolDriver
@@ -896,18 +905,21 @@ class GatherToolContractMetaTask(MetaGatherTask, _ToolContractAble):
 
         """
         _to_cmd_func = None
-        super(GatherToolContractMetaTask, self).__init__(task_id,
-                                                         is_distributed,
-                                                         input_types,
-                                                         output_types,
-                                                         options_schema, nproc,
-                                                         resource_types,
-                                                         _to_cmd_func,
-                                                         output_file_names,
-                                                         mutable_files,
-                                                         description,
-                                                         display_name,
-                                                         version=version)
+        super(GatherToolContractMetaTask, self).__init__(
+            task_id,
+            is_distributed,
+            input_types,
+            output_types,
+            options_schema, nproc,
+            resource_types,
+            _to_cmd_func,
+            output_file_names,
+            mutable_files,
+            description,
+            display_name,
+            version=version,
+            output_file_display_names=output_file_display_names,
+            output_file_descriptions=output_file_descriptions)
         self.tool_contract = tool_contract
         # self.chunk_key = chunk_key
 

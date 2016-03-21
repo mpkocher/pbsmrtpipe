@@ -332,6 +332,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             WS.add_datastore_file(total_ds_uri, datastore_file_, ignore_errors=True)
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
+        assert (len(tnode_.meta_task.output_file_display_names) ==
+                len(tnode_.meta_task.output_file_descriptions) ==
+                len(tnode_.meta_task.output_types) == len(task_.output_files))
         for file_type_, path_, name, description in zip(tnode_.meta_task.output_types, task_.output_files, tnode_.meta_task.output_file_display_names, tnode_.meta_task.output_file_descriptions):
             source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
             ds_uuid = _get_dataset_uuid_or_create_uuid(path_)
