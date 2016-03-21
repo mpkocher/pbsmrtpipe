@@ -1010,6 +1010,8 @@ def parse_operator_xml(f):
 def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d,
         output_file_names):
     mutable_files = []
+    display_names = [oft.display_name for oft in tc.task.output_file_types]
+    descriptions = [oft.description for oft in tc.task.output_file_types]
     return ToolContractMetaTask(tc,
                                 tc.task.task_id,
                                 task_type,
@@ -1022,11 +1024,15 @@ def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d,
                                 mutable_files,
                                 tc.task.description,
                                 tc.task.name,
-                                version=tc.task.version)
+                                version=tc.task.version,
+                                output_file_display_names=display_names,
+                                output_file_descriptions=descriptions)
 
 
 def _to_meta_scatter_task(tc, task_type, input_types, output_types,
                           schema_option_d, max_nchunks, chunk_keys):
+    display_names = [oft.display_name for oft in tc.task.output_file_types]
+    descriptions = [oft.description for oft in tc.task.output_file_types]
     output_file_names = []
     mutable_files = []
     return ScatterToolContractMetaTask(tc,
@@ -1042,10 +1048,14 @@ def _to_meta_scatter_task(tc, task_type, input_types, output_types,
                                        tc.task.description,
                                        tc.task.name,
                                        max_nchunks, chunk_keys,
-                                       version=tc.task.version)
+                                       version=tc.task.version,
+                                       output_file_display_names=display_names,
+                                       output_file_descriptions=descriptions)
 
 
 def _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d):
+    display_names = [oft.display_name for oft in tc.task.output_file_types]
+    descriptions = [oft.description for oft in tc.task.output_file_types]
     output_file_names = []
     mutable_files = []
     return GatherToolContractMetaTask(tc,
@@ -1060,7 +1070,9 @@ def _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option
                                       mutable_files,
                                       tc.task.description,
                                       tc.task.name,
-                                      version=tc.task.version)
+                                      version=tc.task.version,
+                                      output_file_display_names=display_names,
+                                      output_file_descriptions=descriptions)
 
 
 def tool_contract_to_meta_task(tc, max_nchunks):

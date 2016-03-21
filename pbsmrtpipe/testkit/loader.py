@@ -1,4 +1,6 @@
 """Dynamically load test cases from a cfg file"""
+
+import xml.etree.ElementTree as ET
 import importlib
 import logging
 import ConfigParser
@@ -90,3 +92,11 @@ def parse_cfg_file(path):
                         test_cases.append(x)
 
     return test_cases
+
+
+def dtype_and_uuid_from_dataset_xml(dataset_xml):
+    tree = ET.parse(dataset_xml)
+    root = tree.getroot()
+    metatype = root.attrib['MetaType']
+    unique_id = root.attrib['UniqueId']
+    return metatype, unique_id
