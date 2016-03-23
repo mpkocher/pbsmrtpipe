@@ -228,14 +228,14 @@
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }, 
             {
-                "title": "JSON report", 
-                "description": "JSON report", 
+                "title": "CSV report", 
+                "description": "Text report summarizing run statistics", 
                 "default_name": "ccs_report", 
-                "id": "report_json", 
-                "file_type_id": "PacBio.FileTypes.JsonReport"
+                "id": "report_csv", 
+                "file_type_id": "PacBio.FileTypes.txt"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.22", 
         "name": "ccs", 
         "input_types": [
             {

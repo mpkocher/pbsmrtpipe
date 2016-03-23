@@ -18,7 +18,7 @@
                 <task-output>pbccs.tasks.ccs:0</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbcoretools.tasks.gather_report</gather-task-id>
+                <gather-task-id>pbcoretools.tasks.gather_txt</gather-task-id>
                 <chunk-key>$chunk.report_id</chunk-key>
                 <task-output>pbccs.tasks.ccs:1</task-output>
             </chunk>
