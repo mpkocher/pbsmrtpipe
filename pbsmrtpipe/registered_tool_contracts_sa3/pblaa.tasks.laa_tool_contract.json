@@ -197,11 +197,34 @@
             }, 
             {
                 "pb_option": {
+                    "default": 500, 
+                    "type": "integer", 
+                    "option_id": "pblaa.task_options.max_clustering_reads", 
+                    "name": "Maximum number of reads to use in clustering", 
+                    "description": "Maximum number of input reads to cluster per barcode"
+                }, 
+                "title": "JSON Schema for pblaa.task_options.max_clustering_reads", 
+                "required": [
+                    "pblaa.task_options.max_clustering_reads"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pblaa.task_options.max_clustering_reads": {
+                        "default": 500, 
+                        "type": "integer", 
+                        "description": "Maximum number of input reads to cluster per barcode", 
+                        "title": "Maximum number of reads to use in clustering"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
                     "default": 2000, 
                     "type": "integer", 
                     "option_id": "pblaa.task_options.max_reads", 
                     "name": "Maximum number of reads", 
-                    "description": "Maximum number of input reads to cluster per barcode"
+                    "description": "Maximum number of input reads to use per barcode"
                 }, 
                 "title": "JSON Schema for pblaa.task_options.max_reads", 
                 "required": [
@@ -213,7 +236,7 @@
                     "pblaa.task_options.max_reads": {
                         "default": 2000, 
                         "type": "integer", 
-                        "description": "Maximum number of input reads to cluster per barcode", 
+                        "description": "Maximum number of input reads to use per barcode", 
                         "title": "Maximum number of reads"
                     }
                 }
@@ -358,7 +381,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": 3000, 
+                    "default": 750, 
                     "type": "integer", 
                     "option_id": "pblaa.task_options.min_split_score", 
                     "name": "Min Split Score", 
@@ -372,7 +395,7 @@
                 "type": "object", 
                 "properties": {
                     "pblaa.task_options.min_split_score": {
-                        "default": 3000, 
+                        "default": 750, 
                         "type": "integer", 
                         "description": "Minimum score supporting a minor phase required for split", 
                         "title": "Min Split Score"
@@ -564,7 +587,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.14", 
         "name": "laa", 
         "input_types": [
             {
