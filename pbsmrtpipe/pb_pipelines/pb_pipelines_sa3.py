@@ -199,7 +199,7 @@ def ds_align_unrolled():
 
 RESEQUENCING_TASK_OPTIONS = {
     "genomic_consensus.task_options.diploid": False,
-    "genomic_consensus.task_options.algorithm": "arrow",
+    "genomic_consensus.task_options.algorithm": "best",
     "pbalign.task_options.algorithm_options": "-minMatch 12 -bestn 10 -minPctSimilarity 70.0 -refineConcordantAlignments",
     "pbalign.task_options.concordant": True,
 }
@@ -255,7 +255,7 @@ def _core_mod_detection(alignment_ds, reference_ds):
 
 
 BASEMODS_TASK_OPTIONS = dict(RESEQUENCING_TASK_OPTIONS)
-BASEMODS_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "quiver"
+BASEMODS_TASK_OPTIONS["genomic_consensus.task_options.algorithm"] = "best"
 BASEMODS_TASK_OPTIONS["kinetics_tools.task_options.pvalue"] = 0.001
 
 @sa3_register("ds_modification_detection",

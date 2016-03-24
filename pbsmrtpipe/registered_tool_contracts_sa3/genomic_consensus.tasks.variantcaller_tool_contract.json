@@ -13,11 +13,11 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": "quiver", 
+                    "default": "best", 
                     "type": "string", 
                     "option_id": "genomic_consensus.task_options.algorithm", 
                     "name": "Algorithm", 
-                    "description": "Algorithm name"
+                    "description": "Variant calling algorithm"
                 }, 
                 "title": "JSON Schema for genomic_consensus.task_options.algorithm", 
                 "required": [
@@ -27,9 +27,9 @@
                 "type": "object", 
                 "properties": {
                     "genomic_consensus.task_options.algorithm": {
-                        "default": "quiver", 
+                        "default": "best", 
                         "type": "string", 
-                        "description": "Algorithm name", 
+                        "description": "Variant calling algorithm", 
                         "title": "Algorithm"
                     }
                 }
@@ -127,7 +127,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.22", 
         "name": "variantCaller", 
         "input_types": [
             {
