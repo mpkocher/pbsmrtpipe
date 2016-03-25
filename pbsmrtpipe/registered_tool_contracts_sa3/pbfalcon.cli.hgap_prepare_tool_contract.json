@@ -36,7 +36,7 @@
             },
             {
                 "pb_option": {
-                    "default": "20",
+                    "default": "30",
                     "type": "string",
                     "option_id": "falcon_ns.task_options.HGAP_SeedCoverage_str",
                     "name": "Seed coverage",
@@ -50,7 +50,7 @@
                 "type": "object",
                 "properties": {
                     "falcon_ns.task_options.HGAP_SeedCoverage_str": {
-                        "default": "20",
+                        "default": "30",
                         "type": "string",
                         "description": "A target for the total # of bases in the 'raw' (post primary) reads, divided by the total number in the 'seed' reads.",
                         "title": "Seed coverage"
