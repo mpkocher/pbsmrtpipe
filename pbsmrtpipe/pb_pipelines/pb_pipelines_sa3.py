@@ -401,8 +401,8 @@ def _core_barcode():
     ]
 
 
-@sa3_register("sa3_ds_barcode", "SubreadSet Barcoding", "0.1.0",
-              tags=(Tags.INTERNAL, Tags.BARCODE)) # FIXME remove INTERNAL
+@sa3_register("sa3_ds_barcode", "Barcoding", "0.1.0",
+              tags=(Tags.BARCODE,))
 def ds_barcode():
     """
     SubreadSet barcoding pipeline
