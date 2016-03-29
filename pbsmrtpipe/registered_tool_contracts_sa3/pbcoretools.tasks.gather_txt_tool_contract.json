@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.txt"
             }
         ], 
-        "_comment": "Created by v0.3.22", 
+        "_comment": "Created by v0.3.23", 
         "name": "Dev text Gather", 
         "input_types": [
             {

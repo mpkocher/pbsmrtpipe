@@ -5,7 +5,7 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.21", 
+        "_comment": "Created by v0.3.23", 
         "description": "Quick tool bam2fastq pbcoretools.tasks.bam2fastq", 
         "input_types": [
             {

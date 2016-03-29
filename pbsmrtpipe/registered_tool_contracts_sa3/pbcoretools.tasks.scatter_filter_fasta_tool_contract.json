@@ -67,7 +67,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.3.21", 
+        "_comment": "Created by v0.3.23", 
         "nchunks": "$max_nchunks", 
         "name": "Scatter Filter Fasta", 
         "input_types": [
