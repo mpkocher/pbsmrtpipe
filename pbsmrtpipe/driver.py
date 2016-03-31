@@ -15,10 +15,12 @@ import functools
 import uuid
 import platform
 
-from pbcommand.pb_io import write_resolved_tool_contract, write_tool_contract
+from pbcommand.pb_io import (write_resolved_tool_contract,
+                             write_tool_contract,
+                             load_report_from_json)
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
 from pbcommand.utils import log_traceback
-from pbcommand.models import (FileTypes, DataStoreFile, TaskTypes)
+from pbcommand.models import (FileTypes, DataStoreFile)
 from pbsmrtpipe.utils import nfs_exists_check
 
 from pbcore.io import openDataSet, isDataSet
@@ -114,7 +116,19 @@ def _status(bg):
     return "Workflow status {n}/{t} completed/total tasks".format(t=ntasks, n=ncompleted_tasks)
 
 
-def _get_dataset_uuid_or_create_uuid(path):
+def _get_uuid(loader_func, path):
+    """Get UUID from the file resource or return None"""
+    try:
+        r = loader_func(path)
+        i = r.uuid
+        # validate
+        _ = uuid.UUID(i)
+        return i
+    except Exception:
+        return None
+
+
+def _get_or_create_uuid_from_file(path):
     """
     Extract the uuid from the DataSet or assign a new UUID
 
@@ -123,17 +137,12 @@ def _get_dataset_uuid_or_create_uuid(path):
     :rtype: str
     :return: uuid string
     """
-    try:
-        ds = openDataSet(path)
-        ds_id = ds.uuid
-        # make sure it's a validate uuid
-        _ = uuid.UUID(ds_id)
-        return ds_id
-    except ValueError as e:
-        log.error("DataSet {p} uuid is malformed. {e}".format(e=e, p=path))
-    except Exception:
-        if isDataSet(path):
-            log.exception("DataSet {p}".format(p=path))
+
+    loader_funcs = (openDataSet, load_report_from_json)
+    for loader in loader_funcs:
+        ds_uuid = _get_uuid(loader, path)
+        if ds_uuid is not None:
+            return ds_uuid
 
     return uuid.uuid4()
 
@@ -337,7 +346,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 len(tnode_.meta_task.output_types) == len(task_.output_files))
         for file_type_, path_, name, description in zip(tnode_.meta_task.output_types, task_.output_files, tnode_.meta_task.output_file_display_names, tnode_.meta_task.output_file_descriptions):
             source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
-            ds_uuid = _get_dataset_uuid_or_create_uuid(path_)
+            ds_uuid = _get_or_create_uuid_from_file(path_)
             is_chunked_ = _is_chunked_task_node_type(tnode_)
             ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_, is_chunked=is_chunked_, name=name, description=description)
             ds.add(ds_file_)
