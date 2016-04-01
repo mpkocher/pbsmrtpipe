@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
             }
         ], 
-        "_comment": "Created by v0.3.23", 
+        "_comment": "Created by v0.3.24", 
         "name": "Dev Alignments Gather", 
         "input_types": [
             {

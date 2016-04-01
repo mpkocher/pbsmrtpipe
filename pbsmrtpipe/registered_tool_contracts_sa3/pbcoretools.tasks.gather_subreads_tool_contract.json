@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ], 
-        "_comment": "Created by v0.3.23", 
+        "_comment": "Created by v0.3.24", 
         "name": "Dev SubreadSet Gather", 
         "input_types": [
             {

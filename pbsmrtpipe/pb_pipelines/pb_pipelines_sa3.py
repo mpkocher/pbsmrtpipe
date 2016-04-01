@@ -361,8 +361,8 @@ def rs_site_acceptance_test_1():
 
 
 def _core_export_fastx(subread_ds):
-    b1 = [(subread_ds, "pbcoretools.tasks.bam2fasta:0")]
-    b2 = [(subread_ds, "pbcoretools.tasks.bam2fastq:0")]
+    b1 = [(subread_ds, "pbcoretools.tasks.bam2fasta_archive:0")]
+    b2 = [(subread_ds, "pbcoretools.tasks.bam2fastq_archive:0")]
     return b1 + b2
 
 
