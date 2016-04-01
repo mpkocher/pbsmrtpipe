@@ -404,15 +404,14 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
 
-        # After the initial startup, bump up the time to reduce resource usage
-        # (since multiple instances will be launched from the services)
-        niterations += 1
-        if niterations < stead_state_n:
-            sleep_time = dt_ramp
-        else:
-            sleep_time = dt_stead_state
-
         while True:
+            # After the initial startup, bump up the time to reduce resource usage
+            # (since multiple instances will be launched from the services)
+            niterations += 1
+            if niterations < stead_state_n:
+                sleep_time = dt_ramp
+            else:
+                sleep_time = dt_stead_state
 
             # Convert Task -> ScatterAble task (emits a Chunk.json file)
             B.apply_scatterable(bg, global_registry.chunk_operators, global_registry.tasks)
@@ -534,13 +533,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             # Computational resources are tapped
             if len(workers) >= max_nworkers:
                 # don't do anything
-                time.sleep(sleep_time)
                 continue
 
             tnode = B.get_next_runnable_task(bg)
 
             if tnode is None:
-                time.sleep(sleep_time)
                 continue
             elif isinstance(tnode, TaskBindingNode):
                 niterations = 0
@@ -570,7 +567,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
                 if not has_available_slots(task.nproc):
                     # not enough slots to run in
-                    time.sleep(sleep_time)
                     continue
 
                 bg.node[tnode]['task'] = task
