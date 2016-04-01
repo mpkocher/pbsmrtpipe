@@ -5,7 +5,7 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.23", 
+        "_comment": "Created by v0.3.24", 
         "description": "Quick tool bam2fasta_ccs pbcoretools.tasks.bam2fasta_ccs", 
         "input_types": [
             {

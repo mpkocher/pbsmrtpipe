@@ -6,7 +6,7 @@
     }, 
     "tool_contract": {
         "_comment": "Created by v0.3.24", 
-        "description": "Quick tool bam2fastq pbcoretools.tasks.bam2fastq", 
+        "description": "Quick tool bam2fasta_archive pbcoretools.tasks.bam2fasta_archive", 
         "input_types": [
             {
                 "description": "description for PacBio.DataSet.SubreadSet_0", 
@@ -16,15 +16,15 @@
             }
         ], 
         "is_distributed": true, 
-        "name": "Tool bam2fastq", 
+        "name": "Tool bam2fasta_archive", 
         "nproc": 1, 
         "output_types": [
             {
                 "default_name": "file", 
-                "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file >", 
-                "file_type_id": "PacBio.FileTypes.Fastq", 
-                "id": "Label PacBio.FileTypes.Fastq_0", 
-                "title": "<FileType id=PacBio.FileTypes.Fastq name=file >"
+                "description": "description for <FileType id=PacBio.FileTypes.gzip name=file >", 
+                "file_type_id": "PacBio.FileTypes.gzip", 
+                "id": "Label PacBio.FileTypes.gzip_0", 
+                "title": "<FileType id=PacBio.FileTypes.gzip name=file >"
             }
         ], 
         "resource_types": [], 
@@ -54,8 +54,8 @@
             }
         ], 
         "task_type": "pbsmrtpipe.task_types.standard", 
-        "tool_contract_id": "pbcoretools.tasks.bam2fastq"
+        "tool_contract_id": "pbcoretools.tasks.bam2fasta_archive"
     }, 
-    "tool_contract_id": "pbcoretools.tasks.bam2fastq", 
+    "tool_contract_id": "pbcoretools.tasks.bam2fasta_archive", 
     "version": "0.1.0"
 }
