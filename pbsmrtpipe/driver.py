@@ -534,13 +534,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             # Computational resources are tapped
             if len(workers) >= max_nworkers:
                 # don't do anything
-                time.sleep(sleep_time)
                 continue
 
             tnode = B.get_next_runnable_task(bg)
 
             if tnode is None:
-                time.sleep(sleep_time)
                 continue
             elif isinstance(tnode, TaskBindingNode):
                 niterations = 0
@@ -570,7 +568,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
                 if not has_available_slots(task.nproc):
                     # not enough slots to run in
-                    time.sleep(sleep_time)
                     continue
 
                 bg.node[tnode]['task'] = task
