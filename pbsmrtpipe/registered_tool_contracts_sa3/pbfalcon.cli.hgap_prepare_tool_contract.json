@@ -120,7 +120,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
-        "_comment": "Created by v0.3.21",
+        "_comment": "Created by v0.3.23",
         "name": "XXX Experimental HgapConfigGenerator",
         "input_types": [
             {
