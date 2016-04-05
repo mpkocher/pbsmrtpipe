@@ -217,6 +217,29 @@
                         "title": "No Polish CCS"
                     }
                 }
+            }, 
+            {
+                "pb_option": {
+                    "default": false, 
+                    "type": "boolean", 
+                    "option_id": "pbccs.task_options.by_strand", 
+                    "name": "By Strand CCS", 
+                    "description": "For each ZMW, generate two CCS sequences, one for each strand"
+                }, 
+                "title": "JSON Schema for pbccs.task_options.by_strand", 
+                "required": [
+                    "pbccs.task_options.by_strand"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pbccs.task_options.by_strand": {
+                        "default": false, 
+                        "type": "boolean", 
+                        "description": "For each ZMW, generate two CCS sequences, one for each strand", 
+                        "title": "By Strand CCS"
+                    }
+                }
             }
         ], 
         "output_types": [
@@ -235,7 +258,7 @@
                 "file_type_id": "PacBio.FileTypes.txt"
             }
         ], 
-        "_comment": "Created by v0.3.22", 
+        "_comment": "Created by v0.3.25", 
         "name": "ccs", 
         "input_types": [
             {

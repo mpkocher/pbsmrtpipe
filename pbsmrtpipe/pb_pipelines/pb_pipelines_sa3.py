@@ -439,6 +439,17 @@ def ds_ccs():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD)
 
 
+@sa3_register("pb_ds_barcode_ccs", "Internal CCS Pipeline with SubreadSet Barcoding", "0.1.0", tags=(Tags.INTERNAL, Tags.BARCODE, Tags.CCS))
+def pb_barcode_ccs():
+    """
+    Internal pipeline for testing barcoding in combination with CCS
+    """
+    b1 = _core_barcode()
+    subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
+    b2 = _core_ccs(subreadset)
+    return b1 + b2
+
+
 def _core_ccs_align(ccs_ds):
     # pbalign w/CCS input
     b3 = [(ccs_ds, "pbalign.tasks.pbalign_ccs:0"),
