@@ -5,7 +5,7 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.24", 
+        "_comment": "Created by v0.3.25", 
         "description": "Quick tool bam2fastq_ccs pbcoretools.tasks.bam2fastq_ccs", 
         "input_types": [
             {
@@ -21,10 +21,10 @@
         "output_types": [
             {
                 "default_name": "file", 
-                "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file >", 
-                "file_type_id": "PacBio.FileTypes.Fastq", 
-                "id": "Label PacBio.FileTypes.Fastq_0", 
-                "title": "<FileType id=PacBio.FileTypes.Fastq name=file >"
+                "description": "description for <FileType id=PacBio.FileTypes.gzip name=file >", 
+                "file_type_id": "PacBio.FileTypes.gzip", 
+                "id": "Label PacBio.FileTypes.gzip_0", 
+                "title": "<FileType id=PacBio.FileTypes.gzip name=file >"
             }
         ], 
         "resource_types": [], 
