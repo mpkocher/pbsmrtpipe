@@ -465,7 +465,14 @@ def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
     """
-    return _core_ccs_align("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+    b1 = _core_ccs_align("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
+    b2 = [("pbalign.tasks.pbalign_ccs:0",
+           "pbreports.tasks.summarize_coverage_ccs:0"),
+          (Constants.ENTRY_DS_REF, "pbreports.tasks.summarize_coverage_ccs:1")]
+    b3 = [(Constants.ENTRY_DS_REF, "pbreports.tasks.coverage_report:0"),
+          ("pbreports.tasks.summarize_coverage_ccs:0",
+           "pbreports.tasks.coverage_report:1")]
+    return b1 + b2 + b3
 
 
 @sa3_register("pb_ccs_align", "Internal Consensus Read Mapping", "0.1.0", tags=(Tags.MAP, Tags.CCS, Tags.INTERNAL))
