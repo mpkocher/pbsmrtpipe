@@ -21,7 +21,7 @@
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
             }
         ],
-        "is_distributed": false,
+        "is_distributed": true,
         "name": "Tool task_falcon2_run_asm",
         "nproc": 1,
         "output_types": [

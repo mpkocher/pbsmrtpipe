@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ], 
-        "_comment": "Created by v0.3.24", 
+        "_comment": "Created by v0.3.25", 
         "name": "Dev Gff Gather", 
         "input_types": [
             {
@@ -31,7 +31,7 @@
             }
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbcoretools.tasks.gather_gff"
     }
 }
