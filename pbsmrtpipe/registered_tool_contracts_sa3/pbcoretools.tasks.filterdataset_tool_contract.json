@@ -5,7 +5,7 @@
         "serialization": "json"
     }, 
     "tool_contract": {
-        "_comment": "Created by v0.3.24", 
+        "_comment": "Created by v0.3.25", 
         "description": "Quick tool filterdataset pbcoretools.tasks.filterdataset", 
         "input_types": [
             {

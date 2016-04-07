@@ -44,7 +44,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ], 
-        "_comment": "Created by v0.3.24", 
+        "_comment": "Created by v0.3.25", 
         "name": "Gather Fastq", 
         "input_types": [
             {

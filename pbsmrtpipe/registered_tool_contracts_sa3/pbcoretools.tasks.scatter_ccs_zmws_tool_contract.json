@@ -67,7 +67,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ], 
-        "_comment": "Created by v0.3.24", 
+        "_comment": "Created by v0.3.25", 
         "nchunks": "$max_nchunks", 
         "name": "ConsensusReadSet ZMW scatter", 
         "input_types": [
@@ -82,7 +82,7 @@
             "$chunk.ccsset_id"
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbcoretools.tasks.ccsset_zmw_scatter"
     }
 }
