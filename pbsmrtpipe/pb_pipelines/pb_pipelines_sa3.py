@@ -496,6 +496,7 @@ def _core_isoseq_classify(ccs_ds):
 
 
 def _core_isoseq_cluster(ccs_ds, flnc_ds, nfl_ds):
+    """Deprecated, replaced by _core_isoseq_cluster_chunk_by_bins."""
     b5 = [ # cluster reads and get consensus isoforms
         # full-length, non-chimeric transcripts
         (flnc_ds, "pbtranscript.tasks.cluster:0"),
@@ -533,6 +534,44 @@ def _core_isoseq_cluster(ccs_ds, flnc_ds, nfl_ds):
 
     return b5 + b6 + b7 + b8 + b9
 
+def _core_isoseq_cluster_chunk_by_bins(subreads_ds, ccs_ds, flnc_ds, nfl_ds):
+    """Core isoseq cluster pipeline, further chunk ICE, ice_partial, ice_polish
+       by (read sizes or primer) bins, deprecated _core_isoseq_cluster."""
+    # separate_flnc
+    b1 = [(flnc_ds, "pbtranscript.tasks.separate_flnc:0")]
+
+    # create chunks for ICE, ice_partial, ice_polish
+    b2 = [("pbtranscript.tasks.separate_flnc:0", "pbtranscript.tasks.create_chunks:0"),
+          (nfl_ds, "pbtranscript.tasks.create_chunks:1")]
+
+    # run ICE cluster on bins
+    b3 = [("pbtranscript.tasks.create_chunks:0", "pbtranscript.tasks.cluster_bins:0"),
+          (ccs_ds, "pbtranscript.tasks.cluster_bins:1")]
+
+    # run ice_partial on bins
+    b4 = [("pbtranscript.tasks.create_chunks:1", "pbtranscript.tasks.ice_partial_cluster_bins:0"),
+          ("pbtranscript.tasks.cluster_bins:0", "pbtranscript.tasks.ice_partial_cluster_bins:1"),
+          (ccs_ds, "pbtranscript.tasks.ice_partial_cluster_bins:2")]
+
+    # gather chunked nfl pickles in each cluster bin.
+    b5 = [("pbtranscript.tasks.create_chunks:1", "pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle:0"),
+          ("pbtranscript.tasks.ice_partial_cluster_bins:0", "pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle:1")]
+
+    # run ice_polish (quiver|arrow) on bins
+    b6 = [("pbtranscript.tasks.create_chunks:2", "pbtranscript.tasks.ice_polish_cluster_bins:0"),
+          ("pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle:0", "pbtranscript.tasks.ice_polish_cluster_bins:1"),
+          (subreads_ds, "pbtranscript.tasks.ice_polish_cluster_bins:2")]
+
+    # gather polished isoforms in each cluster bin
+    b7 = [("pbtranscript.tasks.create_chunks:2", "pbtranscript.tasks.gather_polished_isoforms_in_each_bin:0"),
+          ("pbtranscript.tasks.ice_polish_cluster_bins:0", "pbtranscript.tasks.gather_polished_isoforms_in_each_bin:1")]
+
+    # Combine results from all cluster bins
+    b8 = [("pbtranscript.tasks.create_chunks:0", "pbtranscript.tasks.combine_cluster_bins:0"),
+          ("pbtranscript.tasks.gather_polished_isoforms_in_each_bin:0", "pbtranscript.tasks.combine_cluster_bins:1")]
+
+    return b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8
+
 
 ISOSEQ_TASK_OPTIONS = {
     "pbccs.task_options.min_passes":1,
@@ -563,10 +602,10 @@ def ds_isoseq():
     Main IsoSeq pipeline, starting from subreads.
     """
     b1 = _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
-    b2 = _core_isoseq_cluster(
-        "pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0",
-        "pbtranscript.tasks.classify:1",
-        "pbtranscript.tasks.classify:2")
+    b2 = _core_isoseq_cluster_chunk_by_bins(subreads_ds=Constants.ENTRY_DS_SUBREAD,
+                                            ccs_ds="pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0",
+                                            flnc_ds="pbtranscript.tasks.classify:1",
+                                            nfl_ds="pbtranscript.tasks.classify:2")
     return b1 + b2
 
 
@@ -576,17 +615,19 @@ def pb_isoseq():
     Internal IsoSeq pipeline starting from an existing CCS dataset.
     """
     b1 = _core_isoseq_classify(Constants.ENTRY_DS_CCS)
-    b2 = _core_isoseq_cluster(
-        Constants.ENTRY_DS_CCS,
-        "pbtranscript.tasks.classify:1",
-        "pbtranscript.tasks.classify:2")
+    b2 = _core_isoseq_cluster_chunk_by_bins(subreads_ds=Constants.ENTRY_DS_SUBREAD,
+                                            ccs_ds=Constants.ENTRY_DS_CCS,
+                                            flnc_ds="pbtranscript.tasks.classify:1",
+                                            nfl_ds="pbtranscript.tasks.classify:2")
     return b1 + b2
 
 
 @sa3_register("pb_isoseq_cluster", "Internal IsoSeq clustering pipeline", "0.2.0", tags=(Tags.ISOSEQ, Tags.INTERNAL,))
 def pb_isoseq_cluster():
-    return _core_isoseq_cluster(Constants.ENTRY_DS_CCS,
-        to_entry("e_flnc_fa"), to_entry("e_nfl_fa"))
+    return _core_isoseq_cluster_chunk_by_bins(subreads_ds=Constants.ENTRY_DS_SUBREAD,
+                                              ccs_ds=Constants.ENTRY_DS_CCS,
+                                              flnc_ds=to_entry("e_flnc_fa"),
+                                              nfl_ds=to_entry("e_nfl_fa"))
 
 
 # XXX will resurrect in the future
