@@ -90,6 +90,8 @@ class _TestBase(unittest.TestCase):
 class TestBase(_TestBase):
     _is_test = True
     job_dir = None
+    services_access_layer = None
+    job_id = None
 
 
 class TestTaskBase(TestBase):
