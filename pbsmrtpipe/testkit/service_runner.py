@@ -92,10 +92,26 @@ def job_id_from_testkit_cfg(testkit_cfg):
     return parsed_cfg.job_id
 
 
-def run_butler_tests_from_cfg(testkit_cfg, output_dir, output_xml):
+# FIXME evil dwells here
+def _patch_test_cases_with_service_access_layer(test_cases,
+                                                service_access_layer, job_id):
+    """This must be called before the test cases are run"""
+    for test_case in test_cases:
+        test_case.__class__.service_access_layer = service_access_layer
+        test_case.__class__.job_id = job_id
+        for t in test_case:
+            t.__class__.service_access_layer = service_access_layer
+            t.__class__.job_id = job_id
+
+
+def run_butler_tests_from_cfg(testkit_cfg, output_dir, output_xml,
+                              service_access_layer, services_job_id=None):
     job_id = job_id_from_testkit_cfg(testkit_cfg)
     butler = config_parser_to_butler(testkit_cfg)
     test_cases = parse_cfg_file(testkit_cfg)
+    _patch_test_cases_with_service_access_layer(test_cases,
+                                                service_access_layer,
+                                                job_id=services_job_id)
     log.info("running tests...")
     exit_code = run_butler_tests(
         test_cases=test_cases,
@@ -123,7 +139,9 @@ def run_services_testkit_job(host, port, testkit_cfg,
         return run_butler_tests_from_cfg(
             testkit_cfg=testkit_cfg,
             output_dir=engine_job.path,
-            output_xml=xml_out)
+            output_xml=xml_out,
+            service_access_layer=sal,
+            services_job_id=test_job_id)
     entrypoints = get_entrypoints(testkit_cfg)
     pipeline_id = pipeline_id_from_testkit_cfg(testkit_cfg)
     job_id = job_id_from_testkit_cfg(testkit_cfg)
@@ -148,7 +166,9 @@ def run_services_testkit_job(host, port, testkit_cfg,
     exit_code = run_butler_tests_from_cfg(
         testkit_cfg=testkit_cfg,
         output_dir=engine_job.path,
-        output_xml=xml_out)
+        output_xml=xml_out,
+        service_access_layer=sal,
+        services_job_id=engine_job.id)
     if ignore_test_failures and engine_job.was_successful():
         return 0
     return exit_code
