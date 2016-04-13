@@ -570,7 +570,10 @@ def _core_isoseq_cluster_chunk_by_bins(subreads_ds, ccs_ds, flnc_ds, nfl_ds):
     b8 = [("pbtranscript.tasks.create_chunks:0", "pbtranscript.tasks.combine_cluster_bins:0"),
           ("pbtranscript.tasks.gather_polished_isoforms_in_each_bin:0", "pbtranscript.tasks.combine_cluster_bins:1")]
 
-    return b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8
+    # pbreports isoseq_cluster
+    b9 = [("pbtranscript.tasks.combine_cluster_bins:0", "pbreports.tasks.isoseq_cluster:0"), # draft consensus isoforms
+          ("pbtranscript.tasks.combine_cluster_bins:1", "pbreports.tasks.isoseq_cluster:1")] # json report
+    return b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9
 
 
 ISOSEQ_TASK_OPTIONS = {
