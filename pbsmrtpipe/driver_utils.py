@@ -353,8 +353,15 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
     slog.info("successfully initialized datastore.")
 
     write_workflow_settings(workflow_level_opts, os.path.join(job_resources.workflow, 'options-workflow.json'))
+
+    log.info("Entry Points:")
+    log.info("\n" + pprint.pformat(ep_d, indent=4))
+
     log.info("Workflow Options:")
-    log.info(pprint.pformat(workflow_level_opts.to_dict(), indent=4))
+    log.info("\n" + pprint.pformat(workflow_level_opts.to_dict(), indent=4))
+
+    log.info("Task Options:")
+    log.info("\n" + pprint.pformat(task_opts, indent=4))
 
     task_opts_path = os.path.join(job_resources.workflow, 'options-task.json')
     with open(task_opts_path, 'w') as f:
@@ -362,6 +369,7 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
 
     env_path = os.path.join(job_resources.workflow, '.env.json')
     IO.write_env_to_json(env_path)
+    log.info("wrote current env to {e}".format(e=env_path))
 
     try:
         sa_system, sa_components = IO.get_smrtanalysis_system_and_components_from_env()

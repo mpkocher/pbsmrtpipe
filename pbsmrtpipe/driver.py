@@ -724,6 +724,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     if isinstance(workflow_template_xml_or_pipeline, Pipeline):
         # Use default values defined in the Pipeline
         builder_record = IO.BuilderRecord(workflow_template_xml_or_pipeline.all_bindings, workflow_template_xml_or_pipeline.task_options, {})
+        slog.info("Loaded pipeline Id {p}".format(p=workflow_template_xml_or_pipeline.pipeline_id))
     else:
         slog.info("Loading workflow template.")
         builder_record = IO.parse_pipeline_template_xml(workflow_template_xml_or_pipeline, registered_pipelines)
@@ -930,13 +931,13 @@ def workflow_exception_exitcode_handler(func):
 
 @workflow_exception_exitcode_handler
 def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d,
-                 chunk_operators, workflow_template_xml, entry_points_d,
+                 chunk_operators, workflow_template_xml_or_pipeline, entry_points_d,
                  output_dir, preset_xmls, rc_preset_or_none, service_uri,
                  force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Entry point for running a pipeline
 
-    :param workflow_template_xml: path to workflow xml
+    :param workflow_template_xml_or_pipeline: path to workflow xml or Pipeline instance
     :param entry_points_d:
     :param output_dir:
     :param preset_xmls: list of path to preset xml
@@ -944,7 +945,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
 
     :type registered_tasks_d: dict[str, pbsmrtpipe.pb_tasks.core.MetaTask]
     :type registered_file_types_d: dict[str, pbsmrtpipe.pb_tasks.core.FileType]
-    :type workflow_template_xml: str
+    :type workflow_template_xml_or_pipeline: str
     :type output_dir: str
     :type preset_xmls: list[str]
     :type service_uri: str | None
@@ -956,7 +957,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
 
     workflow_bindings, workflow_level_opts, task_opts, cluster_render = _load_io_for_workflow(registered_tasks_d,
                                                                                               registered_pipelines_d,
-                                                                                              workflow_template_xml,
+                                                                                              workflow_template_xml_or_pipeline,
                                                                                               entry_points_d, preset_xmls,
                                                                                               rc_preset_or_none,
                                                                                               force_distribute=force_distribute,
