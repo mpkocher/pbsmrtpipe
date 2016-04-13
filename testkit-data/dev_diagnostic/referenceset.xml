@@ -1,19 +1,66 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<pbds:ReferenceSet TimeStampedName="referenceset_150304_231155" MetaType="PacBio.DataSet.ReferenceSet" Name="my-name" CreatedAt="2016-04-12T23:14:24.825-07:00" UniqueId="efec6f75-08c0-4de5-a64b-a4eb4b81a5fd" Version="3.0.1" Author="pbscala 0.38.0-SNAPSHOT reference_info_dataset_0.4.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pbds="http://pacificbiosciences.com/PacBioDatasets.xsd" xmlns:pbbase="http://pacificbiosciences.com/PacBioBaseDataModel.xsd">
-        <pbbase:ExternalResources>
-          <pbbase:ExternalResource Name="First References FASTA" Description="Points to an example references FASTA file." MetaType="PacBio.ReferenceFile.ReferenceFastaFile" ResourceId="./sequence/my_name.fasta" UniqueId="90a11d4e-f23e-4313-ba26-7b0e9f6bcf43" TimeStampedName="pacbio_dataset_index-90a11d4e-f23e-4313-ba26-7b0e9f6bcf43" Tags="converted">
+<pbds:ReferenceSet TimeStampedName="referenceset_150304_231155"
+                   MetaType="PacBio.DataSet.ReferenceSet" Name="my-name"
+                   CreatedAt="2016-04-12T23:14:24.825-07:00"
+                   UniqueId="efec6f75-08c0-4de5-a64b-a4eb4b81a5fd"
+                   Version="3.0.1"
+                   Author="pbscala 0.38.0-SNAPSHOT reference_info_dataset_0.4.2"
+                   xmlns:pbds="http://pacificbiosciences.com/PacBioDatasets.xsd"
+                   xmlns:pbbase="http://pacificbiosciences.com/PacBioBaseDataModel.xsd">
+    <pbbase:ExternalResources>
+        <pbbase:ExternalResource Name="First References FASTA"
+                                 Description="Points to an example references FASTA file."
+                                 MetaType="PacBio.ReferenceFile.ReferenceFastaFile"
+                                 ResourceId="./sequence/my_name.fasta"
+                                 UniqueId="90a11d4e-f23e-4313-ba26-7b0e9f6bcf43"
+                                 TimeStampedName="pacbio_dataset_index-90a11d4e-f23e-4313-ba26-7b0e9f6bcf43"
+                                 Tags="converted">
             <pbbase:FileIndices>
-              <pbbase:FileIndex UniqueId="78c633c4-fd1b-4b73-a92a-fc91a11f3b6f" TimeStampedName="pacbio_dataset_index-78c633c4-fd1b-4b73-a92a-fc91a11f3b6f" MetaType="PacBio.Index.FastaContigIndex" ResourceId="./sequence/my_name.fasta.contig.index"/><pbbase:FileIndex UniqueId="ca5b1099-f89e-4a51-9dfc-30c64de1e3e7" TimeStampedName="pacbio_dataset_index-ca5b1099-f89e-4a51-9dfc-30c64de1e3e7" MetaType="PacBio.Index.SamIndex" ResourceId="./sequence/my_name.fasta.fai"/><pbbase:FileIndex UniqueId="cd856c09-2979-4007-aaed-67d103ac2096" TimeStampedName="pacbio_dataset_index-cd856c09-2979-4007-aaed-67d103ac2096" MetaType="PacBio.Index.Indexer" ResourceId="./sequence/my_name.fasta.index"/><pbbase:FileIndex UniqueId="fdd9990e-9d0a-4568-a83c-5176e207b5af" TimeStampedName="pacbio_dataset_index-fdd9990e-9d0a-4568-a83c-5176e207b5af" MetaType="PacBio.Index.SaWriterIndex" ResourceId="./sequence/my_name.fasta.sa"/>
+                <pbbase:FileIndex
+                        UniqueId="78c633c4-fd1b-4b73-a92a-fc91a11f3b6f"
+                        TimeStampedName="pacbio_dataset_index-78c633c4-fd1b-4b73-a92a-fc91a11f3b6f"
+                        MetaType="PacBio.Index.FastaContigIndex"
+                        ResourceId="./sequence/my_name.fasta.contig.index"/>
+                <pbbase:FileIndex
+                        UniqueId="ca5b1099-f89e-4a51-9dfc-30c64de1e3e7"
+                        TimeStampedName="pacbio_dataset_index-ca5b1099-f89e-4a51-9dfc-30c64de1e3e7"
+                        MetaType="PacBio.Index.SamIndex"
+                        ResourceId="./sequence/my_name.fasta.fai"/>
+                <pbbase:FileIndex
+                        UniqueId="cd856c09-2979-4007-aaed-67d103ac2096"
+                        TimeStampedName="pacbio_dataset_index-cd856c09-2979-4007-aaed-67d103ac2096"
+                        MetaType="PacBio.Index.Indexer"
+                        ResourceId="./sequence/my_name.fasta.index"/>
+                <pbbase:FileIndex
+                        UniqueId="fdd9990e-9d0a-4568-a83c-5176e207b5af"
+                        TimeStampedName="pacbio_dataset_index-fdd9990e-9d0a-4568-a83c-5176e207b5af"
+                        MetaType="PacBio.Index.SaWriterIndex"
+                        ResourceId="./sequence/my_name.fasta.sa"/>
             </pbbase:FileIndices>
-          </pbbase:ExternalResource>
-        </pbbase:ExternalResources>
-        <pbds:DataSetMetadata>
-          <pbds:TotalLength>5662</pbds:TotalLength>
-          <pbds:NumRecords>4</pbds:NumRecords>
-          <pbds:Organism>my_name</pbds:Organism>
-          <pbds:Ploidy>haploid</pbds:Ploidy>
-          <pbds:Contigs>
-            <pbds:Contig Name="ref000001" Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/9/" Length="1756" Digest="86d965078a9545a13946ef18a43b7bba"/><pbds:Contig Name="ref000002" Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/11" Length="3436" Digest="669737736734f74391764438aa1fd989"/><pbds:Contig Name="ref000003" Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13" Length="68" Digest="fb1a4b920000c85cfdb009802fec6f1e"/><pbds:Contig Name="ref000004" Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13" Length="402" Digest="b2f04d9d9f86975bcdfff6e1c1c8c6ae"/>
-          </pbds:Contigs>
-        </pbds:DataSetMetadata>
-      </pbds:ReferenceSet>
+        </pbbase:ExternalResource>
+    </pbbase:ExternalResources>
+    <pbds:DataSetMetadata>
+        <pbds:TotalLength>5662</pbds:TotalLength>
+        <pbds:NumRecords>4</pbds:NumRecords>
+        <pbds:Organism>my_name</pbds:Organism>
+        <pbds:Ploidy>haploid</pbds:Ploidy>
+        <pbds:Contigs>
+            <pbds:Contig Name="ref000001"
+                         Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/9/"
+                         Length="1756"
+                         Digest="86d965078a9545a13946ef18a43b7bba"/>
+            <pbds:Contig Name="ref000002"
+                         Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/11"
+                         Length="3436"
+                         Digest="669737736734f74391764438aa1fd989"/>
+            <pbds:Contig Name="ref000003"
+                         Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13"
+                         Length="68"
+                         Digest="fb1a4b920000c85cfdb009802fec6f1e"/>
+            <pbds:Contig Name="ref000004"
+                         Description="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13"
+                         Length="402"
+                         Digest="b2f04d9d9f86975bcdfff6e1c1c8c6ae"/>
+        </pbds:Contigs>
+    </pbds:DataSetMetadata>
+</pbds:ReferenceSet>
