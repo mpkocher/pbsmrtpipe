@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<reference_info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="my_name" last_modified="2016-04-12T23:14:24-0700" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+    <organism>
+        <name>my-org</name>
+        <ploidy>haploid</ploidy>
+    </organism>
+    <reference>
+        <description>Fasta converter v0.3.1 to PacBio Reference.info.xml and ReferenceSet XML</description>
+        <file format="text/fasta">./sequence/my_name.fasta</file>
+        <index_file type="indexer">./sequence/my_name.fasta.index</index_file>
+        <index_file type="sawriter">./sequence/my_name.fasta.sa</index_file>
+        <index_file type="sam_idx">./sequence/my_name.fasta.fai</index_file>
+        <index_file type="fasta_contig_index">./sequence/my_name.fasta.contig.index</index_file>
+        <max_contig_length>3436</max_contig_length>
+        <num_contigs>4</num_contigs>
+        <type>sample</type>
+    </reference>
+    <contigs>
+        <contig displayName="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/9/" id="ref000001" length="1756">
+            <digest type="md5">86d965078a9545a13946ef18a43b7bba</digest>
+            <header>m120201_042231_42129_c100275262550000001523007907041260_s1_p0/9/0_1756</header>
+        </contig>
+        <contig displayName="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/11" id="ref000002" length="3436">
+            <digest type="md5">669737736734f74391764438aa1fd989</digest>
+            <header>m120201_042231_42129_c100275262550000001523007907041260_s1_p0/11/1513_4949</header>
+        </contig>
+        <contig displayName="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13" id="ref000003" length="68">
+            <digest type="md5">fb1a4b920000c85cfdb009802fec6f1e</digest>
+            <header>m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13/0_68</header>
+        </contig>
+        <contig displayName="m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13" id="ref000004" length="402">
+            <digest type="md5">b2f04d9d9f86975bcdfff6e1c1c8c6ae</digest>
+            <header>m120201_042231_42129_c100275262550000001523007907041260_s1_p0/13/117_519</header>
+        </contig>
+    </contigs>
+</reference_info>
