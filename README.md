@@ -164,3 +164,56 @@ optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
 ```
+
+### Development and Testing
+
+
+"testkit" is the test framework for testing pipelines.
+
+Uninstall and Install pbsmrtpipe
+
+```
+make install
+```
+
+Test defined Tasks
+
+```
+make test-tasks
+```
+
+Test defined Pipelines
+
+```
+make test-pipelines
+```
+
+Test defined Chunk Operators
+
+```
+make test-operators
+```
+
+Test All core defined tasks, pipelines and chunk operators
+
+```
+make test-sanity
+```
+
+Running test-data Integration Pipelines with testkit
+
+```
+make test-dev
+```
+
+Run the entire test suite (unittests and integration tests) This should be run before every pull request.
+
+```
+make test-suite
+```
+
+Clean All 
+
+```bash
+make clean-all
+```
