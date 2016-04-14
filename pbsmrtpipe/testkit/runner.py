@@ -180,7 +180,9 @@ def _args_run_butler(args):
     if not os.path.exists(butler.output_dir):
         os.mkdir(butler.output_dir)
 
-    output_xml = os.path.join(butler.output_dir, 'testkit_xunit.xml')
+    output_xml = args.output_xml
+    if output_xml is None:
+        output_xml = os.path.join(butler.output_dir, 'testkit_xunit.xml')
 
     if args.log_file is None:
         log_file = os.path.join(butler.output_dir, 'testkit.log')
@@ -230,6 +232,12 @@ def add_ignore_test_failures_option(p):
     return p
 
 
+def add_output_xml_option(p):
+    p.add_argument("--output-xml", action="store", dest="output_xml",
+                   default=None, help="Path to output XUnit XML")
+    return p
+
+
 def get_parser():
     desc = "Testkit Tool to run pbsmrtpipe jobs."
     p = get_default_argparser(__version__, desc)
@@ -241,7 +249,8 @@ def get_parser():
              add_log_level_option,
              add_log_file_option,
              add_log_debug_option,
-             add_ignore_test_failures_option]
+             add_ignore_test_failures_option,
+             add_output_xml_option]
 
     f = compose(*funcs)
     p = f(p)
