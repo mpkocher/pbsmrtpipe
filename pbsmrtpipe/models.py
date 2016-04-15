@@ -752,11 +752,13 @@ class WorkflowLevelOptions(collections.Sized):
                   "cluster_manager_path": to_workflow_option_ns("cluster_manager"),
                   "tmp_dir": to_workflow_option_ns("tmp_dir"),
                   "progress_status_url": to_workflow_option_ns("progress_status_url"),
-                  "exit_on_failure": to_workflow_option_ns("exit_on_failure")}
+                  "exit_on_failure": to_workflow_option_ns("exit_on_failure"),
+                  "debug_mode": to_workflow_option_ns("debug_mode")}
 
     def __init__(self, chunk_mode, max_nchunks, max_nproc, total_max_nproc, max_nworkers,
                  distributed_mode, cluster_manager_path, tmp_dir,
-                 progress_status_url, exit_on_failure):
+                 progress_status_url, exit_on_failure, debug_mode,
+                 system_message=None):
         """ Container for the known workflow options"""
         self.chunk_mode = chunk_mode
         self.max_nchunks = max_nchunks
@@ -770,6 +772,10 @@ class WorkflowLevelOptions(collections.Sized):
         self.tmp_dir = tmp_dir
         self.progress_status_url = progress_status_url
         self.exit_on_failure = exit_on_failure
+        self.debug_mode = debug_mode
+        # XXX hack to facilitate displaying runtime information such as
+        # sys.argv in pbsmrtpipe.log
+        self.system_message = system_message
 
     @staticmethod
     def from_defaults():

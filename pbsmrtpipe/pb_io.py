@@ -35,7 +35,7 @@ import pbsmrtpipe.cluster as C
 from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                ChunkOperator, Gather,
                                GatherChunk, ScatterChunk, Scatter,
-                               ToolContractMetaTask,
+                               ToolContractMetaTask, WorkflowLevelOptions,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask, PacBioOption,
                                PipelineBinding, IOBinding, Pipeline)
@@ -297,77 +297,6 @@ def validate_or_modify_workflow_level_options(wopts):
             log.warn("Max workers {w} used will be <= {t}".format(w=wopts.max_nworkers, t=wopts.total_max_nproc))
 
     return wopts
-
-
-class WorkflowLevelOptions(collections.Sized):
-
-    ATTR_TO_ID = {'chunk_mode': _to_wopt_id('chunk_mode'),
-                  'max_nchunks': _to_wopt_id('max_nchunks'),
-                  'max_nproc': _to_wopt_id('max_nproc'),
-                  'total_max_nproc': _to_wopt_id("max_total_nproc"),
-                  'max_nworkers': _to_wopt_id('max_nworkers'),
-                  "distributed_mode": _to_wopt_id("distributed_mode"),
-                  "cluster_manager_path": _to_wopt_id("cluster_manager"),
-                  "tmp_dir": _to_wopt_id("tmp_dir"),
-                  "progress_status_url": _to_wopt_id("progress_status_url"),
-                  "exit_on_failure": _to_wopt_id("exit_on_failure"),
-                  "debug_mode": _to_wopt_id("debug_mode")
-                  }
-
-    def __init__(self, chunk_mode, max_nchunks, max_nproc, total_max_nproc, max_nworkers,
-                 distributed_mode, cluster_manager_path, tmp_dir,
-                 progress_status_url, exit_on_failure, debug_mode):
-        """ Container for the known workflow options"""
-        self.chunk_mode = chunk_mode
-        self.max_nchunks = max_nchunks
-        self.max_nproc = max_nproc
-        self.total_max_nproc = total_max_nproc
-        self.max_nworkers = max_nworkers
-        self.distributed_mode = distributed_mode
-        # This can be given as an abspath to a dir,
-        # or "pbsmrtpipe.cluster_templates.sge"
-        self.cluster_manager_path = cluster_manager_path
-        self.tmp_dir = tmp_dir
-        self.progress_status_url = progress_status_url
-        self.exit_on_failure = exit_on_failure
-        self.debug_mode = debug_mode
-
-    @staticmethod
-    def from_defaults():
-        return WorkflowLevelOptions.from_id_dict({})
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__, h=self.max_nchunks,
-                  n=self.max_nproc,
-                  w=self.max_nworkers, c=self.cluster_manager_path)
-        return "<{k} chunk:{h} nproc:{n} workers:{w} cluster:{c}>".format(**_d)
-
-    def __len__(self):
-        return len(self.to_dict())
-
-    @staticmethod
-    def from_id_dict(d):
-        """
-        Create an instance from a id dict of options (pbsmrtpipe.options.x:value}
-        """
-        adict = {}
-
-        for opt_id, schema in REGISTERED_WORKFLOW_OPTIONS.iteritems():
-            if opt_id in d:
-                v = d[opt_id]
-                OP.validate_value(schema, {opt_id: v})
-                adict[opt_id] = v
-            else:
-                value = OP.get_default_from_schema(schema)
-                d[opt_id] = value
-
-        # build map to instance var names
-        adict = {k: d[v] for k, v in WorkflowLevelOptions.ATTR_TO_ID.iteritems()}
-
-        return WorkflowLevelOptions(**adict)
-
-    def to_dict(self):
-        return {v: getattr(self, k) for k, v in self.ATTR_TO_ID.iteritems()}
 
 
 def _has_valid_root_tag(root):
