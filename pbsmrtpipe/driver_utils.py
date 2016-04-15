@@ -353,15 +353,17 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
     slog.info("successfully initialized datastore.")
 
     write_workflow_settings(workflow_level_opts, os.path.join(job_resources.workflow, 'options-workflow.json'))
+    if workflow_level_opts.pipeline_id is not None:
+        slog.info("Pipeline ID: {i}".format(i=workflow_level_opts.pipeline_id))
 
-    log.info("Entry Points:")
-    log.info("\n" + pprint.pformat(ep_d, indent=4))
+    slog.info("Entry Points:")
+    slog.info("\n" + pprint.pformat(ep_d, indent=4))
 
-    log.info("Workflow Options:")
-    log.info("\n" + pprint.pformat(workflow_level_opts.to_dict(), indent=4))
+    slog.info("Workflow Options:")
+    slog.info("\n" + pprint.pformat(workflow_level_opts.to_dict(), indent=4))
 
-    log.info("Task Options:")
-    log.info("\n" + pprint.pformat(task_opts, indent=4))
+    slog.info("Task Options:")
+    slog.info("\n" + pprint.pformat(task_opts, indent=4))
 
     task_opts_path = os.path.join(job_resources.workflow, 'options-task.json')
     with open(task_opts_path, 'w') as f:

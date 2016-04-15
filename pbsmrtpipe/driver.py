@@ -750,6 +750,8 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         topts.update(dict(preset_record.task_options))
 
     workflow_level_opts = IO.WorkflowLevelOptions.from_id_dict(wopts)
+    if isinstance(workflow_template_xml_or_pipeline, Pipeline):
+        workflow_level_opts.pipeline_id = workflow_template_xml_or_pipeline.pipeline_id
 
     # override distributed mode only if provided.
     if isinstance(force_distribute, bool):
