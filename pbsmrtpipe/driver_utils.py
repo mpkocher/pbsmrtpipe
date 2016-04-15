@@ -353,8 +353,8 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
     slog.info("successfully initialized datastore.")
 
     write_workflow_settings(workflow_level_opts, os.path.join(job_resources.workflow, 'options-workflow.json'))
-    if workflow_level_opts.pipeline_id is not None:
-        slog.info("Pipeline ID: {i}".format(i=workflow_level_opts.pipeline_id))
+    if workflow_level_opts.system_message is not None:
+        slog.info("Command: {m}".format(m=workflow_level_opts.system_message))
 
     slog.info("Entry Points:")
     slog.info("\n" + pprint.pformat(ep_d, indent=4))

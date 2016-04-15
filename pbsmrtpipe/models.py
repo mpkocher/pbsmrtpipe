@@ -758,7 +758,7 @@ class WorkflowLevelOptions(collections.Sized):
     def __init__(self, chunk_mode, max_nchunks, max_nproc, total_max_nproc, max_nworkers,
                  distributed_mode, cluster_manager_path, tmp_dir,
                  progress_status_url, exit_on_failure, debug_mode,
-                 pipeline_id=None):
+                 system_message=None):
         """ Container for the known workflow options"""
         self.chunk_mode = chunk_mode
         self.max_nchunks = max_nchunks
@@ -773,9 +773,9 @@ class WorkflowLevelOptions(collections.Sized):
         self.progress_status_url = progress_status_url
         self.exit_on_failure = exit_on_failure
         self.debug_mode = debug_mode
-        # XXX hack to facilitate displaying the pipeline ID (if specified) in
-        # pbsmrtpipe.log
-        self.pipeline_id = pipeline_id
+        # XXX hack to facilitate displaying runtime information such as
+        # sys.argv in pbsmrtpipe.log
+        self.system_message = system_message
 
     @staticmethod
     def from_defaults():
