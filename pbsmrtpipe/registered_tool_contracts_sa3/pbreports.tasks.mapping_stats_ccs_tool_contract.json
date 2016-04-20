@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.25", 
         "name": "CCS Mapping Statistics", 
         "input_types": [
             {

@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.25", 
         "name": "Mapping Statistics", 
         "input_types": [
             {
@@ -30,7 +30,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ], 
-        "nproc": 1, 
+        "nproc": 4, 
         "is_distributed": true, 
         "tool_contract_id": "pbreports.tasks.mapping_stats"
     }
