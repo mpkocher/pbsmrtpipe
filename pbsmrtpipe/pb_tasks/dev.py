@@ -74,6 +74,13 @@ def run_rtc(rtc):
     return run_main_dev_hello_world(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
+@registry("dev_raises_exception", "0.1.0", FileTypes.TXT, FileTypes.TXT,
+          is_distributed=True)
+def run_rtc(rtc):
+    """Task that deliberately raises an exception, for testing failure mode"""
+    assert 0
+
+
 @registry("dev_subread_report", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.REPORT, is_distributed=False)
 def run_rtc(rtc):
     return subread_dataset_report(rtc.task.input_files[0], rtc.task.output_files[0])

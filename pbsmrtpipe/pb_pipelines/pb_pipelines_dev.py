@@ -40,6 +40,13 @@ def f():
     return b
 
 
+@dev_register("dev_01_fail", "Example Dev 01 crashing pipeline")
+def f():
+    """Simple pipeline that deliberately and immediately crashes"""
+    b = [("$entry:e_01", "pbsmrtpipe.tasks.dev_raises_exception:0")]
+    return b
+
+
 @dev_register("dev_01_ds", "Example Dev 01 Subread DataSet pipeline", tags=(Tags.RPT, ))
 def f():
     """Simplest possible pipeline, a single Task"""
