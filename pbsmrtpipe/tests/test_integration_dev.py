@@ -56,3 +56,10 @@ class DevLocalWithStaticTaskDriverIntegration(_TestDriverPipelineId):
     WORKFLOW_XML = "pbsmrtpipe.pipelines.dev_04_w_static_task"
     JOB_NAME = WORKFLOW_XML
     ENTRY_POINTS = {'e_01': "hello_entry_point.txt"}
+
+
+class Dev01FailureModeIntegration(_TestDriverPipelineId):
+    WORKFLOW_XML = "pbsmrtpipe.pipelines.dev_01_fail"
+    JOB_NAME = WORKFLOW_XML
+    ENTRY_POINTS = {'e_01': "hello_entry_point.txt"}
+    EXIT_CODE = 1
