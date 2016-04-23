@@ -100,7 +100,7 @@ class _TestDriverIntegrationBase(unittest.TestCase):
     WORKFLOW_XML = ''
     ENTRY_POINTS = {}
     TO_CMD_FUNC = _to_pipeline_cmd
-    EXIT_CODE = 0 # in case we want to test failure modes
+    EXPECTED_EXIT_CODE = 0 # in case we want to test failure modes
 
     def _get_root_temp_dir(self):
         """Override me to set the shared tmp dir"""
@@ -131,7 +131,7 @@ class _TestDriverIntegrationBase(unittest.TestCase):
 
         log.debug("Integration Job {i} state {s} in {t:.2f} sec.".format(i=self.JOB_NAME, s=rcode, t=run_time))
 
-        if rcode != 0 and self.EXIT_CODE == 0:
+        if rcode != 0 and self.EXPECTED_EXIT_CODE == 0:
             log.error("Integration Job {i} failed.".format(i=self.JOB_NAME))
             log.error(stdout_results)
             log.error(stderr_results)
@@ -140,7 +140,7 @@ class _TestDriverIntegrationBase(unittest.TestCase):
                     log.error(f.read())
 
         emsg = "Failed Integration Job {i} with exit code {r} in {d}. {w}".format(i=self.JOB_NAME, r=rcode, d=output_dir, w=self.WORKFLOW_XML)
-        self.assertEqual(rcode, self.EXIT_CODE, emsg)
+        self.assertEqual(rcode, self.EXPECTED_EXIT_CODE, emsg)
 
 
 class TestHelloWorldWorkflow(_TestDriverIntegrationBase):
