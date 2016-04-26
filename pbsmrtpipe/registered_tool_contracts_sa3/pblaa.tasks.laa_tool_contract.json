@@ -174,7 +174,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": 4.0, 
+                    "default": 3.75, 
                     "type": "number", 
                     "option_id": "pblaa.task_options.min_snr", 
                     "name": "Minimum SNR", 
@@ -188,7 +188,7 @@
                 "type": "object", 
                 "properties": {
                     "pblaa.task_options.min_snr": {
-                        "default": 4.0, 
+                        "default": 3.75, 
                         "type": "number", 
                         "description": "Minimum SNR of input reads.", 
                         "title": "Minimum SNR"
@@ -266,7 +266,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": 1.0, 
+                    "default": 0.001, 
                     "type": "number", 
                     "option_id": "pblaa.task_options.cluster_loop_weight", 
                     "name": "Cluster Loop Weight", 
@@ -280,7 +280,7 @@
                 "type": "object", 
                 "properties": {
                     "pblaa.task_options.cluster_loop_weight": {
-                        "default": 1.0, 
+                        "default": 0.001, 
                         "type": "number", 
                         "description": "Markov Clustering loop weight parameter", 
                         "title": "Cluster Loop Weight"
@@ -335,6 +335,52 @@
             }, 
             {
                 "pb_option": {
+                    "default": 20.0, 
+                    "type": "number", 
+                    "option_id": "pblaa.task_options.min_qscore", 
+                    "name": "Min Mutation Q-Score", 
+                    "description": "Minimum supporting evidence required to use a mutation for phasing"
+                }, 
+                "title": "JSON Schema for pblaa.task_options.min_qscore", 
+                "required": [
+                    "pblaa.task_options.min_qscore"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pblaa.task_options.min_qscore": {
+                        "default": 20.0, 
+                        "type": "number", 
+                        "description": "Minimum supporting evidence required to use a mutation for phasing", 
+                        "title": "Min Mutation Q-Score"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
+                    "default": 0.09, 
+                    "type": "number", 
+                    "option_id": "pblaa.task_options.min_prevalence", 
+                    "name": "Min Mutation Prevalence", 
+                    "description": "Minimum number of supporting reads required to use a mutation for phasing"
+                }, 
+                "title": "JSON Schema for pblaa.task_options.min_prevalence", 
+                "required": [
+                    "pblaa.task_options.min_prevalence"
+                ], 
+                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "type": "object", 
+                "properties": {
+                    "pblaa.task_options.min_prevalence": {
+                        "default": 0.09, 
+                        "type": "number", 
+                        "description": "Minimum number of supporting reads required to use a mutation for phasing", 
+                        "title": "Min Mutation Prevalence"
+                    }
+                }
+            }, 
+            {
+                "pb_option": {
                     "default": 0.1, 
                     "type": "number", 
                     "option_id": "pblaa.task_options.min_split_fraction", 
@@ -381,7 +427,7 @@
             }, 
             {
                 "pb_option": {
-                    "default": 750, 
+                    "default": 500, 
                     "type": "integer", 
                     "option_id": "pblaa.task_options.min_split_score", 
                     "name": "Min Split Score", 
@@ -395,7 +441,7 @@
                 "type": "object", 
                 "properties": {
                     "pblaa.task_options.min_split_score": {
-                        "default": 750, 
+                        "default": 500, 
                         "type": "integer", 
                         "description": "Minimum score supporting a minor phase required for split", 
                         "title": "Min Split Score"
@@ -587,7 +633,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.14", 
+        "_comment": "Created by v0.3.25", 
         "name": "laa", 
         "input_types": [
             {
