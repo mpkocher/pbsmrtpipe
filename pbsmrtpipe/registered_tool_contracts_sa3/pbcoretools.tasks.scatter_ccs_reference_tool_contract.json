@@ -89,7 +89,7 @@
             "$chunk.reference_id"
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbcoretools.tasks.ccsset_align_scatter"
     }
 }

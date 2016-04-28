@@ -82,7 +82,7 @@
             "$chunk.contigset_id"
         ], 
         "nproc": 1, 
-        "is_distributed": false, 
+        "is_distributed": true, 
         "tool_contract_id": "pbcoretools.tasks.scatter_contigset"
     }
 }
