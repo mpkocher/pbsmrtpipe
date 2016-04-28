@@ -23,7 +23,7 @@ from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile)
 from pbsmrtpipe.utils import nfs_exists_check
 
-from pbcore.io import openDataSet, isDataSet
+from pbcore.io import getDataSetUuid
 
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
@@ -116,16 +116,9 @@ def _status(bg):
     return "Workflow status {n}/{t} completed/total tasks".format(t=ntasks, n=ncompleted_tasks)
 
 
-def _get_uuid(loader_func, path):
+def _get_report_uuid(path):
     """Get UUID from the file resource or return None"""
-    try:
-        r = loader_func(path)
-        i = r.uuid
-        # validate
-        _ = uuid.UUID(i)
-        return i
-    except Exception:
-        return None
+    return load_report_from_json(path).uuid
 
 
 def _get_or_create_uuid_from_file(path):
@@ -138,9 +131,12 @@ def _get_or_create_uuid_from_file(path):
     :return: uuid string
     """
 
-    loader_funcs = (openDataSet, load_report_from_json)
-    for loader in loader_funcs:
-        ds_uuid = _get_uuid(loader, path)
+    loader_funcs = (getDataSetUuid, _get_report_uuid)
+    for get_uuid_func in loader_funcs:
+        try:
+            ds_uuid = get_uuid_func(path)
+        except Exception:
+            ds_uuid = None
         if ds_uuid is not None:
             return ds_uuid
 
