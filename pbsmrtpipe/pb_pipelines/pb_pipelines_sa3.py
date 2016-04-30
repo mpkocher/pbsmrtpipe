@@ -668,3 +668,14 @@ def ds_subreads_to_fastx():
     Export SubreadSet to FASTA and FASTQ formats
     """
     return _core_export_fastx(Constants.ENTRY_DS_SUBREAD)
+
+
+# XXX note that this pipeline is designed with the intention of being driven
+# by pbservice, wrapping the input FASTA as a ContigSet which becomes the
+# entry point.  This will probably not work through the smrtlink UI.
+@sa3_register("sa3_ds_fasta_to_reference", "Convert FASTA to ReferenceSet", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL))
+def ds_fasta_to_reference():
+    """
+    Convert a FASTA file to a ReferenceSet
+    """
+    return [(Constants.ENTRY_REF_FASTA, "pbcoretools.tasks.fasta_to_reference:0")]
