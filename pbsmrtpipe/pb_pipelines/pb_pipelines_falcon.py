@@ -67,8 +67,8 @@ def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD
 
     filt = [(subreadset, 'pbcoretools.tasks.filterdataset:0')]
-    btf = [('pbcoretools.tasks.filterdataset:0', 'pbcoretools.tasks.bam2fasta_nofilter:0')]
-    ftfofn = [('pbcoretools.tasks.bam2fasta_nofilter:0', 'pbcoretools.tasks.fasta2fofn:0')]
+    btf = [('pbcoretools.tasks.filterdataset:0', 'pbcoretools.tasks.bam2fasta:0')]
+    ftfofn = [('pbcoretools.tasks.bam2fasta:0', 'pbcoretools.tasks.fasta2fofn:0')]
 
     i_fasta_fofn = 'pbcoretools.tasks.fasta2fofn:0'
 
