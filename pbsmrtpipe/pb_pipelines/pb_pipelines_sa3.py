@@ -667,7 +667,9 @@ def ds_subreads_to_fastx():
     """
     Export SubreadSet to FASTA and FASTQ formats
     """
-    return _core_export_fastx(Constants.ENTRY_DS_SUBREAD)
+    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.filterdataset:0")]
+    b2 = _core_export_fastx("pbcoretools.tasks.filterdataset:0")
+    return b1 + b2
 
 
 # XXX note that this pipeline is designed with the intention of being driven
