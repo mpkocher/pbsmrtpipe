@@ -28,31 +28,7 @@
             }
         ], 
         "resource_types": [], 
-        "schema_options": [
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "pb_option": {
-                    "default": 0, 
-                    "description": "Minimum length of subreads to write to FASTA/FASTQ", 
-                    "name": "Minimum subread length", 
-                    "option_id": "pbcoretools.task_options.min_subread_length", 
-                    "type": "integer"
-                }, 
-                "properties": {
-                    "pbcoretools.task_options.min_subread_length": {
-                        "default": 0, 
-                        "description": "Minimum length of subreads to write to FASTA/FASTQ", 
-                        "title": "Minimum subread length", 
-                        "type": "integer"
-                    }
-                }, 
-                "required": [
-                    "pbcoretools.task_options.min_subread_length"
-                ], 
-                "title": "JSON Schema for pbcoretools.task_options.min_subread_length", 
-                "type": "object"
-            }
-        ], 
+        "schema_options": [], 
         "task_type": "pbsmrtpipe.task_types.standard", 
         "tool_contract_id": "pbcoretools.tasks.bam2fasta"
     }, 
