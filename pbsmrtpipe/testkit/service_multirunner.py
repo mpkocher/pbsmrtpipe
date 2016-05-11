@@ -28,11 +28,14 @@ class Constants(object):
     EXE = "pbtestkit-service-runner"
     NPROC = 1
     MISC_OPTS = ""
+    SLEEP_TIME = 4 # seconds
 
 
 # FIXME(nechols)(2016-01-22): this should use API calls, but I'd like to
 # figure out how to deal sensibly with log output first
-def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=Constants.MISC_OPTS):
+def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=Constants.MISC_OPTS,
+                     sleep_time=0):
+    time.sleep(sleep_time)
     os.chdir(os.path.dirname(testkit_cfg))
     cmd = "{e} --debug {m} {c}".format(c=testkit_cfg, e=Constants.EXE,
         m=misc_opts)
@@ -72,10 +75,24 @@ def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
             log.info("Completed running {x}. exit code {r} in {s} sec ({m:.2f} min).".format(**d))
             results.append((testkit_cfg, rcode, stdout, stderr, job_run_time))
     else:
-        __run_testkit_cfg = functools.partial(_run_testkit_cfg,
-            misc_opts=misc_opts)
+        _results = []
+        # XXX to avoid connection errors when submitting a job to services,
+        # the calls to pbtestkit-service-runner run staggered with a sleep
+        # time of Constants.SLEEP_TIME between each job.  This allows us to
+        # start many more near-simultaneous pbsmrtpipe jobs than would
+        # otherwise be the case.
         pool = multiprocessing.Pool(nworkers)
-        results = pool.map_async(__run_testkit_cfg, testkit_cfgs).get(9999999)
+        for i_cfg, testkit_cfg in enumerate(testkit_cfgs):
+            sleep_time = (i_cfg % nworkers) * Constants.SLEEP_TIME
+            __run_testkit_cfg = functools.partial(_run_testkit_cfg,
+                misc_opts=misc_opts, sleep_time=sleep_time)
+            log.debug("Running {c} with sleep time {t}".format(
+                      c=testkit_cfg, t=sleep_time))
+            _results.append(pool.apply_async(__run_testkit_cfg, (testkit_cfg,)))
+        pool.close()
+        pool.join()
+        results = [r.get() for r in _results]
+            #results = pool.map_async(__run_testkit_cfg, testkit_cfgs).get(9999999)
     log.info("Results:")
     for bcfg, rcode, _, _, job_run_time in results:
         d = dict(r=rcode, j=bcfg, s=int(job_run_time), m=job_run_time / 60.0)
