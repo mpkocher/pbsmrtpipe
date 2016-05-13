@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0.174838", 
+    "version": "1.0.0.177900", 
     "driver": {
         "serialization": "json", 
         "exe": "python -m pbtranscript.tasks.classify --resolved-tool-contract", 
@@ -15,11 +15,11 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": 300, 
+                    "default": 50, 
                     "type": "integer", 
                     "option_id": "pbtranscript.task_options.min_seq_len", 
                     "name": "Minimum Sequence Length", 
-                    "description": "Minimum sequence length to output (default: 300)"
+                    "description": "Minimum sequence length to output (default: 50)"
                 }, 
                 "title": "JSON Schema for pbtranscript.task_options.min_seq_len", 
                 "required": [
@@ -29,9 +29,9 @@
                 "type": "object", 
                 "properties": {
                     "pbtranscript.task_options.min_seq_len": {
-                        "default": 300, 
+                        "default": 50, 
                         "type": "integer", 
-                        "description": "Minimum sequence length to output (default: 300)", 
+                        "description": "Minimum sequence length to output (default: 50)", 
                         "title": "Minimum Sequence Length"
                     }
                 }
@@ -97,7 +97,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
+        "_comment": "Created by v0.3.25", 
         "name": "pbtranscript.tasks.classify", 
         "input_types": [
             {
