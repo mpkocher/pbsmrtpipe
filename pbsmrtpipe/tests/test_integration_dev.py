@@ -62,5 +62,13 @@ class Dev01FailureModeIntegration(_TestDriverPipelineId):
     WORKFLOW_XML = "pbsmrtpipe.pipelines.dev_01_fail"
     JOB_NAME = WORKFLOW_XML
     ENTRY_POINTS = {'e_01': "hello_entry_point.txt"}
+    # the task will fail
+    EXPECTED_EXIT_CODE = 1
+
+
+class Dev02FailureModeIntegration(_TestDriverPipelineId):
+    WORKFLOW_XML = "pbsmrtpipe.pipelines.dev_01_does_not_exist"
+    JOB_NAME = WORKFLOW_XML
+    ENTRY_POINTS = {'e_01': "hello_entry_point.txt"}
     # the pipeline id won't be found
     EXPECTED_EXIT_CODE = 2
