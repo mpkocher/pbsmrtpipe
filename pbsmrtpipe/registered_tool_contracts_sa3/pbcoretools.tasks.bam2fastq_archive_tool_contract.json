@@ -20,11 +20,11 @@
         "nproc": 1, 
         "output_types": [
             {
-                "default_name": "file", 
-                "description": "description for <FileType id=PacBio.FileTypes.gzip name=file >", 
+                "default_name": "reads.fastq", 
+                "description": "Reads in compressed FASTQ format", 
                 "file_type_id": "PacBio.FileTypes.gzip", 
-                "id": "Label PacBio.FileTypes.gzip_0", 
-                "title": "<FileType id=PacBio.FileTypes.gzip name=file >"
+                "id": "GZIPed FASTQ file(s)", 
+                "title": "GZIPed FASTQ file(s)"
             }
         ], 
         "resource_types": [], 
