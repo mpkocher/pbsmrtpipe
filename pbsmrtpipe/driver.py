@@ -221,7 +221,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # Setup logger, job directory and initialize DS
     slog.info("creating job resources in {o}".format(o=output_dir))
-    job_resources, ds = DU.job_resource_create_and_setup_logs(output_dir, bg, task_opts, workflow_opts, ep_d)
+    job_resources, ds, master_log_ds_file = DU.job_resource_create_and_setup_logs(output_dir, bg, task_opts, workflow_opts, ep_d)
     slog.info("successfully created job resources.")
 
     slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
@@ -334,6 +334,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     def services_add_datastore_file(datastore_file_):
         if service_uri_or_none is not None:
             total_ds_uri = "{u}/datastore".format(u=service_uri_or_none)
+            log.debug("Adding datastore file to services {d}".format(d=datastore_file_))
             WS.add_datastore_file(total_ds_uri, datastore_file_, ignore_errors=True)
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
@@ -376,6 +377,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     write_report_(bg, TaskStates.CREATED, False)
     # write empty analysis reports
     write_analysis_report(analysis_file_links)
+
+    # Add Master log to the datastore file
+    services_add_datastore_file(master_log_ds_file)
 
     BU.write_binding_graph_images(bg, job_resources.workflow)
 

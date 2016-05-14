@@ -384,7 +384,7 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
         pass
 
     slog.info("completed setting up job directory resources and logs in {r}".format(r=job_root_dir))
-    return job_resources, ds
+    return job_resources, ds, master_log_df
 
 
 def to_job_resources_and_create_dirs(root_job_dir):
