@@ -15,5 +15,8 @@ test:
     - git-sym/git-sym update
     - mkdir -p $CIRCLE_TEST_REPORTS
     - make test-sanity
+    # FIXME(mpkocher)(2016-5-14) This is only running the unittests.
+    # This should set ENV vars to make sure the output of each test type
     - nosetests -s --verbose --with-xunit --xunit-file=$CIRCLE_TEST_REPORTS/nosetests.xml --logging-config nose.cfg pbsmrtpipe/tests/test_*.py
-    - make test-dev
+    # This will run the entire suite
+    - make test-suite

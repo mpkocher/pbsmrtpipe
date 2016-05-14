@@ -58,7 +58,7 @@ test-suite: test-sanity test-unit test-dev write-pipeline-templates
 
 test-clean-suite: install test-suite
 
-clean-all:
+clean-all: clean
 	find . -name "*.pyc" | xargs rm -rf;\
 	rm -rf report_unittests.log && cd testkit-data && fab cleaner
 
