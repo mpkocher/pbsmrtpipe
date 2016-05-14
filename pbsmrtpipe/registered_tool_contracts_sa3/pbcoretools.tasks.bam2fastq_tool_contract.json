@@ -20,11 +20,11 @@
         "nproc": 1, 
         "output_types": [
             {
-                "default_name": "file", 
-                "description": "description for <FileType id=PacBio.FileTypes.Fastq name=file >", 
+                "default_name": "reads", 
+                "description": "Reads in FASTQ format", 
                 "file_type_id": "PacBio.FileTypes.Fastq", 
-                "id": "Label PacBio.FileTypes.Fastq_0", 
-                "title": "<FileType id=PacBio.FileTypes.Fastq name=file >"
+                "id": "FASTQ file", 
+                "title": "FASTQ file"
             }
         ], 
         "resource_types": [], 

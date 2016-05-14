@@ -20,11 +20,11 @@
         "nproc": 1, 
         "output_types": [
             {
-                "default_name": "file", 
-                "description": "description for <DataSetFileType id=PacBio.DataSet.SubreadSet name=file >", 
+                "default_name": "filtered", 
+                "description": "Filtered SubreadSet XML", 
                 "file_type_id": "PacBio.DataSet.SubreadSet", 
-                "id": "Label PacBio.DataSet.SubreadSet_0", 
-                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file >"
+                "id": "SubreadSet", 
+                "title": "Filtered SubreadSet XML"
             }
         ], 
         "resource_types": [], 
