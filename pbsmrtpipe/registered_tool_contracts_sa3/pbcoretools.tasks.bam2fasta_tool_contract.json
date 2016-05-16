@@ -23,8 +23,8 @@
                 "default_name": "reads", 
                 "description": "Reads in FASTA format", 
                 "file_type_id": "PacBio.FileTypes.Fasta", 
-                "id": "FASTQ file", 
-                "title": "FASTQ file"
+                "id": "FASTA file", 
+                "title": "FASTA file"
             }
         ], 
         "resource_types": [], 
