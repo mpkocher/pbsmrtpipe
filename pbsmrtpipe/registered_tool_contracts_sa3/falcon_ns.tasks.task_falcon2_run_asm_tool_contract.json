@@ -29,8 +29,8 @@
                 "default_name": "reads",
                 "description": "FASTA sequences",
                 "file_type_id": "PacBio.FileTypes.Fasta",
-                "id": "FASTA file",
-                "title": "FASTA sequences"
+                "id": "fasta_id",
+                "title": "FASTA"
             }
         ],
         "resource_types": [],
