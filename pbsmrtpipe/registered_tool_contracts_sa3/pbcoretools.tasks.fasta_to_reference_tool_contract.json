@@ -1,107 +1,107 @@
 {
     "driver": {
-        "env": {}, 
-        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ", 
+        "env": {},
+        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ",
         "serialization": "json"
-    }, 
+    },
     "tool_contract": {
-        "_comment": "Created by v0.3.25", 
-        "description": "Quick tool fasta_to_reference pbcoretools.tasks.fasta_to_reference", 
+        "_comment": "Created by v0.3.25",
+        "description": "Quick tool fasta_to_reference pbcoretools.tasks.fasta_to_reference",
         "input_types": [
             {
-                "description": "description for PacBio.DataSet.ContigSet_0", 
-                "file_type_id": "PacBio.DataSet.ContigSet", 
-                "id": "Label PacBio.DataSet.ContigSet_0", 
+                "description": "description for PacBio.DataSet.ContigSet_0",
+                "file_type_id": "PacBio.DataSet.ContigSet",
+                "id": "Label PacBio.DataSet.ContigSet_0",
                 "title": "<DataSetFileType id=PacBio.DataSet.ContigSet name=file >"
             }
-        ], 
-        "is_distributed": true, 
-        "name": "Tool fasta_to_reference", 
-        "nproc": 1, 
+        ],
+        "is_distributed": true,
+        "name": "Tool fasta_to_reference",
+        "nproc": 1,
         "output_types": [
             {
-                "default_name": "file", 
-                "description": "description for <DataSetFileType id=PacBio.DataSet.ReferenceSet name=file >", 
-                "file_type_id": "PacBio.DataSet.ReferenceSet", 
-                "id": "Label PacBio.DataSet.ReferenceSet_0", 
-                "title": "<DataSetFileType id=PacBio.DataSet.ReferenceSet name=file >"
+                "default_name": "reference",
+                "description": "PacBio Reference DataSet XML",
+                "file_type_id": "PacBio.DataSet.ReferenceSet",
+                "id": "ReferenceSet",
+                "title": "ReferenceSet XML"
             }
-        ], 
-        "resource_types": [], 
+        ],
+        "resource_types": [],
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": "", 
-                    "description": "Option reference_name description", 
-                    "name": "Option reference_name", 
-                    "option_id": "pbcoretools.task_options.reference_name", 
+                    "default": "",
+                    "description": "Option reference_name description",
+                    "name": "Option reference_name",
+                    "option_id": "pbcoretools.task_options.reference_name",
                     "type": "string"
-                }, 
+                },
                 "properties": {
                     "pbcoretools.task_options.reference_name": {
-                        "default": "", 
-                        "description": "Option reference_name description", 
-                        "title": "Option reference_name", 
+                        "default": "",
+                        "description": "Option reference_name description",
+                        "title": "Option reference_name",
                         "type": "string"
                     }
-                }, 
+                },
                 "required": [
                     "pbcoretools.task_options.reference_name"
-                ], 
-                "title": "JSON Schema for pbcoretools.task_options.reference_name", 
+                ],
+                "title": "JSON Schema for pbcoretools.task_options.reference_name",
                 "type": "object"
-            }, 
+            },
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": "haploid", 
-                    "description": "Option ploidy description", 
-                    "name": "Option ploidy", 
-                    "option_id": "pbcoretools.task_options.ploidy", 
+                    "default": "haploid",
+                    "description": "Option ploidy description",
+                    "name": "Option ploidy",
+                    "option_id": "pbcoretools.task_options.ploidy",
                     "type": "string"
-                }, 
+                },
                 "properties": {
                     "pbcoretools.task_options.ploidy": {
-                        "default": "haploid", 
-                        "description": "Option ploidy description", 
-                        "title": "Option ploidy", 
+                        "default": "haploid",
+                        "description": "Option ploidy description",
+                        "title": "Option ploidy",
                         "type": "string"
                     }
-                }, 
+                },
                 "required": [
                     "pbcoretools.task_options.ploidy"
-                ], 
-                "title": "JSON Schema for pbcoretools.task_options.ploidy", 
+                ],
+                "title": "JSON Schema for pbcoretools.task_options.ploidy",
                 "type": "object"
-            }, 
+            },
             {
-                "$schema": "http://json-schema.org/draft-04/schema#", 
+                "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": "", 
-                    "description": "Option organism description", 
-                    "name": "Option organism", 
-                    "option_id": "pbcoretools.task_options.organism", 
+                    "default": "",
+                    "description": "Option organism description",
+                    "name": "Option organism",
+                    "option_id": "pbcoretools.task_options.organism",
                     "type": "string"
-                }, 
+                },
                 "properties": {
                     "pbcoretools.task_options.organism": {
-                        "default": "", 
-                        "description": "Option organism description", 
-                        "title": "Option organism", 
+                        "default": "",
+                        "description": "Option organism description",
+                        "title": "Option organism",
                         "type": "string"
                     }
-                }, 
+                },
                 "required": [
                     "pbcoretools.task_options.organism"
-                ], 
-                "title": "JSON Schema for pbcoretools.task_options.organism", 
+                ],
+                "title": "JSON Schema for pbcoretools.task_options.organism",
                 "type": "object"
             }
-        ], 
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        ],
+        "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pbcoretools.tasks.fasta_to_reference"
-    }, 
-    "tool_contract_id": "pbcoretools.tasks.fasta_to_reference", 
+    },
+    "tool_contract_id": "pbcoretools.tasks.fasta_to_reference",
     "version": "0.1.0"
 }
