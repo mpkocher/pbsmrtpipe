@@ -36,7 +36,7 @@
                 "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
                 "file_type_id": "PacBio.FileTypes.JsonReport",
                 "id": "Label PacBio.FileTypes.JsonReport",
-                "title": "<FileType id=PacBio.FileTypes.JsonReport name=report >"
+                "title": "Preassembly report"
             }
         ],
         "resource_types": [],
