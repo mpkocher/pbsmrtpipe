@@ -35,7 +35,7 @@
                 "default_name": "preassembly_yield",
                 "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
                 "file_type_id": "PacBio.FileTypes.JsonReport",
-                "id": "Label PacBio.FileTypes.JsonReport",
+                "id": "preassembly_yield_id",
                 "title": "Preassembly report"
             }
         ],

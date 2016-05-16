@@ -27,10 +27,10 @@
         "output_types": [
             {
                 "default_name": "file",
-                "description": "JSON file",
+                "description": "Generic JSON file",
                 "file_type_id": "PacBio.FileTypes.json",
-                "id": "JSON file",
-                "title": "JSON file"
+                "id": "json_id",
+                "title": "JSON"
             }
         ],
         "resource_types": [],

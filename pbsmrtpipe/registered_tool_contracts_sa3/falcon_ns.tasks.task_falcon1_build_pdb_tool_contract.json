@@ -29,7 +29,7 @@
                 "default_name": "run_daligner_jobs.sh",
                 "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
                 "file_type_id": "PacBio.FileTypes.txt",
-                "id": "Label PacBio.FileTypes.txt",
+                "id": "run_daligner_jobs.sh_id",
                 "title": "Shell script"
             }
         ],

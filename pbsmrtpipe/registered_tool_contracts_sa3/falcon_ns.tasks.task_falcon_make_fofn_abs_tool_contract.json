@@ -21,10 +21,10 @@
         "output_types": [
             {
                 "default_name": "file",
-                "description": "List of input file names",
+                "description": "Generic file of file names",
                 "file_type_id": "PacBio.FileTypes.generic_fofn",
-                "id": "FOFN file",
-                "title": "Input file list"
+                "id": "fofn_id",
+                "title": "FOFN"
             }
         ],
         "resource_types": [],
