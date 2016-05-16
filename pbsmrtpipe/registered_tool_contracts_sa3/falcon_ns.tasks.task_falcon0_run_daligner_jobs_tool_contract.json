@@ -26,11 +26,11 @@
         "nproc": 4,
         "output_types": [
             {
-                "default_name": "generic",
-                "description": "description for <FileType id=PacBio.FileTypes.generic_fofn name=generic >",
+                "default_name": "file",
+                "description": "List of input file names",
                 "file_type_id": "PacBio.FileTypes.generic_fofn",
-                "id": "Label PacBio.FileTypes.generic_fofn_0",
-                "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
+                "id": "FOFN file",
+                "title": "Input file list"
             }
         ],
         "resource_types": [],

@@ -30,7 +30,7 @@
                 "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
                 "file_type_id": "PacBio.FileTypes.txt",
                 "id": "Label PacBio.FileTypes.txt",
-                "title": "<FileType id=PacBio.FileTypes.txt name=file >"
+                "title": "Shell script"
             }
         ],
         "resource_types": [],
