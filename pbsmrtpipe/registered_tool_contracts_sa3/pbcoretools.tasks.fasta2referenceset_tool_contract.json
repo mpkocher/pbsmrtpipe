@@ -1,37 +1,37 @@
 {
     "driver": {
-        "env": {}, 
-        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ", 
+        "env": {},
+        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ",
         "serialization": "json"
-    }, 
+    },
     "tool_contract": {
-        "_comment": "Created by v0.3.25", 
-        "description": "Quick tool fasta2referenceset pbcoretools.tasks.fasta2referenceset", 
+        "_comment": "Created by v0.3.25",
+        "description": "Quick tool fasta2referenceset pbcoretools.tasks.fasta2referenceset",
         "input_types": [
             {
-                "description": "description for PacBio.FileTypes.Fasta_0", 
-                "file_type_id": "PacBio.FileTypes.Fasta", 
-                "id": "Label PacBio.FileTypes.Fasta_0", 
+                "description": "description for PacBio.FileTypes.Fasta_0",
+                "file_type_id": "PacBio.FileTypes.Fasta",
+                "id": "Label PacBio.FileTypes.Fasta_0",
                 "title": "<FileType id=PacBio.FileTypes.Fasta name=file >"
             }
-        ], 
-        "is_distributed": true, 
-        "name": "Tool fasta2referenceset", 
-        "nproc": 1, 
+        ],
+        "is_distributed": true,
+        "name": "Tool fasta2referenceset",
+        "nproc": 1,
         "output_types": [
             {
-                "default_name": "file", 
-                "description": "description for <DataSetFileType id=PacBio.DataSet.ReferenceSet name=file >", 
-                "file_type_id": "PacBio.DataSet.ReferenceSet", 
-                "id": "Label PacBio.DataSet.ReferenceSet_0", 
-                "title": "<DataSetFileType id=PacBio.DataSet.ReferenceSet name=file >"
+                "default_name": "reference",
+                "description": "PacBio Reference DataSet XML",
+                "file_type_id": "PacBio.DataSet.ReferenceSet",
+                "id": "ReferenceSet",
+                "title": "ReferenceSet XML"
             }
-        ], 
-        "resource_types": [], 
-        "schema_options": [], 
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        ],
+        "resource_types": [],
+        "schema_options": [],
+        "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pbcoretools.tasks.fasta2referenceset"
-    }, 
-    "tool_contract_id": "pbcoretools.tasks.fasta2referenceset", 
+    },
+    "tool_contract_id": "pbcoretools.tasks.fasta2referenceset",
     "version": "0.1.0"
 }
