@@ -32,11 +32,25 @@
         "nproc": 1,
         "output_types": [
             {
-                "default_name": "reads",
-                "description": "FASTA sequences",
-                "file_type_id": "PacBio.FileTypes.Fasta",
-                "id": "fasta_id",
-                "title": "FASTA"
+                "default_name": "polished.contigset",
+                "description": "Contigset of polished FASTA sequences",
+                "file_type_id": "PacBio.DataSet.ContigSet",
+                "id": "contig_id",
+                "title": "contigset"
+            },
+            {
+                "default_name": "preassembly_rpt",
+                "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
+                "file_type_id": "PacBio.FileTypes.JsonReport",
+                "id": "preassembly_rpt_id",
+                "title": "Preassembly report"
+            },
+            {
+                "default_name": "polished_assembly_rpt",
+                "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
+                "file_type_id": "PacBio.FileTypes.JsonReport",
+                "id": "polished_assembly_rpt_id",
+                "title": "Polished aassembly report"
             }
         ],
         "resource_types": [],
