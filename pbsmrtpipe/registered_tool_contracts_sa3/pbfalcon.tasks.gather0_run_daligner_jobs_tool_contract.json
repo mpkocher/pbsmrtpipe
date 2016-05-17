@@ -13,7 +13,7 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "FOFN LAS maybe?",
+                "title": "FOFN file",
                 "description": "FOFN Not Sure Yet",
                 "default_name": "file_gathered",
                 "id": "fofn_out",
