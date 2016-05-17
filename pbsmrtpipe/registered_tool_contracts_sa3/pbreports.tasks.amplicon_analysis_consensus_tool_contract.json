@@ -13,8 +13,8 @@
         "schema_options": [], 
         "output_types": [
             {
-                "title": "ConsensusReportJSON", 
-                "description": "Consensus Report JSON", 
+                "title": "Amplicon consensus report",
+                "description": "Amplicon Consensus Report JSON",
                 "default_name": "consensus_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
