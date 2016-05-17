@@ -13,8 +13,8 @@
         "schema_options": [], 
         "output_types": [
             {
-                "title": "JSON file", 
-                "description": "Path to write report JSON output", 
+                "title": "Iso-Seq classification report",
+                "description": "Path to write report JSON output",
                 "default_name": "isoseq_classify_report", 
                 "id": "outJson", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
