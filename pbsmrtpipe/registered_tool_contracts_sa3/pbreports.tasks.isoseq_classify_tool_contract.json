@@ -9,7 +9,7 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard", 
         "resource_types": [], 
-        "description": "\nGenerate a report for a IsoSeq Classify run, given both primer-trimmed,\nnon-chimeric, full-length reads and a classify summary.\n", 
+        "description": "\nGenerate a report for a Iso-Seq Classify run, given both primer-trimmed,\nnon-chimeric, full-length reads and a classify summary.\n", 
         "schema_options": [], 
         "output_types": [
             {
@@ -21,16 +21,16 @@
             }
         ], 
         "_comment": "Created by v0.3.25", 
-        "name": "IsoSeq Classify Report", 
+        "name": "Iso-Seq Classify Report", 
         "input_types": [
             {
-                "description": "Reads in FASTA format, usually are full-length, non-chimeric, primer-trimmed reads produced by IsoSeq classify.", 
+                "description": "Reads in FASTA format, usually are full-length, non-chimeric, primer-trimmed reads produced by Iso-Seq classify.", 
                 "title": "Fasta reads", 
                 "id": "inReadsFN", 
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }, 
             {
-                "description": "A summary produced by IsoSeq Classify, e.g. classify_summary.json", 
+                "description": "A summary produced by Iso-Seq Classify, e.g. classify_summary.json", 
                 "title": "Summary file", 
                 "id": "inSummaryFN", 
                 "file_type_id": "PacBio.FileTypes.json"
