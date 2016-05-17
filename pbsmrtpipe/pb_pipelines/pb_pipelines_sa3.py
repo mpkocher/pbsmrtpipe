@@ -591,22 +591,22 @@ ISOSEQ_TASK_OPTIONS = {
 }
 
 
-@sa3_register("sa3_ds_isoseq_classify", "IsoSeq Classify Only", "0.2.0",
+@sa3_register("sa3_ds_isoseq_classify", "Iso-Seq Classify Only", "0.2.0",
               tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
               task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq_classify():
     """
-    Partial IsoSeq pipeline (classify step only), starting from subreads.
+    Partial Iso-Seq pipeline (classify step only), starting from subreads.
     """
     return _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
 
 
-@sa3_register("sa3_ds_isoseq", "IsoSeq", "0.2.0",
+@sa3_register("sa3_ds_isoseq", "Iso-Seq", "0.2.0",
               tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
               task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq():
     """
-    Main IsoSeq pipeline, starting from subreads.
+    Main Iso-Seq pipeline, starting from subreads.
     """
     b1 = _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
     b2 = _core_isoseq_cluster_chunk_by_bins(subreads_ds=Constants.ENTRY_DS_SUBREAD,
@@ -616,10 +616,10 @@ def ds_isoseq():
     return b1 + b2
 
 
-@sa3_register("pb_isoseq", "Internal IsoSeq pipeline", "0.2.0", tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ, Tags.INTERNAL))
+@sa3_register("pb_isoseq", "Internal Iso-Seq pipeline", "0.2.0", tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ, Tags.INTERNAL))
 def pb_isoseq():
     """
-    Internal IsoSeq pipeline starting from an existing CCS dataset.
+    Internal Iso-Seq pipeline starting from an existing CCS dataset.
     """
     b1 = _core_isoseq_classify(Constants.ENTRY_DS_CCS)
     b2 = _core_isoseq_cluster_chunk_by_bins(subreads_ds=Constants.ENTRY_DS_SUBREAD,
@@ -629,7 +629,7 @@ def pb_isoseq():
     return b1 + b2
 
 
-@sa3_register("pb_isoseq_cluster", "Internal IsoSeq clustering pipeline", "0.2.0", tags=(Tags.ISOSEQ, Tags.INTERNAL,))
+@sa3_register("pb_isoseq_cluster", "Internal Iso-Seq clustering pipeline", "0.2.0", tags=(Tags.ISOSEQ, Tags.INTERNAL,))
 def pb_isoseq_cluster():
     return _core_isoseq_cluster_chunk_by_bins(subreads_ds=Constants.ENTRY_DS_SUBREAD,
                                               ccs_ds=Constants.ENTRY_DS_CCS,
