@@ -13,15 +13,15 @@
         "schema_options": [], 
         "output_types": [
             {
-                "title": "JSON report", 
+                "title": "Raw data report", 
                 "description": "Filename of JSON output report. Should be name only, and will be written to output dir", 
                 "default_name": "report", 
                 "id": "report", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.20", 
-        "name": "Filtering Statistics XML Report", 
+        "_comment": "Created by v0.3.25", 
+        "name": "Raw Dataset Statistics XML Report", 
         "input_types": [
             {
                 "description": "SubreadSet", 

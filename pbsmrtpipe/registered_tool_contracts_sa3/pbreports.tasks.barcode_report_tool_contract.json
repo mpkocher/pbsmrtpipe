@@ -13,14 +13,14 @@
         "schema_options": [], 
         "output_types": [
             {
-                "title": "JSON report", 
+                "title": "Barcode report", 
                 "description": "Path to write Report json output.", 
                 "default_name": "barcode_report", 
                 "id": "report_json", 
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ], 
-        "_comment": "Created by v0.3.21", 
+        "_comment": "Created by v0.3.25", 
         "name": "barcode_report", 
         "input_types": [
             {
