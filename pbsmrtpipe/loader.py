@@ -147,6 +147,10 @@ def _load_pipelines_from_python_module_name(name):
         import pbsmrtpipe.pb_pipelines.pb_pipelines_dev
         import pbsmrtpipe.pb_pipelines.pb_pipelines_sa3
         import pbsmrtpipe.pb_pipelines.pb_pipelines_falcon
+        # FIXME(mpkocher)(2016-4-17) To get around the internal build, I'm bundling
+        # the internal condition driven pipelines with the production code
+        import pbsmrtpipe.pb_pipelines.pb_internal_pipelines_sa3
+
         from pbsmrtpipe.models import REGISTERED_PIPELINES
         _REGISTERED_PIPELINES = REGISTERED_PIPELINES
 
