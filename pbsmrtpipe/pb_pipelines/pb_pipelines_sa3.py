@@ -27,6 +27,9 @@ class Constants(object):
     ENTRY_DS_ALIGN = to_entry("eid_alignment")
     ENTRY_DS_CCS = to_entry("eid_ccs")
 
+    # This should only be used for internal use
+    ENTRY_COND_JSON = to_entry("cond_json")
+
 
 class Tags(object):
     # General Analysis Categories
@@ -51,6 +54,8 @@ class Tags(object):
     DEV = "dev"
     # Internal Analysis
     INTERNAL = "internal"
+    # Mulit-analysis jobs
+    COND = "conditions"
 
     RESEQ = (MAP, CONSENSUS)
     RESEQ_INTERNAL = (MAP, CONSENSUS, INTERNAL)
