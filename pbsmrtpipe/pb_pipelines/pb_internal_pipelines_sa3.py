@@ -21,3 +21,11 @@ def to_bs():
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
     return b1
+
+
+@register("internal_cond_dev2", "Internal Condition JSON Dev Test 2")
+def to_bs():
+    """Dev Test for Conditions JSON"""
+    b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
+
+    return b1
