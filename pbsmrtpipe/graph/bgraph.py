@@ -1400,6 +1400,8 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
 
                         g_meta_task = registered_tasks_d[gchunk.gather_task_id]
                         g_node = bg.add_gather_meta_task(g_meta_task, gchunk.chunk_key)
+                        g_meta_task.output_file_display_names[0] = original_task.output_file_display_names[gi]
+                        g_meta_task.output_file_descriptions[0] = original_task.output_file_descriptions[gi]
 
                         # Both In/Out Gather Binding Types only have one input and
                         # one output, hence, the positional in/out index is ALWAYS 0
