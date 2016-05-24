@@ -80,10 +80,10 @@ def _get_polished_falcon_pipeline():
 
     ref = falcon_results['asm']
 
-    faidx = [(ref, 'pbcoretools.tasks.fasta_to_reference:0')]
+    faidx = [(ref, 'pbcoretools.tasks.fasta2referenceset:0')]
 
     aln = 'pbalign.tasks.pbalign:0'
-    ref = 'pbcoretools.tasks.fasta_to_reference:0'
+    ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
     polish = _core_align(subreadset, ref) + _core_gc(aln,
                                                      ref)
@@ -132,9 +132,9 @@ def get_task_polished_falcon_pipeline():
 
     ref = falcon_results['asm']
 
-    faidx = [(ref, 'pbcoretools.tasks.fasta_to_reference:0')]
+    faidx = [(ref, 'pbcoretools.tasks.fasta2referenceset:0')]
 
-    ref = 'pbcoretools.tasks.fasta_to_reference:0'
+    ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
     polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
                                                      ref)
@@ -169,7 +169,7 @@ def get_falcon_pipeline_fat():
 
     # id's of results from falcon:
     aln = 'pbalign.tasks.pbalign:0'
-    ref = 'pbcoretools.tasks.fasta_to_reference:0'
+    ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
     # summarize the coverage:
     sum_cov = [(aln, "pbreports.tasks.summarize_coverage:0"),
