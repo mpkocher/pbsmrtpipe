@@ -9,10 +9,10 @@
         "description": "Quick tool fasta_to_reference pbcoretools.tasks.fasta_to_reference",
         "input_types": [
             {
-                "description": "description for PacBio.DataSet.ContigSet_0",
-                "file_type_id": "PacBio.DataSet.ContigSet",
-                "id": "Label PacBio.DataSet.ContigSet_0",
-                "title": "<DataSetFileType id=PacBio.DataSet.ContigSet name=file >"
+                "description": "description for PacBio.FileTypes.Fasta_0",
+                "file_type_id": "PacBio.FileTypes.Fasta",
+                "id": "Label PacBio.FileTypes.Fasta_0",
+                "title": "<FileType id=PacBio.FileTypes.Fasta name=file >"
             }
         ],
         "is_distributed": true,
