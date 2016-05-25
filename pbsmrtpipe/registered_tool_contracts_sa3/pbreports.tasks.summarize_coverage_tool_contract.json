@@ -59,7 +59,7 @@
             },
             {
                 "pb_option": {
-                    "default": 1000000,
+                    "default": 100000,
                     "type": "integer",
                     "option_id": "pbreports.task_options.max_region_size",
                     "name": "Maximum region size",
