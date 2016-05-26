@@ -433,7 +433,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     else:
         p_err_msg = "task {i} failed (exit-code {x}) after {r:.2f} sec".format(i=runnable_task.task.task_id, r=run_time, x=rcode)
         raw_stderr = _extract_last_nlines(stderr)
-        cluster_raw_stderr = _extract_last_nlines(cstderr)
+        cluster_raw_stderr = _extract_last_nlines(qstderr)
         err_msg = "\n".join([p_err_msg, raw_stderr, cluster_raw_stderr])
         warn_msg = ""
 
