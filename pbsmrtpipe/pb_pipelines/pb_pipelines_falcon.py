@@ -205,7 +205,20 @@ def hgap_cmd():
 @dev_register("hgap_lean", "X - Experimental Assembly (HGAP 5) without reports", tags=("internal",))
 def hgap_lean():
     """GUI polished HGAP pipeline (sans reports).
-    (TODO: Add hgap_fat for reports.)
+    BAM input comes from the SubreadSet.
+    .cfg inputs are based on pbsmrtpipe options, via task_hgap_prepare
+    """
+    subreadset = Constants.ENTRY_DS_SUBREAD
+    hgap_prepare = [(subreadset,
+                   'falcon_ns.tasks.task_hgap_prepare:0')]
+    hgap_cfg =     'falcon_ns.tasks.task_hgap_prepare:0'
+    logging_cfg =  'falcon_ns.tasks.task_hgap_prepare:1'
+    hgap_run = _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
+    return hgap_prepare + hgap_run
+
+@dev_register("hgap_fat", "X - Experimental Assembly (HGAP 5)", tags=())
+def hgap_fat():
+    """GUI polished HGAP pipeline.
     BAM input comes from the SubreadSet.
     .cfg inputs are based on pbsmrtpipe options, via task_hgap_prepare
     """
