@@ -50,7 +50,7 @@
                 "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
                 "file_type_id": "PacBio.FileTypes.JsonReport",
                 "id": "polished_assembly_rpt_id",
-                "title": "Polished aassembly report"
+                "title": "Polished assembly report"
             }
         ],
         "resource_types": [],
