@@ -288,7 +288,7 @@ def run_show_tasks():
         return d.get(klass, "")
 
     for i, t in enumerate(sorted_tasks):
-        print " ".join([(str(i + 1) + ".").rjust(3), t.task_id.ljust(offset), _to_a(t) + t.display_name])
+        print " ".join([(str(i + 1) + ".").rjust(4), t.task_id.ljust(offset), _to_a(t) + t.display_name])
 
     return 0
 
@@ -590,7 +590,6 @@ def _args_run_diagnostics(args):
         return 0
 
 
-
 def _add_required_preset_xml_option(p):
     p.add_argument('preset_xml', type=validate_file, help="Path to Preset XML file.")
     return p
@@ -598,7 +597,8 @@ def _add_required_preset_xml_option(p):
 
 def _add_simple_mode_option(p):
     # Run the Full diagnostics suite
-    p.add_argument('--simple', action='store_true', help="Perform full diagnostics tests (e.g., submit test job to cluster).")
+    p.add_argument('--simple', action='store_true',
+                   help="Perform full diagnostics tests (e.g., submit test job to cluster).")
     return p
 
 
@@ -623,7 +623,7 @@ def get_parser():
     builder('pipeline', wf_desc, add_pipline_parser_options, _args_run_pipeline)
 
     # Run a pipeline by id
-    pipline_id_desc = "Run a registered pipline by specifiying the pipline id."
+    pipline_id_desc = "Run a registered pipeline by specifying the pipeline id."
     builder('pipeline-id', pipline_id_desc, add_pipeline_id_parser_options, _args_run_pipeline_id)
 
     builder('task', "Run Task by id.", add_task_parser_options, _args_task_runner)
