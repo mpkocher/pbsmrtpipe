@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.3.25",
+        "_comment": "Created by v0.3.27",
         "description": "Quick tool task_hgap_run falcon_ns.tasks.task_hgap_run",
         "input_types": [
             {
@@ -50,7 +50,7 @@
                 "description": "description for <FileType id=PacBio.FileTypes.JsonReport name=report >",
                 "file_type_id": "PacBio.FileTypes.JsonReport",
                 "id": "polished_assembly_rpt_id",
-                "title": "Polished aassembly report"
+                "title": "Polished assembly report"
             }
         ],
         "resource_types": [],

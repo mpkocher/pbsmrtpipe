@@ -80,10 +80,10 @@ def _get_polished_falcon_pipeline():
 
     ref = falcon_results['asm']
 
-    faidx = [(ref, 'pbcoretools.tasks.fasta2referenceset:0')]
+    faidx = [(ref, 'pbcoretools.tasks.fasta_to_reference:0')]
 
     aln = 'pbalign.tasks.pbalign:0'
-    ref = 'pbcoretools.tasks.fasta2referenceset:0'
+    ref = 'pbcoretools.tasks.fasta_to_reference:0'
 
     polish = _core_align(subreadset, ref) + _core_gc(aln,
                                                      ref)
@@ -132,9 +132,9 @@ def get_task_polished_falcon_pipeline():
 
     ref = falcon_results['asm']
 
-    faidx = [(ref, 'pbcoretools.tasks.fasta2referenceset:0')]
+    faidx = [(ref, 'pbcoretools.tasks.fasta_to_reference:0')]
 
-    ref = 'pbcoretools.tasks.fasta2referenceset:0'
+    ref = 'pbcoretools.tasks.fasta_to_reference:0'
 
     polish = _core_align(subreadset, ref) + _core_gc('pbalign.tasks.pbalign:0',
                                                      ref)
@@ -169,7 +169,7 @@ def get_falcon_pipeline_fat():
 
     # id's of results from falcon:
     aln = 'pbalign.tasks.pbalign:0'
-    ref = 'pbcoretools.tasks.fasta2referenceset:0'
+    ref = 'pbcoretools.tasks.fasta_to_reference:0'
 
     # summarize the coverage:
     sum_cov = [(aln, "pbreports.tasks.summarize_coverage:0"),
@@ -205,7 +205,20 @@ def hgap_cmd():
 @dev_register("hgap_lean", "X - Experimental Assembly (HGAP 5) without reports", tags=("internal",))
 def hgap_lean():
     """GUI polished HGAP pipeline (sans reports).
-    (TODO: Add hgap_fat for reports.)
+    BAM input comes from the SubreadSet.
+    .cfg inputs are based on pbsmrtpipe options, via task_hgap_prepare
+    """
+    subreadset = Constants.ENTRY_DS_SUBREAD
+    hgap_prepare = [(subreadset,
+                   'falcon_ns.tasks.task_hgap_prepare:0')]
+    hgap_cfg =     'falcon_ns.tasks.task_hgap_prepare:0'
+    logging_cfg =  'falcon_ns.tasks.task_hgap_prepare:1'
+    hgap_run = _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
+    return hgap_prepare + hgap_run
+
+@dev_register("hgap_fat", "X - Experimental Assembly (HGAP 5)", tags=())
+def hgap_fat():
+    """GUI polished HGAP pipeline.
     BAM input comes from the SubreadSet.
     .cfg inputs are based on pbsmrtpipe options, via task_hgap_prepare
     """
