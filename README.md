@@ -15,6 +15,7 @@
 - [pbcommand](https://github.com/PacificBiosciences/pbcommand) Python Tool Contract API to define tasks
 - Simple Bindings model to define pipelines and pipeline templates 
 - HTML Reports
+- interfaces with [smrtflow](http://github.com/Pacificbiosciences/smrtflow)
 
 
 # Defining Tasks using Tool Contracts
