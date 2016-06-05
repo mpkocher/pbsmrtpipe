@@ -33,6 +33,13 @@
                 "title": "Shell script"
             },
             {
+                "default_name": "dazzler.db",
+                "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "dazzler.db_id",
+                "title": "DAZZ_DB (implies dot-files too)"
+            },
+            {
                 "default_name": "job.done",
                 "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
                 "file_type_id": "PacBio.FileTypes.txt",
