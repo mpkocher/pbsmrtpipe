@@ -21,10 +21,10 @@
                 "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
             },
             {
-                "description": "description for PacBio.FileTypes.generic_fofn_2",
-                "file_type_id": "PacBio.FileTypes.generic_fofn",
-                "id": "Label PacBio.FileTypes.generic_fofn_2",
-                "title": "<FileType id=PacBio.FileTypes.generic_fofn name=generic >"
+                "description": "description for PacBio.FileTypes.txt_2",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "Label PacBio.FileTypes.txt_2",
+                "title": "<OutputFileType PacBio.FileTypes.txt dazzler.db_id >"
             }
         ],
         "is_distributed": false,

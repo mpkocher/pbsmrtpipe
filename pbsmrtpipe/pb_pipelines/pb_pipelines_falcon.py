@@ -56,7 +56,7 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
                         'falcon_ns.tasks.task_report_preassembly_yield:0'),
           ('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:0',
                         'falcon_ns.tasks.task_report_preassembly_yield:1'),
-          (i_fasta_fofn,
+          ('falcon_ns.tasks.task_falcon0_build_rdb:1',
                         'falcon_ns.tasks.task_report_preassembly_yield:2'),
     ]
     results = dict()
