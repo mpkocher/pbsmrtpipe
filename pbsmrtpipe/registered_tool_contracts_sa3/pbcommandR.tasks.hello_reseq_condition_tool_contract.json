@@ -2,18 +2,18 @@
   "version": "0.3.2",
   "driver": {
     "serialization": "json",
-    "exe": "exampleAccuracyDensityPlot.R run-rtc "
+    "exe": "exampleReseqCondition.R run-rtc "
   },
-  "tool_contract_id": "pbcommandR.tasks.accplot_reseq_condition",
+  "tool_contract_id": "pbcommandR.tasks.hello_reseq_condition",
   "tool_contract": {
     "task_type": "pbsmrtpipe.task_types.standard",
     "resource_types": [],
-    "description": "Tool Contract from  pbcommandR.tasks.accplot_reseq_condition",
-    "name": "Task Name  pbcommandR.tasks.accplot_reseq_condition",
+    "description": "Tool Contract from  pbcommandR.tasks.hello_reseq_condition",
+    "name": "Task Name  pbcommandR.tasks.hello_reseq_condition",
     "nproc": 1,
     "is_distributed": false,
     "schema_options": [],
-    "tool_contract_id": "pbcommandR.tasks.accplot_reseq_condition",
+    "tool_contract_id": "pbcommandR.tasks.hello_reseq_condition",
     "input_types": [
       {
         "file_type_id": "PacBio.FileTypes.COND_RESEQ",

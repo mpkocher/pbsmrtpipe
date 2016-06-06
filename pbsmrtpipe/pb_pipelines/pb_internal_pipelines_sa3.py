@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 def register(relative_id, display_name, tags=(), task_options=None):
     pipeline_id = to_pipeline_ns(relative_id)
     ptags = list(set(tags + (Tags.INTERNAL, Tags.COND)))
-    return register_pipeline(pipeline_id, display_name, "0.1.1", tags=ptags, task_options=task_options)
+    return register_pipeline(pipeline_id, display_name, "0.2.0", tags=ptags, task_options=task_options)
 
 
 @register("internal_cond_dev", "Internal Condition JSON Dev Test", tags=(Tags.DEV, ))
@@ -33,15 +33,30 @@ def to_bs():
     return b1 + b2
 
 
-@register("internal_cond_hello_r", "Internal Condition Dev Hello R", tags=(Tags.DEV, ))
+@register("internal_cond_dev_r", "Internal Condition Dev R (hello world)", tags=(Tags.DEV, ))
 def to_bs():
-    """Hello World for R"""
+    """Hello World for R + Reports"""
+    # Call the Python cond report for dev/testing purposes
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
-    # RRRRRRRR
+    # RRRRRRRR. This tasks should be renamed
     b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condtion:0")]
 
     return b1 + b2
+
+
+@register("internal_cond_dev_r_reports", "Internal Condition Dev R (hello world + Reports)", tags=(Tags.DEV, ))
+def to_bs():
+    """Hello World for R"""
+    # Call the Python cond report for dev/testing purposes
+    b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
+
+    # RRRRRRRR. This stupid typo should be fixed
+    b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condtion:0")]
+
+    b3 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition_report:0")]
+
+    return b1 + b2 + b3
 
 
 @register("internal_cond_acc_density", "Internal Condition Accuracy Density Plots")

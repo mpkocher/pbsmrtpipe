@@ -1,8 +1,8 @@
 {
-  "version": "0.3.1",
+  "version": "0.3.2",
   "driver": {
     "serialization": "json",
-    "exe": "exampleHelloWorld_R.sh run-rtc "
+    "exe": "exampleHelloWorld.R run-rtc "
   },
   "tool_contract_id": "pbcommandR.tasks.filterFasta",
   "tool_contract": {
@@ -31,6 +31,6 @@
         "default_name": "file"
       }
     ],
-    "comment": "Created from pbcommandR version  0.3.1"
+    "comment": "Created from pbcommandR version  0.3.2"
   }
 }
