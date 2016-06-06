@@ -1,8 +1,8 @@
 {
-  "version": "0.3.2",
+  "version": "0.3.3",
   "driver": {
     "serialization": "json",
-    "exe": "exampleReseqCondition.R run-rtc "
+    "exe": "exampleReseqConditions.R run-rtc "
   },
   "tool_contract_id": "pbcommandR.tasks.hello_reseq_condition_report",
   "tool_contract": {
@@ -31,6 +31,6 @@
         "default_name": "file.report"
       }
     ],
-    "comment": "Created from pbcommandR version  0.3.2"
+    "comment": "Created from pbcommandR version  0.3.3"
   }
 }

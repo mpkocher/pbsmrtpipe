@@ -40,7 +40,7 @@ def to_bs():
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
     # RRRRRRRR. This tasks should be renamed
-    b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condtion:0")]
+    b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition:0")]
 
     return b1 + b2
 
@@ -52,7 +52,7 @@ def to_bs():
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
     # RRRRRRRR. This stupid typo should be fixed
-    b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condtion:0")]
+    b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition:0")]
 
     b3 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition_report:0")]
 
