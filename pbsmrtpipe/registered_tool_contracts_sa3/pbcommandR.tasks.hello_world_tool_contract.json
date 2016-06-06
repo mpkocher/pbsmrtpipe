@@ -1,19 +1,19 @@
 {
-  "version": "0.3.2",
+  "version": "0.3.3",
   "driver": {
     "serialization": "json",
     "exe": "exampleHelloWorld.R run-rtc "
   },
-  "tool_contract_id": "pbcommandR.tasks.helloWorld",
+  "tool_contract_id": "pbcommandR.tasks.hello_world",
   "tool_contract": {
     "task_type": "pbsmrtpipe.task_types.standard",
     "resource_types": [],
-    "description": "Tool Contract from  pbcommandR.tasks.helloWorld",
-    "name": "Task Name  pbcommandR.tasks.helloWorld",
+    "description": "Tool Contract from  pbcommandR.tasks.hello_world",
+    "name": "Task Name  pbcommandR.tasks.hello_world",
     "nproc": 1,
     "is_distributed": false,
     "schema_options": [],
-    "tool_contract_id": "pbcommandR.tasks.helloWorld",
+    "tool_contract_id": "pbcommandR.tasks.hello_world",
     "input_types": [
       {
         "file_type_id": "PacBio.FileTypes.txt",
@@ -31,6 +31,6 @@
         "default_name": "file"
       }
     ],
-    "comment": "Created from pbcommandR version  0.3.2"
+    "comment": "Created from pbcommandR version  0.3.3"
   }
 }
