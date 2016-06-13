@@ -20,11 +20,10 @@
 
 # Defining Tasks using Tool Contracts
 
-pbcommand library can be used to call python functions natively, or generate an CLI interface that can be emit **Tool Contract** JSON files, or run **Resolved Tool Contract** JSON files.
+The pbcommand library can be used to call python functions natively, or generate an CLI interface that can be emit **Tool Contract** JSON files, or run **Resolved Tool Contract** JSON files.
  
-See [pbcommand](http://pbcommand.readthedocs.org/) for details.
- 
-An example using the 'quick' model that allows you to call python functions and define metadata about the task, such as the **FileType**
+An example is shown below using the 'quick' model that allows you to call python functions and define metadata about the task, such as the **FileType**, or number of processors to use. The below example is included to provide a complete overview of how the system works. For specific details on the ToolContract data model and commandline interface, please see [pbcommand](http://pbcommand.readthedocs.org/) for details.
+
 
 ```python
 from pbcommand.models import FileTypes
@@ -113,7 +112,7 @@ Once the pipeline is registered it can be referenced in **pipeline-template** an
 
 The pipeline can by run by referencing id **pipelines.pbsmrtpipe.dev_local** using `--entry-point e_01:/path/to/file.txt` as a CLI arg.
 
-## CLI
+## CLI of running pbsmrtpipe
 
 
 
@@ -166,10 +165,61 @@ optional arguments:
   -v, --version         show program's version number and exit
 ```
 
-### Development and Testing
+### Development and Testing Pipelines
 
 
-"testkit" is the test framework for testing pipelines.
+"testkit" is the test framework for testing pipelines that is included with pbsmrtpipe.
+
+
+Examples of leveraging the testkit are included in the `pbsmrtpipe/testkit-data` dir.
+
+The tests are configurable via an INI/CFG file (e.g., testkit.cfg). This file defines the input entry points, pipeline id and tests to run after the pipeline has completed.
+
+Example from `testkit-data/dev_01/testkit.cfg`
+
+```
+[pbsmrtpipe:pipeline]
+
+id = dev_01
+description = Dev example
+author = mkocher
+
+pipeline_xml = workflow_id.xml
+preset_xml = preset.xml
+
+[entry_points]
+e_01 = input.txt
+
+
+[tests]
+# Tests can be loaded from any python module
+# specifically, Any TestBase subclass in pbsmrtpipe.teskit.core.test_zero will be loaded
+pbsmrtpipe.testkit.core = test_zero, test_resources, test_datastore
+
+```
+
+Executing the test
+
+```bash
+$> pbtestkit-runner --debug testkit.cfg
+```
+
+This will run the specific pipeline via a subprocess call to pbsmrtpipe in `job_output` dir and run tests on the results. 
+
+To re-run *only* the test assertions, run:
+
+```bash
+$> pbtestkit-runner  --only-tests testkit.cfg
+```
+
+To re-run from scratch, delete the `job_output` dir and re-run 
+
+```
+$> pbtestkit-runner testkit.cfg
+```
+
+For development and testing, there are `make` targets to automate common tasks.
+
 
 Uninstall and Install pbsmrtpipe
 
@@ -218,3 +268,22 @@ Clean All
 ```bash
 make clean-all
 ```
+
+### Pacbio End to End Pipeline Testing Model 
+
+Testing at the commandline level is required. If the tests pass at the commandline level via `testkit`, there's a high probability the pipeline  (with the same data set and options) will run successfully from the SMRTLink UI.
+ 
+ Having tests at the commandline level allow quicker iteration and will avoid debugging the entire software stack to debug pipeline failures.
+ 
+#### Summary of the end-to-end model for Pacbio Tool Developers Workflow 
+
+- Update exe and tool within your specific tool repo
+- TEST: Update unittests within your tool repo
+- Update JSON tool contract within the pbsmrtpipe repo (pbsmrtpipe/pbsmrtpipe/registered_tool_contracts_sa3)
+- Update or define new pipeline(s) within `pbsmrtpipe.pb_pipelines.*.py`
+- TEST: Update or add new testkit pipeline test to `/depot/software/smrtanalysis/siv/testkit-jobs/sa3_pipelines` in perforce
+- After the next tools and service bundle build, the updated tasks and pipeline should will be accessible via `smrtlink-bihourly`
+
+Every production pipeline *MUST* have at least one testkit job defined.
+ 
+Todo: Add comments on running pipeline service tests from testkit.cfg using `pbtestkit-service-runner`
