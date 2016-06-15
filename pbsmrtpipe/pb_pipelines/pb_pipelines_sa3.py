@@ -255,7 +255,7 @@ def _core_mod_detection(alignment_ds, reference_ds):
     _add((alignment_ds, "kinetics_tools.tasks.ipd_summary:0"))
     _add((reference_ds, 'kinetics_tools.tasks.ipd_summary:1'))
 
-    _add(('kinetics_tools.tasks.ipd_summary:1', 'pbreports.tasks.modifications_report:0'))
+    #_add(('kinetics_tools.tasks.ipd_summary:1', 'pbreports.tasks.modifications_report:0'))
     return bs
 
 

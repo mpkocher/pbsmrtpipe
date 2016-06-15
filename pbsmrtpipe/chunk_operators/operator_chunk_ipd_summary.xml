@@ -25,8 +25,8 @@ Very similar to variantCaller chunk operator, from which this was copied
                 <task-output>kinetics_tools.tasks.ipd_summary:0</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbcoretools.tasks.gather_csv</gather-task-id>
-                <chunk-key>$chunk.csv_id</chunk-key>
+                <gather-task-id>pbcoretools.tasks.gather_bigwig</gather-task-id>
+                <chunk-key>$chunk.bw_id</chunk-key>
                 <task-output>kinetics_tools.tasks.ipd_summary:1</task-output>
             </chunk>
         </chunks>
