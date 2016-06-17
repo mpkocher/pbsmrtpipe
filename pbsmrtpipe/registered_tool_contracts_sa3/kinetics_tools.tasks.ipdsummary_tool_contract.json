@@ -107,18 +107,18 @@
                 "pb_option": {
                     "default": false,
                     "type": "boolean",
-                    "option_id": "kinetics_Tools.task_options.write_csv",
+                    "option_id": "kinetics_tools.task_options.write_csv",
                     "name": "Write CSV file of per-base metrics (warning: large file)",
                     "description": "Enables CSV output of all metrics used to locate modified bases.  This may consume hundreds of gigabytes for large genomes."
                 },
-                "title": "JSON Schema for kinetics_Tools.task_options.write_csv",
+                "title": "JSON Schema for kinetics_tools.task_options.write_csv",
                 "required": [
-                    "kinetics_Tools.task_options.write_csv"
+                    "kinetics_tools.task_options.write_csv"
                 ],
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "type": "object",
                 "properties": {
-                    "kinetics_Tools.task_options.write_csv": {
+                    "kinetics_tools.task_options.write_csv": {
                         "default": false,
                         "type": "boolean",
                         "description": "Enables CSV output of all metrics used to locate modified bases.  This may consume hundreds of gigabytes for large genomes.",
@@ -141,6 +141,13 @@
                 "default_name": "basemods",
                 "id": "bigwig",
                 "file_type_id": "PacBio.FileTypes.bigwig"
+            },
+            {
+                "title": "HDF5 file containing per-base information",
+                "description": "HDF5 equivalent of CSV output",
+                "default_name": "basemods",
+                "id": "csv_h5",
+                "file_type_id": "PacBio.FileTypes.h5"
             }
         ],
         "_comment": "Created by v0.3.30",

@@ -29,6 +29,11 @@ Very similar to variantCaller chunk operator, from which this was copied
                 <chunk-key>$chunk.bw_id</chunk-key>
                 <task-output>kinetics_tools.tasks.ipd_summary:1</task-output>
             </chunk>
+            <chunk>
+                <gather-task-id>kinetics_tools.tasks.gather_kinetics_h5</gather-task-id>
+                <chunk-key>$chunk.h5_id</chunk-key>
+                <task-output>kinetics_tools.tasks.ipd_summary:2</task-output>
+            </chunk>
         </chunks>
     </gather>
 </chunk-operator>
