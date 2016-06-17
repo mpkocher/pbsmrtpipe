@@ -415,8 +415,8 @@ def ds_barcode():
     return _core_barcode()
 
 
-@sa3_register("pb_ds_barcode_laa", "Internal LAA Pipeline with SubreadSet Barcoding", "0.1.0", tags=(Tags.INTERNAL, Tags.BARCODE, Tags.LAA))
-def pb_barcode_laa():
+@sa3_register("sa3_ds_barcode_laa", "LAA with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.LAA))
+def ds_barcode_laa():
     """
     Internal pipeline for testing barcoding in combination with LAA
     """
@@ -444,8 +444,8 @@ def ds_ccs():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD)
 
 
-@sa3_register("pb_ds_barcode_ccs", "Internal CCS Pipeline with SubreadSet Barcoding", "0.1.0", tags=(Tags.INTERNAL, Tags.BARCODE, Tags.CCS))
-def pb_barcode_ccs():
+@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.1.0", tags=(Tags.BARCODE, Tags.CCS))
+def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
     """
