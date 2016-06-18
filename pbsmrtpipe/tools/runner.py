@@ -224,7 +224,7 @@ def run_task(runnable_task, output_dir, task_stdout, task_stderr, debug_mode):
         with open(task_stderr, 'w') as stderr_fh:
             stdout_fh.write(repr(runnable_task) + "\n")
             stdout_fh.write("Created at {x} on {h}\n".format(x=datetime.datetime.now(), h=host))
-            stderr_fh.write("Running task in {o}\n".format(o=output_dir))
+            stdout_fh.write("Running task in {o}\n".format(o=output_dir))
 
             # Validate Inputs
             for input_file in runnable_task.task.input_files:
