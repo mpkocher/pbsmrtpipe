@@ -84,12 +84,19 @@ def parse_cfg_file(path):
         for module_base_, raw_tests in xs:
             for t in _parse_tests(raw_tests):
                 module_name = ".".join([module_base_, t])
-                m = importlib.import_module(module_name)
-                ts = _load_test_cases_from_module(m)
-                for x in ts:
-                    # Ignore empty
-                    if x.countTestCases > 0:
-                        test_cases.append(x)
+                try:
+                    m = importlib.import_module(module_name)
+                    ts = _load_test_cases_from_module(m)
+                    for x in ts:
+                        # Ignore empty
+                        if x.countTestCases > 0:
+                            test_cases.append(x)
+                        else:
+                            log.debug("Skipping {m} No tests cases found in {x}".format(x=x, m=m))
+
+                except Exception as e:
+                    log.error("Unable to import {t} from {m}. {e}\n".format(m=module_base_, t=t, e=e))
+                    raise
 
     return test_cases
 
