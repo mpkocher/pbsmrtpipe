@@ -681,12 +681,19 @@ def ds_subreads_to_fastx():
     return b1 + b2
 
 
-# XXX note that this pipeline is designed with the intention of being driven
-# by pbservice, wrapping the input FASTA as a ContigSet which becomes the
-# entry point.  This will probably not work through the smrtlink UI.
+# XXX note that this pipeline is designed to be run as part of the import-fasta
+# endpoint in smrtlink
 @sa3_register("sa3_ds_fasta_to_reference", "Convert FASTA to ReferenceSet", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL))
 def ds_fasta_to_reference():
     """
     Convert a FASTA file to a ReferenceSet
     """
     return [(Constants.ENTRY_REF_FASTA, "pbcoretools.tasks.fasta_to_reference:0")]
+
+
+@sa3_register("sa3_fasta_to_gmap_reference", "Convert FASTA to GmapReferenceSet", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL))
+def ds_fasta_to_reference():
+    """
+    Convert a FASTA file to a GmapReferenceSet
+    """
+    return [(Constants.ENTRY_REF_FASTA, "pbcoretools.tasks.fasta_to_gmap_reference:0")]
