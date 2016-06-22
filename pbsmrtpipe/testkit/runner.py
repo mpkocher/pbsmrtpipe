@@ -10,6 +10,7 @@ import unittest
 from pbcommand.cli import pacbio_args_runner, get_default_argparser
 
 # the pbcommand version raise OSError for some reason
+from pbcommand.cli.core import get_default_argparser_with_base_opts
 from pbcommand.utils import (setup_console_and_file_logger, setup_logger,
                              Constants, compose)
 from pbcommand.common_options import (add_log_debug_option,
@@ -29,9 +30,13 @@ import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import setup_log, StdOutStatusLogFilter
 
 log = logging.getLogger()
-slog = logging.getLogger(SLOG_PREFIX + __name__)
+log.addHandler(logging.NullHandler())
 
-__version__ = '0.3.1'
+slog = logging.getLogger(SLOG_PREFIX + __name__)
+slog.addHandler(logging.NullHandler())
+
+
+__version__ = '0.3.2'
 
 
 def _patch_test_cases_with_job_dir(test_cases, job_dir):
@@ -173,6 +178,7 @@ def run_butler(butler, test_cases, output_xml,
 
 
 def _args_run_butler(args):
+
     butler = B.config_parser_to_butler(args.testkit_cfg)
 
     test_cases = L.parse_cfg_file(args.testkit_cfg)
@@ -240,15 +246,12 @@ def add_output_xml_option(p):
 
 def get_parser():
     desc = "Testkit Tool to run pbsmrtpipe jobs."
-    p = get_default_argparser(__version__, desc)
+    p = get_default_argparser_with_base_opts(__version__, desc)
 
     funcs = [TU.add_override_chunked_mode,
              TU.add_override_distribute_option,
              _add_config_file_option,
              add_tests_only_option,
-             add_log_level_option,
-             add_log_file_option,
-             add_log_debug_option,
              add_ignore_test_failures_option,
              add_output_xml_option]
 
@@ -260,4 +263,5 @@ def get_parser():
 
 def main(argv=sys.argv):
     parser = get_parser()
-    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_log_func=None)
+    # note, this logger will overwritten after the output dir is created
+    return pacbio_args_runner(argv[1:], parser, _args_run_butler, log, setup_log_func=setup_log)
