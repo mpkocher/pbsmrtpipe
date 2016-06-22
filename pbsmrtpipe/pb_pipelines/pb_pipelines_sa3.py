@@ -691,7 +691,7 @@ def ds_fasta_to_reference():
     return [(Constants.ENTRY_REF_FASTA, "pbcoretools.tasks.fasta_to_reference:0")]
 
 
-@sa3_register("sa3_ds_fasta_to_gmap_reference", "Convert FASTA to GmapReferenceSet", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL))
+@sa3_register("sa3_fasta_to_gmap_reference", "Convert FASTA to GmapReferenceSet", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL))
 def ds_fasta_to_reference():
     """
     Convert a FASTA file to a GmapReferenceSet
