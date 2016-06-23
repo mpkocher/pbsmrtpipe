@@ -45,13 +45,13 @@ def to_bs():
     return b1 + b2
 
 
-@register("internal_cond_dev_r_reports", "Internal Condition Dev R (hello world + Reports)", tags=(Tags.DEV, ))
+@register("internal_cond_dev_r_reports", "Internal Condition Dev R (hello world + Simple Condition Summary Report)", tags=(Tags.DEV, ))
 def to_bs():
     """Hello World for R"""
     # Call the Python cond report for dev/testing purposes
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
-    # RRRRRRRR. This stupid typo should be fixed
+    # R tasks
     b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition:0")]
 
     b3 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition_report:0")]
@@ -59,11 +59,21 @@ def to_bs():
     return b1 + b2 + b3
 
 
-@register("internal_cond_acc_density", "Internal Condition Accuracy Density Plots")
+@register("internal_cond_acc_density", "Internal Condition Accuracy Density Plots using R")
 def to_bs():
     """Accuracy Density Plots"""
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
     b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.accplot_reseq_condition:0")]
+
+    return b1 + b2
+
+
+@register("mh_poc", "Example Condition Pipeline for Accuracy and Readlength comparison")
+def to_bs():
+    """Accuracy Density Plots"""
+    b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
+
+    b2 = [(Constants.ENTRY_COND_JSON, "pbsmrtpipe_examples.tasks.dev_mh_toy:0")]
 
     return b1 + b2
