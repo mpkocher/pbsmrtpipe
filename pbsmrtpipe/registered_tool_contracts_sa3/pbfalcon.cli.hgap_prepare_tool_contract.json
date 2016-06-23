@@ -82,7 +82,7 @@
             },
             {
                 "pb_option": {
-                    "default": "",
+                    "default": "{\n    \"~for_now_see\": \"https://github.com/PacificBiosciences/ExperimentalPipelineOptionsDocs/blob/master/HGAP/defaults.md\"\n}\n",
                     "type": "string",
                     "option_id": "falcon_ns.task_options.HGAP_Options_JSON",
                     "name": "Experimental HGAP.5 config overrides.",
@@ -96,7 +96,7 @@
                 "type": "object",
                 "properties": {
                     "falcon_ns.task_options.HGAP_Options_JSON": {
-                        "default": "",
+                        "default": "{\n    \"~for_now_see\": \"https://github.com/PacificBiosciences/ExperimentalPipelineOptionsDocs/blob/master/HGAP/defaults.md\"\n}\n",
                         "type": "string",
                         "description": "Experimental HGAP.5 config overrides are experimental.",
                         "title": "Experimental HGAP.5 config overrides."
@@ -118,6 +118,13 @@
                 "default_name": "logging-cfg",
                 "id": "logging-cfg-out",
                 "file_type_id": "PacBio.FileTypes.json"
+            },
+            {
+                "title": "Log-file from Python logger",
+                "description": "Output: log-file",
+                "default_name": "out1",
+                "id": "out",
+                "file_type_id": "PacBio.FileTypes.log"
             }
         ],
         "_comment": "Created by v0.4.1",
