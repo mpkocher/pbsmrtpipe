@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.3.27",
+        "_comment": "Created by v0.4.1",
         "description": "Quick tool task_report_preassembly_yield falcon_ns.tasks.task_report_preassembly_yield",
         "input_types": [
             {
