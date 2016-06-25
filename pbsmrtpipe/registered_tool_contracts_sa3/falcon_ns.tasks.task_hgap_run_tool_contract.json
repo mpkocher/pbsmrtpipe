@@ -51,6 +51,13 @@
                 "file_type_id": "PacBio.FileTypes.JsonReport",
                 "id": "polished_assembly_rpt_id",
                 "title": "Polished assembly report"
+            },
+            {
+                "default_name": "out2",
+                "description": "description for <FileType id=PacBio.FileTypes.log name=file >",
+                "file_type_id": "PacBio.FileTypes.log",
+                "id": "out2_id",
+                "title": "Another log output, experimentally"
             }
         ],
         "resource_types": [],
