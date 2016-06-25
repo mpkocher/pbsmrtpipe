@@ -633,10 +633,10 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             },
             {
-                "title": "JSON summary of subreads",
-                "description": "JSON summary of subreads",
-                "default_name": "amplicon_analysis_subreads",
-                "id": "subreads_json",
+                "title": "JSON summary of ZMWs",
+                "description": "JSON summary of ZMWs",
+                "default_name": "amplicon_analysis_zmws",
+                "id": "zmw_json",
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
