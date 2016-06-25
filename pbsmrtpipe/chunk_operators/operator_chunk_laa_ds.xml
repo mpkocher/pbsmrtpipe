@@ -27,6 +27,11 @@
                 <chunk-key>$chunk.csv_id</chunk-key>
                 <task-output>pblaa.tasks.laa:2</task-output>
             </chunk>
+            <chunk>
+                <gather-task-id>pbcoretools.tasks.gather_laa_json</gather-task-id>
+                <chunk-key>$chunk.json_id</chunk-key>
+                <task-output>pblaa.tasks.laa:3</task-output>
+            </chunk>
         </chunks>
     </gather>
 </chunk-operator>
