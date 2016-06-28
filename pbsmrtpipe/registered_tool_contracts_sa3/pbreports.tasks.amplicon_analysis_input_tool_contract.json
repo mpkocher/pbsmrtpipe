@@ -17,7 +17,7 @@
                 "description": "Long Amplicon Analysis input report JSON",
                 "default_name": "amplicon_input_report",
                 "id": "report_json",
-                "file_type_id": "PacBio.FileTypes.json"
+                "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ],
         "_comment": "Created by v0.4.3",
