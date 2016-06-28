@@ -393,8 +393,11 @@ def ds_laa():
     laa = _core_laa(subreadset)
 
     consensus_report = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
-
-    return laa + consensus_report
+    inputs_report = [
+        ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
+        ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")
+    ]
+    return laa + consensus_report + inputs_report
 
 
 def _core_barcode():
@@ -424,7 +427,9 @@ def ds_barcode_laa():
     subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
     b2 = _core_laa(subreadset)
     b3 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
-    return b1 + b2 + b3
+    b4 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
+          ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")]
+    return b1 + b2 + b3 + b4
 
 
 def _core_ccs(subread_ds):

@@ -1,0 +1,43 @@
+{
+    "version": "0.1.1",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbreports.report.amplicon_analysis_input --resolved-tool-contract ",
+        "env": {}
+    },
+    "tool_contract_id": "pbreports.tasks.amplicon_analysis_input",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [],
+        "description": "Summarize the Long Amplicon Analysis using the ZMW results",
+        "schema_options": [],
+        "output_types": [
+            {
+                "title": "LAA input report",
+                "description": "Long Amplicon Analysis input report JSON",
+                "default_name": "amplicon_input_report",
+                "id": "report_json",
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ],
+        "_comment": "Created by v0.4.3",
+        "name": "Amplicon Analysis Input",
+        "input_types": [
+            {
+                "description": "Consensus Report CSV",
+                "title": "ConsensusReportCSV",
+                "id": "report_csv",
+                "file_type_id": "PacBio.FileTypes.csv"
+            },
+            {
+                "description": "JSON file containing per-ZMW info",
+                "title": "JSON per-ZMW info",
+                "id": "zmws_json",
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ],
+        "nproc": 1,
+        "is_distributed": true,
+        "tool_contract_id": "pbreports.tasks.amplicon_analysis_input"
+    }
+}
