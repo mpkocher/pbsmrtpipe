@@ -23,7 +23,7 @@ def to_bs():
     return b1
 
 
-@register("internal_cond_dev2", "Internal Condition JSON Dev Test 2", tags=(Tags.DEV, ))
+@register("internal_cond_dev2", "Dev Reseq Condition Py (hello world)", tags=(Tags.DEV, ))
 def to_bs():
     """Dev Test for AlignmentSet Condition Summary"""
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
@@ -33,19 +33,18 @@ def to_bs():
     return b1 + b2
 
 
-@register("internal_cond_dev_r", "Internal Condition Dev R (hello world)", tags=(Tags.DEV, ))
+@register("internal_cond_dev_r", "Dev Reseq Condition R (hello world)", tags=(Tags.DEV, ))
 def to_bs():
     """Hello World for R + Reports"""
     # Call the Python cond report for dev/testing purposes
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
-    # RRRRRRRR. This tasks should be renamed
     b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.hello_reseq_condition:0")]
 
     return b1 + b2
 
 
-@register("internal_cond_dev_r_reports", "Internal Condition Dev R (hello world + Simple Condition Summary Report)", tags=(Tags.DEV, ))
+@register("internal_cond_dev_r_reports", "Dev Reseq Condition R (hello world + report)", tags=(Tags.DEV, ))
 def to_bs():
     """Hello World for R"""
     # Call the Python cond report for dev/testing purposes
@@ -74,6 +73,6 @@ def to_bs():
     """Accuracy Density Plots"""
     b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
 
-    b2 = [(Constants.ENTRY_COND_JSON, "pbsmrtpipe_examples.tasks.dev_mh_toy:0")]
+    b2 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.dev_mh_toy:0")]
 
     return b1 + b2

@@ -5,8 +5,8 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.0",
-        "description": "Quick tool dev_mh_toy pbsmrtpipe_examples.tasks.dev_mh_toy",
+        "_comment": "Created by v0.4.2",
+        "description": "Quick tool dev_mh_toy pbinternal2.tasks.dev_mh_toy",
         "input_types": [
             {
                 "description": "description for PacBio.FileTypes.COND_RESEQ_0",
@@ -30,8 +30,8 @@
         "resource_types": [],
         "schema_options": [],
         "task_type": "pbsmrtpipe.task_types.standard",
-        "tool_contract_id": "pbsmrtpipe_examples.tasks.dev_mh_toy"
+        "tool_contract_id": "pbinternal2.tasks.dev_mh_toy"
     },
-    "tool_contract_id": "pbsmrtpipe_examples.tasks.dev_mh_toy",
+    "tool_contract_id": "pbinternal2.tasks.dev_mh_toy",
     "version": "0.3.3"
 }
