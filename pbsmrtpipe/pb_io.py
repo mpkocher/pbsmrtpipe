@@ -664,9 +664,11 @@ def sanity_entry_point(e_raw):
 def _pipeline_to_task_options(rtasks, p):
     """Returns a list of SchemaOption """
     bs = itertools.chain(*p.all_bindings)
+
     task_ids = [_to_task_id_and_index(b) for b in bs if not b.startswith("$entry:")]
     tids = {x for x, _ in task_ids}
     rtsks = [rtasks[tid] for tid in tids]
+
     # {id:schema-opt}
     options = {}
     for task in rtsks:
@@ -711,12 +713,17 @@ def _option_jschema_to_pb_option(opt_jschema_d):
 
 
 def _to_entry_bindings(rtasks, a, b):
+
+    def _to_binding_io_d(x):
+        sx = binding_str_to_task_id_and_instance_id(x)
+        return dict(taskTypeId=sx[0], instanceId=sx[1], index=sx[2])
+
     entry_id = sanity_entry_point(a)
     task_id, t_in = _to_task_id_and_index(b)
     file_type = _get_file_type_id(rtasks, task_id, t_in)
     etype = file_type.file_type_id
     name = "Entry Name: {i}".format(i=file_type.file_type_id)
-    return dict(fileTypeId=etype, entryId=entry_id, name=name)
+    return dict(fileTypeId=etype, entryId=entry_id, name=name, task=_to_binding_io_d(b))
 
 
 def _to_pipeline_binding(s):
@@ -742,9 +749,23 @@ def pipeline_template_to_dict(pipeline, rtasks):
             log.error("Failed to convert {p}\n".format(p=jtopt))
             raise e
 
+    # The Pipeline entry points and bindings should have been objects, not these encoded "simple" versions.
+    # This generates a bunch of dictionary-mania nonsense
     all_entry_points = [_to_entry_bindings(rtasks, bs[0], bs[1]) for bs in pipeline.entry_bindings]
-    entry_points_d = {d['entryId']: d for d in all_entry_points}
+
+    # The Entry Points only communicate the fundamental interface to the pipeline. This allows the pipeline instance
+    # to be loaded from the JSON file
+
+    entry_points_d = {}
+    for d in all_entry_points:
+        i = d['entryId']
+        if i in entry_points_d:
+            entry_points_d[i]['tasks'].append(d['task'])
+        else:
+            entry_points_d[i] = dict(entryId=i, name=d['name'], fileTypeId=d['fileTypeId'], tasks=[d['task']])
+
     bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
+
     tags = list(set(pipeline.tags))
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
     comment = "Created pipeline {i} with pbsmrtpipe v{v}".format(i=pipeline.idx, v=pbsmrtpipe.get_version())
@@ -800,16 +821,66 @@ def write_pipeline_template_rule_to_json(pipeline_template_rule, output_file):
     return _write_json(_validate_with_schema(PTVR_SCHEMA, pipeline_template_rule.to_dict()), output_file)
 
 
-def read_avro_to_d(path):
+def _read_avro_to_d(path):
     f = open(path, 'r')
     with DataFileReader(f, DatumReader()) as reader:
         yield reader.next()
 
 
 def load_pipeline_template_from_avro(path):
-    gen = read_avro_to_d(path)
+    gen = _read_avro_to_d(path)
     # There's only one record
     p = gen.next()
+    return p
+
+
+def _load_from_dict_or_path(d_or_path):
+    # this should be the new load model
+    if isinstance(d_or_path, dict):
+        return d_or_path
+    else:
+        with open(d_or_path, 'r') as f:
+            d = json.loads(f.read())
+        return d
+
+
+def _load_binding(x):
+    def _to_s(task_id, instance_id, index):
+        if instance_id == 0:
+            return "{t}:{f}".format(t=task_id, f=index)
+        else:
+            return "{t}:{i}:{f}".format(t=task_id, i=instance_id, f=index)
+
+    return _to_s(x['taskTypeId'], x['instanceId'], x['index'])
+
+
+def _load_bindings(bd):
+    return _load_binding(bd['out']), _load_binding(bd['in'])
+
+
+def _load_entry_binding(ed):
+    xs = []
+    for x in ed['tasks']:
+        b = _load_binding(x)
+        # Must add the "$entry:" prefix
+        e = ":".join(["$entry", ed['entryId']])
+        xs.append((e, b))
+    return xs
+
+
+def load_pipeline_template_from(d_or_path):
+    """
+    Load a Resolved Pipeline Template from a JSON file
+
+    :type path: str
+    :rtype: Pipeline
+    """
+    d = _load_from_dict_or_path(d_or_path)
+
+    bindings = {_load_bindings(x) for x in d['bindings']}
+    epoints = list(itertools.chain(*[_load_entry_binding(ei) for ei in d['entryPoints']]))
+
+    p = Pipeline(d['id'], d['name'], d['version'], d['description'], bindings, epoints, tags=d['tags'])
     return p
 
 

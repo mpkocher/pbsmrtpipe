@@ -6,7 +6,6 @@ Not Particularly thrilled with this model, howver, it is centralized.
 import os
 import importlib
 import logging
-import sys
 import functools
 import warnings
 
@@ -32,7 +31,7 @@ def _load_all_tool_contracts_from(dir_name):
         if file_name.endswith('.json'):
             f = os.path.join(dir_name, file_name)
             # sanity check using pbcommand
-            tc = load_tool_contract_from(f)
+            _ = load_tool_contract_from(f)
             # Old layer to use MetaTask
             mtask = IO.tool_contract_to_meta_task_from_file(f)
             mtasks[mtask.task_id] = mtask
@@ -54,7 +53,7 @@ def _load_all_tool_contracts(module_name, registered_tasks_d, filter_filename_fu
                 meta_task = processing_func(json_file)
                 log.debug(meta_task)
                 if meta_task.task_id in registered_tasks_d:
-                    log.warn("MetaTask {i} already loaded".format(i=meta_task.task_id))
+                     log.warn("MetaTask {i} already loaded".format(i=meta_task.task_id))
                 registered_tasks_d[meta_task.task_id] = meta_task
             except Exception as e:
                 log.error("Failed loading Static Task from '{x}'".format(x=json_file))
@@ -157,8 +156,50 @@ def _load_pipelines_from_python_module_name(name):
     return _REGISTERED_PIPELINES
 
 
+def _load_resolved_pipeline_template_json_from_dir(dir_name):
+    """
+    :rtype: list[Pipeline]
+    """
+    import pbsmrtpipe.pb_io as IO
+
+    pipelines = []
+    if os.path.exists(dir_name):
+        for file_name in os.listdir(dir_name):
+            if file_name.endswith(".json"):
+                try:
+                    p = IO.load_pipeline_template_from(os.path.join(dir_name, file_name))
+                    pipelines.append(p)
+                except Exception as e:
+                    log.warn("Unable to load Resolved Pipeline Template from {}. {}".format(dir_name, str(e)))
+    else:
+        log.warn("Unable to load Resolved Pipeline Template from {}. Path does not exist.".format(dir_name))
+
+    return pipelines
+
+
+def _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_PT_DIR):
+
+    global _REGISTERED_PIPELINES
+
+    dir_value = os.getenv(env)
+    # print "ENV {}".format(dir_value)
+
+    if dir_value:
+        dir_names = dir_value.split(":")
+        for dir_name in dir_names:
+            # print "Loading from ", dir_name
+            # this needs to be able to reference existing pipeline templates
+            resolved_pipeline_templates = _load_resolved_pipeline_template_json_from_dir(dir_name)
+            for resolved_pipeline_template in resolved_pipeline_templates:
+                _REGISTERED_PIPELINES[resolved_pipeline_template.idx] = resolved_pipeline_template
+
+    return _REGISTERED_PIPELINES
+
+
 def load_all_installed_pipelines():
-    return _load_pipelines_from_python_module_name("")
+    _ = _load_pipelines_from_python_module_name("")
+    _ = _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_PT_DIR)
+    return _REGISTERED_PIPELINES
 
 
 def load_all_registered_file_types():

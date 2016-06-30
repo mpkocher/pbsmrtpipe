@@ -1,0 +1,73 @@
+{
+    "_comment": "Created pipeline pbsmrtpipe_examples.pipelines.dev_a with pbsmrtpipe v0.41.0", 
+    "bindings": [
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_worlder"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+            }
+        }, 
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_garfield"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+            }
+        }, 
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_txt_to_fasta"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+            }
+        }
+    ], 
+    "description": "Custom Pipeline Registry for dev hello world tasks", 
+    "entryPoints": [
+        {
+            "entryId": "e_01", 
+            "fileTypeId": "PacBio.FileTypes.txt", 
+            "name": "Entry Name: PacBio.FileTypes.txt", 
+            "tasks": [
+                {
+                    "index": 0, 
+                    "instanceId": 0, 
+                    "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+                }
+            ]
+        }
+    ], 
+    "id": "pbsmrtpipe_examples.pipelines.dev_a", 
+    "name": "Example 01", 
+    "options": [], 
+    "tags": [
+        "hello-world", 
+        "dev"
+    ], 
+    "taskOptions": [
+        {
+            "default": "Preset Custom Dev Message from register pipeline", 
+            "description": "Option dev_message description", 
+            "id": "pbsmrtpipe.task_options.dev_message", 
+            "name": "Option dev_message", 
+            "optionTypeId": "pbsmrtpipe.option_types.string"
+        }
+    ], 
+    "version": "0.1.0"
+}

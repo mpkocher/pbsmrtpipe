@@ -102,3 +102,22 @@ class TestLoadOperators(unittest.TestCase):
         rtasks, rfile_types, chunk_operators, pipelines = L.load_all()
 
         self.assertTrue(len(chunk_operators) > 0)
+
+
+class TestLoadResolvedPipelineTemplate(unittest.TestCase):
+
+    def test_convert_to_d_and_load(self):
+        import pbsmrtpipe.loader as L
+
+        rtasks, rfile_types, chunk_operators, pipelines = L.load_all()
+
+        for pipeline in pipelines.values():
+            pipeline_d = IO.pipeline_template_to_dict(pipeline, rtasks)
+            pipeline_loaded = IO.load_pipeline_template_from(pipeline_d)
+            self.assertEqual(pipeline.idx, pipeline_loaded.idx)
+            self.assertEqual(pipeline.display_name, pipeline_loaded.display_name)
+            self.assertEqual(len(pipeline.all_bindings), len(pipeline_loaded.all_bindings))
+            self.assertEqual(len(pipeline.entry_bindings), len(pipeline_loaded.entry_bindings))
+
+
+

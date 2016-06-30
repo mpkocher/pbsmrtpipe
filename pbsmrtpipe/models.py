@@ -537,14 +537,28 @@ class RunnableTask(object):
 class Pipeline(object):
 
     def __init__(self, idx, display_name, version, description, bindings, entry_bindings, parent_pipeline_ids=None, tags=(), task_options=None):
+        """
+
+        Both entry_points and bindings are provided as "simple" format (e.g, [("alpha:0", "beta:1"])
+
+        This really should have been abstracted away into containers to make the interface clear. This was a fundamental
+        design mistake.
+
+        :param bindings: List of "simple" binding format [("alpha:0:0", "beta:0:0")]
+        :param entry_bindings: List of "simple" bindings [("$entry:e1", "my_task:0")]
+        """
+
         self.idx = idx
         self.version = version
         self.display_name = display_name
         self.description = description
-        # List of [(a, b), ...]
-        self.bindings = bindings
-        # List of [(a, b), ...]
-        self.entry_bindings = entry_bindings
+
+        # set of [(a, b), ...]
+        self.bindings = {x for x in bindings}
+
+        # set of [(a, b), ...]
+        self.entry_bindings = {x for x in entry_bindings}
+
         # list of strings
         self.tags = tags
         if parent_pipeline_ids is None:
@@ -560,9 +574,10 @@ class Pipeline(object):
 
     @property
     def all_bindings(self):
-        return self.bindings + self.entry_bindings
+        return self.bindings | self.entry_bindings
 
     def __repr__(self):
+        # Only communicate the entry id
         ek = [eid for eid, _ in self.entry_bindings]
         e = " ".join(ek)
         _d = dict(k=self.__class__.__name__, i=self.idx,
@@ -570,17 +585,26 @@ class Pipeline(object):
         return "<{k} id={i} nbindings={b} entry bindings={e} >".format(**_d)
 
     def summary(self):
+        outs = []
+        f = outs.append
+
+        # out a list of tuples
         def _printer(xs):
             for a, b in xs:
-                print a, '->', b
-        print "Summary", self.pipeline_id
-        print "[EntryPoints]"
+                sx = ' -> '.join([str(a), str(b)])
+                f(sx)
+
+        f("Pipeline Summary")
+        f("Pipeline Id          :{}".format(self.pipeline_id))
+        f("EntryPoints          :{}".format(len(self.entry_bindings)))
         _printer(self.entry_bindings)
-        print "[Bindings]"
+        f("Bindings             :{}".format(len(self.bindings)))
         _printer(self.bindings)
-        print "[Parents]", self.parent_pipeline_ids
+        f("Parents pipeline ids :{}".format(self.parent_pipeline_ids))
         if self.tags:
-            print list(set(self.tags))
+            f("Tags                 :{} ".format(list(set(self.tags))))
+
+        return "\n".join(outs)
 
 
 class OptionViewRules(object):
