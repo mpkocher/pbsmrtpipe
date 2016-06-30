@@ -2,6 +2,7 @@
 import inspect
 import logging
 import copy
+import os
 import sys
 import types
 import functools
@@ -101,11 +102,11 @@ def _load_existing_pipeline(p, p_existing):
 
     log.debug("[Loading entry points] from {p} into {i}".format(p=p_existing.pipeline_id, i=p.pipeline_id))
     for e_out, b_in in p_existing.entry_bindings:
-        p.entry_bindings.append((e_out, b_in))
+        p.entry_bindings.add((e_out, b_in))
 
     log.debug("[Loading bindings]")
     for b_out, b_in in p_existing.bindings:
-        p.bindings.append((b_out, b_in))
+        p.bindings.add((b_out, b_in))
 
     # add parent history
     for p_id in p_existing.parent_pipeline_ids:
@@ -137,7 +138,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
     # only use unique pairs
     bs = list({x for x in bs})
 
-    log.debug("Processing pipeline {i}".format(i=pipeline_id))
+    log.debug("Processing pipeline  {i}".format(i=pipeline_id))
     # str, [(in, out)] [(in, out)]
     pipeline = Pipeline(pipeline_id, display_name, version, description, [], [], tags=tags, task_options=task_options)
 
@@ -167,7 +168,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
                 pass
             elif binding_str_is_task_id(b_in):
                 # ($entry:e_01, "pbsmrtpipe.tasks.dev_task_01:0)
-                pipeline.entry_bindings.append((b_out, b_in))
+                pipeline.entry_bindings.add((b_out, b_in))
             elif _binding_str_match(RX_BINDING_PIPELINE_ENTRY, b_in):
                 # ($entry:e_01, pbsmrtpipe.pipelines.pipeline_id_1:$entry:e_02)
                 pi_id = get_pipeline_id_from_pipeline_entry_str(b_in)
@@ -182,7 +183,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
         elif binding_str_is_task_id(b_out):
             # simplest case
             # print ("task -> task binding", b_out, b_in)
-            pipeline.bindings.append((b_out, b_in))
+            pipeline.bindings.add((b_out, b_in))
         elif _binding_str_match(RX_BINDING_PIPELINE_TASK, b_out):
             # pbsmrtpipe.pipelines.dev_01:pbsmrtpipe.tasks.dev_hello_world:0
             # needs to load existing pipeline bindings and entry points
@@ -192,7 +193,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
             pl_id = get_pipeline_id_from_pipeline_task_str(b_out)
             _load_existing_pipeline_or_raise(registered_pipeline_d, pipeline, pl_id)
 
-            pipeline.bindings.append((task_binding_str, b_in))
+            pipeline.bindings.add((task_binding_str, b_in))
             # print ("pipeline task binding", b_out, b_in)
         else:
             raise MalformedPipelineError("Unhandled binding case '{o}' -> '{i}'".format(o=b_out, i=b_in))
@@ -248,3 +249,30 @@ class PipelineRegistry(object):
             return bs
 
         return _w
+
+
+def registry_runner(registry_, rtasks, output_dir, emit_xml=False):
+    # this will emit the PTs to an output dir
+
+    from pbsmrtpipe.pb_io import pipeline_to_xml, write_pipeline_templates_to_json
+
+    d = os.path.abspath(os.path.expanduser(output_dir))
+    r = registry_
+
+    log.info("Writing Pipeline Templates to {o}".format(o=output_dir))
+    print "Emitting pipelines to output dir {d}".format(d=d)
+
+    # write_pipeline_templates_to_avro(r.pipelines.values(), rtasks, d)
+    write_pipeline_templates_to_json(r.pipelines.values(), rtasks, d)
+
+    for p in r.pipelines.values():
+        if emit_xml:
+            file_name = p.idx + "_pipeline.xml"
+            path = os.path.join(output_dir, file_name)
+            xml = pipeline_to_xml(p)
+            with open(path, 'w') as f:
+                f.write(str(xml))
+            log.info("writing pipeline {x}".format(x=path))
+
+    log.info("Successfully wrote {n} pipelines to {d}".format(n=len(r.pipelines), d=d))
+    return 0
