@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline-template>
+
+    <!-- This is a custom pipeline that is defined by testkit-data/custom-pipelines/custom_pipeline.py -->
+    <import-template id="pbsmrtpipe_examples.pipelines.dev_a" />
+
+    <options>
+    <!-- workflow level options  -->
+        <option id="pbsmrtpipe.options.max_nchunks" >
+            <value>7</value>
+        </option>
+        <option id="pbsmrtpipe.options.max_nproc" >
+            <value>13</value>
+        </option>
+    </options>
+
+    <!-- task level options here -->
+    <task-options>
+        <option id="pbsmrtpipe.task_option.option_id1">
+            <value>1234</value>
+        </option>
+        <option id="pbsmrtpipe.task_option.option_id2">
+        <value>abcd</value>
+        </option>
+    </task-options>
+
+</pipeline-template>
