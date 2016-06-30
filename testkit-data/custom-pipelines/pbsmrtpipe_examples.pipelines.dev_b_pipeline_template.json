@@ -1,0 +1,91 @@
+{
+    "_comment": "Created pipeline pbsmrtpipe_examples.pipelines.dev_b with pbsmrtpipe v0.41.0", 
+    "bindings": [
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_garfield"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+            }
+        }, 
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_filter_fasta"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_txt_to_fasta"
+            }
+        }, 
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_worlder"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+            }
+        }, 
+        {
+            "in": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_txt_to_fasta"
+            }, 
+            "out": {
+                "index": 0, 
+                "instanceId": 0, 
+                "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+            }
+        }
+    ], 
+    "description": "Custom Pipeline B for testing", 
+    "entryPoints": [
+        {
+            "entryId": "e_01", 
+            "fileTypeId": "PacBio.FileTypes.txt", 
+            "name": "Entry Name: PacBio.FileTypes.txt", 
+            "tasks": [
+                {
+                    "index": 0, 
+                    "instanceId": 0, 
+                    "taskTypeId": "pbsmrtpipe.tasks.dev_hello_world"
+                }
+            ]
+        }
+    ], 
+    "id": "pbsmrtpipe_examples.pipelines.dev_b", 
+    "name": "Example 02", 
+    "options": [], 
+    "tags": [
+        "dev"
+    ], 
+    "taskOptions": [
+        {
+            "default": 50, 
+            "description": "Option dev_fasta_min_length description", 
+            "id": "pbsmrtpipe.task_options.dev_fasta_min_length", 
+            "name": "Option dev_fasta_min_length", 
+            "optionTypeId": "pbsmrtpipe.option_types.integer"
+        }, 
+        {
+            "default": "Preset Custom Dev Message from register pipeline", 
+            "description": "Option dev_message description", 
+            "id": "pbsmrtpipe.task_options.dev_message", 
+            "name": "Option dev_message", 
+            "optionTypeId": "pbsmrtpipe.option_types.string"
+        }
+    ], 
+    "version": "0.1.0"
+}

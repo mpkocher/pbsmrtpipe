@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pipeline-template id="pbsmrtpipe_examples.pipelines.dev_b">
+    <entry-points>
+        <entry-point id="$entry:e_01" in="pbsmrtpipe.tasks.dev_hello_world:0" />
+    </entry-points>
+    <bindings>
+        <binding in="pbsmrtpipe.tasks.dev_hello_garfield:0" out="pbsmrtpipe.tasks.dev_hello_world:0" />
+        <binding in="pbsmrtpipe.tasks.dev_filter_fasta:0" out="pbsmrtpipe.tasks.dev_txt_to_fasta:0" />
+        <binding in="pbsmrtpipe.tasks.dev_hello_worlder:0" out="pbsmrtpipe.tasks.dev_hello_world:0" />
+        <binding in="pbsmrtpipe.tasks.dev_txt_to_fasta:0" out="pbsmrtpipe.tasks.dev_hello_world:0" />
+    </bindings>
+    <options />
+    <task-options>
+        <option id="pbsmrtpipe.task_options.custom_alpha">
+            <value>12345</value>
+        </option>
+        <option id="pbsmrtpipe.task_options.dev_message">
+            <value>Preset Custom Dev Message from register pipeline</value>
+        </option>
+    </task-options>
+</pipeline-template>
