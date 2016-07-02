@@ -19,7 +19,7 @@
                     "type": "integer",
                     "option_id": "pbtranscript.task_options.max_fuzzy_junction",
                     "name": "max fuzzy junction",
-                    "description": "Max edit distance between merge-able fuzzy junctions (default: 5 bp)"
+                    "description": "Max edit distance between merge-able fuzzy junctions "
                 },
                 "title": "JSON Schema for pbtranscript.task_options.max_fuzzy_junction",
                 "required": [
@@ -31,7 +31,7 @@
                     "pbtranscript.task_options.max_fuzzy_junction": {
                         "default": 5,
                         "type": "integer",
-                        "description": "Max edit distance between merge-able fuzzy junctions (default: 5 bp)",
+                        "description": "Max edit distance between merge-able fuzzy junctions ",
                         "title": "max fuzzy junction"
                     }
                 }
@@ -42,7 +42,7 @@
                     "type": "number",
                     "option_id": "pbtranscript.task_options.min_gmap_aln_coverage",
                     "name": "min gmap aln coverage",
-                    "description": "Min query coverage to analyze a GMAP alignment (default: 0.99)"
+                    "description": "Min query coverage to analyze a GMAP alignment"
                 },
                 "title": "JSON Schema for pbtranscript.task_options.min_gmap_aln_coverage",
                 "required": [
@@ -54,7 +54,7 @@
                     "pbtranscript.task_options.min_gmap_aln_coverage": {
                         "default": 0.99,
                         "type": "number",
-                        "description": "Min query coverage to analyze a GMAP alignment (default: 0.99)",
+                        "description": "Min query coverage to analyze a GMAP alignment",
                         "title": "min gmap aln coverage"
                     }
                 }
@@ -65,7 +65,7 @@
                     "type": "number",
                     "option_id": "pbtranscript.task_options.min_gmap_aln_identity",
                     "name": "min gmap aln identity",
-                    "description": "Min identity to analyze a GMAP alignment (default: 0.95)"
+                    "description": "Min identity to analyze a GMAP alignment"
                 },
                 "title": "JSON Schema for pbtranscript.task_options.min_gmap_aln_identity",
                 "required": [
@@ -77,7 +77,7 @@
                     "pbtranscript.task_options.min_gmap_aln_identity": {
                         "default": 0.95,
                         "type": "number",
-                        "description": "Min identity to analyze a GMAP alignment (default: 0.95)",
+                        "description": "Min identity to analyze a GMAP alignment",
                         "title": "min gmap aln identity"
                     }
                 }
@@ -88,7 +88,7 @@
                     "type": "boolean",
                     "option_id": "pbtranscript.task_options.allow_extra_5exon",
                     "name": "allow extra 5exon",
-                    "description": "True: Collapse shorter 5' transcripts. False: Don't collapse shorter 5' transcripts (default: False)"
+                    "description": "True: Collapse shorter 5' transcripts. False: Don't collapse shorter 5' transcripts "
                 },
                 "title": "JSON Schema for pbtranscript.task_options.allow_extra_5exon",
                 "required": [
@@ -100,7 +100,7 @@
                     "pbtranscript.task_options.allow_extra_5exon": {
                         "default": false,
                         "type": "boolean",
-                        "description": "True: Collapse shorter 5' transcripts. False: Don't collapse shorter 5' transcripts (default: False)",
+                        "description": "True: Collapse shorter 5' transcripts. False: Don't collapse shorter 5' transcripts ",
                         "title": "allow extra 5exon"
                     }
                 }
@@ -125,6 +125,29 @@
                         "type": "integer",
                         "description": "Minimum FL count to not filter a collapsed isoform",
                         "title": "min FL count"
+                    }
+                }
+            },
+            {
+                "pb_option": {
+                    "default": 5,
+                    "type": "integer",
+                    "option_id": "pbtranscript.task_options.max_fuzzy_junction",
+                    "name": "max fuzzy junction",
+                    "description": "Max edit distance between merge-able fuzzy junctions "
+                },
+                "title": "JSON Schema for pbtranscript.task_options.max_fuzzy_junction",
+                "required": [
+                    "pbtranscript.task_options.max_fuzzy_junction"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "pbtranscript.task_options.max_fuzzy_junction": {
+                        "default": 5,
+                        "type": "integer",
+                        "description": "Max edit distance between merge-able fuzzy junctions ",
+                        "title": "max fuzzy junction"
                     }
                 }
             }
