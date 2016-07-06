@@ -1397,8 +1397,11 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                     # list of [(GatherChunk, out-file-node), ...]
                     g_out_gchunk_fnodes = []
                     for gi, gchunk in enumerate(chunk_operator.gather.chunks):
+                        # need to make a copy here, since individual gather
+                        # tasks may be applied to multiple outputs and the file
+                        # labels will get mixed up otherwise
 
-                        g_meta_task = registered_tasks_d[gchunk.gather_task_id]
+                        g_meta_task = copy.deepcopy(registered_tasks_d[gchunk.gather_task_id])
                         g_node = bg.add_gather_meta_task(g_meta_task, gchunk.chunk_key)
                         g_meta_task.output_file_display_names[0] = original_task.output_file_display_names[gi]
                         g_meta_task.output_file_descriptions[0] = original_task.output_file_descriptions[gi]
