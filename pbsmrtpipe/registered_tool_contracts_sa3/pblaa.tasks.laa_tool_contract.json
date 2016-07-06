@@ -612,14 +612,14 @@
         ],
         "output_types": [
             {
-                "title": "consensus_fastq_file",
+                "title": "Consensus FASTQ",
                 "description": "Resulting consensus fastq file",
                 "default_name": "amplicon_analysis",
                 "id": "consensus_fastq",
                 "file_type_id": "PacBio.FileTypes.Fastq"
             },
             {
-                "title": "chimera_fastq_file",
+                "title": "Chimera/noise FASTQ",
                 "description": "Resulting chimera/noise fastq file",
                 "default_name": "amplicon_analysis_chimeras_noise",
                 "id": "chimera_fastq",
@@ -640,7 +640,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
-        "_comment": "Created by v0.4.2",
+        "_comment": "Created by v0.4.3",
         "name": "laa",
         "input_types": [
             {
