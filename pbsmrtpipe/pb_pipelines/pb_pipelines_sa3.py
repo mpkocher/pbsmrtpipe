@@ -636,7 +636,7 @@ def ds_isoseq():
     return b1 + b2
 
 
-@sa3_register("sa3_ds_isoseq_with_genome", "Iso-Seq", "0.2.0",
+@sa3_register("sa3_ds_isoseq_with_genome", "Iso-Seq with Mapping", "0.2.0",
               tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
               task_options=ISOSEQ_TASK_OPTIONS)
 def ds_isoseq_with_genome():
@@ -674,8 +674,8 @@ def pb_isoseq_cluster():
                                               flnc_ds=to_entry("e_flnc_fa"),
                                               nfl_ds=to_entry("e_nfl_fa"))
 
-@sa3_register("pb_isoseq_cluster_with_genome", "Iso-Seq", "0.2.0",
-              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
+@sa3_register("pb_isoseq_cluster_with_genome", "Internal Iso-Seq clustering with mapping", "0.2.0",
+              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ, Tags.INTERNAL),
               task_options=ISOSEQ_TASK_OPTIONS)
 def pb_isoseq_cluster_with_genome():
     """
