@@ -1,114 +1,114 @@
 {
-    "version": "1.0.0.177900", 
+    "version": "1.0.0.177900",
     "driver": {
-        "serialization": "json", 
-        "exe": "python -m pbtranscript.tasks.classify --resolved-tool-contract", 
+        "serialization": "json",
+        "exe": "python -m pbtranscript.tasks.classify --resolved-tool-contract",
         "env": {}
-    }, 
-    "tool_contract_id": "pbtranscript.tasks.classify", 
+    },
+    "tool_contract_id": "pbtranscript.tasks.classify",
     "tool_contract": {
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        "task_type": "pbsmrtpipe.task_types.standard",
         "resource_types": [
             "$tmpdir"
-        ], 
-        "description": "\nClassifies reads from a fasta/q file.  For each read, identify whether it is\nfull length, whether 5', 3' and poly A tail have been found. The input is a\nConsensusRead dataset.\n", 
+        ],
+        "description": "\nClassifies reads from a fasta/q file.  For each read, identify whether it is\nfull length, whether 5', 3' and poly A tail have been found. The input is a\nConsensusRead dataset.\n",
         "schema_options": [
             {
                 "pb_option": {
-                    "default": 50, 
-                    "type": "integer", 
-                    "option_id": "pbtranscript.task_options.min_seq_len", 
-                    "name": "Minimum Sequence Length", 
+                    "default": 50,
+                    "type": "integer",
+                    "option_id": "pbtranscript.task_options.min_seq_len",
+                    "name": "Minimum Sequence Length",
                     "description": "Minimum sequence length to output (default: 50)"
-                }, 
-                "title": "JSON Schema for pbtranscript.task_options.min_seq_len", 
+                },
+                "title": "JSON Schema for pbtranscript.task_options.min_seq_len",
                 "required": [
                     "pbtranscript.task_options.min_seq_len"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
                 "properties": {
                     "pbtranscript.task_options.min_seq_len": {
-                        "default": 50, 
-                        "type": "integer", 
-                        "description": "Minimum sequence length to output (default: 50)", 
+                        "default": 50,
+                        "type": "integer",
+                        "description": "Minimum sequence length to output (default: 50)",
                         "title": "Minimum Sequence Length"
                     }
                 }
-            }, 
+            },
             {
                 "pb_option": {
-                    "default": false, 
-                    "type": "boolean", 
-                    "option_id": "pbtranscript.task_options.ignore_polya", 
-                    "name": "Ignore polyA", 
+                    "default": false,
+                    "type": "boolean",
+                    "option_id": "pbtranscript.task_options.ignore_polya",
+                    "name": "Ignore polyA",
                     "description": "FL does not require polyA tail (default: turned off)"
-                }, 
-                "title": "JSON Schema for pbtranscript.task_options.ignore_polya", 
+                },
+                "title": "JSON Schema for pbtranscript.task_options.ignore_polya",
                 "required": [
                     "pbtranscript.task_options.ignore_polya"
-                ], 
-                "$schema": "http://json-schema.org/draft-04/schema#", 
-                "type": "object", 
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
                 "properties": {
                     "pbtranscript.task_options.ignore_polya": {
-                        "default": false, 
-                        "type": "boolean", 
-                        "description": "FL does not require polyA tail (default: turned off)", 
+                        "default": false,
+                        "type": "boolean",
+                        "description": "FL does not require polyA tail (default: turned off)",
                         "title": "Ignore polyA"
                     }
                 }
             }
-        ], 
+        ],
         "output_types": [
             {
-                "title": "Output ContigSet", 
-                "description": "Output FASTA or ContigSet file", 
-                "default_name": "isoseq_draft", 
-                "id": "outReadsFN", 
+                "title": "Draft isoforms",
+                "description": "Output FASTA or ContigSet file",
+                "default_name": "isoseq_draft",
+                "id": "outReadsFN",
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
+            },
             {
-                "title": "FASTA or ContigSet file", 
-                "description": "Output full-length non-chimeric reads in FASTA or ContigSet", 
-                "default_name": "isoseq_flnc", 
-                "id": "flnc", 
+                "title": "Full-length non-chimeric reads",
+                "description": "Output full-length non-chimeric reads in FASTA or ContigSet",
+                "default_name": "isoseq_flnc",
+                "id": "flnc",
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
+            },
             {
-                "title": "FASTA or ContigSet file", 
-                "description": "Output non-full-length reads in FASTA or ContigSet", 
-                "default_name": "isoseq_nfl", 
-                "id": "nfl", 
+                "title": "Non-full-length reads",
+                "description": "Output non-full-length reads in FASTA or ContigSet",
+                "default_name": "isoseq_nfl",
+                "id": "nfl",
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
+            },
             {
-                "title": "Transcript classification report", 
-                "description": "JSON summary", 
-                "default_name": "summary", 
-                "id": "json_summary", 
+                "title": "JSON summary",
+                "description": "JSON summary",
+                "default_name": "summary",
+                "id": "json_summary",
                 "file_type_id": "PacBio.FileTypes.json"
-            }, 
+            },
             {
-                "title": "CSV file", 
-                "description": "CSV file to output primer info", 
-                "default_name": "isoseq_primer_info", 
-                "id": "report", 
+                "title": "Primer info",
+                "description": "CSV file to output primer info",
+                "default_name": "isoseq_primer_info",
+                "id": "report",
                 "file_type_id": "PacBio.FileTypes.csv"
             }
-        ], 
-        "_comment": "Created by v0.3.25", 
-        "name": "pbtranscript.tasks.classify", 
+        ],
+        "_comment": "Created by v0.4.3",
+        "name": "pbtranscript.tasks.classify",
         "input_types": [
             {
-                "description": "Input ccs reads file (usually reads_of_insert.fasta or ccs.bam or consensusreadset.xml)", 
-                "title": "ConsensusReadSet", 
-                "id": "readsFN", 
+                "description": "Input ccs reads file (usually reads_of_insert.fasta or ccs.bam or consensusreadset.xml)",
+                "title": "ConsensusReadSet",
+                "id": "readsFN",
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             }
-        ], 
-        "nproc": "$max_nproc", 
-        "is_distributed": true, 
+        ],
+        "nproc": "$max_nproc",
+        "is_distributed": true,
         "tool_contract_id": "pbtranscript.tasks.classify"
     }
 }

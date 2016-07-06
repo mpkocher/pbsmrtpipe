@@ -1,78 +1,78 @@
 {
-    "version": "1.0.0.174838", 
+    "version": "1.0.0.177900",
     "driver": {
-        "serialization": "json", 
-        "exe": "python -m pbtranscript.tasks.cluster --resolved-tool-contract", 
+        "serialization": "json",
+        "exe": "python -m pbtranscript.tasks.cluster --resolved-tool-contract",
         "env": {}
-    }, 
-    "tool_contract_id": "pbtranscript.tasks.cluster", 
+    },
+    "tool_contract_id": "pbtranscript.tasks.cluster",
     "tool_contract": {
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        "task_type": "pbsmrtpipe.task_types.standard",
         "resource_types": [
             "$tmpdir"
-        ], 
-        "description": "\nCalls the ICE algorithm, which stands for 'Iteratively Clustering and Error\ncorrection', to identify de novo consensus isoforms.\n", 
-        "schema_options": [], 
+        ],
+        "description": "\nCalls the ICE algorithm, which stands for 'Iteratively Clustering and Error\ncorrection', to identify de novo consensus isoforms.\n",
+        "schema_options": [],
         "output_types": [
             {
-                "title": "FASTA or ContigSet file", 
-                "description": "Output predicted (unpolished) consensus isoforms in FASTA or ContigSet file.", 
-                "default_name": "consensus_isoforms", 
-                "id": "consensusFa", 
+                "title": "Unpolished consensus isoforms",
+                "description": "Output predicted (unpolished) consensus isoforms in FASTA or ContigSet file.",
+                "default_name": "consensus_isoforms",
+                "id": "consensusFa",
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
+            },
             {
-                "title": "Transcript clustering report", 
-                "description": "JSON summary", 
-                "default_name": "summary", 
-                "id": "json_summary", 
+                "title": "JSON summary",
+                "description": "JSON summary",
+                "default_name": "summary",
+                "id": "json_summary",
                 "file_type_id": "PacBio.FileTypes.json"
-            }, 
+            },
             {
-                "title": "CSV file", 
-                "description": "TXT file to output cluster summary (default: *.cluster_summary.txt)", 
-                "default_name": "cluster_report", 
-                "id": "cluster_report", 
+                "title": "Cluster report",
+                "description": "TXT file to output cluster summary (default: *.cluster_summary.txt)",
+                "default_name": "cluster_report",
+                "id": "cluster_report",
                 "file_type_id": "PacBio.FileTypes.csv"
-            }, 
+            },
             {
-                "title": "Pickle file", 
-                "description": "Python pickle file of clusters", 
-                "default_name": "final_clusters", 
-                "id": "pickle_fn", 
+                "title": "Pickle file",
+                "description": "Python pickle file of clusters",
+                "default_name": "final_clusters",
+                "id": "pickle_fn",
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
-        ], 
-        "_comment": "Created by v0.3.20", 
-        "name": "pbtranscript.tasks.cluster", 
+        ],
+        "_comment": "Created by v0.4.3",
+        "name": "pbtranscript.tasks.cluster",
         "input_types": [
             {
-                "description": "Input full-length non-chimeric reads in FASTA or ContigSet format, used for clustering consensus isoforms, e.g., isoseq_flnc.fasta", 
-                "title": "FASTA or ContigSet file", 
-                "id": "flnc_fa", 
+                "description": "Input full-length non-chimeric reads in FASTA or ContigSet format, used for clustering consensus isoforms, e.g., isoseq_flnc.fasta",
+                "title": "FASTA or ContigSet file",
+                "id": "flnc_fa",
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
+            },
             {
-                "description": "Input non-full-length reads in FASTA or ContigSet format, used for polishing consensus isoforms, e.g., isoseq_nfl.fasta", 
-                "title": "FASTA or ContigSet file", 
-                "id": "nfl_fa", 
+                "description": "Input non-full-length reads in FASTA or ContigSet format, used for polishing consensus isoforms, e.g., isoseq_nfl.fasta",
+                "title": "FASTA or ContigSet file",
+                "id": "nfl_fa",
                 "file_type_id": "PacBio.DataSet.ContigSet"
-            }, 
+            },
             {
-                "description": "A FOFN of ccs.h5 or ccs.bam (e.g., ccs.fofn), which contain quality values of consensus (CCS) reads. If not given, assume there is no QV information available.", 
-                "title": "CCS dataset", 
-                "id": "ccs_fofn", 
+                "description": "A FOFN of ccs.h5 or ccs.bam (e.g., ccs.fofn), which contain quality values of consensus (CCS) reads. If not given, assume there is no QV information available.",
+                "title": "CCS dataset",
+                "id": "ccs_fofn",
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
-            }, 
+            },
             {
-                "description": "A FOFN of bax/bas.h5 or bam files (e.g., input.fofn), which contain quality values of raw reads and subreads", 
-                "title": "SubreadSet", 
-                "id": "subreads_fofn", 
+                "description": "A FOFN of bax/bas.h5 or bam files (e.g., input.fofn), which contain quality values of raw reads and subreads",
+                "title": "SubreadSet",
+                "id": "subreads_fofn",
                 "file_type_id": "PacBio.DataSet.SubreadSet"
             }
-        ], 
-        "nproc": "$max_nproc", 
-        "is_distributed": true, 
+        ],
+        "nproc": "$max_nproc",
+        "is_distributed": true,
         "tool_contract_id": "pbtranscript.tasks.cluster"
     }
 }

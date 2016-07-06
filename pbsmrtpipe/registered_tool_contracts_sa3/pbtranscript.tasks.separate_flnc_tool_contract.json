@@ -85,7 +85,7 @@
         ],
         "output_types": [
             {
-                "title": "Pickle file",
+                "title": "Binned transcripts pickle file",
                 "description": "output bins in pickle.",
                 "default_name": "separate_flnc",
                 "id": "out_pickle",
