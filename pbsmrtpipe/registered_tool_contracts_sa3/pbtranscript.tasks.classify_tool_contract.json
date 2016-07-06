@@ -83,7 +83,7 @@
                 "file_type_id": "PacBio.DataSet.ContigSet"
             },
             {
-                "title": "JSON summary",
+                "title": "Transcript classification report",
                 "description": "JSON summary",
                 "default_name": "summary",
                 "id": "json_summary",
