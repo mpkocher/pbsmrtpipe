@@ -15,6 +15,29 @@
         "schema_options": [
             {
                 "pb_option": {
+                    "default": "",
+                    "type": "string",
+                    "option_id": "pbtranscript.task_options.primer_sequences",
+                    "name": "Customer primer sequences",
+                    "description": "Customer primer sequences."
+                },
+                "title": "JSON Schema for pbtranscript.task_options.primer_sequences",
+                "required": [
+                    "pbtranscript.task_options.primer_sequences"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "pbtranscript.task_options.primer_sequences": {
+                        "default": "",
+                        "type": "string",
+                        "description": "Customer primer sequences.",
+                        "title": "Customer primer sequences"
+                    }
+                }
+            },
+            {
+                "pb_option": {
                     "default": 50,
                     "type": "integer",
                     "option_id": "pbtranscript.task_options.min_seq_len",
@@ -97,7 +120,7 @@
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ],
-        "_comment": "Created by v0.4.3",
+        "_comment": "Created by v0.3.30",
         "name": "pbtranscript.tasks.classify",
         "input_types": [
             {
