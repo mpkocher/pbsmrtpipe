@@ -654,6 +654,18 @@ def ds_isoseq_with_genome():
     return b1 + b2 + b3
 
 
+@sa3_register("pb_isoseq_classify", "Internal Iso-Seq Classify Only for tests", "0.2.0",
+              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
+              task_options=ISOSEQ_TASK_OPTIONS)
+def pb_isoseq_classify():
+    """
+    Partial Iso-Seq pipeline (classify step only), starting from ccs.
+    This pipeline was added to test isoseq-classify with customer primers on
+    the only data that we currently have (which could not ccs-ed by ccs2).
+    """
+    return _core_isoseq_classify(ccs_ds=Constants.ENTRY_DS_CCS)
+
+
 @sa3_register("pb_isoseq", "Internal Iso-Seq pipeline", "0.2.0", tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ, Tags.INTERNAL))
 def pb_isoseq():
     """
