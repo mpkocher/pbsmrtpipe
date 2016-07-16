@@ -60,7 +60,7 @@
         ], 
         "output_types": [
             {
-                "title": "Loading report", 
+                "title": "Top Variants Report", 
                 "description": "Filename of JSON output report", 
                 "default_name": "report", 
                 "id": "report", 
