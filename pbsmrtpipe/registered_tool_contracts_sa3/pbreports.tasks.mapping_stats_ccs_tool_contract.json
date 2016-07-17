@@ -13,7 +13,7 @@
         "schema_options": [], 
         "output_types": [
             {
-                "title": "PacBio Json Report", 
+                "title": "CCS Mapping Statistics Report", 
                 "description": "Output report JSON file.", 
                 "default_name": "mapping_stats_report", 
                 "id": "report_json", 
