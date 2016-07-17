@@ -77,6 +77,12 @@ def to_option_schema(option_id, dtype_or_dtypes, display_name, description, defa
 
 
 def crude_coerce_type_from_str(s, type_or_types):
+    """
+    Convert the type from a raw string to a specific type.
+
+    :param s: raw string
+    :param type_or_types: List or single value of option type (as a string) to coerce Example "bool"
+    """
 
     def _to_bool(x):
         _d = {'true': True, 'false': False}
