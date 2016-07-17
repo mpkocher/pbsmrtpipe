@@ -325,7 +325,7 @@ def default_to_ropts(user_opts, opts_schemas):
             ropts[opt_id] = v
         else:
             # must have a default value or null?
-            v = schema['properties'][opt_id]['default']
+            v = schema['pb_option']['default']
             ropts[opt_id] = v
 
     return ropts

@@ -375,10 +375,10 @@ def _raw_option_with_schema(option_id, raw_value, schema):
 
     option_id = option_id.strip()
 
-    schema_option_id = schema['properties'].keys()[0]
+    schema_option_id = schema['pb_option']['option_id']
 
     if option_id == schema_option_id:
-        types_ = schema['properties'][option_id]['type']
+        types_ = schema['pb_option']['type']
         coerced_value = crude_coerce_type_from_str(raw_value, types_)
         _ = jsonschema.validate(schema, {option_id: coerced_value})
         value = coerced_value
@@ -676,11 +676,10 @@ def _pipeline_to_task_options(rtasks, p):
             for k, v in task.option_schemas.iteritems():
                 if k not in options:
                     options[k] = copy.deepcopy(v)
-                    option_id = options[k]["required"][0]
+                    option_id = options[k]["pb_option"]["option_id"]
                     if option_id in p.task_options:
                         default = p.task_options[option_id]
                         options[k]["pb_option"]["default"] = default
-                        options[k]["properties"][option_id]["default"] = default
 
     return options.values()
 
@@ -702,14 +701,18 @@ def _jschema_to_pacbio_option_type_id(jschema_type):
 
 def _option_jschema_to_pb_option(opt_jschema_d):
     """Convert from JsonSchema option to PacBioOption"""
-    opt_id = opt_jschema_d['required'][0]
-    name = opt_jschema_d['properties'][opt_id]['title']
-    default = opt_jschema_d['properties'][opt_id]['default']
-    desc = opt_jschema_d['properties'][opt_id]['description']
-    jschema_type = opt_jschema_d['properties'][opt_id]['type']
+    opt_id = opt_jschema_d['pb_option']['option_id']
+
+    name = opt_jschema_d['pb_option']['name']
+    default = opt_jschema_d['pb_option']['default']
+    desc = opt_jschema_d['pb_option']['description']
+
+    # This should be migrated to PacBio option type ids, Example pacbio.option_types.int32
+    jschema_type = opt_jschema_d['pb_option']['type']
+
     pb_option_type_id = _jschema_to_pacbio_option_type_id(jschema_type)
-    pb_opt = PacBioOption(opt_id, name, default, desc, pb_option_type_id)
-    return pb_opt
+
+    return PacBioOption(opt_id, name, default, desc, pb_option_type_id)
 
 
 def _to_entry_bindings(rtasks, a, b):
@@ -1085,13 +1088,13 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     def _get_ft(x_):
         return REGISTERED_FILE_TYPES[x_]
 
-    schema_option_d = {opt['required'][0]: opt for opt in tc.task.options}
+    schema_option_d = {opt['pb_option']['option_id']: opt for opt in tc.task.options}
 
     # resolve strings to FileType instances
     input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
     output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
     _spe = os.path.splitext
-    output_file_names = [ (_spe(x.default_name)[0], ft.ext) for x,ft in zip(tc.task.output_file_types, output_types) ]
+    output_file_names = [ (_spe(x.default_name)[0], ft.ext) for x, ft in zip(tc.task.output_file_types, output_types) ]
 
     #
     task_type = validate_task_type(tc.task.is_distributed)
