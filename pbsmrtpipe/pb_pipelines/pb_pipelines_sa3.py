@@ -393,11 +393,15 @@ def ds_laa():
     laa = _core_laa(subreadset)
 
     consensus_report = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
+    split_fastq = [
+        ("pblaa.tasks.laa:0", "pbcoretools.tasks.split_laa_fastq:0"),
+        ("pblaa.tasks.laa:1", "pbcoretools.tasks.split_laa_fastq:1")
+    ]
     inputs_report = [
         ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
         ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")
     ]
-    return laa + consensus_report + inputs_report
+    return laa + split_fastq + consensus_report + inputs_report
 
 
 def _core_barcode():
