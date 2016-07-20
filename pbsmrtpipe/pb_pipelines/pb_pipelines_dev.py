@@ -1,4 +1,5 @@
 import logging
+import itertools
 
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import to_pipeline_ns
@@ -157,3 +158,21 @@ def get_reference_ds_report():
     b = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
 
     return b
+
+
+@dev_register("dev_diagnostic_stress", "Reference Set Report + Random tasks", tags=(Tags.RPT, "reference", "stress"))
+def get_reference_ds_report():
+    """Generate a simple report and plot from Reference DataSet"""
+
+    max_txt_tasks = 50
+
+    def to_b(i):
+        return [("pbsmrtpipe.tasks.rset_to_txt:0", "pbsmrtpipe.tasks.dev_hello_worlder:{i}:0".format(i=i))]
+
+    b1 = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
+
+    b2 = [(Constants.ENTRY_DS_REF, 'pbsmrtpipe.tasks.rset_to_txt:0')]
+
+    bs = list(itertools.chain(*[to_b(x) for x in xrange(max_txt_tasks)]))
+
+    return b1 + b2 + bs
