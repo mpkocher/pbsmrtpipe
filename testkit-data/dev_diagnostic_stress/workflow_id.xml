@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline-template>
+
+    <!-- Reference a workflow template defined in -->
+    <import-template id="pbsmrtpipe.pipelines.dev_diagnostic_stress" />
+
+    <options>
+    <!-- workflow level options  -->
+        <option id="pbsmrtpipe.options.max_nchunks" >
+            <value>7</value>
+        </option>
+        <option id="pbsmrtpipe.options.max_nproc" >
+            <value>13</value>
+        </option>
+    </options>
+
+    <!-- task level options here -->
+    <task-options>
+        <option id="pbsmrtpipe.task_options.dev_sleep_time_sec">
+            <value>5</value>
+        </option>
+    </task-options>
+
+</pipeline-template>
