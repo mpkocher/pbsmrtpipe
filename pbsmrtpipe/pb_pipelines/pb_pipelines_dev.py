@@ -160,7 +160,7 @@ def get_reference_ds_report():
     return b
 
 
-@dev_register("dev_diagnostic_stress", "Reference Set Report + Random tasks", tags=(Tags.RPT, "reference"))
+@dev_register("dev_diagnostic_stress", "Reference Set Report + Random tasks", tags=(Tags.RPT, "reference", "stress"))
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 
@@ -173,6 +173,6 @@ def get_reference_ds_report():
 
     b2 = [(Constants.ENTRY_DS_REF, 'pbsmrtpipe.tasks.rset_to_txt:0')]
 
-    bs = itertools.chain(*[to_b(x) for x in xrange(max_txt_tasks)])
+    bs = list(itertools.chain(*[to_b(x) for x in xrange(max_txt_tasks)]))
 
-    return b1 + b2 + list(bs)
+    return b1 + b2 + bs
