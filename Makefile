@@ -77,3 +77,10 @@ write-pipeline-templates: write-pipeline-templates-avro write-pipeline-templates
 
 test-chunk:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/tests/test_tools_dev_tasks.py
+
+
+emit-dev-tool-contracts:
+	python -m pbsmrtpipe.pb_tasks.dev emit-tool-contracts -o pbsmrtpipe/registered_tool_contracts
+
+show-pipelines:
+	pbsmrtpipe show-templates
