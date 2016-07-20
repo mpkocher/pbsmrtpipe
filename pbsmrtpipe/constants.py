@@ -50,7 +50,11 @@ RX_ENTRY = re.compile(r'^\$entry:([A-z0-9_]*)$')
 # to be consistent with the new naming scheme
 RX_BINDING_ENTRY = re.compile(r'^\$entry:([A-z0-9_]*)$')
 
-RX_VALID_BINDINGS = (RX_BINDING_PIPELINE_TASK, RX_BINDING_PIPELINE_ENTRY, RX_BINDING_TASK, RX_BINDING_ENTRY)
+RX_VALID_BINDINGS = (RX_BINDING_PIPELINE_TASK,
+                     RX_BINDING_PIPELINE_ENTRY,
+                     RX_BINDING_TASK,
+                     RX_BINDING_TASK_ADVANCED,
+                     RX_BINDING_ENTRY)
 
 # This should really use a semantic version lib
 RX_VERSION = re.compile(r'(\d*).(\d*).(\d*)')
