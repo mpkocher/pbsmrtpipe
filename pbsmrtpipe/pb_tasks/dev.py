@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import time
 
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.pb_io.report import fofn_to_report
@@ -9,6 +10,7 @@ import sys
 
 from pbcore.io import (readFofn, ReferenceSet, FastqReader, FastaWriter,
                        FastaRecord, FastaReader)
+import random
 
 from pbsmrtpipe.mock import write_random_fasta_records
 import pbsmrtpipe.schema_opt_utils as OP
@@ -86,8 +88,13 @@ def run_rtc(rtc):
     return subread_dataset_report(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
-@registry('dev_hello_worlder', '0.2.1', FileTypes.TXT, FileTypes.TXT, is_distributed=False, nproc=2)
+@registry('dev_hello_worlder', '0.2.1', FileTypes.TXT, FileTypes.TXT, is_distributed=False, nproc=2, options=dict(dev_sleep_time_sec=0))
 def run_rtc(rtc):
+    max_sleep_time = rtc.task.options[_to_opt_id('dev_sleep_time_sec')]
+    sleep_time = random.randint(0, max_sleep_time)
+    # Longer running jobs
+    log.info("Sleeping for {} sec form max sleep time {}".format(sleep_time, max_sleep_time))
+    time.sleep(sleep_time)
     return run_main_dev_hello_world(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
@@ -189,6 +196,18 @@ def run_rtc(rtc):
     if min_seq_length < 0:
         raise ValueError("Invalid min seq length {m}".format(m=min_seq_length))
     return run_fasta_filter(rtc.task.input_files[0], rtc.task.output_files[0], min_seq_length)
+
+
+@registry("rset_to_txt", "0.1.0", FileTypes.DS_REF, FileTypes.TXT, is_distributed=False)
+def run_rtc(rtc):
+    """Dev Task for testing pipelines. Generates a Txt file"""
+
+    with open(rtc.task.output_files[0], 'w') as f:
+        f.write("Dev Mock converting ReferenceSet {}\n".format(rtc.task.input_files[0]))
+        f.write("to text file {}".format(rtc.task.output_files[0]))
+
+    return 0
+
 
 if __name__ == '__main__':
     sys.exit(registry_runner(registry, sys.argv[1:]))
