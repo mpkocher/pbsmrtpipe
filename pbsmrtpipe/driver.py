@@ -121,26 +121,21 @@ def _get_report_uuid(path):
     return load_report_from_json(path).uuid
 
 
-def _get_or_create_uuid_from_file(path):
+def _get_or_create_uuid_from_file(path, file_type):
     """
-    Extract the uuid from the DataSet or assign a new UUID
+    Extract the uuid from the DataSet or Report, or assign a new UUID
 
     :param path: Path to file
 
     :rtype: str
     :return: uuid string
     """
-
-    loader_funcs = (getDataSetUuid, _get_report_uuid)
-    for get_uuid_func in loader_funcs:
-        try:
-            ds_uuid = get_uuid_func(path)
-        except Exception:
-            ds_uuid = None
-        if ds_uuid is not None:
-            return ds_uuid
-
-    return uuid.uuid4()
+    if file_type.file_type_id == FileTypes.REPORT.file_type_id:
+        return _get_report_uuid(path)
+    elif file_type.file_type_id in FileTypes.ALL_DATASET_TYPES():
+        return getDataSetUuid(path)
+    else:
+        return uuid.uuid4()
 
 
 def _get_last_lines_of_stderr(n, stderr_path):
@@ -343,7 +338,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 len(tnode_.meta_task.output_types) == len(task_.output_files))
         for file_type_, path_, name, description in zip(tnode_.meta_task.output_types, task_.output_files, tnode_.meta_task.output_file_display_names, tnode_.meta_task.output_file_descriptions):
             source_id = "{t}-{f}".format(t=task_.task_id, f=file_type_.file_type_id)
-            ds_uuid = _get_or_create_uuid_from_file(path_)
+            ds_uuid = _get_or_create_uuid_from_file(path_, file_type_)
             is_chunked_ = _is_chunked_task_node_type(tnode_)
             ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_, is_chunked=is_chunked_, name=name, description=description)
             ds.add(ds_file_)
