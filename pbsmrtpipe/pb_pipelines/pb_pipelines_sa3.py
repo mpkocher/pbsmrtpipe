@@ -383,21 +383,29 @@ def _core_laa(subread_ds):
     return b3
 
 
+def _core_laa_plus(subread_ds):
+    laa = _core_laa(subread_ds)
+    split_fastq = [
+        ("pblaa.tasks.laa:0", "pbcoretools.tasks.split_laa_fastq:0"),
+        ("pblaa.tasks.laa:1", "pbcoretools.tasks.split_laa_fastq:1")
+    ]
+    consensus_report = [
+        ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")
+    ]
+    inputs_report = [
+        ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
+        ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")
+    ]
+    return laa + split_fastq + consensus_report + inputs_report
+
+
 @sa3_register("sa3_ds_laa", "Long Amplicon Analysis (LAA 2)", "0.1.0", tags=(Tags.LAA, ))
 def ds_laa():
     """
     Basic Long Amplicon Analysis (LAA) pipeline, starting from subreads.
     """
     subreadset = Constants.ENTRY_DS_SUBREAD
-
-    laa = _core_laa(subreadset)
-
-    consensus_report = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
-    inputs_report = [
-        ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
-        ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")
-    ]
-    return laa + consensus_report + inputs_report
+    return _core_laa_plus(Constants.ENTRY_DS_SUBREAD)
 
 
 def _core_barcode():
@@ -425,11 +433,8 @@ def ds_barcode_laa():
     """
     b1  = _core_barcode()
     subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
-    b2 = _core_laa(subreadset)
-    b3 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")]
-    b4 = [("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
-          ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")]
-    return b1 + b2 + b3 + b4
+    b2 = _core_laa_plus(subreadset)
+    return b1 + b2
 
 
 def _core_ccs(subread_ds):
