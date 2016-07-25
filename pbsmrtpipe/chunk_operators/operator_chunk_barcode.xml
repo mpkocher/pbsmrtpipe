@@ -4,7 +4,7 @@
     <task-id>pbcoretools.tasks.bam2bam_barcode</task-id>
 
     <scatter>
-        <scatter-task-id>pbcoretools.tasks.subreadset_bam_scatter</scatter-task-id>
+        <scatter-task-id>pbcoretools.tasks.scatter_subreads_bam2bam</scatter-task-id>
         <chunks>
             <chunk out="$chunk.subreadset_id" in="pbcoretools.tasks.bam2bam_barcode:0"/>
             <chunk out="$chunk.barcodeset_id" in="pbcoretools.tasks.bam2bam_barcode:1"/>
