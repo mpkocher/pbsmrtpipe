@@ -13,7 +13,7 @@
         "schema_options": [
             {
                 "pb_option": {
-                    "default": 30.0, 
+                    "default": 0.30,
                     "type": "number", 
                     "option_id": "motif_maker.task_options.min_fraction", 
                     "name": "Minimum methylated fraction", 
@@ -27,7 +27,7 @@
                 "type": "object", 
                 "properties": {
                     "motif_maker.task_options.min_fraction": {
-                        "default": 30.0, 
+                        "default": 0.30,
                         "type": "number", 
                         "description": "Minimum methylated fraction", 
                         "title": "Minimum methylated fraction"
