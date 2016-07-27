@@ -520,7 +520,8 @@ def parse_pipeline_preset_xml(file_name, validate=True):
     if validate:
         wopts_tlist = validate_workflow_options(wopts)
     # this API is a bit funky. [(k, v), ..] is the format
-    return PresetRecord(wopts_tlist, task_options, pipeline_id)
+    return PresetRecord(wopts_tlist, task_options, pipeline_id, "unknown",
+                        "unknown", "unknown")
 
 
 def parse_pipeline_preset_json(file_name, validate=True):
@@ -533,7 +534,10 @@ def parse_pipeline_preset_json(file_name, validate=True):
     return PresetRecord(
         options=wopts_tlist, # FIXME
         task_options=[(k,v) for (k,v) in p.task_options.iteritems()],
-        pipeline_id=p.pipeline_id)
+        pipeline_id=p.pipeline_id,
+        preset_id=p.preset_id,
+        name=p.name,
+        description=p.description)
 
 
 def _parse_pipeline_preset_files(parser, file_names):
@@ -548,7 +552,8 @@ def _parse_pipeline_preset_files(parser, file_names):
     def to_t(d):
         return [(k, v) for k,v in d.iteritems()]
 
-    return PresetRecord(workflow_options_t, to_t(task_options))
+    return PresetRecord(workflow_options_t, to_t(task_options), "unknown",
+                        "unknown", "unknown", "unknown")
 
 
 parse_pipeline_preset_xmls = functools.partial(_parse_pipeline_preset_files,
