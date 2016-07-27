@@ -16,7 +16,7 @@ from pbcommand.services import ServiceAccessLayer, ServiceEntryPoint
 from pbcommand.services.cli import run_analysis_job
 import pbcommand.services
 
-from pbsmrtpipe.pb_io import parse_pipeline_preset_xml
+from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_json
 from pbsmrtpipe.testkit.butler import config_parser_to_butler
 from pbsmrtpipe.testkit.loader import (parse_cfg_file,
     dtype_and_uuid_from_dataset_xml)
@@ -45,7 +45,25 @@ def get_task_and_workflow_options(testkit_cfg):
             option_type = "pbsmrtpipe.option_types.float"
         return option_type
     if not parsed_cfg.preset_xml in [None, '']:
+        if not parsed_cfg.preset_json in [None, '']:
+            raise ValueError("Please use either preset_json or preset_xml, not both")
         presets = parse_pipeline_preset_xml(parsed_cfg.preset_xml)
+        for option_id, option_value in presets.task_options:
+            log.info("task_option: {i} = {v}".format(i=option_id,
+                                                     v=option_value))
+            task_options.append(dict(
+                optionId=option_id,
+                value=option_value,
+                optionTypeId=__get_option_type(option_value)))
+        for option_id, option_value in presets.workflow_options:
+            log.info("workflow_option: {i} = {v}".format(i=option_id,
+                                                         v=option_value))
+            workflow_options.append(dict(
+                optionId=option_id,
+                value=option_value,
+                optionTypeId=__get_option_type(option_value)))
+    elif not parsed_cfg.preset_json in [None, '']:
+        presets = parse_pipeline_preset_json(parsed_cfg.preset_json)
         for option_id, option_value in presets.task_options:
             log.info("task_option: {i} = {v}".format(i=option_id,
                                                      v=option_value))

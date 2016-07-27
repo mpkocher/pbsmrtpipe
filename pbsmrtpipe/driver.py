@@ -684,7 +684,7 @@ def _validate_entry_points_or_raise(entry_points_d):
 
 
 def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline,
-                          entry_points_d, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
+                          entry_points_d, preset_jsons, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Load and resolve input IO layer
 
@@ -725,13 +725,19 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         builder_record = IO.parse_pipeline_template_xml(workflow_template_xml_or_pipeline, registered_pipelines)
         slog.info("successfully loaded workflow template.")
 
-    if preset_xmls:
-        slog.info("Loading preset(s) {p}".format(p=preset_xmls))
-        preset_record = IO.parse_pipeline_preset_xmls(preset_xmls)
+    preset_xml_record = preset_json_record = None
+    if preset_jsons:
+        slog.info("Loading preset(s) {p}".format(p=preset_jsons))
+        preset_json_record = IO.parse_pipeline_preset_jsons(preset_jsons)
         slog.info("successfully loaded preset.")
     else:
-        slog.info("No preset provided. Skipping preset.xml loading.")
-        preset_record = None
+        slog.info("No JSON preset provided. Skipping preset json loading.")
+    if preset_xmls:
+        slog.info("Loading preset(s) {p}".format(p=preset_xmls))
+        preset_record_ = IO.parse_pipeline_preset_xmls(preset_xmls)
+        slog.info("successfully loaded preset.")
+    else:
+        slog.info("No XML preset provided. Skipping preset XML loading.")
 
     if rc_preset is not None:
         topts.update(dict(rc_preset.task_options))
@@ -740,9 +746,12 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     wopts.update(dict(builder_record.workflow_options))
     topts.update(builder_record.task_options)
 
-    if preset_record is not None:
-        wopts.update(dict(preset_record.workflow_options))
-        topts.update(dict(preset_record.task_options))
+    if preset_xml_record is not None:
+        wopts.update(dict(preset_xml_record.workflow_options))
+        topts.update(dict(preset_xml_record.task_options))
+    if preset_json_record is not None:
+        wopts.update(dict(preset_json_record.workflow_options))
+        topts.update(dict(preset_json_record.task_options))
 
     workflow_level_opts = IO.WorkflowLevelOptions.from_id_dict(wopts)
     if len(sys.argv) > 0:
@@ -791,7 +800,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     return workflow_bindings, workflow_level_opts, topts, cluster_render
 
 
-def _load_io_for_task(registered_tasks, entry_points_d, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
+def _load_io_for_task(registered_tasks, entry_points_d, preset_jsons, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """Grungy loading of the IO and resolving values
 
     Returns a tuple of (WorkflowLevelOptions, TaskOptions, ClusterRender)
@@ -814,6 +823,11 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_xmls, rc_preset_o
 
     if preset_xmls:
         preset_record = IO.parse_pipeline_preset_xmls(preset_xmls)
+        wopts.update(dict(preset_record.workflow_options))
+        topts.update(dict(preset_record.task_options))
+
+    if preset_jsons:
+        preset_record = IO.parse_pipeline_preset_jsons(preset_jsons)
         wopts.update(dict(preset_record.workflow_options))
         topts.update(dict(preset_record.task_options))
 
@@ -930,7 +944,7 @@ def workflow_exception_exitcode_handler(func):
 @workflow_exception_exitcode_handler
 def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tasks_d,
                  chunk_operators, workflow_template_xml_or_pipeline, entry_points_d,
-                 output_dir, preset_xmls, rc_preset_or_none, service_uri,
+                 output_dir, preset_jsons, preset_xmls, rc_preset_or_none, service_uri,
                  force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
     Entry point for running a pipeline
@@ -938,6 +952,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     :param workflow_template_xml_or_pipeline: path to workflow xml or Pipeline instance
     :param entry_points_d:
     :param output_dir:
+    :param preset_jsons: list of path to preset json
     :param preset_xmls: list of path to preset xml
     :return: exit code
 
@@ -945,6 +960,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     :type registered_file_types_d: dict[str, pbsmrtpipe.pb_tasks.core.FileType]
     :type workflow_template_xml_or_pipeline: str
     :type output_dir: str
+    :type preset_jsons: list[str]
     :type preset_xmls: list[str]
     :type service_uri: str | None
     :type force_distribute: None | bool
@@ -956,7 +972,7 @@ def run_pipeline(registered_pipelines_d, registered_file_types_d, registered_tas
     workflow_bindings, workflow_level_opts, task_opts, cluster_render = _load_io_for_workflow(registered_tasks_d,
                                                                                               registered_pipelines_d,
                                                                                               workflow_template_xml_or_pipeline,
-                                                                                              entry_points_d, preset_xmls,
+                                                                                              entry_points_d, preset_jsons, preset_xmls,
                                                                                               rc_preset_or_none,
                                                                                               force_distribute=force_distribute,
                                                                                               force_chunk_mode=force_chunk_mode,
@@ -1057,7 +1073,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 
 @workflow_exception_exitcode_handler
 def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators,
-                    entry_points_d, task_id, output_dir, preset_xmls, rc_preset_or_none,
+                    entry_points_d, task_id, output_dir, preset_jsons, preset_xmls, rc_preset_or_none,
                     service_config,
                     force_distribute=None,
                     force_chunk_mode=None,
@@ -1078,7 +1094,7 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
                        "'show-tasks' to get a list of registered tasks.".format(i=task_id))
 
     workflow_level_opts, task_opts, cluster_render = _load_io_for_task(registered_tasks_d, entry_points_d,
-                                                                       preset_xmls, rc_preset_or_none,
+                                                                       preset_jsons, preset_xmls, rc_preset_or_none,
                                                                        force_distribute=force_distribute,
                                                                        force_chunk_mode=force_chunk_mode,
                                                                        debug_mode=debug_mode)

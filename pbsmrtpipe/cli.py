@@ -95,6 +95,14 @@ def _add_preset_xml_option(p):
     return p
 
 
+def _add_preset_json_option(p):
+    p.add_argument('--preset-json', action="append", type=validate_file,
+                   default=[],
+                   help="Preset/Option JSON file.  This option may be "+
+                        "repeated if you have multiple preset files.")
+    return p
+
+
 def _add_rc_preset_xml_option(p):
     p.add_argument('--preset-rc-xml', type=validate_file,
                    help="Skipping loading preset from ENV var '{x}' and Explicitly load the supplied preset.xml".format(x=ENV_PRESET))
@@ -382,9 +390,10 @@ def _args_run_pipeline(args):
 
     # Validate all preset files exist
     preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
+    preset_jsons = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_json]
     return D.run_pipeline(pipelines_d, registered_files_d, registered_tasks_d, chunk_operators,
                           args.pipeline_template_xml,
-                          ep_d, args.output_dir, preset_xmls, args.preset_rc_xml, args.service_uri,
+                          ep_d, args.output_dir, preset_jsons, preset_xmls, args.preset_rc_xml, args.service_uri,
                           force_distribute=force_distribute, force_chunk_mode=force_chunk, debug_mode=args.debug)
 
 
@@ -443,6 +452,7 @@ def __add_pipeline_parser_options(p):
              TU.add_override_distribute_option,
              _add_webservice_config,
              _add_rc_preset_xml_option,
+             _add_preset_json_option,
              _add_preset_xml_option,
              _add_output_dir_option,
              _add_entry_point_option,
@@ -564,11 +574,12 @@ def _args_run_pipeline_id(args):
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
     preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
+    preset_jsons = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_json]
     return D.run_pipeline(pipelines, registered_files_d,
                           registered_tasks_d,
                           chunk_operators,
                           pipeline,
-                          ep_d, args.output_dir, preset_xmls,
+                          ep_d, args.output_dir, preset_jsons, preset_xmls,
                           args.preset_rc_xml, args.service_uri,
                           force_distribute=force_distribute,
                           force_chunk_mode=force_chunk)
