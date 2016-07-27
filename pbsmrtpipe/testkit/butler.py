@@ -29,7 +29,8 @@ class Constants(object):
 
     CFG_ENTRY_POINTS = 'entry_points'
 
-    CFG_PREFIX_XML = 'preset_xml'
+    CFG_PRESET_XML = 'preset_xml'
+    CFG_PRESET_JSON = 'preset_json'
     CFG_WORKFLOW_XML = 'pipeline_xml'
     CFG_TASK_ID = 'task_id'
     CFG_BASE_EXE = 'base_exe'
@@ -43,10 +44,12 @@ class Constants(object):
 class Butler(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, job_id, output_dir, entry_points, preset_xml, debug,
+    def __init__(self, job_id, output_dir, entry_points, preset_json,
+                 preset_xml, debug,
                  force_distribute=None, force_chunk=None, base_exe=EXE):
         self.output_dir = output_dir
         self.entry_points = entry_points
+        self.preset_json = preset_json
         self.preset_xml = preset_xml
         self.debug_mode = debug
 
@@ -70,15 +73,16 @@ class Butler(object):
 
     def to_cmd(self):
         return _to_pbsmrtpipe_cmd(self.prefix, self.output_dir,
-                                  self.entry_points, self.preset_xml,
+                                  self.entry_points, self.preset_json,
+                                  self.preset_xml,
                                   self.debug_mode, self.force_distribute,
                                   self.force_chunk, self.base_exe)
 
 
 class ButlerWorkflow(Butler):
 
-    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE):
-        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe)
+    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE):
+        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe)
         self.workflow_xml = workflow_xml
 
     @property
@@ -88,8 +92,8 @@ class ButlerWorkflow(Butler):
 
 class ButlerTask(Butler):
 
-    def __init__(self, job_id, output_dir, task_id, entry_points, preset_xml, debug, force_distribute=None, force_chunk=None):
-        super(ButlerTask, self).__init__(job_id, output_dir, entry_points, preset_xml, debug, force_distribute=force_distribute, force_chunk=force_chunk)
+    def __init__(self, job_id, output_dir, task_id, entry_points, preset_json, preset_xml, debug, force_distribute=None, force_chunk=None):
+        super(ButlerTask, self).__init__(job_id, output_dir, entry_points, preset_json, preset_xml, debug, force_distribute=force_distribute, force_chunk=force_chunk)
         self.task_id = task_id
 
     @property
@@ -97,10 +101,11 @@ class ButlerTask(Butler):
         return "task {i}".format(i=self.task_id)
 
 
-def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debug, force_distribute, force_chunk, base_exe=EXE):
+def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_json, preset_xml, debug, force_distribute, force_chunk, base_exe=EXE):
     ep_str = " ".join([' -e ' + ":".join([k, v]) for k, v in entry_points_d.iteritems()])
     d_str = '--debug' if debug else " "
     p_str = " " if preset_xml is None else "--preset-xml={p}".format(p=preset_xml)
+    j_str = " " if preset_json is None else "--preset-json={j}".format(j=preset_json)
     m_str = ' '
 
     force_distribute_str = ''
@@ -113,9 +118,9 @@ def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_xml, debu
         m = {True: '--force-chunk-mode', False: '--disable-chunk-mode'}
         force_chunk_str = m[force_chunk]
 
-    _d = dict(x=base_exe, e=ep_str, d=d_str, p=p_str, m=prefix_mode, o=output_dir, k=m_str,
+    _d = dict(x=base_exe, e=ep_str, d=d_str, p=p_str, j=j_str, m=prefix_mode, o=output_dir, k=m_str,
               f=force_distribute_str, c=force_chunk_str)
-    cmd = "{x} {m} {c} {d} {e} {p} {k} {f} --output-dir={o}"
+    cmd = "{x} {m} {c} {d} {e} {p} {j} {k} {f} --output-dir={o}"
     return cmd.format(**_d)
 
 
@@ -130,7 +135,19 @@ def _parse_or_default(section, key, p, default):
 
 
 def _parse_preset_xml(section_name, p, base_dir):
-    v = _parse_or_default(section_name, Constants.CFG_PREFIX_XML, p, None)
+    v = _parse_or_default(section_name, Constants.CFG_PRESET_XML, p, None)
+    if v is None:
+        return None
+    else:
+        p = v if os.path.isabs(v) else os.path.join(base_dir, v)
+        if os.path.exists(p):
+            return p
+        else:
+            raise IOError("Unable to find preset XML '{p}'".format(p=p))
+
+
+def _parse_preset_json(section_name, p, base_dir):
+    v = _parse_or_default(section_name, Constants.CFG_PRESET_JSON, p, None)
     if v is None:
         return None
     else:
@@ -164,8 +181,8 @@ def _parse_entry_points(p, root_dir_name):
     return ep_d
 
 
-def _parse_entry_points_and_preset_xml(section_name, p, root_dir):
-    return _parse_entry_points(p, root_dir), _parse_preset_xml(section_name, p, root_dir)
+def _parse_entry_points_and_presets(section_name, p, root_dir):
+    return _parse_entry_points(p, root_dir), _parse_preset_xml(section_name, p, root_dir), _parse_preset_json(section_name, p, root_dir)
 
 
 def _to_parse_workflow_config(job_output_dir, base_dir):
@@ -176,7 +193,7 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
     :return:
     """
     def _parse_workflow_config(p):
-        ep_d, preset_xml = _parse_entry_points_and_preset_xml(Constants.CFG_WORKFLOW, p, base_dir)
+        ep_d, preset_xml, preset_json = _parse_entry_points_and_presets(Constants.CFG_WORKFLOW, p, base_dir)
         x = p.get(Constants.CFG_WORKFLOW, Constants.CFG_WORKFLOW_XML)
 
         if not os.path.isabs(x):
@@ -193,7 +210,7 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         job_id = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_JOB_ID, p, default_job_id)
         base_exe = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_BASE_EXE, p, EXE)
 
-        return ButlerWorkflow(job_id, job_output_dir, workflow_xml, ep_d, preset_xml, d, base_exe=base_exe)
+        return ButlerWorkflow(job_id, job_output_dir, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe)
 
     return _parse_workflow_config
 
@@ -202,11 +219,11 @@ def _to_parse_task_config(output_dir, base_dir):
     def _parse_task_config(p):
         # FIXME. This should be defined in cfg file.
         default_job_id = os.path.basename(base_dir)
-        ep_d, preset_xml = _parse_entry_points_and_preset_xml(Constants.CFG_TASK, p, base_dir)
+        ep_d, preset_xml, preset_json = _parse_entry_points_and_presets(Constants.CFG_TASK, p, base_dir)
         job_id = _parse_or_default(Constants.CFG_TASK, Constants.CFG_JOB_ID, p, default_job_id)
         task_id = p.get(Constants.CFG_TASK, Constants.CFG_TASK_ID)
         d = _parse_debug_mode(Constants.CFG_TASK, p)
-        b = ButlerTask(job_id, output_dir, task_id, ep_d, preset_xml, d, force_distribute=False)
+        b = ButlerTask(job_id, output_dir, task_id, ep_d, preset_json, preset_xml, d, force_distribute=False)
 
         return b
 

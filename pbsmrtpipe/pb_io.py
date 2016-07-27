@@ -548,7 +548,7 @@ def _parse_pipeline_preset_files(parser, file_names):
     def to_t(d):
         return [(k, v) for k,v in d.iteritems()]
 
-    return PresetRecord(to_t(task_options), workflow_options_t)
+    return PresetRecord(workflow_options_t, to_t(task_options))
 
 
 parse_pipeline_preset_xmls = functools.partial(_parse_pipeline_preset_files,
