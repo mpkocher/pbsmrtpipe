@@ -1,37 +1,39 @@
 {
+    "version": "0.2.0",
     "driver": {
-        "env": {}, 
-        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ", 
-        "serialization": "json"
-    }, 
+        "serialization": "json",
+        "exe": "python -m pbcoretools.tasks.bam2fasta --resolved-tool-contract",
+        "env": {}
+    },
+    "tool_contract_id": "pbcoretools.tasks.bam2fasta",
     "tool_contract": {
-        "_comment": "Created by v0.3.25", 
-        "description": "Quick tool bam2fasta pbcoretools.tasks.bam2fasta", 
-        "input_types": [
-            {
-                "description": "description for PacBio.DataSet.SubreadSet_0", 
-                "file_type_id": "PacBio.DataSet.SubreadSet", 
-                "id": "Label PacBio.DataSet.SubreadSet_0", 
-                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file >"
-            }
-        ], 
-        "is_distributed": true, 
-        "name": "Tool bam2fasta", 
-        "nproc": 1, 
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [
+            "$tmpdir"
+        ],
+        "description": "\nbam2fasta export with tmp dir support\n",
+        "schema_options": [],
         "output_types": [
             {
-                "default_name": "reads", 
-                "description": "Reads in FASTA format", 
-                "file_type_id": "PacBio.FileTypes.Fasta", 
-                "id": "FASTA file", 
-                "title": "FASTA file"
+                "title": "FASTA",
+                "description": "Exported FASTA",
+                "default_name": "subreads",
+                "id": "fasta_out",
+                "file_type_id": "PacBio.FileTypes.Fasta"
             }
-        ], 
-        "resource_types": [], 
-        "schema_options": [], 
-        "task_type": "pbsmrtpipe.task_types.standard", 
+        ],
+        "_comment": "Created by v0.4.4",
+        "name": "bam2fasta export",
+        "input_types": [
+            {
+                "description": "Input SubreadSet XML",
+                "title": "Input Subreads",
+                "id": "subreads",
+                "file_type_id": "PacBio.DataSet.SubreadSet"
+            }
+        ],
+        "nproc": 1,
+        "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.bam2fasta"
-    }, 
-    "tool_contract_id": "pbcoretools.tasks.bam2fasta", 
-    "version": "0.1.0"
+    }
 }
