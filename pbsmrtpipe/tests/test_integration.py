@@ -83,11 +83,12 @@ class TestHelloWorldCluster(unittest.TestCase):
         self.assertEqual(rcode, 0, stderr)
 
 
-def __to_cmd(pipeline_subparser, job_dir, workflow_xml_or_pipeline_id, preset_xml, ep_d):
+def __to_cmd(pipeline_subparser, job_dir, workflow_xml_or_pipeline_id, preset_json, preset_xml, ep_d):
+    preset_json_str = '' if preset_json is None else ' --preset-json {p}'.format(p=preset_json)
     preset_xml_str = '' if preset_xml is None else ' --preset-xml {p}'.format(p=preset_xml)
     e = ['-e "{i}:{p}"'.format(i=i, p=p) for i, p in ep_d.iteritems()]
-    _d = dict(e=' '.join(e), p=preset_xml_str, w=workflow_xml_or_pipeline_id, d=job_dir, s=pipeline_subparser)
-    return "pbsmrtpipe {s} {w} --debug --output-dir={d} {p} {e}".format(**_d)
+    _d = dict(e=' '.join(e), j=preset_json_str, p=preset_xml_str, w=workflow_xml_or_pipeline_id, d=job_dir, s=pipeline_subparser)
+    return "pbsmrtpipe {s} {w} --debug --output-dir={d} {p} {j} {e}".format(**_d)
 
 _to_pipeline_cmd = functools.partial(__to_cmd, "pipeline")
 _to_pipeline_id_cmd = functools.partial(__to_cmd, "pipeline-id")
@@ -97,6 +98,7 @@ _to_pipeline_id_cmd = functools.partial(__to_cmd, "pipeline-id")
 class _TestDriverIntegrationBase(unittest.TestCase):
     JOB_NAME = "my_job"
     PRESET_XML = None
+    PRESET_JSON = None
     WORKFLOW_XML = ''
     ENTRY_POINTS = {}
     TO_CMD_FUNC = _to_pipeline_cmd
@@ -120,7 +122,7 @@ class _TestDriverIntegrationBase(unittest.TestCase):
             with open(file_name, 'w') as x:
                 x.write("Mock data for {i} \n".format(i=ep_id))
 
-        cmd = self.TO_CMD_FUNC(output_dir, self.WORKFLOW_XML, self.PRESET_XML, ep_d)
+        cmd = self.TO_CMD_FUNC(output_dir, self.WORKFLOW_XML, self.PRESET_JSON, self.PRESET_XML, ep_d)
 
         stderr_path = os.path.join(output_dir, 'job.stderr')
         stdout_path = os.path.join(output_dir, 'job.stdout')
@@ -146,6 +148,14 @@ class _TestDriverIntegrationBase(unittest.TestCase):
 class TestHelloWorldWorkflow(_TestDriverIntegrationBase):
     JOB_NAME = 'hello_world'
     PRESET_XML = os.path.join(TEST_DATA_DIR, 'hello_world_preset.xml')
+    WORKFLOW_XML = os.path.join(TEST_DATA_DIR, 'hello_world_workflow.xml')
+    ENTRY_POINTS = {'e_01': "hello_entry_point.txt"}
+
+
+# XXX only the preset is json
+class TestHelloWorldWorkflowJson(_TestDriverIntegrationBase):
+    JOB_NAME = 'hello_world_json'
+    PRESET_JSON = os.path.join(TEST_DATA_DIR, 'hello_world_preset.json')
     WORKFLOW_XML = os.path.join(TEST_DATA_DIR, 'hello_world_workflow.xml')
     ENTRY_POINTS = {'e_01': "hello_entry_point.txt"}
 

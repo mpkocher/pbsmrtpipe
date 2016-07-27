@@ -19,9 +19,11 @@ from pbcommand.resolver import (resolve_tool_contract,
 from pbcommand.models import (PipelineChunk,
                               ToolContractTask,
                               GatherToolContractTask,
-                              ScatterToolContractTask)
+                              ScatterToolContractTask,
+                              PipelinePreset)
 from pbcommand.models.common import REGISTERED_FILE_TYPES
-from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from)
+from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from,
+                                              load_pipeline_presets_from)
 from xmlbuilder import XMLBuilder
 
 # For version info
@@ -50,18 +52,12 @@ slog = logging.getLogger('status.' + __name__)
 BuilderRecord = namedtuple("BuilderRecord", ['bindings', 'task_options', 'workflow_options'])
 
 
-class PresetRecord(object):
+# FIXME this is inconsistent with the pbcommand model - please deprecate
+class PresetRecord(PipelinePreset):
 
-    def __init__(self, task_options, workflow_options, pipeline_id=None):
-        # this is a list of tuples (task_id, value)
-        self.task_options = task_options
-        self.workflow_options = workflow_options
-        # this is optional for some use cases
-        self.pipeline_id = pipeline_id
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__)
-        return "<{k} >".format(**_d)
+    @property
+    def workflow_options(self):
+        return self.options
 
     def to_workflow_level_opt(self):
         d = dict(self.workflow_options)
@@ -524,13 +520,26 @@ def parse_pipeline_preset_xml(file_name, validate=True):
     if validate:
         wopts_tlist = validate_workflow_options(wopts)
     # this API is a bit funky. [(k, v), ..] is the format
-    return PresetRecord(task_options, wopts_tlist, pipeline_id)
+    return PresetRecord(wopts_tlist, task_options, pipeline_id)
 
 
-def parse_pipeline_preset_xmls(file_names):
+def parse_pipeline_preset_json(file_name, validate=True):
+    if not os.path.exists(file_name):
+        raise IOError("Unable to find preset in {f}".format(f=file_name))
+    p = load_pipeline_presets_from(file_name)
+    wopts_tlist = [(k,v) for (k,v) in p.options.iteritems()]
+    if validate:
+        wopts_tlist = validate_workflow_options(p.options)
+    return PresetRecord(
+        options=wopts_tlist, # FIXME
+        task_options=[(k,v) for (k,v) in p.task_options.iteritems()],
+        pipeline_id=p.pipeline_id)
+
+
+def _parse_pipeline_preset_files(parser, file_names):
     task_options = {}
     workflow_options = {}
-    prs = [parse_pipeline_preset_xml(file_name, False) for file_name in file_names]
+    prs = [parser(file_name, False) for file_name in file_names]
     for pr in prs:
         task_options.update(dict(pr.task_options))
         workflow_options.update(dict(pr.workflow_options))
@@ -540,6 +549,12 @@ def parse_pipeline_preset_xmls(file_names):
         return [(k, v) for k,v in d.iteritems()]
 
     return PresetRecord(to_t(task_options), workflow_options_t)
+
+
+parse_pipeline_preset_xmls = functools.partial(_parse_pipeline_preset_files,
+                                               parse_pipeline_preset_xml)
+parse_pipeline_preset_jsons = functools.partial(_parse_pipeline_preset_files,
+                                                parse_pipeline_preset_json)
 
 
 def parse_pipeline_template_xml(file_name, registered_pipelines):

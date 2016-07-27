@@ -17,15 +17,18 @@ log = logging.getLogger(__name__)
 class TestParsingPresetXml(unittest.TestCase):
     FILE_NAME = 'cli_preset_01.xml'
 
+    def _parse(self, file_name):
+        return IO.parse_pipeline_preset_xml(file_name)
+
     def setUp(self):
         self.path = os.path.join(TEST_DATA_DIR, self.FILE_NAME)
 
     def test_01(self):
-        preset_record = IO.parse_pipeline_preset_xml(self.path)
+        preset_record = self._parse(self.path)
         self.assertIsInstance(preset_record, IO.PresetRecord)
 
     def _to_wopts(self, file_path):
-        preset_record = IO.parse_pipeline_preset_xml(file_path)
+        preset_record = self._parse(file_path)
         d = dict(preset_record.workflow_options)
         wopts = IO.WorkflowLevelOptions.from_id_dict(d)
         return wopts
@@ -35,7 +38,7 @@ class TestParsingPresetXml(unittest.TestCase):
         self.assertIsInstance(wopts, IO.WorkflowLevelOptions)
 
     def test_to_dict(self):
-        preset_record = IO.parse_pipeline_preset_xml(self.path)
+        preset_record = self._parse(self.path)
         d = dict(preset_record.workflow_options)
         wopts = IO.WorkflowLevelOptions.from_id_dict(d)
         self.assertIsInstance(wopts.to_dict(), dict)
@@ -52,6 +55,13 @@ class TestParsingPresetXml(unittest.TestCase):
 
 class TestParsingFetchPresetXml(TestParsingPresetXml):
     FILE_NAME = 'fetch_preset.xml'
+
+
+class TestParsingFetchPresetJson(TestParsingPresetXml):
+    FILE_NAME = "presets.json"
+
+    def _parse(self, file_name):
+        return IO.parse_pipeline_preset_json(file_name)
 
 
 class TestWriteSchemaOptsToXML(unittest.TestCase):
