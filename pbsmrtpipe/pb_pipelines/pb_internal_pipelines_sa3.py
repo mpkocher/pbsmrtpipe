@@ -57,17 +57,6 @@ def to_bs():
 
     return b1 + b2 + b3
 
-
-@register("internal_cond_acc_density", "Internal Condition Accuracy Density Plots using R")
-def to_bs():
-    """Accuracy Density Plots"""
-    b1 = [(Constants.ENTRY_COND_JSON, "pbinternal2.tasks.cond_to_report:0")]
-
-    b2 = [(Constants.ENTRY_COND_JSON, "pbcommandR.tasks.accplot_reseq_condition:0")]
-
-    return b1 + b2
-
-
 @register("mh_poc", "Example Condition Pipeline for Accuracy and Readlength comparison")
 def to_bs():
     """Accuracy Density Plots"""
