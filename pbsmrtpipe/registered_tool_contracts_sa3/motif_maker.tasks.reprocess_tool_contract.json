@@ -37,7 +37,7 @@
         ], 
         "output_types": [
             {
-                "title": "GFF file", 
+                "title": "Modified base motifs GFF file", 
                 "description": "GFF file of modified bases in motifs only", 
                 "default_name": "motifs", 
                 "id": "gff_out", 
