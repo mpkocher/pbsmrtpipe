@@ -734,7 +734,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         slog.info("No JSON preset provided. Skipping preset json loading.")
     if preset_xmls:
         slog.info("Loading preset(s) {p}".format(p=preset_xmls))
-        preset_record_ = IO.parse_pipeline_preset_xmls(preset_xmls)
+        preset_xml_record = IO.parse_pipeline_preset_xmls(preset_xmls)
         slog.info("successfully loaded preset.")
     else:
         slog.info("No XML preset provided. Skipping preset XML loading.")

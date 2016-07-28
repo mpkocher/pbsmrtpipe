@@ -6,6 +6,7 @@
   "description": "Description of preset is required",
   "options": {
     "pbsmrtpipe.options.max_nchunks": 10,
+    "pbsmrtpipe.options.max_nproc": 24,
     "pbsmrtpipe.options.chunk_mode": true
   },
   "taskOptions": {
