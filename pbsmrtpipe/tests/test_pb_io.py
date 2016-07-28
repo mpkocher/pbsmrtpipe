@@ -20,12 +20,20 @@ class TestParsingPresetXml(unittest.TestCase):
     def _parse(self, file_name):
         return IO.parse_pipeline_preset_xml(file_name)
 
+    def _parse_multiple(self, file_name):
+        return IO.parse_pipeline_preset_xmls([file_name])
+
     def setUp(self):
         self.path = os.path.join(TEST_DATA_DIR, self.FILE_NAME)
 
     def test_01(self):
         preset_record = self._parse(self.path)
         self.assertIsInstance(preset_record, IO.PresetRecord)
+
+    def test_parse_mutliple(self):
+        preset = self._parse_multiple(self.path)
+        wopts = preset.to_workflow_level_opt()
+        self.assertEqual(wopts.max_nproc, 24)
 
     def _to_wopts(self, file_path):
         preset_record = self._parse(file_path)
@@ -62,6 +70,9 @@ class TestParsingFetchPresetJson(TestParsingPresetXml):
 
     def _parse(self, file_name):
         return IO.parse_pipeline_preset_json(file_name)
+
+    def _parse_multiple(self, file_name):
+        return IO.parse_pipeline_preset_jsons([file_name])
 
 
 class TestWriteSchemaOptsToXML(unittest.TestCase):
