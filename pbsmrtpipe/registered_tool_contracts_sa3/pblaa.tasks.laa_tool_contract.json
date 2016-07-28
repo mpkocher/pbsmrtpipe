@@ -608,6 +608,52 @@
                         "title": "No Chimera Filter"
                     }
                 }
+            },
+            {
+                "pb_option": {
+                    "default": "",
+                    "type": "string",
+                    "option_id": "pblaa.task_options.model_path",
+                    "name": "Model(s) Path",
+                    "description": "Path to model parameter file(s)"
+                },
+                "title": "JSON Schema for pblaa.task_options.model_path",
+                "required": [
+                    "pblaa.task_options.model_path"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "pblaa.task_options.model_path": {
+                        "default": "",
+                        "type": "string",
+                        "description": "Path to model parameter file(s)",
+                        "title": "Model(s) Path"
+                    }
+                }
+            },
+            {
+                "pb_option": {
+                    "default": "",
+                    "type": "string",
+                    "option_id": "pblaa.task_options.model_spec",
+                    "name": "Model Override",
+                    "description": "Override default model selection with a provided model specification"
+                },
+                "title": "JSON Schema for pblaa.task_options.model_spec",
+                "required": [
+                    "pblaa.task_options.model_spec"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "pblaa.task_options.model_spec": {
+                        "default": "",
+                        "type": "string",
+                        "description": "Override default model selection with a provided model specification",
+                        "title": "Model Override"
+                    }
+                }
             }
         ],
         "output_types": [
@@ -640,7 +686,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
-        "_comment": "Created by v0.4.3",
+        "_comment": "Created by v0.4.5",
         "name": "laa",
         "input_types": [
             {
