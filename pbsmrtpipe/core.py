@@ -229,10 +229,26 @@ class PipelineRegistry(object):
     Container for Defining Pipeline Templates that can be loaded by
     other python modules
     """
-    def __init__(self, namespace):
+    def __init__(self, namespace, pipelines=None):
+        """
+
+        :param namespace: Pipeline Namespace
+        :param pipelines: List of Pipelines. This allows the registry to
+        refererence pipelines already loaded by pbsmrtpipe
+
+        :type pipelines: list[Pipeline]
+        """
         self.namespace = namespace
         # {id:Pipeline}
-        self.pipelines = {}
+        self._pipelines = {}
+        if pipelines is not None:
+            self._pipelines = {p.idx: p for p in pipelines}
+        self.original_pipeline_ids = {i for i in self._pipelines.keys()}
+
+    @property
+    def pipelines(self):
+        # Only emit the pipelines that were specifically added to this registry
+        return {i: p for i, p in self._pipelines.items() if i not in self.original_pipeline_ids}
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, n=self.namespace, p=len(self.pipelines))
@@ -245,7 +261,9 @@ class PipelineRegistry(object):
             t_options = {} if task_options is None else copy.deepcopy(task_options)
             bs = func()
             pipeline_id = ".".join([self.namespace, 'pipelines', relative_pipeline_id])
-            load_pipeline_bindings(self.pipelines, pipeline_id, name, version, desc, bs, tags=tags, task_options=t_options)
+            # pass in the *ALL* the pipelines to the new pipelines can reference
+            # previously loaded pipelines
+            load_pipeline_bindings(self._pipelines, pipeline_id, name, version, desc, bs, tags=tags, task_options=t_options)
             return bs
 
         return _w
