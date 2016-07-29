@@ -6,6 +6,7 @@ using pipelines to emit a Pipeline XML or ResolvedPipeline Template JSON file
 import logging
 import sys
 
+from pbsmrtpipe.loader import load_all_installed_pipelines
 from pbsmrtpipe.core import PipelineRegistry
 from pbsmrtpipe.cli_custom_pipeline import registry_runner_main
 
@@ -16,8 +17,9 @@ class Constants(object):
     PT_NAMESPACE = "pbsmrtpipe_examples"
     TAGS_DEV = "dev"
 
-
-registry = PipelineRegistry(Constants.PT_NAMESPACE)
+# MK. Need to take another pass at this.
+loaded_pipelines = load_all_installed_pipelines().values()
+registry = PipelineRegistry(Constants.PT_NAMESPACE, pipelines=loaded_pipelines)
 
 
 def _example_topts():
@@ -45,6 +47,12 @@ def to_bs():
     # by this namespace.
     b3 = [("pbsmrtpipe_examples.pipelines.dev_a:pbsmrtpipe.tasks.dev_txt_to_fasta:0", 'pbsmrtpipe.tasks.dev_filter_fasta:0')]
     return b3
+
+
+@registry("dev_c", "Example 03", "0.1.0", tags=("dev",))
+def to_bs():
+    """Example Registry Pipeline that loads existing pipelines"""
+    return [("pbsmrtpipe.pipelines.dev_04:pbsmrtpipe.tasks.dev_hello_world:0", "pbsmrtpipe.tasks.dev_txt_to_fasta:0")]
 
 
 if __name__ == '__main__':

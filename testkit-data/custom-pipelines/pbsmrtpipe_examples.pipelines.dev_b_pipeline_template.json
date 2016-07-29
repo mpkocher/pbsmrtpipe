@@ -1,5 +1,5 @@
 {
-    "_comment": "Created pipeline pbsmrtpipe_examples.pipelines.dev_b with pbsmrtpipe v0.41.0", 
+    "_comment": "Created pipeline pbsmrtpipe_examples.pipelines.dev_b with pbsmrtpipe v0.42.3", 
     "bindings": [
         {
             "in": {
@@ -80,11 +80,18 @@
             "optionTypeId": "pbsmrtpipe.option_types.integer"
         }, 
         {
-            "default": "Preset Custom Dev Message from register pipeline", 
+            "default": "Hello Dev message", 
             "description": "Option dev_message description", 
             "id": "pbsmrtpipe.task_options.dev_message", 
             "name": "Option dev_message", 
             "optionTypeId": "pbsmrtpipe.option_types.string"
+        }, 
+        {
+            "default": 0, 
+            "description": "Option dev_sleep_time_sec description", 
+            "id": "pbsmrtpipe.task_options.dev_sleep_time_sec", 
+            "name": "Option dev_sleep_time_sec", 
+            "optionTypeId": "pbsmrtpipe.option_types.integer"
         }
     ], 
     "version": "0.1.0"
