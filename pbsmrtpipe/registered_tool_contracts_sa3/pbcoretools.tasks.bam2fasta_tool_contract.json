@@ -15,7 +15,7 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "FASTA",
+                "title": "FASTA subreads",
                 "description": "Exported FASTA",
                 "default_name": "subreads",
                 "id": "fasta_out",
