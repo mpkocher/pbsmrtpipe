@@ -41,8 +41,8 @@
                     "default": 70.0, 
                     "type": "number", 
                     "option_id": "pbalign.task_options.min_accuracy", 
-                    "name": "Min. accuracy", 
-                    "description": "Minimum required alignment accuracy (percent)"
+                    "name": "Min. concordance", 
+                    "description": "Minimum required alignment concordance"
                 }, 
                 "title": "JSON Schema for pbalign.task_options.min_accuracy", 
                 "required": [
@@ -54,8 +54,8 @@
                     "pbalign.task_options.min_accuracy": {
                         "default": 70.0, 
                         "type": "number", 
-                        "description": "Minimum required alignment accuracy (percent)", 
-                        "title": "Min. accuracy"
+                        "description": "Minimum required alignment concordance", 
+                        "title": "Min. concordance"
                     }
                 }
             }, 
