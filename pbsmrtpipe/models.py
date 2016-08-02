@@ -146,6 +146,12 @@ class PipelineBinding(object):
         return {"in": self.in_binding.to_dict(),
                 "out": self.out_binding.to_dict()}
 
+    def __repr__(self):
+        _d = dict(i=repr(self.in_binding),
+                  o=repr(self.out_binding),
+                  k=self.__class__.__name__)
+        return "<{k} in:{i} out:{o} >".format(**_d)
+
     @staticmethod
     def from_dict(d):
         in_b = IOBinding.from_dict(d['in'])

@@ -363,7 +363,7 @@ def _to_objs_from_binding_str(registered_tasks_d, b_out, b_in):
         # Task Id, Instance id, in out position index
         ti_id, ti_in, ti_index = binding_str_to_task_id_and_instance_id(b_in)
 
-        log.info(("Binding parsed ", b_in, ti_id, ti_in, ti_index))
+        log.debug("Binding parsed binding '{}' => task id:{} instance:{} index:{}".format(b_in, ti_id, ti_in, ti_index))
 
         # meta task instance
         ti_meta_task = _get_meta_task_or_raise(ti_id)
@@ -406,9 +406,10 @@ def _to_objs_from_binding_str(registered_tasks_d, b_out, b_in):
         _log_error(e.message)
         raise
 
-    log.info("Binding parsed {o} -> {i} successfully".format(o=b_out, i=b_in))
+    result = (in_node, fi_node, ti_node, fo_node)
+    log.debug("Binding parsed Raw {o} -> {i} successfully to {r}".format(o=b_out, i=b_in, r=result))
     # Task/EP node, File out, TaskIn, File in/None
-    return in_node, fi_node, ti_node, fo_node
+    return result
 
 
 def add_nodes_to_binding_graph(g, to_node, fo_node, ti_node, fi_node, add_node_func):
