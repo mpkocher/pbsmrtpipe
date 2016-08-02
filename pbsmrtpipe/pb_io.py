@@ -750,7 +750,7 @@ def _to_entry_bindings(rtasks, a, b):
 
 
 def _to_pipeline_binding(s):
-    task_id, index, instance_id = binding_str_to_task_id_and_instance_id(s)
+    task_id, instance_id, index = binding_str_to_task_id_and_instance_id(s)
     return IOBinding(task_id, index, instance_id)
 
 
@@ -787,7 +787,7 @@ def pipeline_template_to_dict(pipeline, rtasks):
         else:
             entry_points_d[i] = dict(entryId=i, name=d['name'], fileTypeId=d['fileTypeId'], tasks=[d['task']])
 
-    bindings = [PipelineBinding(_to_pipeline_binding(b_out),  _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
+    bindings = [PipelineBinding(_to_pipeline_binding(b_out), _to_pipeline_binding(b_in)) for b_out, b_in in pipeline.bindings]
 
     tags = list(set(pipeline.tags))
     desc = "Pipeline {i} description".format(i=pipeline.idx) if pipeline.description is None else pipeline.description
