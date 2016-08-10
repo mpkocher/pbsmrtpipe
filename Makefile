@@ -85,6 +85,9 @@ emit-dev-tool-contracts:
 show-pipelines:
 	pbsmrtpipe show-templates
 
+show-templates: show-pipelines
+
+
 reinstall-pb-repos:
 	pip uninstall -y pbcommand
 	pip uninstall -y pbcore

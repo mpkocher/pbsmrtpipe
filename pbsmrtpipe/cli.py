@@ -117,7 +117,7 @@ def _add_output_preset_xml_option(p):
 def pretty_registered_pipelines(registered_new_pipelines_d):
 
     n = len(registered_new_pipelines_d)
-    title = "{n} Registered Pipelines (name -> id)".format(n=n)
+    title = "{n} Registered Pipelines (name -> version, id)".format(n=n)
     header = len(title) * "*"
 
     outs = []
@@ -130,7 +130,7 @@ def pretty_registered_pipelines(registered_new_pipelines_d):
 
     spipelines = sorted(registered_new_pipelines_d.values(), key=lambda x: x.pipeline_id)
     for i, k in enumerate(spipelines):
-        outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.idx]))
+        outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.version, k.idx]))
 
     return "\n".join(outs)
 
@@ -138,11 +138,8 @@ def pretty_registered_pipelines(registered_new_pipelines_d):
 def pretty_bindings(bindings):
     entry_points = {i for i, o in bindings if i.startswith(ENTRY_PREFIX)}
 
-    s = "*" * 20
-
     outs = []
-    outs.append("Entry points  : {n}".format(n=len(entry_points)))
-    outs.append(s)
+    outs.append("**** Entry points ({n}) ****".format(n=len(entry_points)))
 
     for i, entry_point in enumerate(entry_points):
         outs.append(entry_point)
@@ -151,8 +148,7 @@ def pretty_bindings(bindings):
     pad = 4
 
     outs.append("")
-    outs.append("Bindings      : {n}".format(n=len(bindings)))
-    outs.append(s)
+    outs.append("**** Bindings ({n}) ****".format(n=len(bindings)))
 
     for i, o in bindings:
         outs.append(" -> ".join([i.rjust(max_length + pad), o]))
@@ -211,12 +207,15 @@ def run_show_template_details(template_id, output_preset_xml):
 
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]
-        print "Pipeline id   : {i}".format(i=pipeline.idx)
-        print "Pipeline name : {x}".format(x=pipeline.display_name)
-        print "Description   : {x}".format(x=pipeline.description)
+        print "**** Pipeline Summary ****"
+        print "id         : {i}".format(i=pipeline.idx)
+        print "version    : {i}".format(i=pipeline.version)
+        print "name       : {x}".format(x=pipeline.display_name)
         if pipeline.tags:
-            print "Tags          : {t} ".format(t=",".join(pipeline.tags))
+            print "Tags       : {t} ".format(t=",".join(pipeline.tags))
+        print "Description: \n {x}".format(x=pipeline.description.strip())
 
+        print
         print pretty_bindings(pipeline.all_bindings)
 
         if isinstance(output_preset_xml, str):
@@ -246,9 +245,10 @@ def run_show_template_details(template_id, output_preset_xml):
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
 
         if pipeline.task_options:
-            print "Default Task Options"
+            print
+            print "**** Default Task Options ****"
             for k, v in pipeline.task_options.iteritems():
-                print "'{k}' -> {v}".format(k=k, v=v)
+                print " {k} -> {v}".format(k=k, v=v)
         else:
             print "No default task options"
 
