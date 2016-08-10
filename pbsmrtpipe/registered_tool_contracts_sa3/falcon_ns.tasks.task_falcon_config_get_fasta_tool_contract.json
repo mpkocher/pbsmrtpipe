@@ -21,10 +21,10 @@
         "output_types": [
             {
                 "default_name": "file",
-                "description": "Generic file of file names",
+                "description": "file of file names of fasta input",
                 "file_type_id": "PacBio.FileTypes.generic_fofn",
                 "id": "fofn_id",
-                "title": "FOFN"
+                "title": "FOFN of daligner input (.fasta paths, possibly relative)"
             }
         ],
         "resource_types": [],
