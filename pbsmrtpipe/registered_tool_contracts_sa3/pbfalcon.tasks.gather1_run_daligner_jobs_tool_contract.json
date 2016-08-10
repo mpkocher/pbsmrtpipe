@@ -13,7 +13,7 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "FOFN file",
+                "title": "FOFN of .las files, stage-1",
                 "description": "FOFN Not Sure Yet",
                 "default_name": "file_gathered",
                 "id": "fofn_out",

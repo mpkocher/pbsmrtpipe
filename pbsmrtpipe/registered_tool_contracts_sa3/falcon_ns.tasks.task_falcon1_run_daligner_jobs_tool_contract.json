@@ -18,7 +18,7 @@
                 "description": "description for PacBio.FileTypes.txt_1",
                 "file_type_id": "PacBio.FileTypes.txt",
                 "id": "Label PacBio.FileTypes.txt_1",
-                "title": "<OutputFileType PacBio.FileTypes.txt run_daligner_jobs.sh_id >"
+                "title": "<OutputFileType PacBio.FileTypes.txt run_daligner_jobs1_id >"
             }
         ],
         "is_distributed": true,
@@ -27,10 +27,10 @@
         "output_types": [
             {
                 "default_name": "file",
-                "description": "Generic file of file names",
+                "description": "file of file names of local-alignment output",
                 "file_type_id": "PacBio.FileTypes.generic_fofn",
                 "id": "fofn_id",
-                "title": "FOFN"
+                "title": "FOFN of daligner output (unmerged .las, stage-1)"
             }
         ],
         "resource_types": [],

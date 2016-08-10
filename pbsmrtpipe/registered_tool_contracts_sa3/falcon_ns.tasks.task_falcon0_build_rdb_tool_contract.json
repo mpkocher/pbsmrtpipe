@@ -26,11 +26,11 @@
         "nproc": 1,
         "output_types": [
             {
-                "default_name": "run_daligner_jobs.sh",
-                "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
+                "default_name": "run_daligner_jobs0.sh",
+                "description": "bash script",
                 "file_type_id": "PacBio.FileTypes.txt",
-                "id": "run_daligner_jobs.sh_id",
-                "title": "Shell script"
+                "id": "run_daligner_jobs0_id",
+                "title": "bash file from HPC.daligner, stage-0"
             },
             {
                 "default_name": "dazzler.db",

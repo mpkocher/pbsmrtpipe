@@ -13,7 +13,7 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "Chunk JSON Filtered Fasta",
+                "title": "Chunk of .fasta for daligner, stage-0",
                 "description": "Chunked JSON Filtered Fasta",
                 "default_name": "fasta.chunked",
                 "id": "cjson_out",
