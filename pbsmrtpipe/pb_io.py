@@ -350,7 +350,8 @@ def __parse_options(child_name, root):
             assert len(vs) == 1
             v = vs[0]
             value = v.text
-
+            if value == "\"\"": # XXX special case for empty str values
+                value = ""
             options.append((i, value))
 
     return options
