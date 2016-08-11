@@ -297,10 +297,10 @@
                 "file_type_id": "PacBio.DataSet.ConsensusReadSet"
             },
             {
-                "title": "CCS report",
+                "title": "CCS run summary",
                 "description": "Text report summarizing run statistics",
-                "default_name": "ccs_report",
-                "id": "ccs_report_txt",
+                "default_name": "ccs_summary",
+                "id": "ccs_summary_txt",
                 "file_type_id": "PacBio.FileTypes.txt"
             }
         ],
