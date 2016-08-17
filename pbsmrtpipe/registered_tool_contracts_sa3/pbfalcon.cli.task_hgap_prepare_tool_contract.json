@@ -2,7 +2,7 @@
     "version": "1.0.0",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbfalcon.cli.hgap_prepare --resolved-tool-contract ",
+        "exe": "python -m pbfalcon.cli.task_hgap_prepare --resolved-tool-contract ",
         "env": {}
     },
     "tool_contract_id": "falcon_ns.tasks.task_hgap_prepare",

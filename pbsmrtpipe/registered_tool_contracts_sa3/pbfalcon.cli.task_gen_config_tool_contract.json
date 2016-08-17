@@ -2,7 +2,7 @@
     "version": "1.0.0",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbfalcon.cli.gen_config --resolved-tool-contract ",
+        "exe": "python -m pbfalcon.cli.task_gen_config --resolved-tool-contract ",
         "env": {}
     },
     "tool_contract_id": "falcon_ns.tasks.task_falcon_gen_config",
