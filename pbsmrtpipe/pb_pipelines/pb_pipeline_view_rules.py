@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
+"""
+Specifies pipeline datastore view rules and generates JSON files for building
+into smrtlink.
+"""
+
+import argparse
 import logging
+import os.path as op
+import os
 import sys
 
 from pbcommand.models import (FileTypes, DataStoreViewRule,
@@ -62,8 +70,12 @@ def sat_view_rules():
 
 def main(argv):
     logging.basicConfig(level=logging.INFO)
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--output-dir", action="store", default=os.getcwd(),
+                   help="Output directory for JSON files")
+    args = p.parse_args(argv[1:])
     for pipeline_id, rules in REGISTERED_VIEW_RULES.iteritems():
-        file_name = "pipeline_datastore_view_rules-{p}.json".format(p=pipeline_id)
+        file_name = op.join(args.output_dir, "pipeline_datastore_view_rules-{p}.json".format(p=pipeline_id))
         log.info("Writing {f}".format(f=file_name))
         rules.write_json(file_name)
     return 0
