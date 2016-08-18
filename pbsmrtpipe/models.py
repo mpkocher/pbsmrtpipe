@@ -231,6 +231,7 @@ class MetaTask(object):
             output_file_display_names is not None else ["" for x in output_file_names]
         self.output_file_descriptions = output_file_descriptions if \
             output_file_descriptions is not None else ["" for x in output_file_names]
+        self.datastore_source_id = None
 
     def __eq__(self, other):
         # need to rethink this.

@@ -61,6 +61,9 @@ class TestDataStoreFileLabels(TestBase):
 
 
 class TestDataStoreUuids(TestBase):
+    """
+    Verify that report and DataSet UUIDs are propagated to the datastore.
+    """
 
     def test_datastore_report_file_uuid(self):
         p = os.path.join(self.job_dir, "workflow", "datastore.json")
