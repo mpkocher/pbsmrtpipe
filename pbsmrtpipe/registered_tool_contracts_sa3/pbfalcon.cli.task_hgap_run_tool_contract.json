@@ -8,7 +8,9 @@
     "tool_contract_id": "falcon_ns.tasks.task_hgap_run",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard",
-        "resource_types": [],
+        "resource_types": [
+            "$tmpdir"
+        ],
         "description": "pbcommand wrapper for falcon_ns.tasks.task_hgap_run",
         "schema_options": [],
         "output_types": [
