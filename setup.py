@@ -44,8 +44,6 @@ setup(
     setup_requires=['nose>=1.0'],
     # Maybe the pbtools-* should really be done in a subparser style
     entry_points={'console_scripts': ['pbsmrtpipe = pbsmrtpipe.cli:main',
-                                      'pbtools-gather = pbsmrtpipe.tools.gather:main',
-                                      'pbtools-chunker = pbsmrtpipe.tools.chunker:main',
                                       'pbtools-runner = pbsmrtpipe.tools.runner:main',
                                       'pbtestkit-runner = pbsmrtpipe.testkit.runner:main',
                                       'pbtestkit-multirunner = pbsmrtpipe.testkit.multirunner:main',

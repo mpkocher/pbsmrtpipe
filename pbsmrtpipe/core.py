@@ -222,7 +222,8 @@ def register_pipeline(pipeline_id, display_name, version, tags=(), task_options=
             log.warn("'{i}' has already been registered.".format(i=pipeline_id))
 
         bs = func()
-        load_pipeline_bindings(REGISTERED_PIPELINES, pipeline_id, display_name, version, func.__doc__, bs, tags, task_options=task_options)
+        pipeline_desc = func.__doc__ if func.__doc__ is not None else "Pipeline Id:{i} Name:{n}".format(i=pipeline_id, n=display_name)
+        load_pipeline_bindings(REGISTERED_PIPELINES, pipeline_id, display_name, version, pipeline_desc, bs, tags, task_options=task_options)
 
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)

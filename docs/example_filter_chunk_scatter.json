@@ -1,11 +1,63 @@
 {
-  "comments": "Example scatter chunks with metadata",
-  "nchunks": 5,
-  "chunks": {
-    "0": {"$chunk.movie_fofn_id": "/path/to/chunk_0_movie.fofn", "nfofns": 4, "$chunk.report_id": "/path/to/report.json"},
-    "1": {"$chunk.movie_fofn_id": "/path/to/chunk_1_movie.fofn", "nfofns": 2, "$chunk.report_id": "/path/to/report.json"},
-    "2": {"$chunk.movie_fofn_id": "/path/to/chunk_2_movie.fofn", "nfofns": 3, "$chunk.report_id": "/path/to/report.json"},
-    "3": {"$chunk.movie_fofn_id": "/path/to/chunk_3_movie.fofn", "nfofns": 4, "$chunk.report_id": "/path/to/report.json"},
-    "4": {"$chunk.movie_fofn_id": "/path/to/chunk_4_movie.fofn", "nfofns": 3, "$chunk.report_id": "/path/to/report.json"}
-  }
+    "chunks": [
+        {
+            "chunk_id": "scattered-fasta_0",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_0.fasta",
+                "total_bases": 79268,
+                "nrecords": 143
+            }
+        },
+        {
+            "chunk_id": "scattered-fasta_1",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_1.fasta",
+                "total_bases": 75847,
+                "nrecords": 143
+            }
+        },
+        {
+            "chunk_id": "scattered-fasta_2",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_2.fasta",
+                "total_bases": 85497,
+                "nrecords": 143
+            }
+        },
+        {
+            "chunk_id": "scattered-fasta_3",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_3.fasta",
+                "total_bases": 78354,
+                "nrecords": 143
+            }
+        },
+        {
+            "chunk_id": "scattered-fasta_4",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_4.fasta",
+                "total_bases": 75831,
+                "nrecords": 143
+            }
+        },
+        {
+            "chunk_id": "scattered-fasta_5",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_5.fasta",
+                "total_bases": 72765,
+                "nrecords": 143
+            }
+        },
+        {
+            "chunk_id": "scattered-fasta_6",
+            "chunk": {
+                "$chunk.fasta_id": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1/scattered-fasta_6.fasta",
+                "total_bases": 74672,
+                "nrecords": 142
+            }
+        }
+    ],
+    "_comment": "Chunks written at 2016-08-17 18:47:48.937366",
+    "nchunks": 7,
+    "_version": "0.1.0"
 }
