@@ -18,11 +18,11 @@ Where (0..N) Task1 is a list of tasks with task type id Task1.
 
 The new .chunk.json files provide a new API and file format that the workflow semantically understands via chunk keys (e.g., $chunk.movie_fofn_id). The chunking operation is only supported at single task level, not multiple tasks or "channels". In other words, a single task is scatter and gathered, then the single output can be passed to a downstream task.
 
-.. note:: The general scattering/gathering problem is an involved that has a modicum of complexity.
+.. note:: The general scattering/gathering problem is a bit involved that has a modicum of complexity.
 
-Given a task `my-exe` with a input type signature of (Fasta, Fastq, CSV), there are several models of splitting up the files. The first input (Fasta) can be split into N chunks, while the second input can not be chunk (i.e., passed directly) and the CSV could be split into M chunks (where N < M). Other possibilities include an all to all comparison of Fasta and Fastq to generate N chunks.
+For example, given a task, `my-exe`, with a input type signature of (Fasta, Fastq, CSV), there are several models of splitting up the files. The first input (Fasta) can be split into N chunks, while the second input can not be chunk (i.e., passed directly) and the CSV could be split into M chunks (where N < M). Other possibilities include an all to all comparison of Fasta and Fastq to generate N chunks.
 
-There are a myriad of other scatter/gather patterns that are specific to the access patterns of a specific tool. The current design separates the chunking operations from task of interest in a language agnostic manner. By delegating the scatter/gather pattern to the tool combined with a defined chunk operator, the chunking mechanism is user defined and dynamic at runtime and there are minimal constraints on the chunking pattern of how a single task is scattered/gathered in a pipeline.
+There are a myriad of other scatter/gather patterns that are specific to the access patterns of a specific tool. The current design separates the chunking operations from the task of interest in a language agnostic manner. By delegating the scatter/gather pattern to the separate tool, combined with defining a chunk operator, the chunking mechanism is a user defined and dynamic runtime process that has minimal constraints on the chunking pattern.
 
 
 High level Model of Chunking Steps
@@ -30,7 +30,7 @@ High level Model of Chunking Steps
 
 The chunking process is broken down into 4 steps described below.
 
-- Step 0. Define a companion scatter/chunking task that takes the same input type signature but will a emit a single JSON Chunk file (defined below) as output
+- Step 0. Define a "companion" scatter/chunking task that takes the same input type signature but will a emit a single JSON Chunk file (defined below) as output
 - Step 1. pbsmrtpipe will "re-map" task inputs (Task1) to the companion scattered task input (ScatterTask1), run scatter task to create scatter.chunks.json
 - Step 2. at the workflow level read in the scatter.chunks.json, Create N new chunked Task1, map **$chunk.{key_id}** to N chunk Task1 inputs
 - Step 3. after N chunked Task1 are completed, at the workflow level, create gather.chunk.json from **$chunk.{key_id}** of outputs
@@ -42,7 +42,9 @@ Example Chunk model
 
 Taken from `testkit-data/dev_local_fasta_chunk <https://github.com/PacificBiosciences/pbsmrtpipe/tree/master/testkit-data/dev_local_fasta_chunk>`_
 
-Please run this testkit job included within pbsmrtpipe and examine the logs and graph in the job directory output of `job_output/workflow/workflow.svg` in your webbrower to examine the DAG.
+.. note:: Please run this testkit job included within pbsmrtpipe and examine the logs and graph in the job directory output of `job_output/workflow/workflow.svg` in your webbrower to examine the DAG.
+
+More examples of chunking tools and examples are in `pbcoretools <https://github.com/PacificBiosciences/pbcoretools>`_
 
 
 In this testkit-job, the "pbsmrtpipe.tasks.dev_filter_fasta" has a companion chunked task and . The task as one input a **Fasta** File and emits a single **Fasta** file type.
@@ -80,8 +82,8 @@ There will be a log message of the form:
 ::
 
 
-Chunk Data Model
-~~~~~~~~~~~~~~~~
+Chunk Operator Data Model
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - `task-id` The original task id to scatter
 
@@ -122,11 +124,11 @@ The workflow will use the ToolContract and ResolvedToolContract interfaces to ca
 
     $> python -m pbcoretools.tasks.scatter_filter_fasta --chunk_key fasta_id --max_nchunks 7 /Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbsmrtpipe.tasks.dev_txt_to_fasta-0/file.fasta scatter.chunk.json
 
-The `chunk-key` option is just provided so that the commandline exe can be used for any fofn type.
+The `--chunk_key` value is provided to communicate (from the workflow engine) the specific chunk value inside the `PipelineChunk` data model.
 
-The `max-chunks` argument is set to a value consistent with the metadata of the FOFN (nfiles extracted from from the report.json file). The max number of chunks is described via Dependency Injection model using a DI model list with a custom function to determine the number of chunks from the metadata provided in the report.json file).
+The `--max_chunks` value is provided to communicate (from the workflow engine) the maximum number of chunks that chould be created by the chunking task. If the your chunking tool exceeds this value, the workflow engine will raise an exception at terminate the pipeline execution.
 
-.. note:: The max nchunks can be configured in `pbsmrtpipe.options.max_nchunks` of the preset.xml or workflow.xml
+.. note:: The max nchunks can be configured in the workflow level options with identifier `pbsmrtpipe.options.max_nchunks` in either the preset.xml or workflow.xml
 
 .. code-block:: xml
 
@@ -134,7 +136,7 @@ The `max-chunks` argument is set to a value consistent with the metadata of the 
         <value>7</value>
     </option>
 
-This output of the exe will create a scatter.chunk.json. Chunk keys that begin with '$chunk.' are inputs or outputs that communicated and written (by the workflow), respectively. Keys not beginning with '$chunk.' are assumed to be chunk metadata written by the scatter tool.
+This output of the exe will create a scatter.chunk.json. For tools using python, `pbcommand` has several helper methods to help write the PipelineChunk model(s) to JSON. Chunk keys that begin with '$chunk.' are inputs or outputs that communicated and written (by the workflow), respectively. Keys not beginning with '$chunk.' are assumed to be chunk metadata written by the scatter tool.
 
 Raw output from the example testkit output task dir `testkit-data/dev_local_fasta_chunk/job_output/tasks/pbcoretools.tasks.dev_scatter_filter_fasta-1`
 
@@ -193,9 +195,10 @@ Gather #2
 
     $> python -m pbcoretools.tasks.gather_fasta --chunk_key filtered_fasta_id .pbcoretools.tasks.dev_scatter_filter_fasta-d6ba7f08-7ac7-4d94-a292-89d897f5cd06-gathered-pipeline.chunks.json gathered.output.fasta
 
-(there's an assumption that chunk "keys" in the chunk file are hardcoded, i.e., hardcoded to pbsmrtpipe task definition to always look for "$chunk.rgn_fofn_id" in chunk.json file. This is probably not the best idea, but I don't know if passing the chunk keys within a task makes sense.)
+This will create a single output file for that specific gather chunk defined in the Chunk Operator.
 
-Also, gather commandline tools must only have one output.
+
+.. note:: Gather commandline tools must only have one output. In other words, these tools take a single json file and chunk key and emit a single output file that maps to one of the outputs of the original unchunked task (e.g., `pbsmrtpipe.tasks.dev_filter_fasta:0`.
 
 Step 4.
 -------
