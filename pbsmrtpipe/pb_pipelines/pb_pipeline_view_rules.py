@@ -38,6 +38,11 @@ def register_pipeline_rules(pipeline_id, smrtlink_version):
             return func(*args, **kwds)
     return deco_wrapper
 
+def _log_file_rules():
+    return [
+        ("pbsmrtpipe::master.log", FileTypes.LOG, False),
+        ("pbsmrtpipe::pbsmrtpipe.log", FileTypes.LOG, False)
+    ]
 
 def _mapping_report_rules():
     return [
@@ -55,7 +60,7 @@ def _variant_report_rules():
 
 @register_pipeline_rules("sa3_sat", "3.2")
 def sat_view_rules():
-    return _mapping_report_rules() + _variant_report_rules() + [
+    return _mapping_report_rules() + _variant_report_rules() + _log_file_rules() + [
         ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT, True)
     ]
 
