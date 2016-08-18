@@ -13,23 +13,6 @@ Core Pbsmrtpipe executable
 Chunking Tools
 ~~~~~~~~~~~~~~
 
-
-Chunking/Scatter
-
-.. argparse::
-   :module: pbsmrtpipe.tools.chunker
-   :func: get_parser
-   :prog: pbtools-chunker
-
-
-Gather
-
-.. argparse::
-   :module: pbsmrtpipe.tools.gather
-   :func: get_parser
-   :prog: pbtools-gather
-
-
 Runner
 
 .. argparse::
