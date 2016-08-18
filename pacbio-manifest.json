@@ -3,7 +3,7 @@
     "id": "pbsmrtpipe",
     "name": "pbsmrtpipe Workflow Engine",
     "_comment": "Need to add the first 6 chars of the GH SHA",
-    "version": "0.43.0-FIXME",
+    "version": "0.43.1",
     "description": "PacBio Workflow engine for running distributed analysis pipelines",
     "dependencies": ["pbcommand", "pbcore" ]
   }
