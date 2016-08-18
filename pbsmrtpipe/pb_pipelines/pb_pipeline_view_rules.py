@@ -38,11 +38,7 @@ def register_pipeline_rules(pipeline_id, smrtlink_version):
             return func(*args, **kwds)
     return deco_wrapper
 
-def _log_file_rules():
-    return [
-        ("pbsmrtpipe::master.log", FileTypes.LOG, False),
-        ("pbsmrtpipe::pbsmrtpipe.log", FileTypes.LOG, False)
-    ]
+#define files rules
 
 def _mapping_report_rules():
     return [
@@ -57,11 +53,67 @@ def _variant_report_rules():
         ("pbreports.tasks.top_variants-out-0", FileTypes.REPORT, True)
     ]
 
+def _isoseq_report_rules():
+    return [
+        ("pbtranscript.tasks.classify-out-3", FileTypes.JSON, True),
+        ("pbreports.tasks.isoseq_classify-out-0", FileTypes.REPORT, True)
+    ]
+
+def _ccs_report_rules():
+    return [
+        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT, True),
+    ]
+
+#define pipeline rules
+
+@register_pipeline_rules("hgap_fat", "3.2")
+def hgap_view_rules():
+    return   [
+        ("falcon_ns.tasks.task_hgap_prepare-out-0", FileTypes.JSON, True),
+        ("falcon_ns.tasks.task_hgap_prepare-out-1", FileTypes.JSON, True),
+        ("falcon_ns.tasks.task_hgap_prepare-out-2", FileTypes.LOG, True),
+        ("falcon_ns.tasks.task_hgap_run-out-1", FileTypes.REPORT, True),
+        ("falcon_ns.tasks.task_hgap_run-out-2", FileTypes.REPORT, True),
+        ("falcon_ns.tasks.task_hgap_run-out-3", FileTypes.LOG, True)
+    ]
+
+
+@register_pipeline_rules("sa3_ds_isoseq", "3.2")
+def isoseq_view_rules():
+    return  _isoseq_report_rules() + _ccs_report_rules() + [
+        ("pbtranscript.tasks.separate_flnc-out-0", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.create_chunks-out-0", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.create_chunks-out-1", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.create_chunks-out-2", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.combine_cluster_bins-out-7", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.cluster_bins-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.ice_partial_cluster_bins-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.ice_polish_cluster_bins-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.gather_polished_isoforms_in_each_bin-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.ice_cleanup-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.combine_cluster_bins-out-1", FileTypes.JSON, True),
+        ("pbreports.tasks.isoseq_cluster-out-0", FileTypes.REPORT, True)
+
+    ]
+
+@register_pipeline_rules("sa3_ds_isoseq_classify", "3.2")
+def isoseq_classify_view_rules():
+    return  _isoseq_report_rules() + _ccs_report_rules() + [
+
+    ]
 
 @register_pipeline_rules("sa3_sat", "3.2")
 def sat_view_rules():
-    return _mapping_report_rules() + _variant_report_rules() + _log_file_rules() + [
-        ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT, True)
+    return _mapping_report_rules() + _variant_report_rules() + [
+        ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT, True),
+        ("pbalign.tasks.pbalign-out-0", FileTypes.XML, True)
+    ]
+
+@register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
+def resequencing_view_rules():
+    return _mapping_report_rules() + _variant_report_rules() + [
+        ("pbalign.tasks.pbalign-out-0", FileTypes.XML, True)
     ]
 
 
