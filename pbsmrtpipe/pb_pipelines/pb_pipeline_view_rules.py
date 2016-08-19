@@ -102,20 +102,20 @@ def ccs_view_rules():
 
 @register_pipeline_rules("sa3_ds_barcode_ccs", "3.2")
 def ccs_barcoding_view_rules():
-    return _ccs_report_rules() + [
-        ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT, True),
-    ]
+    return _ccs_report_rules() + _barcode_report_rules()
 
 
 @register_pipeline_rules("sa3_ds_ccs_align", "3.2")
 def ccs_mapping_view_rules():
-    return _ccs_report_rules() + _mapping_report_rules() + _coverage_report_rules()
+    return _ccs_report_rules() + _coverage_report_rules() + [
+        ("pbreports.tasks.mapping_stats_ccs-out-0", FileTypes.REPORT, True)
+    ]
 
 
 @register_pipeline_rules("ds_modification_detection", "3.2")
 def basemod_view_rules():
     return _mapping_report_rules() + [
-        ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True),
+        ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True)
     ]
 
 
@@ -172,7 +172,7 @@ def laa_view_rules():
 
 
 @register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
-def laa_view_rules(): 
+def laa_barcode_view_rules(): 
     return _barcode_report_rules() + _laa_report_rules()
 
 
