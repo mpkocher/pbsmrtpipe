@@ -181,15 +181,9 @@ Step 3.
 
 Call the required gather tasks to create the final gathered files.
 
-Gather tasks for `pbsmrtpipe.tasks.dev_filter_fasta`
+Gather tasks for `pbsmrtpipe.tasks.dev_filter_fasta` only require 1 gather output. In general, if a task has N outputs, it must defined N gather tasks. Each gather task takes a chunked JSON file and a chunk-key and will emit a single file.
 
-Gather #1
-
-.. code-block:: bash
-
-    $> pbtools-gather csv --chunk-key csv_id chunk.json -o file.csv
-
-Gather #2
+Example
 
 .. code-block:: bash
 
