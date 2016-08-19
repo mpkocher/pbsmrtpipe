@@ -38,8 +38,6 @@ def register_pipeline_rules(pipeline_id, smrtlink_version):
             return func(*args, **kwds)
     return deco_wrapper
 
-# define files rules
-
 
 def _mapping_report_rules():
     return [
@@ -90,8 +88,6 @@ def _pbcoretools_alignmentset_rules():
     return [
         ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN, True)
     ]
-
-# define pipeline rules
 
 
 @register_pipeline_rules("sa3_ds_barcode", "3.2")
@@ -195,8 +191,7 @@ def resequencing_view_rules():
 def main(argv):
     logging.basicConfig(level=logging.INFO)
     for pipeline_id, rules in REGISTERED_VIEW_RULES.iteritems():
-        file_name = "pipeline_datastore_view_rules-{p}.json".format(
-            p=pipeline_id)
+        file_name = "pipeline_datastore_view_rules-{p}.json".format(p=pipeline_id)
         log.info("Writing {f}".format(f=file_name))
         rules.write_json(file_name)
     return 0
