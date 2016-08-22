@@ -93,3 +93,6 @@ reinstall-pb-repos:
 	pip uninstall -y pbcore
 	pip uninstall -y pbcoretools
 	pip install -r PB_REQUIREMENTS.txt
+
+repl:
+	ipython -i -c "import pbsmrtpipe.loader as L; rx_tasks, rx_files, rx_operators, rx_pipelines = L.load_all()"
