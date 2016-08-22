@@ -22,7 +22,8 @@ import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.driver as D
 from pbsmrtpipe.utils import StdOutStatusLogFilter, setup_log, compose
 
-from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY, ENV_TC_DIR)
+from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY, ENV_TC_DIR,
+                                  ENV_CHK_OPT_DIR)
 
 log = logging.getLogger()
 slog = logging.getLogger('status.' + __file__)
@@ -601,6 +602,30 @@ def _args_run_diagnostics(args):
         return 0
 
 
+def _args_show_chunk_operator_summary(args):
+    import pbsmrtpipe.loader as L
+    chunk_operators = L.load_all_installed_chunk_operators()
+
+    if chunk_operators:
+        for i, xs in enumerate(chunk_operators.iteritems()):
+            op_id, chunk_operator = xs
+            print "{i}. Chunk Operator Id: {o}".format(o=op_id, i=i)
+            print "  Scatter :"
+            print "    Scatter Task: {i} -> Chunk Task: {t}".format(i=chunk_operator.scatter.task_id, t=chunk_operator.scatter.scatter_task_id)
+            for si, c in enumerate(chunk_operator.scatter.chunks):
+                print "    {i} Task Binding: {t} -> Chunk Key: {k}".format(t=c.task_input, k=c.chunk_key, i=si)
+            print "  Gather :"
+            for ci, c in enumerate(chunk_operator.gather.chunks):
+                print "    {i} Gather Task: {t} ".format(t=c.gather_task_id, i=ci)
+                print "      Task Binding: {i} -> Chunk Key: {k} ".format(i=c.task_input, k=c.chunk_key)
+    else:
+        print "WARNING. No Chunk operators loaded"
+
+    return 0
+
+
+
+
 def _add_required_preset_xml_option(p):
     p.add_argument('preset_xml', type=validate_file, help="Path to Preset XML file.")
     return p
@@ -637,7 +662,7 @@ def get_parser():
     pipline_id_desc = "Run a registered pipeline by specifying the pipeline id."
     builder('pipeline-id', pipline_id_desc, add_pipeline_id_parser_options, _args_run_pipeline_id)
 
-    builder('task', "Run Task by id.", add_task_parser_options, _args_task_runner)
+    builder('task', "Run Task (i.e., ToolContract) by id", add_task_parser_options, _args_task_runner)
 
     # Show Templates
     desc = "List all pipeline templates. A pipeline 'id' can be referenced in " \
@@ -664,6 +689,9 @@ def get_parser():
 
     diag_desc = "Diagnostic tests of preset.xml and cluster configuration"
     builder('run-diagnostic', diag_desc, add_args_run_diagnstic, _args_run_diagnostics)
+
+    desc_chunk_op_show = "Show a list of loaded chunk operators for Scatter/Gather Tasks. Extend resource loading by exporting ENV var {i}. Example export {i}=/path/to/chunk-operators-xml-dir".format(i=ENV_CHK_OPT_DIR)
+    builder('show-chunk-operators', desc_chunk_op_show, lambda x: x, _args_show_chunk_operator_summary)
 
     return p
 
