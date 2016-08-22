@@ -110,26 +110,49 @@ def load_all_tool_contracts():
     return rtasks
 
 
-def _load_xml_chunk_operators_from_python_module_name(name):
+def __load_chunk_operators_from_dir(path):
     import pbsmrtpipe.pb_io as IO
-    m = importlib.import_module(name)
-    d = os.path.dirname(m.__file__)
 
     operators = []
-    for x in os.listdir(d):
+
+    for x in os.listdir(path):
         if x.endswith(".xml"):
-            p = os.path.join(d, x)
+            p = os.path.join(path, x)
             operator = IO.parse_operator_xml(p)
             operators.append(operator)
 
-    log.debug("Loaded {o} operators from {n} -> {d}".format(o=len(operators), n=name, d=d))
     return {op.idx: op for op in operators}
 
 
+def _load_chunk_operators_from_env(env_name=GlobalConstants.ENV_CHK_OPT_DIR):
+    dir_name = _get_env_path_if_defined(env_name)
+    operators_d = {}
+    if dir_name is not None:
+        operators_d = __load_chunk_operators_from_dir(dir_name)
+        log.debug("Loaded {o} operators from {d}".format(o=len(operators_d), d=dir_name))
+    return operators_d
+
+
+def _load_xml_chunk_operators_from_python_module_name(name):
+    m = importlib.import_module(name)
+    path = os.path.dirname(m.__file__)
+    return __load_chunk_operators_from_dir(path)
+
+
 def load_all_installed_chunk_operators():
+    """:rtype dict[str, ChunkOperator]"""
+
+    module_name = "pbsmrtpipe.chunk_operators"
+    chunk_operator_env_name = GlobalConstants.ENV_CHK_OPT_DIR
+
     global _REGISTERED_OPERATORS
     if _REGISTERED_OPERATORS is None:
-        _REGISTERED_OPERATORS = _load_xml_chunk_operators_from_python_module_name("pbsmrtpipe.chunk_operators")
+        d1 = _load_xml_chunk_operators_from_python_module_name(module_name)
+        d2 = _load_chunk_operators_from_env(env_name=chunk_operator_env_name)
+        # Values defined in the ENV will overwrite operators defined in python module loading
+        d1.update(d2)
+        _REGISTERED_OPERATORS = d1
+        log.debug("Loaded {o} total chunk operators from module {m} ENV {e} (if defined)".format(o=len(d1), m=module_name, e=chunk_operator_env_name))
 
     return _REGISTERED_OPERATORS
 
