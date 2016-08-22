@@ -59,29 +59,6 @@
             },
             {
                 "pb_option": {
-                    "default": 0,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.min_total_barcode_score",
-                    "name": "Min total barcode score",
-                    "description": "Minimum total barcode score to require of subreads."
-                },
-                "title": "JSON Schema for pblaa.task_options.min_total_barcode_score",
-                "required": [
-                    "pblaa.task_options.min_total_barcode_score"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_total_barcode_score": {
-                        "default": 0,
-                        "type": "integer",
-                        "description": "Minimum total barcode score to require of subreads.",
-                        "title": "Min total barcode score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
                     "default": false,
                     "type": "boolean",
                     "option_id": "pblaa.task_options.full_length",
@@ -686,7 +663,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
-        "_comment": "Created by v0.4.5",
+        "_comment": "Created by v0.4.6",
         "name": "laa",
         "input_types": [
             {
