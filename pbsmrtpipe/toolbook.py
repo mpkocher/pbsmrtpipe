@@ -3,6 +3,7 @@ import itertools
 import tempfile
 import StringIO
 import networkx as nx
+from networkx.drawing.nx_agraph import write_dot
 from IPython.display import display_svg
 
 from pbsmrtpipe.external_tools import dot_file_to_svg, dot_file_to_png
@@ -48,5 +49,5 @@ def display_dot_str(dot_str):
 
 def display_networkx_graph(g):
     dot_file = _to_tmp_file('.dot')
-    nx.write_dot(g, dot_file)
+    write_dot(g, dot_file)
     display_dot(dot_file)
