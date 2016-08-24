@@ -122,14 +122,14 @@ def ccs_mapping_view_rules():
 
 @register_pipeline_rules("ds_modification_detection", "3.2")
 def basemod_view_rules():
-    return _mapping_report_rules() + [
+    return _mapping_report_rules() + _pbcoretools_alignmentset_rules() + [
         ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True)
     ]
 
 
 @register_pipeline_rules("ds_modification_motif_analysis", "3.2")
 def basemod_and_motif_view_rules():
-    return _mapping_report_rules() + [
+    return _mapping_report_rules() + _pbcoretools_alignmentset_rules() + [
         ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True),
         ("pbreports.tasks.motifs_report-out-0", FileTypes.REPORT, True)
     ]
