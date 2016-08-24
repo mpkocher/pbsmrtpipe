@@ -92,7 +92,7 @@ def _ccs_report_rules():
     ]
 
 
-def _pbcoretools_alignmentset_rules():
+def _pbalign_alignmentset_rules():
     return [
         ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN, True)
     ]
@@ -122,14 +122,14 @@ def ccs_mapping_view_rules():
 
 @register_pipeline_rules("ds_modification_detection", "3.2")
 def basemod_view_rules():
-    return _mapping_report_rules() + [
+    return _mapping_report_rules() + _pbalign_alignmentset_rules() + [
         ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True)
     ]
 
 
 @register_pipeline_rules("ds_modification_motif_analysis", "3.2")
 def basemod_and_motif_view_rules():
-    return _mapping_report_rules() + [
+    return _mapping_report_rules() + _pbalign_alignmentset_rules() + [
         ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True),
         ("pbreports.tasks.motifs_report-out-0", FileTypes.REPORT, True)
     ]
@@ -186,14 +186,14 @@ def laa_barcode_view_rules():
 
 @register_pipeline_rules("sa3_sat", "3.2")
 def sat_view_rules():
-    return _pbcoretools_alignmentset_rules() + _mapping_report_rules() + _coverage_report_rules() + _variant_report_rules() + [
+    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _coverage_report_rules() + _variant_report_rules() + [
         ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT, True)
     ]
 
 
 @register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
 def resequencing_view_rules():
-    return _pbcoretools_alignmentset_rules() + _mapping_report_rules() + _coverage_report_rules() + _variant_report_rules()
+    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _coverage_report_rules() + _variant_report_rules()
 
 
 def main(argv):
