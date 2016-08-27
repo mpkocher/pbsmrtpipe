@@ -160,7 +160,7 @@ def get_falcon_pipeline_lean():
     falcon, _ = _get_polished_falcon_pipeline()
     return falcon
 
-@dev_register("polished_falcon_fat", "X - Assembly (HGAP 4 - deprecated)",
+@dev_register("polished_falcon_fat", "Assembly (HGAP 4)",
         task_options=RESEQUENCING_TASK_OPTIONS)
 def get_falcon_pipeline_fat():
     """Same as polished_falcon_lean, but with reports.
@@ -216,7 +216,7 @@ def hgap_lean():
     hgap_run = _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
     return hgap_prepare + hgap_run
 
-@dev_register("hgap_fat", "Assembly (HGAP 5)", tags=())
+@dev_register("hgap_fat", "Assembly (HGAP 5 beta)", tags=())
 def hgap_fat():
     """GUI polished HGAP pipeline.
     BAM input comes from the SubreadSet.
