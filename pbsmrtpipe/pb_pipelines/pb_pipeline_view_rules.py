@@ -135,8 +135,26 @@ def basemod_and_motif_view_rules():
     ]
 
 
+@register_pipeline_rules("polished_falcon_fat", "3.2")
+def hgap4_view_rules():
+    return [
+        ("pbcoretools.tasks.bam2fasta-out-0", FileTypes.FASTA , True),
+        ("pbcoretools.tasks.fasta2fofn-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon_make_fofn_abs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon0_build_rdb-out-0", FileTypes.TXT , True),
+        ("falcon_ns.tasks.task_falcon1_build_pdb-out-0", FileTypes.TXT , True),
+        ("falcon_ns.tasks.task_falcon0_run_daligner_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon1_run_daligner_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon_gen_config-out-0", FileTypes.CFG , True),
+        ("falcon_ns.tasks.task_falcon0_build_rdb-out-2", FileTypes.TXT , True),
+        ("pbreports.tasks.polished_assembly-out-0", FileTypes.REPORT , True),
+        ("falcon_ns.tasks.task_report_preassembly_yield-out-0", FileTypes.REPORT , True)
+    ]
+
 @register_pipeline_rules("hgap_fat", "3.2")
-def hgap_view_rules():
+def hgap5_view_rules():
     return [
         ("falcon_ns.tasks.task_hgap_prepare-out-0", FileTypes.JSON, True),
         ("falcon_ns.tasks.task_hgap_prepare-out-1", FileTypes.JSON, True),
