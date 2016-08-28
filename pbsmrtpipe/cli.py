@@ -206,6 +206,8 @@ def run_show_template_details(template_id, output_preset_xml):
 
     from pbsmrtpipe.pb_io import binding_str_to_task_id_and_instance_id
 
+    task_options = {}
+
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]
         print "**** Pipeline Summary ****"
@@ -219,10 +221,7 @@ def run_show_template_details(template_id, output_preset_xml):
         print
         print pretty_bindings(pipeline.all_bindings)
 
-        if isinstance(output_preset_xml, str):
-            rtasks, rfiles, operators, pipelines = __dynamically_load_all()
-            task_options = {}
-            for b_out, b_in, in pipeline.all_bindings:
+        for b_out, b_in, in pipeline.all_bindings:
                 for x in (b_out, b_in):
                     if not binding_str_is_entry_id(x):
                         task_id, _, _ = binding_str_to_task_id_and_instance_id(x)
@@ -242,14 +241,12 @@ def run_show_template_details(template_id, output_preset_xml):
                                 else:
                                     task_options[k] = copy.deepcopy(vx)
 
+        if isinstance(output_preset_xml, str):
             warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
 
-        if pipeline.task_options:
-            print
-            print "**** Default Task Options ****"
-            for k, v in pipeline.task_options.iteritems():
-                print " {k} -> {v}".format(k=k, v=v)
+        if task_options:
+            _print_option_schemas(task_options)
         else:
             print "No default task options"
 
