@@ -6,6 +6,7 @@ import json
 import re
 
 from pbcommand.pb_io.report import load_report_from_json
+from pbcommand.validators import validate_report
 from pbcommand.models import FileTypes
 from pbcore.io import getDataSetUuid
 
@@ -102,3 +103,17 @@ class TestDataStoreUuids(TestBase):
                     n_tested += 1
             if n_tested == 0:
                 raise unittest.SkipTest("No DataSet XML files in datastore.")
+
+
+class TestReports(TestBase):
+    def test_datastore_report_validation(self):
+        p = os.path.join(self.job_dir, "workflow", "datastore.json")
+        with open(p, 'r') as r:
+            d = json.loads(r.read())
+            n_tested = 0
+            for file_info in d['files']:
+                if file_info['fileTypeId'] == FileTypes.REPORT.file_type_id:
+                    errors = validate_report(file_info['path'], False)
+                    if len(errors) > 0:
+                        self.fail("Report validation failed:\n{e}".format(
+                                  e="\n".join([str(e) for e in errors])))
