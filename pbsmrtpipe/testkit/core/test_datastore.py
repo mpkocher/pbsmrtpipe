@@ -113,7 +113,8 @@ class TestReports(TestBase):
             n_tested = 0
             for file_info in d['files']:
                 if file_info['fileTypeId'] == FileTypes.REPORT.file_type_id:
-                    errors = validate_report(file_info['path'], False)
-                    if len(errors) > 0:
+                    try:
+                        r = validate_report(file_info['path'])
+                    except ValueError as e:
                         self.fail("Report validation failed:\n{e}".format(
-                                  e="\n".join([str(e) for e in errors])))
+                                  e=str(e)))
