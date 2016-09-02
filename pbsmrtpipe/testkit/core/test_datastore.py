@@ -5,7 +5,8 @@ import logging
 import json
 import re
 
-from pbcommand.pb_io.report import load_report_from_json
+from pbcommand.pb_io.report import (load_report_from_json,
+                                    load_report_spec_from_json)
 from pbcommand.validators import validate_report
 from pbcommand.models import FileTypes
 from pbcore.io import getDataSetUuid
@@ -106,15 +107,55 @@ class TestDataStoreUuids(TestBase):
 
 
 class TestReports(TestBase):
-    def test_datastore_report_validation(self):
+    """
+    Validate Report JSON files against AVRO schema and specifications.
+    """
+
+    def setUp(self):
+        # FIXME This will change at some point
+        try:
+            import pbreports
+        except ImportError:
+            self._specs = None
+        else:
+            self._specs = {}
+            spec_path = os.path.join(os.path.dirname(pbreports.__file__),
+                                     "report", "specs")
+            for file_name in os.listdir(spec_path):
+                if file_name.endswith(".json"):
+                    path = os.path.join(spec_path, file_name)
+                    spec = load_report_spec_from_json(path)
+                    self._specs[spec.id] = spec
+
+    def _validate_datastore_reports(self, validate_func):
         p = os.path.join(self.job_dir, "workflow", "datastore.json")
+        have_reports = True
         with open(p, 'r') as r:
             d = json.loads(r.read())
             n_tested = 0
             for file_info in d['files']:
                 if file_info['fileTypeId'] == FileTypes.REPORT.file_type_id:
                     try:
-                        r = validate_report(file_info['path'])
+                        r = validate_func(file_info['path'])
                     except ValueError as e:
                         self.fail("Report validation failed:\n{e}".format(
                                   e=str(e)))
+                    else:
+                        have_reports = True
+        if not have_reports:
+            raise unittest.SkipTest("No Report JSON files in datastore.")
+        return have_reports
+
+    def test_datastore_report_schema_validation(self):
+        self._validate_datastore_reports(validate_report)
+
+    def test_datastore_report_spec_validation(self):
+        def _validate_against_spec(path):
+            if self._specs is None:
+                raise unittest.SkipTest("Can't find report specs.")
+            rpt = load_report_from_json(path)
+            spec = self._specs.get(rpt.id, None)
+            if rpt.id is None:
+                self.fail("No spec found for report {r}".format(r=rpt.id))
+            return spec.validate_report(rpt)
+        self._validate_datastore_reports(_validate_against_spec)
