@@ -155,7 +155,8 @@ class TestReports(TestBase):
                 raise unittest.SkipTest("Can't find report specs.")
             rpt = load_report_from_json(path)
             spec = self._specs.get(rpt.id, None)
-            if rpt.id is None:
+            if spec is None:
                 self.fail("No spec found for report {r}".format(r=rpt.id))
-            return spec.validate_report(rpt)
+            else:
+                return spec.validate_report(rpt)
         self._validate_datastore_reports(_validate_against_spec)
