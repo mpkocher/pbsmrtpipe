@@ -1,5 +1,5 @@
-Task Unittesting
-================
+Tool Contract Unittesting
+=========================
 
 Due to the dynamic nature of the workflow, it's imperative to write unittests for tasks. This can help proactively solve any problems with resolving options.
 
@@ -12,8 +12,8 @@ Stylistically similar to testkit, there's a base class that has class vars that 
     :language: py
 
 
-Running
--------
+Running ToolContract
+--------------------
 
 Individual tasks tests (or test classes) can be run using the standard nosetests interface.
 

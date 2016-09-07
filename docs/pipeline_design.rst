@@ -1,6 +1,6 @@
 
 Constructing Pipelines
-----------------------
+======================
 
 Fundamental Definitions
 
@@ -63,17 +63,12 @@ A list of **Bindings** with an **EntryPoint** is core component of creating a **
 
 
 
-Basic Task Model
-----------------
+Basic Task and Bindings Model
+-----------------------------
 
-.. image:: http://s3.amazonaws.com/media.pacb.com/pbsmrtpipe_docs_images/task_model:001.jpg
+Consider an example task of the form:
 
-
-Bindings Example
-----------------
-
-
-.. image:: http://s3.amazonaws.com/media.pacb.com/pbsmrtpipe_docs_images/task_model:002.jpg
+.. image:: images/bindings_01.png
 
 Bindings from pipeline are shown as b2, b3. The bindings would have the form:
 
@@ -84,10 +79,11 @@ Bindings from pipeline are shown as b2, b3. The bindings would have the form:
         ("task_1:0", "task_3:0")  # b3
         ]
 
+Entry Points
+------------
 
-To expose an interface of required files, entry points need to be defined. Select entry points are labeled as b0, b1 in figure below.
+To expose an interface of required files, entry points need to be defined. These are prefixed with a symbol `$entry:`.
 
-.. image:: http://s3.amazonaws.com/media.pacb.com/pbsmrtpipe_docs_images/task_model:003.jpg
 
 .. code-block:: python
 
@@ -101,12 +97,11 @@ To expose an interface of required files, entry points need to be defined. Selec
         ("task_1:0", "task_3:0")   # b3
         ]
 
-Entry Points
-------------
 
-**Entry points** are the exposed interface for files that will be bound during creation.
 
-The entry point symbols defined in pipeline templates (discussed later) have the form "$entry:e_01" while the commandline interface to bind file paths to of entry points defined in a pipeline template is given by **-e "e_01:/path/to/file.txt" commandline args.
+The entry point symbols defined in pipeline templates (discussed later) have the form "$entry:e_01" while the commandline interface to bind file paths to of entry points defined in a pipeline template is given by **-e "e_01:/path/to/file.txt"** commandline args.
+
+.. image:: images/bindings_02.png
 
 
 Advanced Bindings
