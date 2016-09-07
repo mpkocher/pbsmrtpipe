@@ -9,3 +9,4 @@ requests
 #semantic_version
 fabric>=1.9.1
 #sphinx-bootstrap-theme
+nose # Required for pbsmrtpipe.testkit

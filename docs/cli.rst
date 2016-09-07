@@ -1,5 +1,5 @@
-pbsmrtpipe Command Line Interface
----------------------------------
+Command Line Interface Tools
+----------------------------
 
 Core Pbsmrtpipe executable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10,7 +10,7 @@ Core Pbsmrtpipe executable
    :prog: pbsmrtpipe
 
 
-Chunking Tools
+pbtools-runner
 ~~~~~~~~~~~~~~
 
 Runner
@@ -30,3 +30,12 @@ Testkit Runner
    :module: pbsmrtpipe.testkit.runner
    :func: get_parser
    :prog: pbtestkit-runner
+
+
+Testkit Multi-Runner
+~~~~~~~~~~~~~~~~~~~~
+
+.. argparse::
+   :module: pbsmrtpipe.testkit.multirunner
+   :func: get_parser
+   :prog: pbtestkit-multirunner

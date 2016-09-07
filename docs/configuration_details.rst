@@ -5,11 +5,7 @@ General pipeline engine level options details and default values can be emitted 
 
 .. code-block:: bash
 
-    $> pbsmrtpipe pbsmrtpipe show-workflow-options
-
-
-.. literalinclude:: cli_pbsmrtpipe_show_workflow_options_help.sh
-    :language: bash
+    $> pbsmrtpipe show-workflow-options
 
 
 The pipeline level options can be set in the **options** section of the preset (or workflow) XML file.
