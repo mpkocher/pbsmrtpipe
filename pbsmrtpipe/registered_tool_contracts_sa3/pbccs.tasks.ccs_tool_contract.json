@@ -1,321 +1,337 @@
 {
-    "version": "0.1",
     "driver": {
-        "serialization": "json",
-        "exe": "task_pbccs_ccs --resolved-tool-contract ",
-        "env": {}
+        "env": {},
+        "exe": "ccs --resolved-tool-contract",
+        "serialization": "json"
     },
-    "tool_contract_id": "pbccs.tasks.ccs",
     "tool_contract": {
-        "task_type": "pbsmrtpipe.task_types.standard",
-        "resource_types": [],
-        "description": "\nWrapper for 'ccs' executable to provide tool contract interface support (and\nincidentally, using DataSet XML as input).  Note that this will *not* currently\nsupport chunking, since it access the individual .bam files en masse.\n",
-        "schema_options": [
-            {
-                "pb_option": {
-                    "default": 3.75,
-                    "type": "number",
-                    "option_id": "pbccs.task_options.min_snr",
-                    "name": "Minimum SNR",
-                    "description": "Minimum SNR of input subreads"
-                },
-                "title": "JSON Schema for pbccs.task_options.min_snr",
-                "required": [
-                    "pbccs.task_options.min_snr"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.min_snr": {
-                        "default": 3.75,
-                        "type": "number",
-                        "description": "Minimum SNR of input subreads",
-                        "title": "Minimum SNR"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.65,
-                    "type": "number",
-                    "option_id": "pbccs.task_options.min_read_score",
-                    "name": "Minimum Read Score",
-                    "description": "Minimum read score of input subreads"
-                },
-                "title": "JSON Schema for pbccs.task_options.min_read_score",
-                "required": [
-                    "pbccs.task_options.min_read_score"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.min_read_score": {
-                        "default": 0.65,
-                        "type": "number",
-                        "description": "Minimum read score of input subreads",
-                        "title": "Minimum Read Score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 7000,
-                    "type": "integer",
-                    "option_id": "pbccs.task_options.max_length",
-                    "name": "Maximum Subread Length",
-                    "description": "Maximum length of subreads to use for generating CCS"
-                },
-                "title": "JSON Schema for pbccs.task_options.max_length",
-                "required": [
-                    "pbccs.task_options.max_length"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.max_length": {
-                        "default": 7000,
-                        "type": "integer",
-                        "description": "Maximum length of subreads to use for generating CCS",
-                        "title": "Maximum Subread Length"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 10,
-                    "type": "integer",
-                    "option_id": "pbccs.task_options.min_length",
-                    "name": "Minimum Subread Length",
-                    "description": "Minimum length of subreads to use for generating CCS"
-                },
-                "title": "JSON Schema for pbccs.task_options.min_length",
-                "required": [
-                    "pbccs.task_options.min_length"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.min_length": {
-                        "default": 10,
-                        "type": "integer",
-                        "description": "Minimum length of subreads to use for generating CCS",
-                        "title": "Minimum Subread Length"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 3,
-                    "type": "integer",
-                    "option_id": "pbccs.task_options.min_passes",
-                    "name": "Minimum Number of Passes",
-                    "description": "Minimum number of subreads required to generate CCS"
-                },
-                "title": "JSON Schema for pbccs.task_options.min_passes",
-                "required": [
-                    "pbccs.task_options.min_passes"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.min_passes": {
-                        "default": 3,
-                        "type": "integer",
-                        "description": "Minimum number of subreads required to generate CCS",
-                        "title": "Minimum Number of Passes"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.9,
-                    "type": "number",
-                    "option_id": "pbccs.task_options.min_predicted_accuracy",
-                    "name": "Minimum Predicted Accuracy",
-                    "description": "Minimum predicted accuracy in [0, 1]"
-                },
-                "title": "JSON Schema for pbccs.task_options.min_predicted_accuracy",
-                "required": [
-                    "pbccs.task_options.min_predicted_accuracy"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.min_predicted_accuracy": {
-                        "default": 0.9,
-                        "type": "number",
-                        "description": "Minimum predicted accuracy in [0, 1]",
-                        "title": "Minimum Predicted Accuracy"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": -5.0,
-                    "type": "number",
-                    "option_id": "pbccs.task_options.min_zscore",
-                    "name": "Minimum Z Score",
-                    "description": "Minimum Z score to use a subread"
-                },
-                "title": "JSON Schema for pbccs.task_options.min_zscore",
-                "required": [
-                    "pbccs.task_options.min_zscore"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.min_zscore": {
-                        "default": -5.0,
-                        "type": "number",
-                        "description": "Minimum Z score to use a subread",
-                        "title": "Minimum Z Score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.34,
-                    "type": "number",
-                    "option_id": "pbccs.task_options.max_drop_fraction",
-                    "name": "Maximum Dropped Fraction",
-                    "description": "Maximum fraction of subreads that can be dropped before giving up"
-                },
-                "title": "JSON Schema for pbccs.task_options.max_drop_fraction",
-                "required": [
-                    "pbccs.task_options.max_drop_fraction"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.max_drop_fraction": {
-                        "default": 0.34,
-                        "type": "number",
-                        "description": "Maximum fraction of subreads that can be dropped before giving up",
-                        "title": "Maximum Dropped Fraction"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pbccs.task_options.no_polish",
-                    "name": "No Polish CCS",
-                    "description": "Only output the initial template derived from the POA"
-                },
-                "title": "JSON Schema for pbccs.task_options.no_polish",
-                "required": [
-                    "pbccs.task_options.no_polish"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.no_polish": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Only output the initial template derived from the POA",
-                        "title": "No Polish CCS"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pbccs.task_options.by_strand",
-                    "name": "By Strand CCS",
-                    "description": "For each ZMW, generate two CCS sequences, one for each strand"
-                },
-                "title": "JSON Schema for pbccs.task_options.by_strand",
-                "required": [
-                    "pbccs.task_options.by_strand"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.by_strand": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "For each ZMW, generate two CCS sequences, one for each strand",
-                        "title": "By Strand CCS"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": "",
-                    "type": "string",
-                    "option_id": "pbccs.task_options.model_path",
-                    "name": "Model(s) Path",
-                    "description": "Path to model parameter file(s)"
-                },
-                "title": "JSON Schema for pbccs.task_options.model_path",
-                "required": [
-                    "pbccs.task_options.model_path"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.model_path": {
-                        "default": "",
-                        "type": "string",
-                        "description": "Path to model parameter file(s)",
-                        "title": "Model(s) Path"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": "",
-                    "type": "string",
-                    "option_id": "pbccs.task_options.model_spec",
-                    "name": "Model Override",
-                    "description": "Override default model selection with a provided model specification"
-                },
-                "title": "JSON Schema for pbccs.task_options.model_spec",
-                "required": [
-                    "pbccs.task_options.model_spec"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbccs.task_options.model_spec": {
-                        "default": "",
-                        "type": "string",
-                        "description": "Override default model selection with a provided model specification",
-                        "title": "Model Override"
-                    }
-                }
-            }
-        ],
-        "output_types": [
-            {
-                "title": "ConsensusReadSet",
-                "description": "Output DataSet XML file",
-                "default_name": "ccs",
-                "id": "bam_output",
-                "file_type_id": "PacBio.DataSet.ConsensusReadSet"
-            },
-            {
-                "title": "CCS run summary",
-                "description": "Text report summarizing run statistics",
-                "default_name": "ccs_summary",
-                "id": "ccs_summary_txt",
-                "file_type_id": "PacBio.FileTypes.txt"
-            }
-        ],
-        "_comment": "Created by v0.4.5",
-        "name": "ccs",
+        "_comment": "Created by v0.0.1",
+        "description": "Generate circular consensus sequences (ccs) from subreads.",
         "input_types": [
             {
                 "description": "Subread DataSet or .bam file",
-                "title": "SubreadSet",
+                "file_type_id": "PacBio.DataSet.SubreadSet",
                 "id": "subread_set",
-                "file_type_id": "PacBio.DataSet.SubreadSet"
+                "title": "SubreadSet"
             }
         ],
-        "nproc": "$max_nproc",
-        "is_distributed": true,
+        "is_distributed": false,
+        "name": "ccs",
+        "nproc": 1,
+        "output_types": [
+            {
+                "default_name": "ccs",
+                "description": "Output DataSet XML file",
+                "file_type_id": "PacBio.DataSet.ConsensusReadSet",
+                "id": "bam_output",
+                "title": "ConsensusReadSet"
+            }
+        ],
+        "resource_types": [],
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Generate a consensus for each strand.",
+                    "name": "By Strand CCS",
+                    "option_id": "pbccs.task_options.by_strand",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pbccs.task_options.by_strand": {
+                        "default": false,
+                        "description": "Generate a consensus for each strand.",
+                        "title": "By Strand CCS",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.by_strand"
+                ],
+                "title": "JSON Schema for pbccs.task_options.by_strand",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.34,
+                    "description": "Maximum fraction of subreads that can be dropped before giving up.",
+                    "name": "Maximum Dropped Fraction",
+                    "option_id": "pbccs.task_options.max_drop_fraction",
+                    "type": "number"
+                },
+                "properties": {
+                    "pbccs.task_options.max_drop_fraction": {
+                        "default": 0.34,
+                        "description": "Maximum fraction of subreads that can be dropped before giving up.",
+                        "title": "Maximum Dropped Fraction",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.max_drop_fraction"
+                ],
+                "title": "JSON Schema for pbccs.task_options.max_drop_fraction",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 7000,
+                    "description": "Maximum length of subreads to use for generating CCS.",
+                    "name": "Maximum Subread Length",
+                    "option_id": "pbccs.task_options.max_length",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pbccs.task_options.max_length": {
+                        "default": 7000,
+                        "description": "Maximum length of subreads to use for generating CCS.",
+                        "title": "Maximum Subread Length",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.max_length"
+                ],
+                "title": "JSON Schema for pbccs.task_options.max_length",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 10,
+                    "description": "Minimum length of subreads to use for generating CCS.",
+                    "name": "Minimum Subread Length",
+                    "option_id": "pbccs.task_options.min_length",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pbccs.task_options.min_length": {
+                        "default": 10,
+                        "description": "Minimum length of subreads to use for generating CCS.",
+                        "title": "Minimum Subread Length",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.min_length"
+                ],
+                "title": "JSON Schema for pbccs.task_options.min_length",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 3,
+                    "description": "Minimum number of subreads required to generate CCS.",
+                    "name": "Minimum Number of Passes",
+                    "option_id": "pbccs.task_options.min_passes",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pbccs.task_options.min_passes": {
+                        "default": 3,
+                        "description": "Minimum number of subreads required to generate CCS.",
+                        "title": "Minimum Number of Passes",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.min_passes"
+                ],
+                "title": "JSON Schema for pbccs.task_options.min_passes",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.9,
+                    "description": "Minimum predicted accuracy in [0, 1].",
+                    "name": "Minimum Predicted Accuracy",
+                    "option_id": "pbccs.task_options.min_predicted_accuracy",
+                    "type": "number"
+                },
+                "properties": {
+                    "pbccs.task_options.min_predicted_accuracy": {
+                        "default": 0.9,
+                        "description": "Minimum predicted accuracy in [0, 1].",
+                        "title": "Minimum Predicted Accuracy",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.min_predicted_accuracy"
+                ],
+                "title": "JSON Schema for pbccs.task_options.min_predicted_accuracy",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.75,
+                    "description": "Minimum read score of input subreads.",
+                    "name": "Minimal Read Score",
+                    "option_id": "pbccs.task_options.min_read_score",
+                    "type": "number"
+                },
+                "properties": {
+                    "pbccs.task_options.min_read_score": {
+                        "default": 0.75,
+                        "description": "Minimum read score of input subreads.",
+                        "title": "Minimal Read Score",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.min_read_score"
+                ],
+                "title": "JSON Schema for pbccs.task_options.min_read_score",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 3.75,
+                    "description": "Minimum SNR of input subreads.",
+                    "name": "Minimum SNR",
+                    "option_id": "pbccs.task_options.min_snr",
+                    "type": "number"
+                },
+                "properties": {
+                    "pbccs.task_options.min_snr": {
+                        "default": 3.75,
+                        "description": "Minimum SNR of input subreads.",
+                        "title": "Minimum SNR",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.min_snr"
+                ],
+                "title": "JSON Schema for pbccs.task_options.min_snr",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": -3.5,
+                    "description": "Minimum z-score to use a subread. NaN disables this filter.",
+                    "name": "Minimum Z Score",
+                    "option_id": "pbccs.task_options.min_zscore",
+                    "type": "number"
+                },
+                "properties": {
+                    "pbccs.task_options.min_zscore": {
+                        "default": -3.5,
+                        "description": "Minimum z-score to use a subread. NaN disables this filter.",
+                        "title": "Minimum Z Score",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.min_zscore"
+                ],
+                "title": "JSON Schema for pbccs.task_options.min_zscore",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "",
+                    "description": "Path to a model file or directory containing model files.",
+                    "name": "Model(s) Path",
+                    "option_id": "pbccs.task_options.model_path",
+                    "type": "string"
+                },
+                "properties": {
+                    "pbccs.task_options.model_path": {
+                        "default": "",
+                        "description": "Path to a model file or directory containing model files.",
+                        "title": "Model(s) Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.model_path"
+                ],
+                "title": "JSON Schema for pbccs.task_options.model_path",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "",
+                    "description": "Name of chemistry or model to use, overriding default selection.",
+                    "name": "Model Override",
+                    "option_id": "pbccs.task_options.model_spec",
+                    "type": "string"
+                },
+                "properties": {
+                    "pbccs.task_options.model_spec": {
+                        "default": "",
+                        "description": "Name of chemistry or model to use, overriding default selection.",
+                        "title": "Model Override",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.model_spec"
+                ],
+                "title": "JSON Schema for pbccs.task_options.model_spec",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Only output the initial template derived from the POA (faster, less accurate).",
+                    "name": "No Polish CCS",
+                    "option_id": "pbccs.task_options.no_polish",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pbccs.task_options.no_polish": {
+                        "default": false,
+                        "description": "Only output the initial template derived from the POA (faster, less accurate).",
+                        "title": "No Polish CCS",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.no_polish"
+                ],
+                "title": "JSON Schema for pbccs.task_options.no_polish",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "ccs_report.txt",
+                    "description": "Where to write the results report.",
+                    "name": "Report File Output",
+                    "option_id": "pbccs.task_options.report_file",
+                    "type": "string"
+                },
+                "properties": {
+                    "pbccs.task_options.report_file": {
+                        "default": "ccs_report.txt",
+                        "description": "Where to write the results report.",
+                        "title": "Report File Output",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pbccs.task_options.report_file"
+                ],
+                "title": "JSON Schema for pbccs.task_options.report_file",
+                "type": "object"
+            }
+        ],
+        "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pbccs.tasks.ccs"
-    }
+    },
+    "tool_contract_id": "pbccs.tasks.ccs",
+    "version": "2.0.4 (commit 0d1f4f8*)"
 }
