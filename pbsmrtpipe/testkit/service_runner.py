@@ -65,23 +65,24 @@ def get_task_and_workflow_options(testkit_cfg):
             workflow_options.append(dict(
                 optionId=option_id,
                 value=option_value,
-                optionTypeId=__get_option_type(option_value)))
+                optionTypeId=__get_option_type(option_value)[0]))
     elif not parsed_cfg.preset_json in [None, '']:
         presets = parse_pipeline_preset_json(parsed_cfg.preset_json)
         for option_id, option_value in presets.task_options:
             log.info("task_option: {i} = {v}".format(i=option_id,
                                                      v=option_value))
+            option_type, option_value = __get_option_type(option_value)
             task_options.append(dict(
                 optionId=option_id,
                 value=option_value,
-                optionTypeId=__get_option_type(option_value)))
+                optionTypeId=option_type))
         for option_id, option_value in presets.workflow_options:
             log.info("workflow_option: {i} = {v}".format(i=option_id,
                                                          v=option_value))
             workflow_options.append(dict(
                 optionId=option_id,
                 value=option_value,
-                optionTypeId=__get_option_type(option_value)))
+                optionTypeId=__get_option_type(option_value)[0]))
     return task_options, workflow_options
 
 
