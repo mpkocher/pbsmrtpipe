@@ -437,6 +437,12 @@ def ds_barcode_laa():
     return b1 + b2
 
 
+# global defaults for CCS jobs
+CCS_TASK_OPTIONS = {
+  "pbccs.task_options.min_read_score": 0.65,
+  "pbccs.task_options.min_zscore": -5.0,
+}
+
 def _core_ccs(subread_ds):
     # Call ccs
     b3 = [(subread_ds, "pbccs.tasks.ccs:0")]
@@ -446,7 +452,7 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5
 
 
-@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.1.0", tags=(Tags.CCS, ))
+@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.1.0", tags=(Tags.CCS, ), task_options=CCS_TASK_OPTIONS)
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
@@ -454,7 +460,7 @@ def ds_ccs():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD)
 
 
-@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.1.0", tags=(Tags.BARCODE, Tags.CCS))
+@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.1.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
 def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
@@ -475,7 +481,7 @@ def _core_ccs_align(ccs_ds):
     return b3+b4
 
 
-@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.1.0", tags=(Tags.CCS, Tags.MAP, ))
+@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.1.0", tags=(Tags.CCS, Tags.MAP, ), task_options=CCS_TASK_OPTIONS)
 def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
@@ -605,7 +611,8 @@ def _core_isoseq_collapse(hq_isoforms_hq, gmap_ref_ds, sample_prefix_pickle):
     return b1 + b2
 
 
-ISOSEQ_TASK_OPTIONS = {
+ISOSEQ_TASK_OPTIONS = dict(CCS_TASK_OPTIONS)
+ISOSEQ_TASK_OPTIONS.update({
     "pbccs.task_options.min_passes":1,
     "pbccs.task_options.min_length":50,
     "pbccs.task_options.max_length":15000,
@@ -613,7 +620,7 @@ ISOSEQ_TASK_OPTIONS = {
     "pbccs.task_options.max_drop_fraction":0.80,
     "pbccs.task_options.min_predicted_accuracy":0.80,
     "pbccs.task_options.no_polish":True
-}
+})
 
 
 @sa3_register("sa3_ds_isoseq_classify", "Iso-Seq Classify Only", "0.2.0",
