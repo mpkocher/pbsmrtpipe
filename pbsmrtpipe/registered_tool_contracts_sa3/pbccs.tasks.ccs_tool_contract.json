@@ -17,7 +17,7 @@
         ],
         "is_distributed": false,
         "name": "ccs",
-        "nproc": 1,
+        "nproc": "$max_nproc",
         "output_types": [
             {
                 "default_name": "ccs",
