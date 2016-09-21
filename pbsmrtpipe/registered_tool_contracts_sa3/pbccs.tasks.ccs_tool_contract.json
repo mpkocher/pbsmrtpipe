@@ -15,7 +15,7 @@
                 "title": "SubreadSet"
             }
         ],
-        "is_distributed": false,
+        "is_distributed": true,
         "name": "ccs",
         "nproc": "$max_nproc",
         "output_types": [
