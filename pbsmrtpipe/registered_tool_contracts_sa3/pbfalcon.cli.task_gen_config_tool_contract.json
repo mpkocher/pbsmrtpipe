@@ -113,7 +113,7 @@
                 "file_type_id": "PacBio.FileTypes.cfg"
             }
         ],
-        "_comment": "Created by v0.4.6",
+        "_comment": "Created by v0.4.11",
         "name": "Tool FalconConfigGenerator",
         "input_types": [
             {

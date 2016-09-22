@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.6",
+        "_comment": "Created by v0.4.11",
         "description": "Quick tool task_falcon0_build_rdb falcon_ns.tasks.task_falcon0_build_rdb",
         "input_types": [
             {

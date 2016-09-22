@@ -43,7 +43,7 @@
                 "file_type_id": "PacBio.FileTypes.log"
             }
         ],
-        "_comment": "Created by v0.4.6",
+        "_comment": "Created by v0.4.11",
         "name": "Tool task_hgap_run",
         "input_types": [
             {
