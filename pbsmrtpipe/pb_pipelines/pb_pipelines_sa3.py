@@ -230,7 +230,6 @@ def ds_resequencing():
 
 
 _OPTIONS = RESEQUENCING_TASK_OPTIONS.copy()
-_OPTIONS["pbalign.task_options.consolidate_aligned_bam"] = True
 
 
 @sa3_register("sa3_ds_resequencing_fat",
