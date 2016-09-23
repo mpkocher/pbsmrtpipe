@@ -15,8 +15,57 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "contigset",
-                "description": "Contigset of polished FASTA sequences",
+                "title": "preads.fasta",
+                "description": "Tarball of FASTA for preassembly reads",
+                "default_name": "preads",
+                "id": "preads_id",
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            },
+            {
+                "title": "polished.fasta",
+                "description": "FASTA of polished assembly",
+                "default_name": "polished",
+                "id": "polished_fasta_id",
+                "file_type_id": "PacBio.FileTypes.Fasta"
+            },
+            {
+                "title": "polished.fastq",
+                "description": "FASTQ of polished assembly",
+                "default_name": "polished",
+                "id": "polished_fastq_id",
+                "file_type_id": "PacBio.FileTypes.Fastq"
+            },
+            {
+                "title": "polished.csv",
+                "description": "CSV from report of polished assembly",
+                "default_name": "polished",
+                "id": "polished_csv_id",
+                "file_type_id": "PacBio.FileTypes.csv"
+            },
+            {
+                "title": "aligned.subreads.alignmentset.xml",
+                "description": "Dataset of BAM files of aligned subreads",
+                "default_name": "aligned.subreads",
+                "id": "alignmentset_id",
+                "file_type_id": "PacBio.DataSet.AlignmentSet"
+            },
+            {
+                "title": "alignment.summary.gff",
+                "description": "General Feature Format file for alignment coverage",
+                "default_name": "alignment.summary",
+                "id": "gff_id",
+                "file_type_id": "PacBio.FileTypes.gff"
+            },
+            {
+                "title": "unmapped.subreads.txt",
+                "description": "Names of unmapped subreads from pbalign",
+                "default_name": "unmapped.subreads",
+                "id": "unmapped_id",
+                "file_type_id": "PacBio.FileTypes.txt"
+            },
+            {
+                "title": "polished.contigset.xml",
+                "description": "Contigset of polished FASTA sequences (redundant with polished.fasta)",
                 "default_name": "polished.contigset",
                 "id": "contig_id",
                 "file_type_id": "PacBio.DataSet.ContigSet"
