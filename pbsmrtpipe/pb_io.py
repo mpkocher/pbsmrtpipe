@@ -903,8 +903,9 @@ def load_pipeline_template_from(d_or_path):
 
     bindings = {_load_bindings(x) for x in d['bindings']}
     epoints = list(itertools.chain(*[_load_entry_binding(ei) for ei in d['entryPoints']]))
+    task_options = {t['id']:t['default'] for t in d['taskOptions']}
 
-    p = Pipeline(d['id'], d['name'], d['version'], d['description'], bindings, epoints, tags=d['tags'])
+    p = Pipeline(d['id'], d['name'], d['version'], d['description'], bindings, epoints, tags=d['tags'], task_options=task_options)
     return p
 
 

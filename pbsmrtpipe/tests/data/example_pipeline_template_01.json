@@ -9,7 +9,14 @@
     {
       "entryId": "e_label",
       "fileTypeId": "PacBio.FileTypes.Fasta",
-      "name": "Fasta"
+      "name": "Fasta",
+      "tasks": [
+        {
+          "index": 0,
+          "instanceId": 0,
+          "taskTypeId": "task-1"
+        }
+      ]
     }
   ],
   "bindings": [
