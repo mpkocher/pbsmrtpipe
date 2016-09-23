@@ -67,7 +67,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ],
-        "_comment": "Created by v0.4.4",
+        "_comment": "Created by v0.4.11",
         "nchunks": "$max_nchunks",
         "name": "SubreadSet ZMW scatter",
         "input_types": [
@@ -88,7 +88,7 @@
             "$chunk.subreadset_id"
         ],
         "nproc": 1,
-        "is_distributed": false,
+        "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.scatter_subreads_bam2bam"
     }
 }

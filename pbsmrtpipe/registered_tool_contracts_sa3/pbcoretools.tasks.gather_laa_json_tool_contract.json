@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
-        "_comment": "Created by v0.4.2",
+        "_comment": "Created by v0.4.11",
         "name": "LAA JSON gather",
         "input_types": [
             {
