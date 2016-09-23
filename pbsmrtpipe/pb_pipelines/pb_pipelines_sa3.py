@@ -666,8 +666,7 @@ def ds_isoseq_with_genome():
 
 
 @sa3_register("pb_isoseq_classify", "Internal Iso-Seq Classify Only for tests", "0.2.0",
-              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ),
-              task_options=ISOSEQ_TASK_OPTIONS)
+              tags=(Tags.MAP, Tags.CCS, Tags.ISOSEQ))
 def pb_isoseq_classify():
     """
     Partial Iso-Seq pipeline (classify step only), starting from ccs.

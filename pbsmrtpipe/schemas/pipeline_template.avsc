@@ -48,6 +48,33 @@
               "doc": "Display Name",
               "name": "name",
               "type": "string"
+            },
+            {
+              "name": "tasks",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "EntryPointBinding",
+                  "fields": [
+                    {
+                      "doc": "Input file index for the specified task",
+                      "name": "index",
+                      "type": "int"
+                    },
+                    {
+                      "doc": "FIXME",
+                      "name": "instanceId",
+                      "type": "int"
+                    },
+                    {
+                      "doc": "Identifier of a pbsmrtpipe task",
+                      "name": "taskTypeId",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
             }
           ]
         }

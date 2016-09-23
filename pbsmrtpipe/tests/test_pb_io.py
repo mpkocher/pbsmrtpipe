@@ -139,6 +139,20 @@ class TestLoadResolvedPipelineTemplate(unittest.TestCase):
             self.assertEqual(pipeline.display_name, pipeline_loaded.display_name)
             self.assertEqual(len(pipeline.all_bindings), len(pipeline_loaded.all_bindings))
             self.assertEqual(len(pipeline.entry_bindings), len(pipeline_loaded.entry_bindings))
+            # note that the internally registered pipeline does not necessarily
+            # have any task_options at this point, so we can't simply test for
+            # equality.  however after another cycle they should be identical
+            if len(pipeline.task_options) > 0:
+                self.assertGreater(len(pipeline_loaded.task_options), 0)
+                pipeline_d2 = IO.pipeline_template_to_dict(pipeline_loaded, rtasks)
+                pipeline_loaded2 = IO.load_pipeline_template_from(pipeline_d2)
+                self.assertEqual(len(pipeline_loaded.task_options),
+                                 len(pipeline_loaded2.task_options))
+                for k,v in pipeline.task_options.iteritems():
+                    if k in pipeline_loaded2.task_options:
+                        self.assertEqual(v, pipeline_loaded2.task_options[k])
 
-
-
+    def test_load_pipeline_template_json(self):
+        path = os.path.join(TEST_DATA_DIR, "example_pipeline_template_01.json")
+        pipeline_loaded = IO.load_pipeline_template_from(path)
+        self.assertEqual(len(pipeline_loaded.task_options), 1)
