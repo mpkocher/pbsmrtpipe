@@ -285,24 +285,24 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": false,
-                    "description": "Only output the initial template derived from the POA (faster, less accurate).",
-                    "name": "No Polish CCS",
-                    "option_id": "pbccs.task_options.no_polish",
+                    "default": true,
+                    "description": "Emit high-accuracy CCS sequences polished using the Arrow algorithm",
+                    "name": "Polish CCS",
+                    "option_id": "pbccs.task_options.polish",
                     "type": "boolean"
                 },
                 "properties": {
-                    "pbccs.task_options.no_polish": {
-                        "default": false,
-                        "description": "Only output the initial template derived from the POA (faster, less accurate).",
-                        "title": "No Polish CCS",
+                    "pbccs.task_options.polish": {
+                        "default": true,
+                        "description": "Emit high-accuracy CCS sequences polished using the Arrow algorithm",
+                        "title": "Polish CCS",
                         "type": "boolean"
                     }
                 },
                 "required": [
-                    "pbccs.task_options.no_polish"
+                    "pbccs.task_options.polish"
                 ],
-                "title": "JSON Schema for pbccs.task_options.no_polish",
+                "title": "JSON Schema for pbccs.task_options.polish",
                 "type": "object"
             },
             {
@@ -333,5 +333,5 @@
         "tool_contract_id": "pbccs.tasks.ccs"
     },
     "tool_contract_id": "pbccs.tasks.ccs",
-    "version": "2.0.4 (commit 0d1f4f8*)"
+    "version": "2.0.4 (commit 1c09191*)"
 }

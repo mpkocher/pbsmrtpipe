@@ -618,7 +618,7 @@ ISOSEQ_TASK_OPTIONS.update({
     "pbccs.task_options.min_zscore":-9999,
     "pbccs.task_options.max_drop_fraction":0.80,
     "pbccs.task_options.min_predicted_accuracy":0.80,
-    "pbccs.task_options.no_polish":True
+    "pbccs.task_options.polish":False
 })
 
 
