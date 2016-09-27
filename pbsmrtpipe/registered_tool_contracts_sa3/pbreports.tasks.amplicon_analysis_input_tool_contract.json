@@ -13,27 +13,21 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "LAA input report",
+                "title": "Amplicon Inputs",
                 "description": "Long Amplicon Analysis input report JSON",
                 "default_name": "amplicon_input_report",
                 "id": "report_json",
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ],
-        "_comment": "Created by v0.4.3",
+        "_comment": "Created by v0.4.11",
         "name": "Amplicon Analysis Input",
         "input_types": [
             {
-                "description": "Consensus Report CSV",
-                "title": "ConsensusReportCSV",
+                "description": "Consensus summary CSV by barcode",
+                "title": "Consensus Summary CSV",
                 "id": "report_csv",
                 "file_type_id": "PacBio.FileTypes.csv"
-            },
-            {
-                "description": "JSON file containing per-ZMW info",
-                "title": "JSON per-ZMW info",
-                "id": "zmws_json",
-                "file_type_id": "PacBio.FileTypes.json"
             }
         ],
         "nproc": 1,
