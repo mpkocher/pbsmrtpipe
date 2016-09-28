@@ -85,7 +85,7 @@ class ButlerWorkflow(Butler):
 
     def __init__(self, job_id, output_dir, pipeline_id, workflow_xml, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE):
         super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe)
-        assert workflow_xml is None or pipeline_id is None
+        assert [workflow_xml, pipeline_id].count(None) == 1
         self.workflow_xml = workflow_xml
         self.pipeline_id = pipeline_id
 
