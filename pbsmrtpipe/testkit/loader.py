@@ -7,6 +7,7 @@ import ConfigParser
 import types
 import unittest
 import warnings
+import json
 
 import pbsmrtpipe.testkit.base
 
@@ -72,31 +73,39 @@ def _load_test_cases_from_module(module_instance):
 
 
 def parse_cfg_file(path):
-
-    p = ConfigParser.ConfigParser()
-    p.read(path)
-
     test_cases = []
 
-    if p.has_section('tests'):
-        xs = _get_section_items(p, 'tests')
+    def _load_test(module_base, test_name):
+        module_name = ".".join([module_base, test_name])
+        try:
+            m = importlib.import_module(module_name)
+            ts = _load_test_cases_from_module(m)
+            for x in ts:
+                # Ignore empty
+                if x.countTestCases > 0:
+                    test_cases.append(x)
+                else:
+                    log.debug("Skipping {m} No tests cases found in {x}".format(x=x, m=m))
 
-        for module_base_, raw_tests in xs:
-            for t in _parse_tests(raw_tests):
-                module_name = ".".join([module_base_, t])
-                try:
-                    m = importlib.import_module(module_name)
-                    ts = _load_test_cases_from_module(m)
-                    for x in ts:
-                        # Ignore empty
-                        if x.countTestCases > 0:
-                            test_cases.append(x)
-                        else:
-                            log.debug("Skipping {m} No tests cases found in {x}".format(x=x, m=m))
+        except Exception as e:
+            log.error("Unable to import {t} from {m}. {e}\n".format(m=module_base, t=t, e=e))
+            raise
 
-                except Exception as e:
-                    log.error("Unable to import {t} from {m}. {e}\n".format(m=module_base_, t=t, e=e))
-                    raise
+    if path.endswith(".json"):
+        with open(path) as json_in:
+            cfg = json.load(json_in)
+            py_tests = cfg.get("pythonTests", {})
+            for module_base_, test_names in py_tests.iteritems():
+                for t in test_names:
+                    _load_test(module_base_, t)
+    else:
+        p = ConfigParser.ConfigParser()
+        p.read(path)
+        if p.has_section('tests'):
+            xs = _get_section_items(p, 'tests')
+            for module_base_, raw_tests in xs:
+                for t in _parse_tests(raw_tests):
+                    _load_test(module_base_, t)
 
     return test_cases
 

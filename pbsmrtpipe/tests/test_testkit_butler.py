@@ -41,3 +41,7 @@ class TestParsingButlerWorkflowCfgWithPrefix(_TestSanity):
 class TestParsingButlerTaskCfg(_TestSanity):
     FILE_NAME = 'example_butler_task.cfg'
     BUTLER_KLASS = ButlerTask
+
+
+class TestParsingButlerWorkflowJson(_TestSanity):
+    FILE_NAME = "example_butler_workflow.json"
