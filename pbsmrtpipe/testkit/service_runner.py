@@ -103,11 +103,12 @@ def entrypoints_dicts(entrypoints):
 
 def pipeline_id_from_testkit_cfg(testkit_cfg):
     parsed_cfg = config_parser_to_butler(testkit_cfg)
-    parsed_dict = parsed_cfg.__dict__
-    tree = ET.parse(parsed_dict['workflow_xml'])
-    root = tree.getroot()
-    pipeline_id = root[0].attrib['id']
-    return pipeline_id
+    if parsed_cfg.workflow_xml is not None:
+        tree = ET.parse(parsed_cfg.workflow_xml)
+        root = tree.getroot()
+        return root[0].attrib['id']
+    else:
+        return parsed_cfg.pipeline_id
 
 
 def job_id_from_testkit_cfg(testkit_cfg):
