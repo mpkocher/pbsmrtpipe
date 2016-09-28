@@ -1,0 +1,17 @@
+{
+  "testId": "dev_local_fasta_chunk",
+  "description": "Dev example for Fasta Chunking",
+  "author": "mkocher",
+  "debug": true,
+  "workflowXml": "workflow_id.xml",
+  "presetXml": "preset.xml",
+  "entryPoints": [
+    {
+      "entryId": "e_01",
+      "path": "input.txt"
+    }
+  ],
+  "pythonTests": {
+    "pbsmrtpipe.testkit.core": ["test_zero", "test_resources", "test_datastore", "test_datastore_chunking"]
+  }
+}
