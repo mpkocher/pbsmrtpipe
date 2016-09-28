@@ -1,6 +1,7 @@
 import ConfigParser
 import logging
 import functools
+import json
 import abc
 import os
 
@@ -79,15 +80,38 @@ class Butler(object):
                                   self.force_chunk, self.base_exe)
 
 
+
 class ButlerWorkflow(Butler):
 
-    def __init__(self, job_id, output_dir, workflow_xml, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE):
+    def __init__(self, job_id, output_dir, pipeline_id, workflow_xml, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE):
         super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe)
+        assert [workflow_xml, pipeline_id].count(None) == 1
         self.workflow_xml = workflow_xml
+        self.pipeline_id = pipeline_id
 
     @property
     def prefix(self):
-        return "pipeline {i}".format(i=self.workflow_xml)
+        if self.pipeline_id is not None:
+            return "pipeline-id {i}".format(i=self.pipeline_id)
+        else:
+            return "pipeline {i}".format(i=self.workflow_xml)
+
+    @staticmethod
+    def from_json(file_name, force_distribute=None, force_chunk=None):
+        with open(file_name) as json_f:
+            d = json.load(json_f)
+            assert d.get('jobType', "pbsmrtpipe") == "pbsmrtpipe"
+            return ButlerWorkflow(
+                job_id=d['testId'],
+                output_dir=d.get('outputDir', "job_output"),
+                pipeline_id=d.get("pipelineId", None),
+                workflow_xml=d.get("workflowXml", None),
+                entry_points={e['entryId']:e['path'] for e in d['entryPoints']},
+                preset_xml_path=d.get('presetXml', None),
+                preset_json_path=d.get("presetJson", None),
+                debug=d.get("debug", False),
+                force_distribute=force_distribute,
+                force_chunk=force_chunk)
 
 
 class ButlerTask(Butler):
@@ -210,7 +234,7 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         job_id = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_JOB_ID, p, default_job_id)
         base_exe = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_BASE_EXE, p, EXE)
 
-        return ButlerWorkflow(job_id, job_output_dir, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe)
+        return ButlerWorkflow(job_id, job_output_dir, None, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe)
 
     return _parse_workflow_config
 
@@ -238,8 +262,9 @@ def config_parser_to_butler(file_path):
 
     :rtype: Butler
     """
+    if file_path.endswith(".json"):
+        return ButlerWorkflow.from_json(file_path)
     # this is weak. Needs error handling.
-
     p = ConfigParser.ConfigParser()
     _ = p.read(file_path)
 
