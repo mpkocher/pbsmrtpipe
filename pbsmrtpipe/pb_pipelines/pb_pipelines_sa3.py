@@ -392,8 +392,7 @@ def _core_laa_plus(subread_ds):
         ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_consensus:0")
     ]
     inputs_report = [
-        ("pblaa.tasks.laa:2", "pbreports.tasks.amplicon_analysis_input:0"),
-        ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:1")
+        ("pblaa.tasks.laa:3", "pbreports.tasks.amplicon_analysis_input:0")
     ]
     return laa + split_fastq + consensus_report + inputs_report
 

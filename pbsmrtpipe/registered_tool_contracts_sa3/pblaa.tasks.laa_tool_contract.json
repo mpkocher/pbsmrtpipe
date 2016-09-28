@@ -1,680 +1,887 @@
 {
-    "version": "0.1",
     "driver": {
-        "serialization": "json",
-        "exe": "task_pblaa_laa --resolved-tool-contract ",
-        "env": {}
+        "env": {},
+        "exe": "laa --resolved-tool-contract",
+        "serialization": "json"
     },
-    "tool_contract_id": "pblaa.tasks.laa",
     "tool_contract": {
-        "task_type": "pbsmrtpipe.task_types.standard",
-        "resource_types": [],
-        "description": "\nWrapper for 'laa' executable to provide tool contract interface support (and\nincidentally, using DataSet XML as input).\n",
-        "schema_options": [
-            {
-                "pb_option": {
-                    "default": 42,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.rng_seed",
-                    "name": "RNG seed",
-                    "description": "Modulates reservoir filtering of reads"
-                },
-                "title": "JSON Schema for pblaa.task_options.rng_seed",
-                "required": [
-                    "pblaa.task_options.rng_seed"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.rng_seed": {
-                        "default": 42,
-                        "type": "integer",
-                        "description": "Modulates reservoir filtering of reads",
-                        "title": "RNG seed"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.min_barcode_score",
-                    "name": "Min barcode score",
-                    "description": "Minimum average barcode score to require of subreads."
-                },
-                "title": "JSON Schema for pblaa.task_options.min_barcode_score",
-                "required": [
-                    "pblaa.task_options.min_barcode_score"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_barcode_score": {
-                        "default": 0,
-                        "type": "integer",
-                        "description": "Minimum average barcode score to require of subreads.",
-                        "title": "Min barcode score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pblaa.task_options.full_length",
-                    "name": "Full Length Subreads",
-                    "description": "Require subreads to have both flanking barcodes"
-                },
-                "title": "JSON Schema for pblaa.task_options.full_length",
-                "required": [
-                    "pblaa.task_options.full_length"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.full_length": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Require subreads to have both flanking barcodes",
-                        "title": "Full Length Subreads"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 3000,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.min_length",
-                    "name": "Minimum length",
-                    "description": "Minimum length of subreads to use"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_length",
-                "required": [
-                    "pblaa.task_options.min_length"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_length": {
-                        "default": 3000,
-                        "type": "integer",
-                        "description": "Minimum length of subreads to use",
-                        "title": "Minimum length"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.max_length",
-                    "name": "Maximum length",
-                    "description": "Maximum length of subreads to use"
-                },
-                "title": "JSON Schema for pblaa.task_options.max_length",
-                "required": [
-                    "pblaa.task_options.max_length"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.max_length": {
-                        "default": 0,
-                        "type": "integer",
-                        "description": "Maximum length of subreads to use",
-                        "title": "Maximum length"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.75,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.min_read_score",
-                    "name": "Min Read Score",
-                    "description": "Minimum read score of input reads"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_read_score",
-                "required": [
-                    "pblaa.task_options.min_read_score"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_read_score": {
-                        "default": 0.75,
-                        "type": "number",
-                        "description": "Minimum read score of input reads",
-                        "title": "Min Read Score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 3.75,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.min_snr",
-                    "name": "Minimum SNR",
-                    "description": "Minimum SNR of input reads."
-                },
-                "title": "JSON Schema for pblaa.task_options.min_snr",
-                "required": [
-                    "pblaa.task_options.min_snr"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_snr": {
-                        "default": 3.75,
-                        "type": "number",
-                        "description": "Minimum SNR of input reads.",
-                        "title": "Minimum SNR"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 500,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.max_clustering_reads",
-                    "name": "Maximum number of reads to use in clustering",
-                    "description": "Maximum number of input reads to cluster per barcode"
-                },
-                "title": "JSON Schema for pblaa.task_options.max_clustering_reads",
-                "required": [
-                    "pblaa.task_options.max_clustering_reads"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.max_clustering_reads": {
-                        "default": 500,
-                        "type": "integer",
-                        "description": "Maximum number of input reads to cluster per barcode",
-                        "title": "Maximum number of reads to use in clustering"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 2000,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.max_reads",
-                    "name": "Maximum number of reads",
-                    "description": "Maximum number of input reads to use per barcode"
-                },
-                "title": "JSON Schema for pblaa.task_options.max_reads",
-                "required": [
-                    "pblaa.task_options.max_reads"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.max_reads": {
-                        "default": 2000,
-                        "type": "integer",
-                        "description": "Maximum number of input reads to use per barcode",
-                        "title": "Maximum number of reads"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 2.0,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.cluster_inflation",
-                    "name": "Cluster Inflation",
-                    "description": "Markov Clustering inflation parameter"
-                },
-                "title": "JSON Schema for pblaa.task_options.cluster_inflation",
-                "required": [
-                    "pblaa.task_options.cluster_inflation"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.cluster_inflation": {
-                        "default": 2.0,
-                        "type": "number",
-                        "description": "Markov Clustering inflation parameter",
-                        "title": "Cluster Inflation"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.001,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.cluster_loop_weight",
-                    "name": "Cluster Loop Weight",
-                    "description": "Markov Clustering loop weight parameter"
-                },
-                "title": "JSON Schema for pblaa.task_options.cluster_loop_weight",
-                "required": [
-                    "pblaa.task_options.cluster_loop_weight"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.cluster_loop_weight": {
-                        "default": 0.001,
-                        "type": "number",
-                        "description": "Markov Clustering loop weight parameter",
-                        "title": "Cluster Loop Weight"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pblaa.task_options.no_clustering",
-                    "name": "No Clustering",
-                    "description": "Deactivate the coarse clustering step, go directly to fine phasing"
-                },
-                "title": "JSON Schema for pblaa.task_options.no_clustering",
-                "required": [
-                    "pblaa.task_options.no_clustering"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.no_clustering": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Deactivate the coarse clustering step, go directly to fine phasing",
-                        "title": "No Clustering"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 500,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.max_phasing_reads",
-                    "name": "Max Phasing Reads",
-                    "description": "Maximum number of input reads to phase per cluster"
-                },
-                "title": "JSON Schema for pblaa.task_options.max_phasing_reads",
-                "required": [
-                    "pblaa.task_options.max_phasing_reads"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.max_phasing_reads": {
-                        "default": 500,
-                        "type": "integer",
-                        "description": "Maximum number of input reads to phase per cluster",
-                        "title": "Max Phasing Reads"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 20.0,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.min_split_fraction",
-                    "name": "Min Mutation Q-Score",
-                    "description": "Minimum supporting evidence required to use a mutation for phasing"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_split_fraction",
-                "required": [
-                    "pblaa.task_options.min_split_fraction"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_split_fraction": {
-                        "default": 20.0,
-                        "type": "number",
-                        "description": "Minimum supporting evidence required to use a mutation for phasing",
-                        "title": "Min Mutation Q-Score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.09,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.min_split_fraction",
-                    "name": "Min Mutation Prevalence",
-                    "description": "Minimum number of supporting reads required to use a mutation for phasing"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_split_fraction",
-                "required": [
-                    "pblaa.task_options.min_split_fraction"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_split_fraction": {
-                        "default": 0.09,
-                        "type": "number",
-                        "description": "Minimum number of supporting reads required to use a mutation for phasing",
-                        "title": "Min Mutation Prevalence"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.1,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.min_split_fraction",
-                    "name": "Min Split Fraction",
-                    "description": "Minimum fraction of reads supporting a minor phase required for split"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_split_fraction",
-                "required": [
-                    "pblaa.task_options.min_split_fraction"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_split_fraction": {
-                        "default": 0.1,
-                        "type": "number",
-                        "description": "Minimum fraction of reads supporting a minor phase required for split",
-                        "title": "Min Split Fraction"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 20,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.min_split_reads",
-                    "name": "Min Split Reads",
-                    "description": "Minimum number of reads supporting a minor phase required for split"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_split_reads",
-                "required": [
-                    "pblaa.task_options.min_split_reads"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_split_reads": {
-                        "default": 20,
-                        "type": "integer",
-                        "description": "Minimum number of reads supporting a minor phase required for split",
-                        "title": "Min Split Reads"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 500,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.min_split_score",
-                    "name": "Min Split Score",
-                    "description": "Minimum score supporting a minor phase required for split"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_split_score",
-                "required": [
-                    "pblaa.task_options.min_split_score"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_split_score": {
-                        "default": 500,
-                        "type": "integer",
-                        "description": "Minimum score supporting a minor phase required for split",
-                        "title": "Min Split Score"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 20,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.ignore_ends",
-                    "name": "Ignore Ends",
-                    "description": "When phasing, ignore variants within N bases of the ends"
-                },
-                "title": "JSON Schema for pblaa.task_options.ignore_ends",
-                "required": [
-                    "pblaa.task_options.ignore_ends"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.ignore_ends": {
-                        "default": 20,
-                        "type": "integer",
-                        "description": "When phasing, ignore variants within N bases of the ends",
-                        "title": "Ignore Ends"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pblaa.task_options.no_phasing",
-                    "name": "No Phasing",
-                    "description": "Deactivate the fine phasing step, go directly from clustering to consensus"
-                },
-                "title": "JSON Schema for pblaa.task_options.no_phasing",
-                "required": [
-                    "pblaa.task_options.no_phasing"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.no_phasing": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Deactivate the fine phasing step, go directly from clustering to consensus",
-                        "title": "No Phasing"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.take_n",
-                    "name": "Take N",
-                    "description": "Report only the top N consensus sequences for each barcode, set < 1 to disable"
-                },
-                "title": "JSON Schema for pblaa.task_options.take_n",
-                "required": [
-                    "pblaa.task_options.take_n"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.take_n": {
-                        "default": 0,
-                        "type": "integer",
-                        "description": "Report only the top N consensus sequences for each barcode, set < 1 to disable",
-                        "title": "Take N"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0,
-                    "type": "integer",
-                    "option_id": "pblaa.task_options.trim_ends",
-                    "name": "Trim Ends",
-                    "description": "Trim N bases from each end of each consensus"
-                },
-                "title": "JSON Schema for pblaa.task_options.trim_ends",
-                "required": [
-                    "pblaa.task_options.trim_ends"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.trim_ends": {
-                        "default": 0,
-                        "type": "integer",
-                        "description": "Trim N bases from each end of each consensus",
-                        "title": "Trim Ends"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 0.95,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.min_predicted_accuracy",
-                    "name": "Min Predicted Accuracy",
-                    "description": "Minimum predicted consensus accuracy below which a consensus is called 'Noise'"
-                },
-                "title": "JSON Schema for pblaa.task_options.min_predicted_accuracy",
-                "required": [
-                    "pblaa.task_options.min_predicted_accuracy"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.min_predicted_accuracy": {
-                        "default": 0.95,
-                        "type": "number",
-                        "description": "Minimum predicted consensus accuracy below which a consensus is called 'Noise'",
-                        "title": "Min Predicted Accuracy"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": 1.0,
-                    "type": "number",
-                    "option_id": "pblaa.task_options.chimera_score_threshold",
-                    "name": "Chimera Score Threshold",
-                    "description": "Minimum score to consider a sequence chimeric"
-                },
-                "title": "JSON Schema for pblaa.task_options.chimera_score_threshold",
-                "required": [
-                    "pblaa.task_options.chimera_score_threshold"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.chimera_score_threshold": {
-                        "default": 1.0,
-                        "type": "number",
-                        "description": "Minimum score to consider a sequence chimeric",
-                        "title": "Chimera Score Threshold"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pblaa.task_options.no_chimera_filter",
-                    "name": "No Chimera Filter",
-                    "description": "Deactivate the chimera filter and output all consensus results"
-                },
-                "title": "JSON Schema for pblaa.task_options.no_chimera_filter",
-                "required": [
-                    "pblaa.task_options.no_chimera_filter"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.no_chimera_filter": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Deactivate the chimera filter and output all consensus results",
-                        "title": "No Chimera Filter"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": "",
-                    "type": "string",
-                    "option_id": "pblaa.task_options.model_path",
-                    "name": "Model(s) Path",
-                    "description": "Path to model parameter file(s)"
-                },
-                "title": "JSON Schema for pblaa.task_options.model_path",
-                "required": [
-                    "pblaa.task_options.model_path"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.model_path": {
-                        "default": "",
-                        "type": "string",
-                        "description": "Path to model parameter file(s)",
-                        "title": "Model(s) Path"
-                    }
-                }
-            },
-            {
-                "pb_option": {
-                    "default": "",
-                    "type": "string",
-                    "option_id": "pblaa.task_options.model_spec",
-                    "name": "Model Override",
-                    "description": "Override default model selection with a provided model specification"
-                },
-                "title": "JSON Schema for pblaa.task_options.model_spec",
-                "required": [
-                    "pblaa.task_options.model_spec"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pblaa.task_options.model_spec": {
-                        "default": "",
-                        "type": "string",
-                        "description": "Override default model selection with a provided model specification",
-                        "title": "Model Override"
-                    }
-                }
-            }
-        ],
-        "output_types": [
-            {
-                "title": "Consensus FASTQ",
-                "description": "Resulting consensus fastq file",
-                "default_name": "amplicon_analysis",
-                "id": "consensus_fastq",
-                "file_type_id": "PacBio.FileTypes.Fastq"
-            },
-            {
-                "title": "Chimera/noise FASTQ",
-                "description": "Resulting chimera/noise fastq file",
-                "default_name": "amplicon_analysis_chimeras_noise",
-                "id": "chimera_fastq",
-                "file_type_id": "PacBio.FileTypes.Fastq"
-            },
-            {
-                "title": "CSV report",
-                "description": "CSV report",
-                "default_name": "amplicon_analysis",
-                "id": "report_csv",
-                "file_type_id": "PacBio.FileTypes.csv"
-            },
-            {
-                "title": "JSON summary of ZMWs",
-                "description": "JSON summary of ZMWs",
-                "default_name": "amplicon_analysis_zmws",
-                "id": "zmw_json",
-                "file_type_id": "PacBio.FileTypes.json"
-            }
-        ],
-        "_comment": "Created by v0.4.6",
-        "name": "laa",
+        "_comment": "Created by v0.0.1",
+        "description": "A tool to deconvolute mixtures of alleles and loci into phased consensus sequences. \nCopyright (c) 2014-2016 Pacific Biosciences, Inc.\nLicense: 3-BSD",
         "input_types": [
             {
                 "description": "Subread DataSet or .bam file",
-                "title": "SubreadSet",
+                "file_type_id": "PacBio.DataSet.SubreadSet",
                 "id": "subread_set",
-                "file_type_id": "PacBio.DataSet.SubreadSet"
+                "title": "SubreadSet"
             }
         ],
-        "nproc": 2,
         "is_distributed": true,
+        "name": "laa",
+        "nproc": 8,
+        "output_types": [
+            {
+                "default_name": "amplicon_analysis",
+                "description": "Resulting consensus fastq file",
+                "file_type_id": "PacBio.FileTypes.Fastq",
+                "id": "result_fastq",
+                "title": "Consensus FASTQ"
+            },
+            {
+                "default_name": "amplicon_analysis_chimeras_noise",
+                "description": "Resulting chimera/noise fastq file",
+                "file_type_id": "PacBio.FileTypes.Fastq",
+                "id": "junk_fastq",
+                "title": "Chimera/noise FASTQ"
+            },
+            {
+                "default_name": "amplicon_analysis_summary",
+                "description": "Metadata for all resulting fastq sequences",
+                "file_type_id": "PacBio.FileTypes.csv",
+                "id": "summary_csv",
+                "title": "Consensus summary CSV"
+            },
+            {
+                "default_name": "amplicon_analysis_input",
+                "description": "Per-barcode PCR quality estimates",
+                "file_type_id": "PacBio.FileTypes.csv",
+                "id": "input_csv",
+                "title": "Input molecule report CSV"
+            }
+        ],
+        "resource_types": [],
+        "schema_options": [
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 1,
+                    "description": "Minimum score to consider a sequence chimeric.",
+                    "name": "chimeraScoreThreshold",
+                    "option_id": "pblaa.task_options.chimera_score_threshold",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.chimera_score_threshold": {
+                        "default": 1,
+                        "description": "Minimum score to consider a sequence chimeric.",
+                        "title": "chimeraScoreThreshold",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.chimera_score_threshold"
+                ],
+                "title": "JSON Schema for pblaa.task_options.chimera_score_threshold",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 2,
+                    "description": "Markov Clustering inflation parameter.",
+                    "name": "clusterInflation",
+                    "option_id": "pblaa.task_options.cluster_inflation",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.cluster_inflation": {
+                        "default": 2,
+                        "description": "Markov Clustering inflation parameter.",
+                        "title": "clusterInflation",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.cluster_inflation"
+                ],
+                "title": "JSON Schema for pblaa.task_options.cluster_inflation",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.00100000004749745,
+                    "description": "Markov Clustering loop weight parameter.",
+                    "name": "clusterLoopWeight",
+                    "option_id": "pblaa.task_options.cluster_loop_weight",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.cluster_loop_weight": {
+                        "default": 0.00100000004749745,
+                        "description": "Markov Clustering loop weight parameter.",
+                        "title": "clusterLoopWeight",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.cluster_loop_weight"
+                ],
+                "title": "JSON Schema for pblaa.task_options.cluster_loop_weight",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "",
+                    "description": "Comma-separated list of barcode-index pairs to analyze, in the form '0--0'.",
+                    "name": "Barcode-Index Pairs",
+                    "option_id": "pblaa.task_options.do_bc",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.do_bc": {
+                        "default": "",
+                        "description": "Comma-separated list of barcode-index pairs to analyze, in the form '0--0'.",
+                        "title": "Barcode-Index Pairs",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.do_bc"
+                ],
+                "title": "JSON Schema for pblaa.task_options.do_bc",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Write consensus sequences for each barcode out to separate files",
+                    "name": "fastxByBarcode",
+                    "option_id": "pblaa.task_options.fastx_by_barcode",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.fastx_by_barcode": {
+                        "default": false,
+                        "description": "Write consensus sequences for each barcode out to separate files",
+                        "title": "fastxByBarcode",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.fastx_by_barcode"
+                ],
+                "title": "JSON Schema for pblaa.task_options.fastx_by_barcode",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Filter input reads by presence of both flanking barcodes.",
+                    "name": "Only Full Length Subreads",
+                    "option_id": "pblaa.task_options.full_length",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.full_length": {
+                        "default": false,
+                        "description": "Filter input reads by presence of both flanking barcodes.",
+                        "title": "Only Full Length Subreads",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.full_length"
+                ],
+                "title": "JSON Schema for pblaa.task_options.full_length",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Disable barcode filtering and treat all data as one sample.",
+                    "name": "Disable Barcode Filtering",
+                    "option_id": "pblaa.task_options.ignore_bc",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.ignore_bc": {
+                        "default": false,
+                        "description": "Disable barcode filtering and treat all data as one sample.",
+                        "title": "Disable Barcode Filtering",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.ignore_bc"
+                ],
+                "title": "JSON Schema for pblaa.task_options.ignore_bc",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0,
+                    "description": "When splitting, ignore N bases at the ends. Use to prevent excessive splitting caused by degenerate primers.",
+                    "name": "ignoreEnds",
+                    "option_id": "pblaa.task_options.ignore_ends",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.ignore_ends": {
+                        "default": 0,
+                        "description": "When splitting, ignore N bases at the ends. Use to prevent excessive splitting caused by degenerate primers.",
+                        "title": "ignoreEnds",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.ignore_ends"
+                ],
+                "title": "JSON Schema for pblaa.task_options.ignore_ends",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "amplicon_analysis_input.csv",
+                    "description": "Output estimates of input PCR quality based on subread mappings",
+                    "name": "Input Molecule Report File",
+                    "option_id": "pblaa.task_options.input_report_file",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.input_report_file": {
+                        "default": "amplicon_analysis_input.csv",
+                        "description": "Output estimates of input PCR quality based on subread mappings",
+                        "title": "Input Molecule Report File",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.input_report_file"
+                ],
+                "title": "JSON Schema for pblaa.task_options.input_report_file",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "amplicon_analysis_chimeras_noise.fastq",
+                    "description": "Output file for low-quality or chimeric results.",
+                    "name": "Junk File",
+                    "option_id": "pblaa.task_options.junk_file",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.junk_file": {
+                        "default": "amplicon_analysis_chimeras_noise.fastq",
+                        "description": "Output file for low-quality or chimeric results.",
+                        "title": "Junk File",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.junk_file"
+                ],
+                "title": "JSON Schema for pblaa.task_options.junk_file",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "",
+                    "description": "Output file to write logging information to",
+                    "name": "LOG file",
+                    "option_id": "pblaa.task_options.log_file",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.log_file": {
+                        "default": "",
+                        "description": "Output file to write logging information to",
+                        "title": "LOG file",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.log_file"
+                ],
+                "title": "JSON Schema for pblaa.task_options.log_file",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 500,
+                    "description": "Maximum number of input reads to cluster per barcode.",
+                    "name": "maxClusteringReads",
+                    "option_id": "pblaa.task_options.max_clustering_reads",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.max_clustering_reads": {
+                        "default": 500,
+                        "description": "Maximum number of input reads to cluster per barcode.",
+                        "title": "maxClusteringReads",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.max_clustering_reads"
+                ],
+                "title": "JSON Schema for pblaa.task_options.max_clustering_reads",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0,
+                    "description": "Maximum length of input reads, set 0 to disable.",
+                    "name": "maxLength",
+                    "option_id": "pblaa.task_options.max_length",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.max_length": {
+                        "default": 0,
+                        "description": "Maximum length of input reads, set 0 to disable.",
+                        "title": "maxLength",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.max_length"
+                ],
+                "title": "JSON Schema for pblaa.task_options.max_length",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 500,
+                    "description": "Maximum number of reads to use for phasing/consensus.",
+                    "name": "maxPhasingReads",
+                    "option_id": "pblaa.task_options.max_phasing_reads",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.max_phasing_reads": {
+                        "default": 500,
+                        "description": "Maximum number of reads to use for phasing/consensus.",
+                        "title": "maxPhasingReads",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.max_phasing_reads"
+                ],
+                "title": "JSON Schema for pblaa.task_options.max_phasing_reads",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 2000,
+                    "description": "Maximum number of input reads to cluster per barcode.",
+                    "name": "maxReads",
+                    "option_id": "pblaa.task_options.max_reads",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.max_reads": {
+                        "default": 2000,
+                        "description": "Maximum number of input reads to cluster per barcode.",
+                        "title": "maxReads",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.max_reads"
+                ],
+                "title": "JSON Schema for pblaa.task_options.max_reads",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0,
+                    "description": "Minimum average barcode score to require of subreads.",
+                    "name": "Minimum Average Barcode Score",
+                    "option_id": "pblaa.task_options.min_barcode_score",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.min_barcode_score": {
+                        "default": 0,
+                        "description": "Minimum average barcode score to require of subreads.",
+                        "title": "Minimum Average Barcode Score",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_barcode_score"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_barcode_score",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 3000,
+                    "description": "Minimum length of input reads.",
+                    "name": "minLength",
+                    "option_id": "pblaa.task_options.min_length",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.min_length": {
+                        "default": 3000,
+                        "description": "Minimum length of input reads.",
+                        "title": "minLength",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_length"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_length",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.949999988079071,
+                    "description": "Minimum predicted consensus accuracy below which a consensus is called 'noise'.",
+                    "name": "minPredictedAccuracy",
+                    "option_id": "pblaa.task_options.min_predicted_accuracy",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_predicted_accuracy": {
+                        "default": 0.949999988079071,
+                        "description": "Minimum predicted consensus accuracy below which a consensus is called 'noise'.",
+                        "title": "minPredictedAccuracy",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_predicted_accuracy"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_predicted_accuracy",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.0900000035762787,
+                    "description": "Minimum prevalence to require of mutations used for phasing.",
+                    "name": "minPrevalence",
+                    "option_id": "pblaa.task_options.min_prevalence",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_prevalence": {
+                        "default": 0.0900000035762787,
+                        "description": "Minimum prevalence to require of mutations used for phasing.",
+                        "title": "minPrevalence",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_prevalence"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_prevalence",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 20,
+                    "description": "Minimum score to require of mutations  used for phasing.",
+                    "name": "minQScore",
+                    "option_id": "pblaa.task_options.min_q_score",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_q_score": {
+                        "default": 20,
+                        "description": "Minimum score to require of mutations  used for phasing.",
+                        "title": "minQScore",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_q_score"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_q_score",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.75,
+                    "description": "Minimum read score of input reads.",
+                    "name": "minReadScore",
+                    "option_id": "pblaa.task_options.min_read_score",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_read_score": {
+                        "default": 0.75,
+                        "description": "Minimum read score of input reads.",
+                        "title": "minReadScore",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_read_score"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_read_score",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 3.75,
+                    "description": "Minimum SNR of input reads.",
+                    "name": "minSnr",
+                    "option_id": "pblaa.task_options.min_snr",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_snr": {
+                        "default": 3.75,
+                        "description": "Minimum SNR of input reads.",
+                        "title": "minSnr",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_snr"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_snr",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0.100000001490116,
+                    "description": "Minimum fraction of reads favoring the minor phase required to split a haplotype.",
+                    "name": "minSplitFraction",
+                    "option_id": "pblaa.task_options.min_split_fraction",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_split_fraction": {
+                        "default": 0.100000001490116,
+                        "description": "Minimum fraction of reads favoring the minor phase required to split a haplotype.",
+                        "title": "minSplitFraction",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_split_fraction"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_split_fraction",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 20,
+                    "description": "Minimum number reads favoring the minor phase required to split a haplotype.",
+                    "name": "minSplitReads",
+                    "option_id": "pblaa.task_options.min_split_reads",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.min_split_reads": {
+                        "default": 20,
+                        "description": "Minimum number reads favoring the minor phase required to split a haplotype.",
+                        "title": "minSplitReads",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_split_reads"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_split_reads",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 500,
+                    "description": "Global likelihood improvement required to split a haplotype.",
+                    "name": "minSplitScore",
+                    "option_id": "pblaa.task_options.min_split_score",
+                    "type": "number"
+                },
+                "properties": {
+                    "pblaa.task_options.min_split_score": {
+                        "default": 500,
+                        "description": "Global likelihood improvement required to split a haplotype.",
+                        "title": "minSplitScore",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.min_split_score"
+                ],
+                "title": "JSON Schema for pblaa.task_options.min_split_score",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "",
+                    "description": "Path to a model file or directory containing model files.",
+                    "name": "Model(s) Path",
+                    "option_id": "pblaa.task_options.model_path",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.model_path": {
+                        "default": "",
+                        "description": "Path to a model file or directory containing model files.",
+                        "title": "Model(s) Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.model_path"
+                ],
+                "title": "JSON Schema for pblaa.task_options.model_path",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "",
+                    "description": "Name of chemistry or model to use, overriding default selection.",
+                    "name": "Model Override",
+                    "option_id": "pblaa.task_options.model_spec",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.model_spec": {
+                        "default": "",
+                        "description": "Name of chemistry or model to use, overriding default selection.",
+                        "title": "Model Override",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.model_spec"
+                ],
+                "title": "JSON Schema for pblaa.task_options.model_spec",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Deactivate the chimera filter and output all consensus",
+                    "name": "noChimeraFilter",
+                    "option_id": "pblaa.task_options.no_chimera_filter",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.no_chimera_filter": {
+                        "default": false,
+                        "description": "Deactivate the chimera filter and output all consensus",
+                        "title": "noChimeraFilter",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.no_chimera_filter"
+                ],
+                "title": "JSON Schema for pblaa.task_options.no_chimera_filter",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Disable the coarse clustering",
+                    "name": "noClustering",
+                    "option_id": "pblaa.task_options.no_clustering",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.no_clustering": {
+                        "default": false,
+                        "description": "Disable the coarse clustering",
+                        "title": "noClustering",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.no_clustering"
+                ],
+                "title": "JSON Schema for pblaa.task_options.no_clustering",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": false,
+                    "description": "Disable the fine phasing step.",
+                    "name": "noPhasing",
+                    "option_id": "pblaa.task_options.no_phasing",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.no_phasing": {
+                        "default": false,
+                        "description": "Disable the fine phasing step.",
+                        "title": "noPhasing",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.no_phasing"
+                ],
+                "title": "JSON Schema for pblaa.task_options.no_phasing",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "amplicon_analysis_summary.csv",
+                    "description": "Output file for summary report.",
+                    "name": "Report File",
+                    "option_id": "pblaa.task_options.report_file",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.report_file": {
+                        "default": "amplicon_analysis_summary.csv",
+                        "description": "Output file for summary report.",
+                        "title": "Report File",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.report_file"
+                ],
+                "title": "JSON Schema for pblaa.task_options.report_file",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "amplicon_analysis.fastq",
+                    "description": "Output file for high-quality results.",
+                    "name": "resultFile",
+                    "option_id": "pblaa.task_options.result_file",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.result_file": {
+                        "default": "amplicon_analysis.fastq",
+                        "description": "Output file for high-quality results.",
+                        "title": "resultFile",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.result_file"
+                ],
+                "title": "JSON Schema for pblaa.task_options.result_file",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 42,
+                    "description": "RNG seed, modulates reservoir filtering of reads.",
+                    "name": "RNG seed",
+                    "option_id": "pblaa.task_options.rng_seed",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.rng_seed": {
+                        "default": 42,
+                        "description": "RNG seed, modulates reservoir filtering of reads.",
+                        "title": "RNG seed",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.rng_seed"
+                ],
+                "title": "JSON Schema for pblaa.task_options.rng_seed",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": "amplicon_analysis_subreads",
+                    "description": "Output prefix for subreads report.",
+                    "name": "Subreads Report Prefix",
+                    "option_id": "pblaa.task_options.subreads_report_prefix",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.subreads_report_prefix": {
+                        "default": "amplicon_analysis_subreads",
+                        "description": "Output prefix for subreads report.",
+                        "title": "Subreads Report Prefix",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.subreads_report_prefix"
+                ],
+                "title": "JSON Schema for pblaa.task_options.subreads_report_prefix",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0,
+                    "description": "Report only the top N consensus sequences for each barcode, set <1 to disable.",
+                    "name": "takeN",
+                    "option_id": "pblaa.task_options.take_n",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.take_n": {
+                        "default": 0,
+                        "description": "Report only the top N consensus sequences for each barcode, set <1 to disable.",
+                        "title": "takeN",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.take_n"
+                ],
+                "title": "JSON Schema for pblaa.task_options.take_n",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": 0,
+                    "description": "Trim N bases from each end of each consensus.",
+                    "name": "trimEnds",
+                    "option_id": "pblaa.task_options.trim_ends",
+                    "type": "integer"
+                },
+                "properties": {
+                    "pblaa.task_options.trim_ends": {
+                        "default": 0,
+                        "description": "Trim N bases from each end of each consensus.",
+                        "title": "trimEnds",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.trim_ends"
+                ],
+                "title": "JSON Schema for pblaa.task_options.trim_ends",
+                "type": "object"
+            }
+        ],
+        "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pblaa.tasks.laa"
-    }
+    },
+    "tool_contract_id": "pblaa.tasks.laa",
+    "version": "pblaa 2.0.0 (commit b8d7eab*) | unanimity 2.0.4 (commit 91ad042*)"
 }

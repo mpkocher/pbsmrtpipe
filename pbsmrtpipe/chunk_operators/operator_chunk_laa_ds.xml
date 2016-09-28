@@ -14,22 +14,22 @@
         <chunks>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
-                <chunk-key>$chunk.consensus_fastq_id</chunk-key>
+                <chunk-key>$chunk.result_fastq_id</chunk-key>
                 <task-output>pblaa.tasks.laa:0</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
-                <chunk-key>$chunk.chimera_fastq_id</chunk-key>
+                <chunk-key>$chunk.junk_fastq_id</chunk-key>
                 <task-output>pblaa.tasks.laa:1</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_csv</gather-task-id>
-                <chunk-key>$chunk.csv_id</chunk-key>
+                <chunk-key>$chunk.summary_csv_id</chunk-key>
                 <task-output>pblaa.tasks.laa:2</task-output>
             </chunk>
             <chunk>
-                <gather-task-id>pbcoretools.tasks.gather_laa_json</gather-task-id>
-                <chunk-key>$chunk.json_id</chunk-key>
+                <gather-task-id>pbcoretools.tasks.gather_csv</gather-task-id>
+                <chunk-key>$chunk.input_csv_id</chunk-key>
                 <task-output>pblaa.tasks.laa:3</task-output>
             </chunk>
         </chunks>
