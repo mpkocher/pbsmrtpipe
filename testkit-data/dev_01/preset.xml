@@ -27,6 +27,11 @@
             <value>pbsmrtpipe.cluster_templates.sge</value>
         </option>
 
+	<!-- Testing for options that are not part of the schema -->
+        <option id="pbsmrtpipe.options.not_a_option" >
+            <value>11234</value>
+        </option>
+
     </options>
 
     <!-- Default Task specific Options -->
