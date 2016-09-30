@@ -772,7 +772,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
 
     slog.info("validating supplied task options.")
     topts = IO.validate_raw_task_options(registered_tasks, topts)
-    slog.info("successfully validated (pre DI) task options.")
+    slog.info("successfully loaded and validated task options.")
 
     workflow_bindings = builder_record.bindings
 

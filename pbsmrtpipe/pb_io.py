@@ -394,7 +394,7 @@ def validate_raw_task_option(registered_tasks, option_id, raw_value):
     if option_id in opts:
         value = _raw_option_with_schema(option_id, raw_value, opts[option_id])
     else:
-        log.warn("Unknown option '{i}'. Ignoring".format(i=option_id))
+        log.warn("UNKNOWN TASK OPTION with id '{i}'. Ignoring option".format(i=option_id))
         value = None
 
     return value
