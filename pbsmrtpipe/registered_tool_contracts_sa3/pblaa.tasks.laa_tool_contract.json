@@ -53,6 +53,52 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
+                    "default": "",
+                    "description": "Fasta file of the barcode sequences used, overwriting any names in the DataSet. NOTE: Only used to find barcode names",
+                    "name": "Barcode Fasta File",
+                    "option_id": "pblaa.task_options.barcodes",
+                    "type": "string"
+                },
+                "properties": {
+                    "pblaa.task_options.barcodes": {
+                        "default": "",
+                        "description": "Fasta file of the barcode sequences used, overwriting any names in the DataSet. NOTE: Only used to find barcode names",
+                        "title": "Barcode Fasta File",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.barcodes"
+                ],
+                "title": "JSON Schema for pblaa.task_options.barcodes",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
+                    "default": true,
+                    "description": "Activate the chimera filter and separate chimeric consensus outputs",
+                    "name": "ChimeraFilter",
+                    "option_id": "pblaa.task_options.chimera_filter",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.chimera_filter": {
+                        "default": true,
+                        "description": "Activate the chimera filter and separate chimeric consensus outputs",
+                        "title": "ChimeraFilter",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.chimera_filter"
+                ],
+                "title": "JSON Schema for pblaa.task_options.chimera_filter",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
                     "default": 1,
                     "description": "Minimum score to consider a sequence chimeric.",
                     "name": "chimeraScoreThreshold",
@@ -122,8 +168,31 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
+                    "default": true,
+                    "description": "Enable the coarse clustering",
+                    "name": "Clustering",
+                    "option_id": "pblaa.task_options.clustering",
+                    "type": "boolean"
+                },
+                "properties": {
+                    "pblaa.task_options.clustering": {
+                        "default": true,
+                        "description": "Enable the coarse clustering",
+                        "title": "Clustering",
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "pblaa.task_options.clustering"
+                ],
+                "title": "JSON Schema for pblaa.task_options.clustering",
+                "type": "object"
+            },
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "pb_option": {
                     "default": "",
-                    "description": "Comma-separated list of barcode-index pairs to analyze, in the form '0--0'.",
+                    "description": "Comma-separated list of barcode names or barcode-index pairs to analyze, in the form '0--0'.",
                     "name": "Barcode-Index Pairs",
                     "option_id": "pblaa.task_options.do_bc",
                     "type": "string"
@@ -131,7 +200,7 @@
                 "properties": {
                     "pblaa.task_options.do_bc": {
                         "default": "",
-                        "description": "Comma-separated list of barcode-index pairs to analyze, in the form '0--0'.",
+                        "description": "Comma-separated list of barcode names or barcode-index pairs to analyze, in the form '0--0'.",
                         "title": "Barcode-Index Pairs",
                         "type": "string"
                     }
@@ -674,70 +743,24 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": false,
-                    "description": "Deactivate the chimera filter and output all consensus",
-                    "name": "noChimeraFilter",
-                    "option_id": "pblaa.task_options.no_chimera_filter",
+                    "default": true,
+                    "description": "Enable the fine phasing step.",
+                    "name": "Phasing",
+                    "option_id": "pblaa.task_options.phasing",
                     "type": "boolean"
                 },
                 "properties": {
-                    "pblaa.task_options.no_chimera_filter": {
-                        "default": false,
-                        "description": "Deactivate the chimera filter and output all consensus",
-                        "title": "noChimeraFilter",
+                    "pblaa.task_options.phasing": {
+                        "default": true,
+                        "description": "Enable the fine phasing step.",
+                        "title": "Phasing",
                         "type": "boolean"
                     }
                 },
                 "required": [
-                    "pblaa.task_options.no_chimera_filter"
+                    "pblaa.task_options.phasing"
                 ],
-                "title": "JSON Schema for pblaa.task_options.no_chimera_filter",
-                "type": "object"
-            },
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": false,
-                    "description": "Disable the coarse clustering",
-                    "name": "noClustering",
-                    "option_id": "pblaa.task_options.no_clustering",
-                    "type": "boolean"
-                },
-                "properties": {
-                    "pblaa.task_options.no_clustering": {
-                        "default": false,
-                        "description": "Disable the coarse clustering",
-                        "title": "noClustering",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "pblaa.task_options.no_clustering"
-                ],
-                "title": "JSON Schema for pblaa.task_options.no_clustering",
-                "type": "object"
-            },
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": false,
-                    "description": "Disable the fine phasing step.",
-                    "name": "noPhasing",
-                    "option_id": "pblaa.task_options.no_phasing",
-                    "type": "boolean"
-                },
-                "properties": {
-                    "pblaa.task_options.no_phasing": {
-                        "default": false,
-                        "description": "Disable the fine phasing step.",
-                        "title": "noPhasing",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "pblaa.task_options.no_phasing"
-                ],
-                "title": "JSON Schema for pblaa.task_options.no_phasing",
+                "title": "JSON Schema for pblaa.task_options.phasing",
                 "type": "object"
             },
             {
@@ -883,5 +906,5 @@
         "tool_contract_id": "pblaa.tasks.laa"
     },
     "tool_contract_id": "pblaa.tasks.laa",
-    "version": "pblaa 2.0.0 (commit b8d7eab*) | unanimity 2.0.4 (commit 91ad042*)"
+    "version": "pblaa 2.1.0 (commit 5403cd7*) | unanimity 2.0.4 (commit 2dd7309*)"
 }
