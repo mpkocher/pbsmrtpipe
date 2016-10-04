@@ -191,6 +191,24 @@ def _is_chunked_task_node_type(tnode):
     return isinstance(tnode, (TaskChunkedBindingNode, TaskScatterBindingNode))
 
 
+def _write_kill_script(output_dir):
+
+    def __writer(fx, sx):
+        with open(fx, 'w') as f:
+            f.write(sx)
+
+    pid = os.getpid()
+    kill_script = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID_KILL_FILE_SCRIPT)
+    pid_file = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID)
+
+    # It's recommended to use kill -SIGINT {PID}
+    s = "kill -9 {i}".format(i=pid)
+    __writer(kill_script, s)
+    __writer(pid_file, str(pid))
+
+    return pid
+
+
 def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_dir,
                    workers, shutdown_event, service_uri_or_none):
     """
@@ -252,6 +270,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     B.apply_chunk_operator(bg, global_registry.chunk_operators, global_registry.tasks, workflow_opts.max_nchunks)
 
     log.debug(BU.to_binding_graph_summary(bg))
+
+
+    # Write self kill script
+    _write_kill_script(output_dir)
 
     # "global" file type id counter {str: int} that will be
     # used to generate ids
