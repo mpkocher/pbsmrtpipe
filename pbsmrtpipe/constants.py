@@ -16,6 +16,10 @@ ENV_PT_DIR = "PB_PIPELINE_TEMPLATE_DIR"
 ENV_CHK_OPT_DIR = "PB_CHUNK_OPERATOR_DIR"
 
 
+PBSMRTPIPE_PID_KILL_FILE_SCRIPT = ".pbsmrtpipe-terminate.sh"
+PBSMRTPIPE_PID = '.pbsmrtpipe-pid'
+
+
 DEEP_DEBUG = False
 
 # Global Env vars that are necessary to do *anything*. This is stupid.
