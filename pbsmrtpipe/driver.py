@@ -198,13 +198,13 @@ def _write_kill_script(output_dir):
             f.write(sx)
 
     pid = os.getpid()
+    pgid = os.getpgrp()
     kill_script = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID_KILL_FILE_SCRIPT)
-    pid_file = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID)
 
-    # It's recommended to use kill -SIGINT {PID}
-    s = "kill -9 {i}".format(i=pid)
+    # kill using the process group id to make sure that the signal is sent
+    # to the children in a non-tty
+    s = "kill -INT -{i}".format(i=pgid)
     __writer(kill_script, s)
-    __writer(pid_file, str(pid))
 
     return pid
 
