@@ -211,15 +211,16 @@ def args_runner(args):
         test_job_id=args.test_job_id)
 
 
-def _get_parser():
+def get_parser():
     p = get_default_argparser_with_base_opts(
         version="0.1",
         description=__doc__)
     p.add_argument("testkit_cfg")
     p.add_argument("-u", "--host", dest="host", action="store",
-                   default="http://localhost")
+                   default=os.environ.get("PB_SERVICE_HOST", "http://localhost"))
     p.add_argument("-p", "--port", dest="port", action="store", type=int,
-                   default=8081, help="Port number")
+                   default=int(os.environ.get("PB_SERVICE_PORT", "8081")),
+                   help="Services port number")
     p.add_argument("-x", "--xunit", dest="xml_out", default="test-output.xml",
                    help="Output XUnit test results")
     p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
@@ -241,7 +242,7 @@ def _get_parser():
 def main(argv=sys.argv):
     return pacbio_args_runner(
         argv=argv[1:],
-        parser=_get_parser(),
+        parser=get_parser(),
         args_runner_func=args_runner,
         alog=log,
         setup_log_func=setup_log)
