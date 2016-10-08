@@ -198,10 +198,9 @@ def run_command_async(command, file_stdout=None, file_stderr=None):
     process = subprocess.Popen(shlex.split(command), stdout=ofho,
                                stderr=ofhe)
 
-    # wait till the process has been loaded and stdout and stderr have been 'created'
-    #time.sleep(1)
     process.poll()
-    slog.debug(" pid={pid}".format(pid=process.pid))
+    pid = process.pid
+    slog.debug("pid={i} pgroupid={g}".format(i=pid, g=os.getpgid(pid)))
 
     # Launch the asynchronous readers of the process' stdout and stderr.
     stdout_queue = create_file_tail_reader(fno)
@@ -312,7 +311,8 @@ def run_command(cmd, stdout_fh, stderr_fh, shell=True, time_out=None):
     dt = 0.1
 
     process.poll()
-    slog.debug(" pid={pid}".format(pid=process.pid))
+    pid = process.pid
+    slog.debug("pid={i} pgroupid={g}".format(i=pid, g=os.getpgid(pid)))
     while process.returncode is None:
         process.poll()
         time.sleep(sleep_time)

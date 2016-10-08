@@ -271,8 +271,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     log.debug(BU.to_binding_graph_summary(bg))
 
-
-    # Write self kill script
+    slog.info("pbsmrtpipe main process pid={i} pgroupid={g} ppid={p}".format(i=os.getpid(), g=os.getpgrp(), p=os.getppid()))
     _write_kill_script(output_dir)
 
     # "global" file type id counter {str: int} that will be
