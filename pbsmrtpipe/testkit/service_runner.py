@@ -7,6 +7,7 @@ pbtestkit-runner.
 import xml.etree.ElementTree as ET
 import argparse
 import logging
+import os
 import sys
 
 from pbcommand.cli import (get_default_argparser_with_base_opts,
