@@ -21,7 +21,7 @@ not as lightweight.
 
 As an alternative to a workflow XML, you can instead specify ``pipelineId``.
 
-Currently, there are dev integration tests in **testkit-data** root level directory that only dependend on pbcore. These are useful to running example jobs and understanding how pipelines are constructed.  In our Perforce repos, most tests live in ``//depot/software/smrtanalysis/siv/testkit-jobs/sa3_pipelines``, which has multiple examples for all of our production pipelines.  Each test should have its own subdirectory, preferably grouped by application type.  Please note that although pbsmrtpipe pipelines will often work with "bare" BAM or FASTA files as inputs instead of PacBio DataSet XML files, testkit jobs should always use the corresponding DataSet XML as entry points.
+Currently, there are dev integration tests in **testkit-data** root level directory that only dependend on pbcore. These are useful to running example jobs and understanding how pipelines are constructed.  In our Perforce repos, most tests live in ``//depot/software/smrtanalysis/siv/testkit-jobs/sa3_pipelines``, which has multiple examples for all of our production pipelines.  Each test should have its own subdirectory, preferably grouped by application type.  Please note that although pbsmrtpipe pipelines will often work with "bare" BAM or FASTA files as inputs instead of PacBio DataSet XML files, testkit jobs should always use the corresponding DataSet XML as entry points, to ensure compatibility with SMRT Link services (see below).
 
 
 Defining Test Cases
@@ -63,7 +63,8 @@ test suite with modifications, add ``--only-tests``.
 
 Testing via services is slightly less flexible but has the added advantage of
 making the job visible in SMRT Link, including all reports and plots, plus
-checking for functionality in the server environment.
+checking for functionality in the server environment.  Note that services
+absolutely requires that all entry points be DataSet XML files.
 The equivalent command is slightly more complicated::
 
   $ pbtestkit-service-runner --host smrtlink-bihourly --port 8081 testkit.cfg
