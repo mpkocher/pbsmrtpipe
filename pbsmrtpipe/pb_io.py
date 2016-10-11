@@ -375,8 +375,10 @@ def _raw_option_with_schema(option_id, raw_value, schema):
     schema_option_id = schema['pb_option']['option_id']
 
     if option_id == schema_option_id:
-        types_ = schema['pb_option']['type']
-        coerced_value = crude_coerce_type_from_str(raw_value, types_)
+        pb_type = schema['pb_option']['type']
+        coerced_value = crude_coerce_type_from_str(raw_value, pb_type)
+        if pb_type == "string" and raw_value is None:
+            coerced_value = ""
         _ = jsonschema.validate(schema, {option_id: coerced_value})
         value = coerced_value
     else:
