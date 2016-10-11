@@ -10,14 +10,17 @@
             <value>7</value>
         </option>
         <option id="pbsmrtpipe.options.max_nproc" >
-            <value>13</value>
+            <value>4</value>
+        </option>
+        <option id="pbsmrtpipe.options.max_total_nproc">
+            <value>6</value>
         </option>
     </options>
 
     <!-- task level options here -->
     <task-options>
         <option id="pbsmrtpipe.task_options.dev_sleep_time_sec">
-            <value>5</value>
+            <value>10</value>
         </option>
     </task-options>
 
