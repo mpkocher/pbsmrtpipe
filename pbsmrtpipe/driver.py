@@ -162,7 +162,7 @@ def _terminate_all_workers(workers, shutdown_event):
         shutdown_event.set()
         # this is brutal terminate
         for worker in workers:
-            log.debug("terminating worker {n}".format(n=worker.name))
+            log.info("terminating worker {n}".format(n=worker.name))
             worker.terminate()
             # time.sleep(0.25)
 
@@ -191,7 +191,7 @@ def _is_chunked_task_node_type(tnode):
     return isinstance(tnode, (TaskChunkedBindingNode, TaskScatterBindingNode))
 
 
-def _write_kill_script(output_dir):
+def _write_terminate_script(output_dir):
 
     def __writer(fx, sx):
         with open(fx, 'w') as f:
@@ -199,12 +199,38 @@ def _write_kill_script(output_dir):
 
     pid = os.getpid()
     kill_script = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID_KILL_FILE_SCRIPT)
-    pid_file = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID)
 
-    # It's recommended to use kill -SIGINT {PID}
-    s = "kill -9 {i}".format(i=pid)
-    __writer(kill_script, s)
-    __writer(pid_file, str(pid))
+    # kill using the process group id to make sure that the signal is sent
+    # to the children in a non-tty
+    sx = """#!/bin/bash
+
+# MK. This is taken from https://github.com/cloud66/apps-build/blob/master/gitlab/killtree.sh
+# It most certainly doesn't work on BSD
+
+# it is able to kill a process provided and all child sub-processes of that process (doesn't affect parents)
+# execute with: killtree <pid> <sig>
+# ie: killtree 1234 kill
+killtree() {
+    local _pid=$1
+    local _sig=${2:-INT}
+    # needed to stop quickly forking parent from producing child between child killing and parent killing
+    #kill -stop ${_pid}
+    echo "kill -stop ${_pid}"
+    for _child in $(ps -o pid --no-headers --ppid ${_pid}); do
+        killtree ${_child} ${_sig}
+    done
+    kill -${_sig} ${_pid}
+    echo "kill -${_sig} ${_pid}"
+}
+
+if [ $# -eq 0 -o $# -gt 2 ]; then
+    echo "Usage: $(basename $0) <pid> [signal]"
+    exit 1
+fi"""
+
+    sx += "\nkilltree {i} INT".format(i=pid)
+
+    __writer(kill_script, sx)
 
     return pid
 
@@ -272,7 +298,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     log.debug(BU.to_binding_graph_summary(bg))
 
     slog.info("pbsmrtpipe main process pid={i} pgroupid={g} ppid={p}".format(i=os.getpid(), g=os.getpgrp(), p=os.getppid()))
-    _write_kill_script(output_dir)
+    _write_terminate_script(output_dir)
 
     # "global" file type id counter {str: int} that will be
     # used to generate ids
@@ -892,7 +918,10 @@ def _load_io_for_task(registered_tasks, entry_points_d, preset_jsons, preset_xml
 
 
 def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_opts, output_dir, service_uri):
-    """This is the fundamental entry point to running a pbsmrtpipe workflow."""
+    """This is the fundamental entry point to running a pbsmrtpipe workflow.
+
+    :rtype: int
+    """
 
     slog.info("Initializing Workflow")
 
@@ -907,6 +936,8 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
         state = __exe_workflow(global_registry, entry_points_d, bg, task_opts,
                                workflow_level_opts, output_dir,
                                workers, shutdown_event, service_uri)
+        # Need to be clearer about this
+        exit_code = 0 if state else GlobalConstants.DEFAULT_EXIT_CODE
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
             emsg = "received SIGINT. Attempting to abort gracefully."
@@ -914,19 +945,22 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
             emsg = "Unexpected exception. shutting down."
 
         log.exception(emsg)
-        raise
+        exit_code = GlobalConstants.EXCEPTION_TO_EXIT_CODE.get(e.__class__, GlobalConstants.DEFAULT_EXIT_CODE)
+        state = False
 
     finally:
-        _terminate_all_workers(workers.values(), shutdown_event)
+        # Each of these calls needs to be wrapped in a try black hole
+        if workers:
+            _terminate_all_workers(workers.values(), shutdown_event)
         _write_final_results_message(state)
 
-    return state
+    return exit_code
 
 
 def workflow_exception_exitcode_handler(func):
     """Decorator to call core workflow/task run funcs
 
-    Funcs should return True/False or 0/1.
+    Funcs should return positive int exit code
 
     It will log the run time and handle exception handling and logging/stderr.
 
@@ -937,11 +971,11 @@ def workflow_exception_exitcode_handler(func):
     def _wrapper(*args, **kwargs):
         started_at = time.time()
 
-        state = False
+        exit_code = GlobalConstants.DEFAULT_EXIT_CODE
         try:
-            state = func(*args, **kwargs)
+            exit_code = func(*args, **kwargs)
         except Exception as e:
-            emsg = "Error executing function {f}".format(f=func.__name__)
+            emsg = "Error executing function {f} with {c}".format(f=func.__name__, c=e.__class__)
             log.exception(emsg)
             slog.error(e)
 
@@ -950,19 +984,21 @@ def workflow_exception_exitcode_handler(func):
             log_traceback(slog, e, traceback_)
             log_traceback(log, e, traceback_)
 
-            state = False
+            exit_code = GlobalConstants.EXCEPTION_TO_EXIT_CODE.get(e.__class__, GlobalConstants.DEFAULT_EXIT_CODE)
+            print "Exit code from {e} class {c}".format(e=exit_code, c=e.__class__)
 
         finally:
             print "Shutting down."
             run_time = time.time() - started_at
             run_time_min = run_time / 60.0
-            _m = "was Successful" if state else "Failed"
-            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min)".format(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min)
+            _m = "was Successful" if exit_code == 0 else "Failed"
+            _d = dict(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=exit_code)
+            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) with exit code {c}".format(**_d)
 
             slog.info(msg)
             log.info(msg)
 
-        return 0 if state else 1
+        return exit_code
 
     return _wrapper
 

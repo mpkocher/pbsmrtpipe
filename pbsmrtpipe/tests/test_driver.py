@@ -70,10 +70,11 @@ def _test_run_driver(chunk_operators, register_tasks_d, rfiles_d, ep_d, bg, job_
     service_uri = None
 
     global_registry = GlobalRegistry(register_tasks_d, rfiles_d, chunk_operators, cluster_renderer)
-    state = D.exe_workflow(global_registry, ep_d, bg, task_opts, workflow_level_options,
-                           job_output_dir, service_uri)
+    exit_code = D.exe_workflow(global_registry, ep_d, bg, task_opts, workflow_level_options,
+                               job_output_dir, service_uri)
     run_time = time.time() - started_at
-    log.debug("Completed running driver test in {s:.2} sec".format(s=run_time))
+    log.debug("Completed running driver test in {s:.2} sec with exit code {c}".format(s=run_time, c=exit_code))
+    state = True if exit_code == 0 else False
     return state
 
 
