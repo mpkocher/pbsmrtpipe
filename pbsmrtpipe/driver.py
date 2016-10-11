@@ -209,7 +209,7 @@ def _write_terminate_script(output_dir):
 
 # it is able to kill a process provided and all child sub-processes of that process (doesn't affect parents)
 # execute with: killtree <pid> <sig>
-# ie: killtree 1234 kill
+# ie: killtree 1234 INT
 killtree() {
     local _pid=$1
     local _sig=${2:-INT}
@@ -223,10 +223,7 @@ killtree() {
     echo "kill -${_sig} ${_pid}"
 }
 
-if [ $# -eq 0 -o $# -gt 2 ]; then
-    echo "Usage: $(basename $0) <pid> [signal]"
-    exit 1
-fi"""
+"""
 
     sx += "\nkilltree {i} INT".format(i=pid)
 
