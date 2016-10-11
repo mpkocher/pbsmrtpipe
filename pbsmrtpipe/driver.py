@@ -992,9 +992,8 @@ def workflow_exception_exitcode_handler(func):
             run_time = time.time() - started_at
             run_time_min = run_time / 60.0
             _m = "was Successful" if exit_code == 0 else "Failed"
-            c = "" if exit_code == 0 else "with exit code {r}".format(r=exit_code)
-            _d = dict(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=c)
-            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) {c}".format(**_d)
+            _d = dict(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=exit_code)
+            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) with exit code {c}".format(**_d)
 
             slog.info(msg)
             log.info(msg)
