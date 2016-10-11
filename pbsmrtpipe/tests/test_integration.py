@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 import random
 import shutil
@@ -171,3 +172,25 @@ class TestHelloWorldDistributed(TestHelloWorldWorkflow):
 
 class _TestDriverPipelineId(_TestDriverIntegrationBase):
     TO_CMD_FUNC = _to_pipeline_id_cmd
+
+
+class TestWritePresets(unittest.TestCase):
+
+    def test_write_pipeline_preset_json(self):
+        ofn = tempfile.NamedTemporaryFile(suffix=".json").name
+        CMD = "pbsmrtpipe show-template-details pbsmrtpipe.pipelines.dev_diagnostic_stress -j {f}".format(f=ofn)
+        rcode, stdout, stderr, run_time = backticks(CMD)
+        self.assertEqual(rcode, 0)
+        with open(ofn) as f:
+            d = json.load(f)
+            self.assertEqual(len(d['taskOptions']), 2)
+
+    def test_write_workflow_preset_json(self):
+        from pbsmrtpipe.pb_io import REGISTERED_WORKFLOW_OPTIONS
+        ofn = tempfile.NamedTemporaryFile(suffix=".json").name
+        CMD = "pbsmrtpipe show-workflow-options -j {f}".format(f=ofn)
+        rcode, stdout, stderr, run_time = backticks(CMD)
+        self.assertEqual(rcode, 0)
+        with open(ofn) as f:
+            d = json.load(f)
+            self.assertEqual(len(d['options']), len(REGISTERED_WORKFLOW_OPTIONS))
