@@ -111,6 +111,7 @@ def _add_rc_preset_xml_option(p):
 
 
 def _add_output_preset_xml_option(p):
+    p.add_argument('-j', '--output-preset-json', type=str, help="Write pipeline/task preset.json of options.")
     p.add_argument('-o', '--output-preset-xml', type=str, help="Write pipeline/task preset.xml of options.")
     return p
 
@@ -200,7 +201,15 @@ def write_task_options_to_preset_xml_and_print(opts, output_file, warning_msg):
         print warning_msg
 
 
-def run_show_template_details(template_id, output_preset_xml):
+def write_presets_json_and_print(p, opts, output_file, warning_msg):
+    if opts:
+        IO.write_pipeline_presets_json(p, opts, output_file)
+        print "Wrote preset to {j}".format(j=output_file)
+    else:
+        print warning_msg
+
+
+def run_show_template_details(template_id, output_preset_xml, output_preset_json):
 
     rtasks, rfiles, operators, pipelines_d = __dynamically_load_all()
 
@@ -241,9 +250,12 @@ def run_show_template_details(template_id, output_preset_xml):
                                 else:
                                     task_options[k] = copy.deepcopy(vx)
 
+        warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
         if isinstance(output_preset_xml, str):
-            warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
             write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
+
+        if isinstance(output_preset_json, str):
+            write_presets_json_and_print(pipeline, task_options, output_preset_json, warn_msg)
 
         if task_options:
             _print_option_schemas(task_options)
@@ -259,7 +271,7 @@ def run_show_template_details(template_id, output_preset_xml):
 
 
 def _args_run_show_template_details(args):
-    return run_show_template_details(args.template_id, args.output_preset_xml)
+    return run_show_template_details(args.template_id, args.output_preset_xml, args.output_preset_json)
 
 
 def __dynamically_load_all():
@@ -539,13 +551,15 @@ def _args_run_show_workflow_level_options(args):
 
     _print_option_schemas(REGISTERED_WORKFLOW_OPTIONS)
 
-    output_file = args.output_preset_xml
-
-    if output_file is not None:
+    if args.output_preset_xml is not None:
         xml = IO.schema_workflow_options_to_xml(REGISTERED_WORKFLOW_OPTIONS)
-        with open(output_file, 'w') as w:
+        with open(args.output_preset_xml, 'w') as w:
             w.write(str(xml))
-        log.info("wrote options to {x}".format(x=output_file))
+        log.info("wrote options to {x}".format(x=args.output_preset_xml))
+
+    if args.output_preset_json is not None:
+        IO.write_workflow_presets_json(REGISTERED_WORKFLOW_OPTIONS, args.output_preset_json)
+        log.info("wrote options to {x}".format(x=args.output_preset_json))
 
     return 0
 
