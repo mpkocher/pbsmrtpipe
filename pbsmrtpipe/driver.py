@@ -960,7 +960,7 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
 def workflow_exception_exitcode_handler(func):
     """Decorator to call core workflow/task run funcs
 
-    Funcs should return int exit code
+    Funcs should return positive int exit code
 
     It will log the run time and handle exception handling and logging/stderr.
 
@@ -993,7 +993,8 @@ def workflow_exception_exitcode_handler(func):
             run_time_min = run_time / 60.0
             _m = "was Successful" if exit_code == 0 else "Failed"
             c = "" if exit_code == 0 else "with exit code {r}".format(r=exit_code)
-            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) {c}".format(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=c)
+            _d = dict(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=c)
+            msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) {c}".format(**_d)
 
             slog.info(msg)
             log.info(msg)
