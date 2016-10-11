@@ -3,6 +3,7 @@ import functools
 # from here because of the plugin registry.
 import os
 import re
+import socket
 
 
 ENV_PRESET = 'PB_SMRTPIPE_XML_PRESET'
@@ -17,8 +18,11 @@ ENV_CHK_OPT_DIR = "PB_CHUNK_OPERATOR_DIR"
 
 
 PBSMRTPIPE_PID_KILL_FILE_SCRIPT = ".pbsmrtpipe-terminate.sh"
-PBSMRTPIPE_PID = '.pbsmrtpipe-pid'
 
+# Map of exception types to exit codes.
+EXCEPTION_TO_EXIT_CODE = {KeyboardInterrupt: 7, IOError: 2, socket.error: 7}
+# For Unknown error
+DEFAULT_EXIT_CODE = 1
 
 DEEP_DEBUG = False
 
