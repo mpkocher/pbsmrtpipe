@@ -37,14 +37,14 @@
         ],
         "output_types": [
             {
-                "title": "Modified Base Motifs",
-                "description": "Path of output JSON report",
+                "title": "Motifs Report",
+                "description": "Summary of motif analysis results",
                 "default_name": "motifs_report",
                 "id": "report_json",
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ],
-        "_comment": "Created by v0.4.5",
+        "_comment": "Created by v0.4.13",
         "name": "Modified Base Motifs",
         "input_types": [
             {

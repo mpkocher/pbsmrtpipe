@@ -13,14 +13,14 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "Amplicon Inputs",
-                "description": "Long Amplicon Analysis input report JSON",
+                "title": "LAA Input Report",
+                "description": "Summary of input amplicon quality",
                 "default_name": "amplicon_input_report",
                 "id": "report_json",
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ],
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "name": "Amplicon Analysis Input",
         "input_types": [
             {

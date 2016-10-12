@@ -14,13 +14,13 @@
         "output_types": [
             {
                 "title": "Basemods report",
-                "description": "Filename of JSON output report",
+                "description": "Summary of basemod results",
                 "default_name": "report",
                 "id": "report",
                 "file_type_id": "PacBio.FileTypes.JsonReport"
             }
         ],
-        "_comment": "Created by v0.4.0",
+        "_comment": "Created by v0.4.13",
         "name": "Modifications Report",
         "input_types": [
             {
