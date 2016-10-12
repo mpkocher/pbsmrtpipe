@@ -9,8 +9,8 @@ pbsmrtpipe
 .. toctree::
    :maxdepth: 2
 
-   getting_started
    installing
+   getting_started
    intro
    configuration_details
    task_model
