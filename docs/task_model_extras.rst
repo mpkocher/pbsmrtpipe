@@ -1,5 +1,5 @@
 Job Directory Structure
------------------------
+=======================
 
 Job directory Structure. Details and examples of the files are shown below.
 
@@ -18,7 +18,9 @@ Job directory Structure. Details and examples of the files are shown below.
         - index.html (main summary page)
     - tasks/ # all tasks are here
         - {task_id}-{instance_id}/  # each task has a directory
-            - task-manifest.json
+            - tool-contract.json (Tool Contract for {task_id})
+            - resolved-tool-contract.json (Resolved Tool Contract. Contains paths to files and specific options used in the task execution)
+            - runnable-task.json (
             - task-report.json (when the task is completed)
             - outfile.1.txt (output files)
             - stdout
@@ -41,10 +43,39 @@ File paths are `workflow` directory.
     :language: js
 
 
-Example task-manifest.json
---------------------------
+Task Specific Components
+------------------------
 
-In each task directory, a **task-manifest** is written. It contains all the metadata necessary for the task to be run on the execution node (or run locally). The task manifest is run via the **pbtools-runner** commandline tool.
+The are several structured JSON files within a task directory of note.
+
+- tool-contract.json
+- resolved-tool-contract.json
+- runnable-task.json
+- task-report.json
+
+
+Example Tool Contract JSON
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See `pbcommand <https://github.com/PacificBiosciences/pbcommand>`_ for more details.
+
+.. literalinclude:: example_tool_contract.json
+    :language: js
+
+
+Example Resolved Tool Contracts JSON
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See `pbcommand <https://github.com/PacificBiosciences/pbcommand>`_ for more details.
+
+.. literalinclude:: example_resolved_tool_contract.json
+    :language: js
+
+
+Example Runnable Task JSON
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In each task directory, a **runnable-task** is written. It contains all the metadata necessary for the task to be run on the execution node (or run locally). The task manifest is run via the **pbtools-runner** commandline tool.
 
 There are several motivations for **pbtool-runner** abstraction
 - NFS checks to validate input files can be found (related to python NFS caching errors that often result in IOErrors)
@@ -54,16 +85,16 @@ There are several motivations for **pbtool-runner** abstraction
 - allow a bit of tweaking and rerunning by hand for failed tasks
 - strict documenting of input files, resolved task type, resolved task options used to run the task
 
-`task-manifest.json` contains all the resolved task type, resolved task values, such as resolved options, input files, output files, and resources (e.g., temp files, temp dirs).
+`runnable-task.json` contains all the resolved task type, resolved task values, such as resolved options, input files, output files, and resources (e.g., temp files, temp dirs).
 
 Example file.
 
-.. literalinclude:: example_task-manifest.json
+.. literalinclude:: example_runnable_task.json
     :language: js
 
 
 Example task-report.json
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 After **pbtool-runner** completes executing the task, a metadata report of job is written to job directory.
 
@@ -72,3 +103,5 @@ After **pbtool-runner** completes executing the task, a metadata report of job i
 
 .. literalinclude:: example_task-report.json
     :language: js
+
+

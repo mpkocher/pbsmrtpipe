@@ -17,7 +17,7 @@ pairs.
 For pipelines, an alternative is to use JSON format, which is more flexible but
 not as lightweight.
 
-.. literalinclude:: testkit-data/dev_local_fasta_chunk/testkit.json
+.. literalinclude:: ../testkit-data/dev_local_fasta_chunk/testkit.json
 
 As an alternative to a workflow XML, you can instead specify ``pipelineId``.
 

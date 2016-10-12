@@ -1,0 +1,31 @@
+{
+    "cluster": {
+        "start": "qsub -S /bin/bash -sync y -V -q default -N ${JOB_ID} \\\n    -o \"${STDOUT_FILE}\" \\\n    -e \"${STDERR_FILE}\" \\\n    -pe smp ${NPROC} \\\n    \"${CMD}\"", 
+        "stop": "qdel ${JOB_ID}"
+    }, 
+    "env": {}, 
+    "id": "pbsmrtpipe.tasks.dev_reference_ds_report", 
+    "resource_types": [], 
+    "task": {
+        "cmds": [
+            "python -m pbsmrtpipe.pb_tasks.dev  run-rtc   /Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_diagnostic/job_output/tasks/pbsmrtpipe.tasks.dev_reference_ds_report-0/resolved-tool-contract.json"
+        ], 
+        "input_files": [
+            "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_diagnostic/referenceset.xml"
+        ], 
+        "is_distributed": false, 
+        "nproc": 3, 
+        "options": {
+            "pbsmrtpipe.task_options.dev_diagnostic_strict": false
+        }, 
+        "output_dir": "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_diagnostic/job_output/tasks/pbsmrtpipe.tasks.dev_reference_ds_report-0", 
+        "output_files": [
+            "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_diagnostic/job_output/tasks/pbsmrtpipe.tasks.dev_reference_ds_report-0/report.json"
+        ], 
+        "resources": [], 
+        "task_id": "pbsmrtpipe.tasks.dev_reference_ds_report", 
+        "task_type_id": "pbsmrtpipe.tasks.dev_reference_ds_report", 
+        "uuid": "252d72cd-4617-4a33-9622-606720dec512"
+    }, 
+    "version": "0.44.2"
+}
