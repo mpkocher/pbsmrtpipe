@@ -1,0 +1,25 @@
+{
+    "driver": {
+        "env": {},
+        "exe": "python -m pbsmrtpipe.pb_tasks.dev  run-rtc  ",
+        "serialization": "json"
+    },
+    "resolved_tool_contract": {
+        "_comment": "Created by pbcommand v0.4.11",
+        "input_files": [
+            "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_diagnostic/referenceset.xml"
+        ],
+        "is_distributed": false,
+        "log_level": "INFO",
+        "nproc": 3,
+        "options": {
+            "pbsmrtpipe.task_options.dev_diagnostic_strict": false
+        },
+        "output_files": [
+            "/Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_diagnostic/job_output/tasks/pbsmrtpipe.tasks.dev_reference_ds_report-0/report.json"
+        ],
+        "resources": [],
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "tool_contract_id": "pbsmrtpipe.tasks.dev_reference_ds_report"
+    }
+}

@@ -70,16 +70,14 @@ On startup, pbsmrtpipe will load the XML operators and will apply them if a task
     Successfully applying chunk operator ['pbsmrtpipe.operators.chunk_dev_filter_fasta'] to TaskScatterBindingNode pbcoretools.tasks.dev_scatter_filter_fasta-1 to generate 7 tasks.
     Starting chunking gathering process for task TaskScatterBindingNode pbcoretools.tasks.dev_scatter_filter_fasta-1 chunk-group 72d80506-0d68-4574-ba71-2b61ddc1dd12 with operator pbsmrtpipe.operators.chunk_dev_filter_fasta
 
-::
+
 
 There will be a log message of the form:
 
 ::
-
     [DEBUG] 2016-08-18 01:47:49,748Z [status.__name__ add_chunkable_task_nodes_to_bgraph 1090] Starting to chunk task type pbsmrtpipe.tasks.dev_filter_fasta with chunk-group 72d80506-0d68-4574-ba71-2b61ddc1dd12 for operator pbsmrtpipe.operators.chunk_dev_filter_fasta
     [INFO] 2016-08-18 01:47:49,783Z [status.__name__ apply_chunk_operator 1239] Successfully applying chunk operator ['pbsmrtpipe.operators.chunk_dev_filter_fasta'] to TaskScatterBindingNode pbcoretools.tasks.dev_scatter_filter_fasta-1 to generate 7 tasks.
 
-::
 
 
 Chunk Operator Data Model
