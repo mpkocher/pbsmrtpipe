@@ -179,8 +179,13 @@ def get_falcon_pipeline_fat():
     # takes alignment summary GFF, polished assembly fastQ
     polished_report = [('pbreports.tasks.summarize_coverage:0', 'pbreports.tasks.polished_assembly:0'),
                        ('genomic_consensus.tasks.variantcaller:2', 'pbreports.tasks.polished_assembly:1')]
+    mapping_report = [(aln, "pbreports.tasks.mapping_stats:0")]
+    coverage_report = [
+        (ref, "pbreports.tasks.coverage_report:0"),
+        ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.coverage_report:1")
+    ]
 
-    return falcon + sum_cov + polished_report
+    return falcon + sum_cov + polished_report + mapping_report + coverage_report
 
 def _get_hgap_pypeflow(i_cfg, i_logging_cfg, i_subreadset):
     return [
