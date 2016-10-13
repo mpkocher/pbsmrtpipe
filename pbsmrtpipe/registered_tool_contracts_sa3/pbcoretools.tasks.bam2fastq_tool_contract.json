@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "description": "Quick tool bam2fastq pbcoretools.tasks.bam2fastq",
         "input_types": [
             {
@@ -23,7 +23,7 @@
                 "default_name": "reads",
                 "description": "Reads in FASTQ format",
                 "file_type_id": "PacBio.FileTypes.Fastq",
-                "id": "FASTQ file",
+                "id": "fastq",
                 "title": "FASTQ file"
             }
         ],

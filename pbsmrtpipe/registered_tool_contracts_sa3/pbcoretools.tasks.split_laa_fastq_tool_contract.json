@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "description": "Quick tool split_laa_fastq pbcoretools.tasks.split_laa_fastq",
         "input_types": [
             {
@@ -27,17 +27,17 @@
         "output_types": [
             {
                 "default_name": "consensus_fastq",
-                "description": "Tar-gzipped FASTQ files split by barcode",
+                "description": "Consensus amplicons in FASTQ format, split by barcode",
                 "file_type_id": "PacBio.FileTypes.gzip",
                 "id": "fastq_split_gz",
-                "title": "Consensus FASTQ archive"
+                "title": "Consensus Amplicons"
             },
             {
                 "default_name": "chimera_fastq",
-                "description": "Tar-gzipped FASTQ files split by barcode",
+                "description": "Chimeric and noise sequences in FASTQ format, split by barcode",
                 "file_type_id": "PacBio.FileTypes.gzip",
                 "id": "fastq_split_gz",
-                "title": "Chimera/noise FASTQ archive"
+                "title": "Chimeric/Noise Sequences by barcode"
             }
         ],
         "resource_types": [],

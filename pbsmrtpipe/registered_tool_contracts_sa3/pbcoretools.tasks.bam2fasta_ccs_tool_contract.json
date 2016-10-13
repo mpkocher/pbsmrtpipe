@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "description": "Quick tool bam2fasta_ccs pbcoretools.tasks.bam2fasta_ccs",
         "input_types": [
             {
@@ -20,11 +20,11 @@
         "nproc": 1,
         "output_types": [
             {
-                "default_name": "reads.fasta",
-                "description": "Reads in compressed FASTA format",
+                "default_name": "ccs.fasta",
+                "description": "Consensus sequences generated from CCS2",
                 "file_type_id": "PacBio.FileTypes.gzip",
-                "id": "GZIPed FASTA file(s)",
-                "title": "GZIPed FASTA file(s)"
+                "id": "fasta_gz",
+                "title": "Consensus Sequences"
             }
         ],
         "resource_types": [],
