@@ -13,14 +13,14 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "Alignment summary with basemods",
-                "description": "Modified alignment summary file",
+                "title": "Coverage and Base Modifications Summary",
+                "description": "Coverage summary for regions (bins) spanning the reference with basemod results for each region",
                 "default_name": "alignment_summary_with_basemods",
                 "id": "gff_out",
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ],
-        "_comment": "Created by v0.4.3",
+        "_comment": "Created by v0.4.13",
         "name": "kinetics_tools.tasks.summarize_modifications",
         "input_types": [
             {
