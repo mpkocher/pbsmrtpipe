@@ -1,5 +1,5 @@
 {
-    "version": "2.2",
+    "version": "2.3",
     "driver": {
         "serialization": "json",
         "exe": "python -m kineticsTools.ipdSummary --resolved-tool-contract",
@@ -106,28 +106,28 @@
         ],
         "output_types": [
             {
-                "title": "Modified bases GFF",
-                "description": "GFF file of modified bases",
+                "title": "Modified Bases Summary",
+                "description": "Summary of analysis results for each kinModCall",
                 "default_name": "basemods",
                 "id": "gff",
                 "file_type_id": "PacBio.FileTypes.gff"
             },
             {
-                "title": "BigWig file encoding base IpdRatios",
-                "description": "Compressed binary format containing the IpdRatios for every base (both strands)",
+                "title": "Base IpdRatios",
+                "description": "BigWig file encoding base IpdRatios",
                 "default_name": "basemods",
                 "id": "bigwig",
                 "file_type_id": "PacBio.FileTypes.bigwig"
             },
             {
-                "title": "HDF5 file containing per-base information",
-                "description": "HDF5 equivalent of CSV output",
+                "title": "Per-Base Information",
+                "description": "HDF5 file containing per-base information",
                 "default_name": "basemods",
                 "id": "csv_h5",
                 "file_type_id": "PacBio.FileTypes.h5"
             }
         ],
-        "_comment": "Created by v0.4.3",
+        "_comment": "Created by v0.4.13",
         "name": "ipdSummary",
         "input_types": [
             {

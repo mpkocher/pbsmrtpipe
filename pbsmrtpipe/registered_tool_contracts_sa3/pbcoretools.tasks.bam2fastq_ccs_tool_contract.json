@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "description": "Quick tool bam2fastq_ccs pbcoretools.tasks.bam2fastq_ccs",
         "input_types": [
             {
@@ -20,11 +20,11 @@
         "nproc": 1,
         "output_types": [
             {
-                "default_name": "reads.fastq",
-                "description": "Reads in compressed FASTQ format",
+                "default_name": "ccs.fastq",
+                "description": "Consensus sequences generated from CCS2",
                 "file_type_id": "PacBio.FileTypes.gzip",
-                "id": "GZIPed FASTQ file(s)",
-                "title": "GZIPed FASTQ file(s)"
+                "id": "fastq_gz",
+                "title": "Consensus Sequences"
             }
         ],
         "resource_types": [],

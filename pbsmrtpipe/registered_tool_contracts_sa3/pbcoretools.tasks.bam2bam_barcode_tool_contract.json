@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "description": "Quick tool bam2bam_barcode pbcoretools.tasks.bam2bam_barcode",
         "input_types": [
             {
@@ -27,10 +27,10 @@
         "output_types": [
             {
                 "default_name": "subreads_barcoded",
-                "description": "Barcoded SubreadSet",
+                "description": "Barcoded Subreads DataSet XML",
                 "file_type_id": "PacBio.DataSet.SubreadSet",
                 "id": "SubreadSet",
-                "title": "Barcoded SubreadSet"
+                "title": "Barcoded Subreads"
             }
         ],
         "resource_types": [],

@@ -73,7 +73,7 @@
                 "type": "object",
                 "properties": {
                     "pbreports.task_options.max_region_size": {
-                        "default": 1000000,
+                        "default": 100000,
                         "type": "integer",
                         "description": "Upper limit for genomic region size (ignored if region_size is set explicitly)",
                         "title": "Maximum region size"
@@ -106,14 +106,14 @@
         ],
         "output_types": [
             {
-                "title": "Alignment Summary GFF",
-                "description": "Alignment Summary GFF",
+                "title": "Coverage Summary",
+                "description": "Coverage summary for regions (bins) spanning the reference",
                 "default_name": "alignment_summary",
                 "id": "aln_summ_gff",
                 "file_type_id": "PacBio.FileTypes.gff"
             }
         ],
-        "_comment": "Created by v0.3.25",
+        "_comment": "Created by v0.4.13",
         "name": "Summarize Coverage",
         "input_types": [
             {

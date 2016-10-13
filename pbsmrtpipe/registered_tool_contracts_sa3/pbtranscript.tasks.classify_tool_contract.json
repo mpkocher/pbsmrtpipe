@@ -86,21 +86,21 @@
         "output_types": [
             {
                 "title": "Draft isoforms",
-                "description": "Output FASTA or ContigSet file",
+                "description": "Intermediate dataset used to get full-length reads",
                 "default_name": "isoseq_draft",
                 "id": "outReadsFN",
                 "file_type_id": "PacBio.DataSet.ContigSet"
             },
             {
                 "title": "Full-length non-chimeric reads",
-                "description": "Output full-length non-chimeric reads in FASTA or ContigSet",
+                "description": "Full-length non-chimeric reads generated from pbtranscript classify",
                 "default_name": "isoseq_flnc",
                 "id": "flnc",
                 "file_type_id": "PacBio.DataSet.ContigSet"
             },
             {
                 "title": "Non-full-length reads",
-                "description": "Output non-full-length reads in FASTA or ContigSet",
+                "description": "Non-full-length reads generated from pbtranscript classify",
                 "default_name": "isoseq_nfl",
                 "id": "nfl",
                 "file_type_id": "PacBio.DataSet.ContigSet"
@@ -114,13 +114,13 @@
             },
             {
                 "title": "Primer info",
-                "description": "CSV file to output primer info",
+                "description": "Per-CCS read annotation and classification results",
                 "default_name": "isoseq_primer_info",
                 "id": "report",
                 "file_type_id": "PacBio.FileTypes.csv"
             }
         ],
-        "_comment": "Created by v0.3.30",
+        "_comment": "Created by v0.4.13",
         "name": "pbtranscript.tasks.classify",
         "input_types": [
             {
