@@ -150,7 +150,9 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon_gen_config-out-0", FileTypes.CFG , True),
         ("falcon_ns.tasks.task_falcon0_build_rdb-out-2", FileTypes.TXT , True),
         ("pbreports.tasks.polished_assembly-out-0", FileTypes.REPORT , True),
-        ("falcon_ns.tasks.task_report_preassembly_yield-out-0", FileTypes.REPORT , True)
+        ("falcon_ns.tasks.task_report_preassembly_yield-out-0", FileTypes.REPORT , True),
+        ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Unpolished Assembly"),
+        ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.DS_CONTIG, False, "Polished Assembly")
     ]
 
 @register_pipeline_rules("hgap_fat", "3.2")
