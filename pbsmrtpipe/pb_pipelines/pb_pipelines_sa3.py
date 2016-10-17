@@ -591,7 +591,9 @@ def _core_isoseq_cluster_chunk_by_bins(subreads_ds, ccs_ds, flnc_ds, nfl_ds):
 
     # pbreports isoseq_cluster
     b9 = [("pbtranscript.tasks.combine_cluster_bins:0", "pbreports.tasks.isoseq_cluster:0"), # draft consensus isoforms
-          ("pbtranscript.tasks.combine_cluster_bins:1", "pbreports.tasks.isoseq_cluster:1")] # json report
+          ("pbtranscript.tasks.combine_cluster_bins:1", "pbreports.tasks.isoseq_cluster:1"), # json report
+          ("pbtranscript.tasks.combine_cluster_bins:4", "pbreports.tasks.isoseq_cluster:2"), # HQ isoforms fastq
+          ("pbtranscript.tasks.combine_cluster_bins:6", "pbreports.tasks.isoseq_cluster:3")] # LQ isoforms fastq
 
     # Clean up ICE intermediate files in all cluster bins
     b10 = [("pbtranscript.tasks.create_chunks:0", "pbtranscript.tasks.ice_cleanup:0"),
