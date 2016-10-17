@@ -24,7 +24,7 @@
                 "description": "Consensus sequences generated from CCS2",
                 "file_type_id": "PacBio.FileTypes.gzip",
                 "id": "fastq_gz",
-                "title": "Consensus Sequences"
+                "title": "Consensus Sequences (FASTQ)"
             }
         ],
         "resource_types": [],

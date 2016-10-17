@@ -24,7 +24,7 @@
                 "description": "PacBio Reference DataSet XML",
                 "file_type_id": "PacBio.DataSet.ReferenceSet",
                 "id": "ReferenceSet",
-                "title": "ReferenceSet XML"
+                "title": "Reference Dataset"
             }
         ],
         "resource_types": [],
