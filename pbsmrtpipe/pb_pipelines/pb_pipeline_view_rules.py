@@ -194,7 +194,10 @@ def isoseq_classify_view_rules():
 
 @register_pipeline_rules("sa3_ds_laa", "3.2")
 def laa_view_rules(): 
-    return _laa_report_rules()
+    r1 = [
+        ("pblaa.tasks.laa:3", FileTypes.CSV, True)
+    ]
+    return r1 + _laa_report_rules()
 
 
 @register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
