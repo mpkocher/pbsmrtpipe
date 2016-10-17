@@ -62,14 +62,14 @@
         ],
         "output_types": [
             {
-                "title": "AlignmentSet",
-                "description": "Consolidated AlignmentSet",
+                "title": "Alignments",
+                "description": "Alignment results dataset",
                 "default_name": "combined",
                 "id": "ds_out",
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ],
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "name": "AlignmentSet consolidate",
         "input_types": [
             {
