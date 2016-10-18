@@ -8,7 +8,7 @@ from pbcommand.cli.utils import main_runner_default
 from pbcommand.validators import validate_file
 
 import pbsmrtpipe.report_renderer as R
-import pbsmrtpipe.tools.utils as U
+import pbcommand.cli.utils as U
 from pbcommand.pb_io import load_report_from_json
 
 log = logging.getLogger(__name__)
