@@ -49,12 +49,7 @@ def register_pipeline_rules(pipeline_id, smrtlink_version):
 
 def _mapping_report_rules():
     return [
-        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT, True)
-    ]
-
-
-def _coverage_report_rules():
-    return [
+        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT, True),
         ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT, True)
     ]
 
@@ -115,7 +110,7 @@ def ccs_barcoding_view_rules():
 
 @register_pipeline_rules("sa3_ds_ccs_align", "3.2")
 def ccs_mapping_view_rules():
-    return _ccs_report_rules() + _coverage_report_rules() + [
+    return _ccs_report_rules() + _mapping_report_rules() + [
         ("pbreports.tasks.mapping_stats_ccs-out-0", FileTypes.REPORT, True)
     ]
 
@@ -147,13 +142,16 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon1_run_daligner_jobs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon2_run_asm-out-0", FileTypes.FASTA, True),
         ("falcon_ns.tasks.task_falcon_gen_config-out-0", FileTypes.CFG , True),
         ("falcon_ns.tasks.task_falcon0_build_rdb-out-2", FileTypes.TXT , True),
+        ("falcon_ns.tasks.task_falcon_config-out-0", FileTypes.JSON, True),
         ("pbreports.tasks.polished_assembly-out-0", FileTypes.REPORT , True),
         ("falcon_ns.tasks.task_report_preassembly_yield-out-0", FileTypes.REPORT , True),
         ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Unpolished Assembly"),
         ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.DS_CONTIG, False, "Polished Assembly")
-    ]
+    ] + _mapping_report_rules()
+
 
 @register_pipeline_rules("hgap_fat", "3.2")
 def hgap5_view_rules():
@@ -209,14 +207,14 @@ def laa_barcode_view_rules():
 
 @register_pipeline_rules("sa3_sat", "3.2")
 def sat_view_rules():
-    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _coverage_report_rules() + _variant_report_rules() + [
+    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _variant_report_rules() + [
         ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT, True)
     ]
 
 
 @register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
 def resequencing_view_rules():
-    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _coverage_report_rules() + _variant_report_rules()
+    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _variant_report_rules()
 
 
 def main(argv):
