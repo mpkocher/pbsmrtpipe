@@ -21,31 +21,31 @@
         "output_types": [
             {
                 "default_name": "amplicon_analysis",
-                "description": "Resulting consensus fastq file",
+                "description": "Consensus amplicons in FASTQ format",
                 "file_type_id": "PacBio.FileTypes.Fastq",
                 "id": "result_fastq",
-                "title": "Consensus FASTQ"
+                "title": "Consensus Amplicons"
             },
             {
                 "default_name": "amplicon_analysis_chimeras_noise",
                 "description": "Resulting chimera/noise fastq file",
                 "file_type_id": "PacBio.FileTypes.Fastq",
                 "id": "junk_fastq",
-                "title": "Chimera/noise FASTQ"
+                "title": "Chimeric/Noise Sequences"
             },
             {
                 "default_name": "amplicon_analysis_summary",
                 "description": "Metadata for all resulting fastq sequences",
                 "file_type_id": "PacBio.FileTypes.csv",
                 "id": "summary_csv",
-                "title": "Consensus summary CSV"
+                "title": "Consensus Sequence Statistics"
             },
             {
                 "default_name": "amplicon_analysis_input",
                 "description": "Per-barcode PCR quality estimates",
                 "file_type_id": "PacBio.FileTypes.csv",
                 "id": "input_csv",
-                "title": "Input molecule report CSV"
+                "title": "Input Molecule Report CSV"
             }
         ],
         "resource_types": [],
@@ -906,5 +906,5 @@
         "tool_contract_id": "pblaa.tasks.laa"
     },
     "tool_contract_id": "pblaa.tasks.laa",
-    "version": "pblaa 2.1.0 (commit 5403cd7*) | unanimity 2.0.4 (commit 2dd7309*)"
+    "version": "pblaa 2.1.0 (commit 3642f5e) | unanimity 2.0.4 (commit ee49d7d)"
 }
