@@ -613,7 +613,7 @@ def _core_isoseq_collapse(hq_isoforms_hq, gmap_ref_ds, sample_prefix_pickle):
 
 ISOSEQ_TASK_OPTIONS = dict(CCS_TASK_OPTIONS)
 ISOSEQ_TASK_OPTIONS.update({
-    "pbccs.task_options.min_passes":1,
+    "pbccs.task_options.min_passes":0,
     "pbccs.task_options.min_length":50,
     "pbccs.task_options.max_length":15000,
     "pbccs.task_options.min_zscore":-9999,
