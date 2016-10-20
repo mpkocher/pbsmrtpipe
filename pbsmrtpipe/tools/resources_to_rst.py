@@ -33,21 +33,21 @@ def make_rst_table(rows, headers=None):
 
 
 def load_pipelines_from_dir(dir_name):
-	"""
-	:arg path: Path to pipeline template dir
-	:type path: basestring
-	:rtype path: list[Pipeline]
-	"""
-	pipelines = []
-	if os.path.exists(dir_name):
-		for file_name in os.listdir(dir_name):
-			if file_name.endswith(".json"):
-				try:
-					pipelines.append(json.load(open(os.path.join(dir_name, file_name))))
-				except Exception as e:
-					log.warn("Unable to load Resolved Pipeline Template from {}. {}".format(
-					    dir_name, str(e)))
-	return pipelines
+    """
+    :arg path: Path to pipeline template dir
+    :type path: basestring
+    :rtype path: list[Pipeline]
+    """
+    pipelines = []
+    if os.path.exists(dir_name):
+        for file_name in os.listdir(dir_name):
+            if file_name.endswith(".json"):
+                try:
+                    pipelines.append(json.load(open(os.path.join(dir_name, file_name))))
+                except Exception as e:
+                    log.warn("Unable to load Resolved Pipeline Template from {}. {}".format(
+                        dir_name, str(e)))
+    return pipelines
 
 
 def convert_pipeline_to_rst(pipeline):
@@ -72,12 +72,12 @@ def write_converted_pipelines(converted_pipelines, output_dir):
     :type converted_pipelines: list[ConvertedPipeline]
     :type output_dir: basestring
     """
-	pipeline_dir = op.join(output_dir, 'pipelines')
-	os.makedirs(pipeline_dir)
-	for cp in converted_pipelines:
-		pipeline_rst = op.join(pipeline_dir, cp[1] + ".rst")
-		with open(pipeline_rst, "w") as f:
-			f.write(cp[0])
+    pipeline_dir = op.join(output_dir, 'pipelines')
+    os.makedirs(pipeline_dir)
+    for cp in converted_pipelines:
+        pipeline_rst = op.join(pipeline_dir, cp[1] + ".rst")
+        with open(pipeline_rst, "w") as f:
+            f.write(cp[0])
     return 0
 
 
