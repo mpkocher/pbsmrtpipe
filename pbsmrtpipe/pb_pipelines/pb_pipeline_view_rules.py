@@ -202,7 +202,7 @@ def laa_view_rules():
 
 @register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
 def laa_barcode_view_rules(): 
-    return _barcode_report_rules() + _laa_view_rules()
+    return _barcode_report_rules() + laa_view_rules()
 
 
 @register_pipeline_rules("sa3_sat", "3.2")
