@@ -34,10 +34,10 @@
             },
             {
                 "default_name": "dazzler.db",
-                "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
+                "description": "DAZZLER database file",
                 "file_type_id": "PacBio.FileTypes.txt",
                 "id": "dazzler.db_id",
-                "title": "DAZZ_DB (implies dot-files too)"
+                "title": "Database Overview"
             },
             {
                 "default_name": "job.done",
