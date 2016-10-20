@@ -438,7 +438,6 @@ def ds_barcode_laa():
 # global defaults for CCS jobs
 CCS_TASK_OPTIONS = {
   "pbccs.task_options.min_read_score": 0.65,
-  "pbccs.task_options.min_zscore": -5.0,
 }
 
 def _core_ccs(subread_ds):
