@@ -195,14 +195,14 @@ def isoseq_classify_view_rules():
 @register_pipeline_rules("sa3_ds_laa", "3.2")
 def laa_view_rules(): 
     r1 = [
-        ("pblaa.tasks.laa:3", FileTypes.CSV, True)
+        ("pblaa.tasks.laa-out-3", FileTypes.CSV, True)
     ]
     return r1 + _laa_report_rules()
 
 
 @register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
 def laa_barcode_view_rules():
-    r1 = [("pblaa.tasks.laa:3", FileTypes.CSV, True)]
+    r1 = [("pblaa.tasks.laa-out-3", FileTypes.CSV, True)]
     return _barcode_report_rules() + r1 + _laa_report_rules()
 
 
