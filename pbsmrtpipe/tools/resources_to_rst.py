@@ -1,10 +1,16 @@
 import os
 import os.path as op
 import sys
-from collections import namedtuple
+import logging
+import json
+import re
 
-from pbcommand.cli import get_default_argparser_with_base_opts
+from pbcommand.utils import setup_log
+from pbcommand.cli import pacbio_args_runner, get_default_argparser_with_base_opts
 from pbcommand.validators import validate_dir
+
+log = logging.getLogger(__name__)
+slog = logging.getLogger('status.' + __name__)
 
 __version__ = "0.1.0"
 
@@ -52,26 +58,21 @@ def load_pipelines_from_dir(dir_name):
 
 def convert_pipeline_to_rst(pipeline):
     """:type pipeline: ConvertedPipeline"""
-    converted_pipeline = namedtuple("", "")
-    header = ["Name", "ID", "Description"]
-    table = []
-    for to in pipeline['taskOptions']:
-        row = [to['name'], to['id]', to['description']]
-        table.append(row)
-    rst_table = make_rst_table(table, headers=header)
-    return converted_pipeline(rst_table, pipeline['id'])
+    converted_pipeline = []
+    if len(pipeline['taskOptions']) > 0:
+        header = ["Name", "ID", "Description"]
+        table = []
+        for to in pipeline['taskOptions']:
+            row = [to['name'], to['id'], to['description']]
+            table.append(row)
+        rst_table = make_rst_table(table, headers=header)
+        converted_pipeline.append(rst_table)
+    else:
+        converted_pipeline.append('')
+    converted_pipeline.append(pipeline['id'])
+    return converted_pipeline
 
 def write_converted_pipelines(converted_pipelines, output_dir):
-    """
-    writes a index rst file to the output dir with each pipeline named
-    pipeline_id.rst
-    Maybe each individual pipeline.rst should be nested within a subdir called "pipelines"
-    index.rst
-    pipelines/
-        - my_pipeline.rst
-    :type converted_pipelines: list[ConvertedPipeline]
-    :type output_dir: basestring
-    """
     pipeline_dir = op.join(output_dir, 'pipelines')
     os.makedirs(pipeline_dir)
     for cp in converted_pipelines:
@@ -81,11 +82,11 @@ def write_converted_pipelines(converted_pipelines, output_dir):
     return 0
 
 
-def convert_pipeline_json_files(pipeline_dir, output_dir):
+def convert_pipeline_json_files(args):
 
-    pipelines = load_pipelines_from_dir(pipeline_dir)
+    pipelines = load_pipelines_from_dir(args.pipeline_dir)
     converted_pipelines = [convert_pipeline_to_rst(p) for p in pipelines]
-    write_converted_pipelines(converted_pipelines, output_dir)
+    write_converted_pipelines(converted_pipelines, args.output_dir)
 
     return 0
 
@@ -93,16 +94,18 @@ def convert_pipeline_json_files(pipeline_dir, output_dir):
 def get_parser():
     desc = "Description"
     p = get_default_argparser_with_base_opts(__version__, desc)
-    p.add_argument("path_to_pipeline_dir", type=validate_dir,
+    p.add_argument("pipeline_dir", type=validate_dir,
                    help="Path to Pipeline Template JSON Dir")
-    p.add_argument("--output-dir", "pipeline-outputs")
+    p.add_argument("--output-dir", 
+                   help="Path to RST Output Dir")
     return p
 
 
-def main(args):
+def main(argv=None):
 
-    return 0
+    argv_ = sys.argv if argv is None else argv
+    parser = get_parser()
+    return pacbio_args_runner(argv_[1:], parser, convert_pipeline_json_files, log, setup_log)
 
-
-if __name__ == '__main__':
-    sys.exit(main(args=sys.argv[1:]))
+if __name__ == "__main__":
+    main()
