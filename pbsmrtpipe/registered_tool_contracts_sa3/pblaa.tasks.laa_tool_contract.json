@@ -215,29 +215,6 @@
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
                     "default": false,
-                    "description": "Write consensus sequences for each barcode out to separate files",
-                    "name": "fastxByBarcode",
-                    "option_id": "pblaa.task_options.fastx_by_barcode",
-                    "type": "boolean"
-                },
-                "properties": {
-                    "pblaa.task_options.fastx_by_barcode": {
-                        "default": false,
-                        "description": "Write consensus sequences for each barcode out to separate files",
-                        "title": "fastxByBarcode",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "pblaa.task_options.fastx_by_barcode"
-                ],
-                "title": "JSON Schema for pblaa.task_options.fastx_by_barcode",
-                "type": "object"
-            },
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": false,
                     "description": "Filter input reads by presence of both flanking barcodes.",
                     "name": "Only Full Length Subreads",
                     "option_id": "pblaa.task_options.full_length",
@@ -906,5 +883,5 @@
         "tool_contract_id": "pblaa.tasks.laa"
     },
     "tool_contract_id": "pblaa.tasks.laa",
-    "version": "pblaa 2.1.0 (commit 3642f5e) | unanimity 2.0.4 (commit ee49d7d)"
+    "version": "pblaa 2.1.0 (commit 3642f5e*) | unanimity 2.0.4 (commit 2dd7309*)"
 }
