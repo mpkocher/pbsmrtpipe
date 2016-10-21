@@ -19,7 +19,7 @@
                     "type": "number",
                     "option_id": "pbtranscript.task_options.hq_quiver_min_accuracy",
                     "name": "Minimum Quiver Accuracy",
-                    "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality."
+                    "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality (default: 0.99)"
                 },
                 "title": "JSON Schema for pbtranscript.task_options.hq_quiver_min_accuracy",
                 "required": [
@@ -31,7 +31,7 @@
                     "pbtranscript.task_options.hq_quiver_min_accuracy": {
                         "default": 0.99,
                         "type": "number",
-                        "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality.",
+                        "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality (default: 0.99)",
                         "title": "Minimum Quiver Accuracy"
                     }
                 }
@@ -42,7 +42,7 @@
                     "type": "integer",
                     "option_id": "pbtranscript.task_options.qv_trim_5p",
                     "name": "Trim QVs 5'",
-                    "description": "Ignore QV of n bases in the 5' end."
+                    "description": "Ignore QV of n bases in the 5' end (default 100)."
                 },
                 "title": "JSON Schema for pbtranscript.task_options.qv_trim_5p",
                 "required": [
@@ -54,7 +54,7 @@
                     "pbtranscript.task_options.qv_trim_5p": {
                         "default": 100,
                         "type": "integer",
-                        "description": "Ignore QV of n bases in the 5' end.",
+                        "description": "Ignore QV of n bases in the 5' end (default 100).",
                         "title": "Trim QVs 5'"
                     }
                 }
@@ -65,7 +65,7 @@
                     "type": "integer",
                     "option_id": "pbtranscript.task_options.qv_trim_3p",
                     "name": "Trim QVs 3'",
-                    "description": "Ignore QV of n bases in the 3' end."
+                    "description": "Ignore QV of n bases in the 3' end (default 30)."
                 },
                 "title": "JSON Schema for pbtranscript.task_options.qv_trim_3p",
                 "required": [
@@ -77,7 +77,7 @@
                     "pbtranscript.task_options.qv_trim_3p": {
                         "default": 30,
                         "type": "integer",
-                        "description": "Ignore QV of n bases in the 3' end.",
+                        "description": "Ignore QV of n bases in the 3' end (default 30).",
                         "title": "Trim QVs 3'"
                     }
                 }
@@ -85,53 +85,53 @@
         ],
         "output_types": [
             {
-                "title": "JSON summary",
+                "title": "Transcript Clustering Report",
                 "description": "JSON summary",
                 "default_name": "summary",
                 "id": "json_summary",
                 "file_type_id": "PacBio.FileTypes.json"
             },
             {
-                "title": "Cluster report",
-                "description": "TXT file to output cluster summary (default: *.cluster_summary.txt)",
+                "title": "Clustering Results",
+                "description": "Clustering results for each CCS read",
                 "default_name": "cluster_report",
                 "id": "cluster_report",
                 "file_type_id": "PacBio.FileTypes.csv"
             },
             {
-                "title": "High-quality isoforms",
-                "description": "High-quality isoform sequences",
+                "title": "High-Quality Isoforms",
+                "description": "Isoforms with high consensus accuracy",
                 "default_name": "hq_isoforms",
                 "id": "hq_isoforms_fa",
                 "file_type_id": "PacBio.DataSet.ContigSet"
             },
             {
-                "title": "High-quality isoforms (FASTQ)",
-                "description": "High-quality isoform sequences with quality scores",
+                "title": "High-Quality Isoforms",
+                "description": "Isoforms with high consensus accuracy",
                 "default_name": "hq_isoforms",
                 "id": "hq_isoforms_fq",
                 "file_type_id": "PacBio.FileTypes.Fastq"
             },
             {
-                "title": "Low-quality isoforms",
-                "description": "Low-quality isoform sequences",
+                "title": "Low-Quality Isoforms",
+                "description": "Isoforms with low consensus accuracy",
                 "default_name": "lq_isoforms",
                 "id": "lq_isoforms_fa",
                 "file_type_id": "PacBio.DataSet.ContigSet"
             },
             {
-                "title": "Low-quality isoforms (FASTQ)",
-                "description": "Low-quality isoform sequences with quality scores",
+                "title": "Low-Quality Isoforms",
+                "description": "Isoforms with low consensus accuracy",
                 "default_name": "lq_isoforms",
                 "id": "lq_isoforms_fq",
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ],
-        "_comment": "Created by v0.4.3",
+        "_comment": "Created by v0.4.13",
         "name": "pbtranscript.tasks.ice_quiver_postprocess",
         "input_types": [
             {
-                "description": "A FOFN of bax/bas.h5 or bam files (e.g., input.fofn), which contain quality values of raw reads and subreads",
+                "description": "A FOFN of bam or dataset xml (e.g., input.fofn|bam|subreadset.xml), which contain quality values of raw reads and subreads",
                 "title": "SubreadSet",
                 "id": "subreads_fofn",
                 "file_type_id": "PacBio.DataSet.SubreadSet"
