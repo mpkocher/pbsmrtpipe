@@ -1,4 +1,4 @@
-.PHONY: clean doc doc-clean tests check test install
+.PHONY: clean doc doc-clean tests check test install pipeline-docs
 
 
 install:
@@ -96,3 +96,7 @@ reinstall-pb-repos:
 
 repl:
 	ipython -i -c "import pbsmrtpipe.loader as L; rx_tasks, rx_files, rx_operators, rx_pipelines = L.load_all()"
+
+pipeline-docs:
+	pbsmrtpipe show-templates --output-templates-json extras/pipeline-templates-json
+	python -m pbsmrtpipe.tools.resources_to_rst extras/pipeline-templates-json -o pipeline-docs
