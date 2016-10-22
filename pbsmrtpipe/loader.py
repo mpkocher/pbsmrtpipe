@@ -176,7 +176,7 @@ def _load_pipelines_from_python_module_name(name):
     return _REGISTERED_PIPELINES
 
 
-def _load_resolved_pipeline_template_json_from_dir(dir_name):
+def load_resolved_pipeline_template_jsons_from_dir(dir_name):
     """
     :rtype: list[Pipeline]
     """
@@ -209,7 +209,7 @@ def _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_P
         for dir_name in dir_names:
             # print "Loading from ", dir_name
             # this needs to be able to reference existing pipeline templates
-            resolved_pipeline_templates = _load_resolved_pipeline_template_json_from_dir(dir_name)
+            resolved_pipeline_templates = load_resolved_pipeline_template_jsons_from_dir(dir_name)
             for resolved_pipeline_template in resolved_pipeline_templates:
                 _REGISTERED_PIPELINES[resolved_pipeline_template.idx] = resolved_pipeline_template
 
