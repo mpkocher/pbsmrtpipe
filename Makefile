@@ -14,9 +14,6 @@ clean: doc-clean
 	find . -name "*.egg-info" | xargs rm -rf;\
 	rm -rf dist/;\
 	find . -name "*.pyc" | xargs rm -f;
-	find . -name "job_output" | xargs rm -rf;
-	find . -name "0.stdout" | xargs rm -rf;
-	find . -name "0.stderr" | xargs rm -rf;
 	rm -f nosetests.xml
 
 doc:
@@ -30,8 +27,13 @@ doc-clean:
 unit-test:
 	nosetests --verbose --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/*.py pbsmrtpipe/tests/test_*.py
 
-test-dev:
-	cd testkit-data && fab cleaner && pbtestkit-multirunner --debug --nworkers 8 dev.fofn
+clean-testkit:
+	find testkit-data -name "job_output" | xargs rm -rf;
+	find testkit-data -name "0.stdout" | xargs rm -rf;
+	find testkit-data -name "0.stderr" | xargs rm -rf;
+
+test-dev: clean-testkit
+	cd testkit-data && pbtestkit-multirunner --debug --nworkers 8 dev.fofn
 
 test-unit:
 	nosetests --verbose --with-xunit --logging-conf nose.cfg pbsmrtpipe/pb_tasks/tests/*.py pbsmrtpipe/tests/test_*.py
@@ -58,9 +60,9 @@ test-suite: test-sanity test-unit test-dev write-pipeline-templates
 
 test-clean-suite: install test-suite
 
-clean-all: clean
+clean-all: clean clean-testkit
 	find . -name "*.pyc" | xargs rm -rf;\
-	rm -rf report_unittests.log && cd testkit-data && fab cleaner
+	rm -rf report_unittests.log
 
 build-java-classes:
 	avro-tools compile schema pbsmrtpipe/schemas java-classes/
