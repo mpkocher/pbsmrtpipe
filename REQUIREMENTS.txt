@@ -7,6 +7,5 @@ xmlbuilder
 requests
 # this doesn't play well with the 2.3 SMRTAnalysis build
 #semantic_version
-fabric>=1.9.1
 #sphinx-bootstrap-theme
 nose # Required for pbsmrtpipe.testkit
