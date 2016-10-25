@@ -5,56 +5,25 @@ import logging
 import json
 import re
 
+from jinja2 import PackageLoader, Environment
+
 from pbcommand.utils import setup_log
 from pbcommand.cli import pacbio_args_runner, get_default_argparser_with_base_opts
 from pbcommand.validators import validate_dir
 import pbsmrtpipe.loader as L
 
+_TEMPLATE_DIR_NAME = 'templates'
+
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), _TEMPLATE_DIR_NAME)
+
+_LOADER = PackageLoader('pbsmrtpipe.tools', package_path='templates')
+
+ENV = Environment(loader=_LOADER)
+
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
 __version__ = "0.2.0"
-
-
-INDEX_RST_TEMPLATE = """
-
-PacBio Pipeline Docs
-====================
-
-Contents:
-
-.. toctree::
-    :maxdepth: 1
-
-"""
-
-PIPELINE_DETAIL_TEMPLATE = """
-Pipeline {n}
-------------
-
-:id: {i}
-:name: {n}
-:version: {v}
-:tags: {g}
-:description: {d}
-
-EntryPoints
-^^^^^^^^^^^
-
-{e}
-
-Task Options ({t})
-^^^^^^^^^^^^^^^^^^
-"""
-
-ENTRY_POINT_TEMPLATE = """
-::
-
-    :id: {i}
-    :name: {n}
-    :fileTypeId: {f}
-
-"""
 
 
 def make_rst_table(rows, headers=None):
@@ -82,9 +51,9 @@ def make_rst_table(rows, headers=None):
 
 def load_pipelines_from_dir(dir_name):
     """
-    :arg path: Path to pipeline template dir
-    :type path: basestring
-    :rtype path: list[Pipeline]
+    :arg dir_name: Path to pipeline template dir
+    :type dir_name: str
+    :rtype: list[Pipeline]
     """
     pipelines = []
     if os.path.exists(dir_name):
@@ -99,44 +68,15 @@ def load_pipelines_from_dir(dir_name):
 
 
 def sanitize(s):
+    # this will create problems in the RST table
     return s.replace("\n", " ")
 
 
-def entry_point_to_str(e_d):
-    return ENTRY_POINT_TEMPLATE.format(i=e_d.get('entryId', "NONE"), f=e_d.get('fileTypeId', "UNKNOWN"), n=e_d['name'])
-
-
-def entry_points_to_str(ep_d_list):
-    return "\n".join([entry_point_to_str(e) for e in ep_d_list])
-
-
-def tags_to_str(tags):
-    if tags:
-        return ",".join(tags)
-    else:
-        return ""
-
-
-def convert_pipeline_to_rst(pipeline):
-    """:type pipeline: Pipeline"""
-    converted_pipeline = []
-
-    # this requires fixing the IO layer and the Pipeline class
-    # task_options = pipeline.task_options
-
-    pipeline_version = pipeline['version']
-    task_options = pipeline['taskOptions']
-    tags = pipeline['tags']
-    pipeline_id = pipeline['id']
-    name = sanitize(pipeline['name'])
-    desc = pipeline['description']
-    raw_entry_points = pipeline['entryPoints']
-    entry_point_str = entry_points_to_str(raw_entry_points)
-
-    _d = dict(i=pipeline_id, n=name, d=desc, t=len(task_options),
-              e=entry_point_str, v=pipeline_version, g=tags_to_str(tags))
-    s = PIPELINE_DETAIL_TEMPLATE.format(**_d)
-
+def task_option_to_rst_table_str(task_options):
+    """
+    Convert the task options to an RST table
+    :rtype: str
+    """
     if task_options:
         header = ["Name", "ID", "Default Value", "OptionType", "Description"]
         table = []
@@ -148,33 +88,44 @@ def convert_pipeline_to_rst(pipeline):
             row = [to['name'], to['id'], str(to['default']), option_type, description]
             table.append(row)
         rst_table = make_rst_table(table, headers=header)
-        converted_pipeline.append(s + rst_table)
+        return rst_table
     else:
-        converted_pipeline.append(s)
-
-    converted_pipeline.append(pipeline_id)
-    converted_pipeline.append(name)
-    return converted_pipeline
+        return ""
 
 
-def generate_index(pipeline_ids):
+def convert_pipeline_to_rst(pipeline_d):
+    pipeline_id = pipeline_d['id']
+    name = sanitize(pipeline_d['name'])
 
-    outs = []
-    f = outs.append
+    # Nat already wrote a RST table converter, so we'll use that
+    task_options = pipeline_d['taskOptions']
+    task_option_table_str = task_option_to_rst_table_str(task_options)
 
-    for pipeline_id in pipeline_ids:
-        f("    {}".format(pipeline_id))
+    _d = dict(pipeline=pipeline_d,
+              entry_points=pipeline_d['entryPoints'],
+              task_options=pipeline_d['taskOptions'],
+              task_table_summary=task_option_table_str)
 
-    return INDEX_RST_TEMPLATE + "\n".join(outs)
+    t = ENV.get_template("pipeline_details_rst.tmpl")
+    s = t.render(**_d)
+
+    return [s, pipeline_id, name]
 
 
-def _write_file(output, s):
-    with open(output, 'w+') as f:
-        f.write(s)
-    return s
+def generate_index(pipeline_ids, title, doc_version):
+    _d = dict(title=title,
+              version=doc_version,
+              pipeline_ids=pipeline_ids)
+    return ENV.get_template("pipeline_index_rst.tmpl").render(**_d)
 
 
-def write_converted_pipelines(converted_pipelines, doc_output_dir, index_rst="index.rst"):
+def _write_file(output_file, content):
+    with open(output_file, 'w+') as f:
+        f.write(content)
+    return content
+
+
+def write_converted_pipelines(converted_pipelines, doc_output_dir, index_rst="index.rst", title="PacBio Pipelines", doc_version="0.1.0"):
 
     if not os.path.exists(doc_output_dir):
         os.makedirs(doc_output_dir)
@@ -186,37 +137,59 @@ def write_converted_pipelines(converted_pipelines, doc_output_dir, index_rst="in
         pipeline_ids.add(pipeline_id)
 
     full_index_rst = os.path.join(doc_output_dir, index_rst)
-    index_str = generate_index(pipeline_ids)
+    index_str = generate_index(pipeline_ids, title, doc_version)
     _write_file(full_index_rst, index_str)
 
     return 0
 
 
-def convert_pipeline_json_files(args):
+def _render_template(tmpl_name, output_file, **kwargs):
+    tmpl = ENV.get_template(tmpl_name)
+    content = tmpl.render(**kwargs)
+    _write_file(output_file, content)
+    return content
+
+
+def convert_pipeline_json_files(output_dir, pipeline_dir, title="PacBio Pipelines", doc_version="0.1.0"):
+    pipelines = load_pipelines_from_dir(pipeline_dir)
+    converted_pipelines = [convert_pipeline_to_rst(p) for p in pipelines]
+    write_converted_pipelines(converted_pipelines, output_dir, title=title)
+
+    _d = dict(title=title, version=doc_version)
+    # Write the sphinx resources; conf.py and Makefile
+    conf_py_path = os.path.join(output_dir, 'conf.py')
+    _render_template("conf_py.tmpl", conf_py_path, **_d)
+
+    makefile_path = os.path.join(output_dir, "Makefile")
+    _render_template("makefile.tmpl", makefile_path, **_d)
+
+    return 0
+
+
+def convert_pipeline_json_files_args(args):
 
     output_dir = os.path.abspath(os.path.expanduser(args.output_dir))
     # see comments above about IO layer
     # pipelines = L.load_resolved_pipeline_template_jsons_from_dir(args.pipeline_dir)
-    pipelines = load_pipelines_from_dir(args.pipeline_dir)
-    converted_pipelines = [convert_pipeline_to_rst(p) for p in pipelines]
-    write_converted_pipelines(converted_pipelines, output_dir)
-
-    return 0
+    return convert_pipeline_json_files(output_dir, args.pipeline_dir, title=args.title, doc_version=args.doc_version)
 
 
 def get_parser():
     desc = "Generate Pipeline documentation from a directory of Resolved Pipeline Templates"
     p = get_default_argparser_with_base_opts(__version__, desc)
-    p.add_argument("pipeline_dir", type=validate_dir,
-                   help="Path to Pipeline Template JSON Dir")
-    p.add_argument('-o', "--output-dir", default="pipeline-docs",
-                   help="Path to RST Output Dir")
+
+    f = p.add_argument
+
+    f("pipeline_dir", type=validate_dir, help="Path to Pipeline Template JSON Dir")
+    f('-o', "--output-dir", default="pipeline-docs", help="Path to RST Output Dir")
+    f('-t', '--title', default="PacBio Pipelines", help="Title of Pipeline documents")
+    f('-d', '--doc-version', default="0.1.0", help="Version of Pipeline documents")
     return p
 
 
 def main(argv=sys.argv):
     parser = get_parser()
-    return pacbio_args_runner(argv[1:], parser, convert_pipeline_json_files, log, setup_log)
+    return pacbio_args_runner(argv[1:], parser, convert_pipeline_json_files_args, log, setup_log)
 
 if __name__ == "__main__":
     sys.exit(main(argv=sys.argv))
