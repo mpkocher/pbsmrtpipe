@@ -39,3 +39,21 @@ Testkit Multi-Runner
    :module: pbsmrtpipe.testkit.multirunner
    :func: get_parser
    :prog: pbtestkit-multirunner
+
+
+Resource RST Pipeline Generation from Resolved Pipeline JSON
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example:
+
+.. code-block:: bash
+
+   $> python -m pbsmrtpipe.tools.resources_to_rst /path/to/resolved-pipeline-templates -o pipeline-docs/ --title "PacBio Custom Pipelines" --debug
+   $> cd pipeline-docs && make clean html
+   # pipelines docs will be accessible in _build/html
+
+
+.. argparse::
+   :module: pbsmrtpipe.tools.resources_to_rst
+   :func: get_parser
+   :prog: python -m pbsmrtpipe.tools.resources_to_rst

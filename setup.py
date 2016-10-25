@@ -67,6 +67,7 @@ setup(
                                  'html_templates/*.css',
                                  'html_templates/js/*.js',
                                  'html_templates/css/*.css',
+                                 'tools/templates/*.tmpl',
                                  'tests/data/*.xml',
                                  'tests/data/*.json',
                                  'tests/data/*.cfg']}

@@ -75,3 +75,4 @@ sync_over_sa3_build.sh
 extras/pipeline-templates-json/*
 0.stderr
 0.stdout
+pipeline-docs
