@@ -71,7 +71,9 @@ def _isoseq_report_rules():
 def _laa_report_rules():
     return [
         ("pbreports.tasks.amplicon_analysis_input-out-0", FileTypes.REPORT, True),
-        ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT, True)
+        ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT, True),
+        ("pbcoretools.tasks.split_laa_fastq-out-0", FileTypes.GZIP, False, "Consensus Amplicons (FASTQ)"),
+        ("pbcoretools.tasks.split_laa_fastq-out-1", FileTypes.GZIP, False, "Chimeric/Noise Sequences by barcode (FASTQ)")
     ]
 
 
@@ -137,6 +139,12 @@ def hgap4_view_rules():
         ("pbcoretools.tasks.fasta2fofn-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon_make_fofn_abs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon0_build_rdb-out-0", FileTypes.TXT , True),
+        ("falcon_ns.tasks.task_falcon0_build_rdb-out-1", FileTypes.TXT,True),
+        ("genomic_consensus.tasks.variantcaller-out-0", FileTypes.GFF,True),
+        ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.DS_CONTIG, False, "Polished Assembly"),
+        ("genomic_consensus.tasks.variantcaller-out-2", FileTypes.FASTQ, False, "Polished Assembly"),
+        ("genomic_consensus.tasks.gff2vcf-out-0", FileTypes.VCF,True),
+        ("genomic_consensus.tasks.gff2bed-out-0", FileTypes.BED,True),
         ("falcon_ns.tasks.task_falcon1_build_pdb-out-0", FileTypes.TXT , True),
         ("falcon_ns.tasks.task_falcon0_run_daligner_jobs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
@@ -148,8 +156,7 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon_config-out-0", FileTypes.JSON, True),
         ("pbreports.tasks.polished_assembly-out-0", FileTypes.REPORT , True),
         ("falcon_ns.tasks.task_report_preassembly_yield-out-0", FileTypes.REPORT , True),
-        ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Unpolished Assembly"),
-        ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.DS_CONTIG, False, "Polished Assembly")
+        ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Draft Assembly")
     ] + _mapping_report_rules()
 
 
@@ -215,8 +222,10 @@ def sat_view_rules():
 
 @register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
 def resequencing_view_rules():
-    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _variant_report_rules()
-
+    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _variant_report_rules() + [
+        ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.DS_CONTIG, False, "Consensus Sequences"),
+        ("genomic_consensus.tasks.variantcaller-out-2", FileTypes.FASTQ, False, "Consensus Sequences")
+]
 
 def main(argv):
     logging.basicConfig(level=logging.INFO)
