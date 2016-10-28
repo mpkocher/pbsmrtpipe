@@ -15,7 +15,7 @@ SIV_TEST_DATA_DIR = '/pbi/dept/secondary/siv/testdata'
 # this is necessary for test jobs to write a tmp shared space for jobs that
 # are submitted to the cluster
 CLUSTER_SHARED_TMP_DIR = '/mnt/secondary/Share/tmp/'
-IS_PACBIO_CLUSTER = os.path.exists(CLUSTER_SHARED_TMP_DIR)
+IS_PACBIO_CLUSTER = os.path.exists(CLUSTER_SHARED_TMP_DIR) and "PB_USE_CLUSTER" in os.environ
 
 DEBUG = True
 SLOW_ATTR = 'slow'
