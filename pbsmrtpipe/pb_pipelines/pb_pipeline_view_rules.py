@@ -60,6 +60,11 @@ def _variant_report_rules():
         ("pbreports.tasks.top_variants-out-0", FileTypes.REPORT, True)
     ]
 
+def _basemod_report_rules():
+    return [
+        ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF, True),
+        ("kinetics_tools.tasks.summarize_modifications-out-0", FileTypes.GFF, True)
+]
 
 def _isoseq_report_rules():
     return [
@@ -119,16 +124,17 @@ def ccs_mapping_view_rules():
 
 @register_pipeline_rules("ds_modification_detection", "3.2")
 def basemod_view_rules():
-    return _mapping_report_rules() + _pbalign_alignmentset_rules() + [
+    return _basemod_report_rules() + _mapping_report_rules() + _pbalign_alignmentset_rules() + [
         ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True)
     ]
 
 
 @register_pipeline_rules("ds_modification_motif_analysis", "3.2")
 def basemod_and_motif_view_rules():
-    return _mapping_report_rules() + _pbalign_alignmentset_rules() + [
+    return _basemod_report_rules() + _mapping_report_rules() + _pbalign_alignmentset_rules() + [
         ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True),
-        ("pbreports.tasks.motifs_report-out-0", FileTypes.REPORT, True)
+        ("pbreports.tasks.motifs_report-out-0", FileTypes.REPORT, True),
+        ("kinetics_tools.tasks.ipd_summary-out-0", FileTypes.GFF, True)
     ]
 
 
