@@ -42,7 +42,7 @@ def _is_qsub_accessible():
         _log.warn(m)
     return cluster_exe is not None
 
-HAS_CLUSTER_QSUB = _is_qsub_accessible()
+HAS_CLUSTER_QSUB = _is_qsub_accessible() and "PB_USE_CLUSTER" in os.environ
 
 
 def get_data_file(file_name):
