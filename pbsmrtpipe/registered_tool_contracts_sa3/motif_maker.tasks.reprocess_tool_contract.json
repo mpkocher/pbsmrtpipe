@@ -37,7 +37,7 @@
         ],
         "output_types": [
             {
-                "title": "Modified Base Motifs Summary",
+                "title": "Motifs and Modifications",
                 "description": "Summary of analysis results for each kinModCall with motif information",
                 "default_name": "motifs",
                 "id": "gff_out",

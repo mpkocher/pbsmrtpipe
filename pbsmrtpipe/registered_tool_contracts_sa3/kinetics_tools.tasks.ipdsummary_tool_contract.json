@@ -106,21 +106,21 @@
         ],
         "output_types": [
             {
-                "title": "Modified Bases Summary",
+                "title": "Modifications",
                 "description": "Summary of analysis results for each kinModCall",
                 "default_name": "basemods",
                 "id": "gff",
                 "file_type_id": "PacBio.FileTypes.gff"
             },
             {
-                "title": "Base IpdRatios",
+                "title": "IPD Ratios",
                 "description": "BigWig file encoding base IpdRatios",
                 "default_name": "basemods",
                 "id": "bigwig",
                 "file_type_id": "PacBio.FileTypes.bigwig"
             },
             {
-                "title": "Per-Base Information",
+                "title": "Full Kinetics Summary",
                 "description": "HDF5 file containing per-base information",
                 "default_name": "basemods",
                 "id": "csv_h5",

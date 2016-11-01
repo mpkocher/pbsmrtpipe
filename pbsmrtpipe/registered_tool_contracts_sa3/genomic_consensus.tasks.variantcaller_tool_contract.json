@@ -107,7 +107,7 @@
         "output_types": [
             {
                 "title": "Variant Calls",
-                "description": "Liast of variants from the reference",
+                "description": "List of variants from the reference",
                 "default_name": "variants",
                 "id": "variants",
                 "file_type_id": "PacBio.FileTypes.gff"
