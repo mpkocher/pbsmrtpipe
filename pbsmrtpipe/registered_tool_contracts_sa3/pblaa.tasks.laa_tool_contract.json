@@ -78,7 +78,7 @@
                 "pb_option": {
                     "default": true,
                     "description": "Activate the chimera filter and separate chimeric consensus outputs",
-                    "name": "ChimeraFilter",
+                    "name": "Chimera Filter",
                     "option_id": "pblaa.task_options.chimera_filter",
                     "type": "boolean"
                 },
@@ -86,7 +86,7 @@
                     "pblaa.task_options.chimera_filter": {
                         "default": true,
                         "description": "Activate the chimera filter and separate chimeric consensus outputs",
-                        "title": "ChimeraFilter",
+                        "title": "Chimera Filter",
                         "type": "boolean"
                     }
                 },
@@ -101,7 +101,7 @@
                 "pb_option": {
                     "default": 1,
                     "description": "Minimum score to consider a sequence chimeric.",
-                    "name": "chimeraScoreThreshold",
+                    "name": "Chimera Score Threshold",
                     "option_id": "pblaa.task_options.chimera_score_threshold",
                     "type": "number"
                 },
@@ -109,7 +109,7 @@
                     "pblaa.task_options.chimera_score_threshold": {
                         "default": 1,
                         "description": "Minimum score to consider a sequence chimeric.",
-                        "title": "chimeraScoreThreshold",
+                        "title": "Chimera Score Threshold",
                         "type": "number"
                     }
                 },
@@ -124,7 +124,7 @@
                 "pb_option": {
                     "default": 2,
                     "description": "Markov Clustering inflation parameter.",
-                    "name": "clusterInflation",
+                    "name": "Cluster Inflation Factor",
                     "option_id": "pblaa.task_options.cluster_inflation",
                     "type": "number"
                 },
@@ -132,7 +132,7 @@
                     "pblaa.task_options.cluster_inflation": {
                         "default": 2,
                         "description": "Markov Clustering inflation parameter.",
-                        "title": "clusterInflation",
+                        "title": "Cluster Inflation Factor",
                         "type": "number"
                     }
                 },
@@ -147,7 +147,7 @@
                 "pb_option": {
                     "default": 0.00100000004749745,
                     "description": "Markov Clustering loop weight parameter.",
-                    "name": "clusterLoopWeight",
+                    "name": "Cluster Loop Weight",
                     "option_id": "pblaa.task_options.cluster_loop_weight",
                     "type": "number"
                 },
@@ -155,7 +155,7 @@
                     "pblaa.task_options.cluster_loop_weight": {
                         "default": 0.00100000004749745,
                         "description": "Markov Clustering loop weight parameter.",
-                        "title": "clusterLoopWeight",
+                        "title": "Cluster Loop Weight",
                         "type": "number"
                     }
                 },
@@ -192,16 +192,16 @@
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
                     "default": "",
-                    "description": "Comma-separated list of barcode names or barcode-index pairs to analyze, in the form '0--0'.",
-                    "name": "Barcode-Index Pairs",
+                    "description": "Comma-separated list of barcode pairs to analyze, either by name, such as 'lbc1--lbc1', or by index, such as '0--0'.",
+                    "name": "Barcode Name or Index Pairs",
                     "option_id": "pblaa.task_options.do_bc",
                     "type": "string"
                 },
                 "properties": {
                     "pblaa.task_options.do_bc": {
                         "default": "",
-                        "description": "Comma-separated list of barcode names or barcode-index pairs to analyze, in the form '0--0'.",
-                        "title": "Barcode-Index Pairs",
+                        "description": "Comma-separated list of barcode pairs to analyze, either by name, such as 'lbc1--lbc1', or by index, such as '0--0'.",
+                        "title": "Barcode Name or Index Pairs",
                         "type": "string"
                     }
                 },
@@ -216,7 +216,7 @@
                 "pb_option": {
                     "default": false,
                     "description": "Filter input reads by presence of both flanking barcodes.",
-                    "name": "Only Full Length Subreads",
+                    "name": "Use Only Full-Length Subreads",
                     "option_id": "pblaa.task_options.full_length",
                     "type": "boolean"
                 },
@@ -224,7 +224,7 @@
                     "pblaa.task_options.full_length": {
                         "default": false,
                         "description": "Filter input reads by presence of both flanking barcodes.",
-                        "title": "Only Full Length Subreads",
+                        "title": "Use Only Full-Length Subreads",
                         "type": "boolean"
                     }
                 },
@@ -262,7 +262,7 @@
                 "pb_option": {
                     "default": 0,
                     "description": "When splitting, ignore N bases at the ends. Use to prevent excessive splitting caused by degenerate primers.",
-                    "name": "ignoreEnds",
+                    "name": "Ignore End-Bases",
                     "option_id": "pblaa.task_options.ignore_ends",
                     "type": "integer"
                 },
@@ -270,7 +270,7 @@
                     "pblaa.task_options.ignore_ends": {
                         "default": 0,
                         "description": "When splitting, ignore N bases at the ends. Use to prevent excessive splitting caused by degenerate primers.",
-                        "title": "ignoreEnds",
+                        "title": "Ignore End-Bases",
                         "type": "integer"
                     }
                 },
@@ -285,7 +285,7 @@
                 "pb_option": {
                     "default": "amplicon_analysis_input.csv",
                     "description": "Output estimates of input PCR quality based on subread mappings",
-                    "name": "Input Molecule Report File",
+                    "name": "Input Molecule Report Filename",
                     "option_id": "pblaa.task_options.input_report_file",
                     "type": "string"
                 },
@@ -293,7 +293,7 @@
                     "pblaa.task_options.input_report_file": {
                         "default": "amplicon_analysis_input.csv",
                         "description": "Output estimates of input PCR quality based on subread mappings",
-                        "title": "Input Molecule Report File",
+                        "title": "Input Molecule Report Filename",
                         "type": "string"
                     }
                 },
@@ -308,7 +308,7 @@
                 "pb_option": {
                     "default": "amplicon_analysis_chimeras_noise.fastq",
                     "description": "Output file for low-quality or chimeric results.",
-                    "name": "Junk File",
+                    "name": "Junk Filename",
                     "option_id": "pblaa.task_options.junk_file",
                     "type": "string"
                 },
@@ -316,7 +316,7 @@
                     "pblaa.task_options.junk_file": {
                         "default": "amplicon_analysis_chimeras_noise.fastq",
                         "description": "Output file for low-quality or chimeric results.",
-                        "title": "Junk File",
+                        "title": "Junk Filename",
                         "type": "string"
                     }
                 },
@@ -331,7 +331,7 @@
                 "pb_option": {
                     "default": "",
                     "description": "Output file to write logging information to",
-                    "name": "LOG file",
+                    "name": "Log Filename",
                     "option_id": "pblaa.task_options.log_file",
                     "type": "string"
                 },
@@ -339,7 +339,7 @@
                     "pblaa.task_options.log_file": {
                         "default": "",
                         "description": "Output file to write logging information to",
-                        "title": "LOG file",
+                        "title": "Log Filename",
                         "type": "string"
                     }
                 },
@@ -354,7 +354,7 @@
                 "pb_option": {
                     "default": 500,
                     "description": "Maximum number of input reads to cluster per barcode.",
-                    "name": "maxClusteringReads",
+                    "name": "Maximum Clustering Reads",
                     "option_id": "pblaa.task_options.max_clustering_reads",
                     "type": "integer"
                 },
@@ -362,7 +362,7 @@
                     "pblaa.task_options.max_clustering_reads": {
                         "default": 500,
                         "description": "Maximum number of input reads to cluster per barcode.",
-                        "title": "maxClusteringReads",
+                        "title": "Maximum Clustering Reads",
                         "type": "integer"
                     }
                 },
@@ -377,7 +377,7 @@
                 "pb_option": {
                     "default": 0,
                     "description": "Maximum length of input reads, set 0 to disable.",
-                    "name": "maxLength",
+                    "name": "Maximum Subread Length",
                     "option_id": "pblaa.task_options.max_length",
                     "type": "integer"
                 },
@@ -385,7 +385,7 @@
                     "pblaa.task_options.max_length": {
                         "default": 0,
                         "description": "Maximum length of input reads, set 0 to disable.",
-                        "title": "maxLength",
+                        "title": "Maximum Subread Length",
                         "type": "integer"
                     }
                 },
@@ -400,7 +400,7 @@
                 "pb_option": {
                     "default": 500,
                     "description": "Maximum number of reads to use for phasing/consensus.",
-                    "name": "maxPhasingReads",
+                    "name": "Maximum Phasing Reads",
                     "option_id": "pblaa.task_options.max_phasing_reads",
                     "type": "integer"
                 },
@@ -408,7 +408,7 @@
                     "pblaa.task_options.max_phasing_reads": {
                         "default": 500,
                         "description": "Maximum number of reads to use for phasing/consensus.",
-                        "title": "maxPhasingReads",
+                        "title": "Maximum Phasing Reads",
                         "type": "integer"
                     }
                 },
@@ -423,7 +423,7 @@
                 "pb_option": {
                     "default": 2000,
                     "description": "Maximum number of input reads to cluster per barcode.",
-                    "name": "maxReads",
+                    "name": "Maximum Reads",
                     "option_id": "pblaa.task_options.max_reads",
                     "type": "integer"
                 },
@@ -431,7 +431,7 @@
                     "pblaa.task_options.max_reads": {
                         "default": 2000,
                         "description": "Maximum number of input reads to cluster per barcode.",
-                        "title": "maxReads",
+                        "title": "Maximum Reads",
                         "type": "integer"
                     }
                 },
@@ -446,7 +446,7 @@
                 "pb_option": {
                     "default": 0,
                     "description": "Minimum average barcode score to require of subreads.",
-                    "name": "Minimum Average Barcode Score",
+                    "name": "Minimum Barcode Score",
                     "option_id": "pblaa.task_options.min_barcode_score",
                     "type": "integer"
                 },
@@ -454,7 +454,7 @@
                     "pblaa.task_options.min_barcode_score": {
                         "default": 0,
                         "description": "Minimum average barcode score to require of subreads.",
-                        "title": "Minimum Average Barcode Score",
+                        "title": "Minimum Barcode Score",
                         "type": "integer"
                     }
                 },
@@ -469,7 +469,7 @@
                 "pb_option": {
                     "default": 3000,
                     "description": "Minimum length of input reads.",
-                    "name": "minLength",
+                    "name": "Minimum Subread Length",
                     "option_id": "pblaa.task_options.min_length",
                     "type": "integer"
                 },
@@ -477,7 +477,7 @@
                     "pblaa.task_options.min_length": {
                         "default": 3000,
                         "description": "Minimum length of input reads.",
-                        "title": "minLength",
+                        "title": "Minimum Subread Length",
                         "type": "integer"
                     }
                 },
@@ -492,7 +492,7 @@
                 "pb_option": {
                     "default": 0.949999988079071,
                     "description": "Minimum predicted consensus accuracy below which a consensus is called 'noise'.",
-                    "name": "minPredictedAccuracy",
+                    "name": "Minimum Predicted Accuracy",
                     "option_id": "pblaa.task_options.min_predicted_accuracy",
                     "type": "number"
                 },
@@ -500,7 +500,7 @@
                     "pblaa.task_options.min_predicted_accuracy": {
                         "default": 0.949999988079071,
                         "description": "Minimum predicted consensus accuracy below which a consensus is called 'noise'.",
-                        "title": "minPredictedAccuracy",
+                        "title": "Minimum Predicted Accuracy",
                         "type": "number"
                     }
                 },
@@ -513,55 +513,9 @@
             {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "pb_option": {
-                    "default": 0.0900000035762787,
-                    "description": "Minimum prevalence to require of mutations used for phasing.",
-                    "name": "minPrevalence",
-                    "option_id": "pblaa.task_options.min_prevalence",
-                    "type": "number"
-                },
-                "properties": {
-                    "pblaa.task_options.min_prevalence": {
-                        "default": 0.0900000035762787,
-                        "description": "Minimum prevalence to require of mutations used for phasing.",
-                        "title": "minPrevalence",
-                        "type": "number"
-                    }
-                },
-                "required": [
-                    "pblaa.task_options.min_prevalence"
-                ],
-                "title": "JSON Schema for pblaa.task_options.min_prevalence",
-                "type": "object"
-            },
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": 20,
-                    "description": "Minimum score to require of mutations  used for phasing.",
-                    "name": "minQScore",
-                    "option_id": "pblaa.task_options.min_q_score",
-                    "type": "number"
-                },
-                "properties": {
-                    "pblaa.task_options.min_q_score": {
-                        "default": 20,
-                        "description": "Minimum score to require of mutations  used for phasing.",
-                        "title": "minQScore",
-                        "type": "number"
-                    }
-                },
-                "required": [
-                    "pblaa.task_options.min_q_score"
-                ],
-                "title": "JSON Schema for pblaa.task_options.min_q_score",
-                "type": "object"
-            },
-            {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
                     "default": 0.75,
                     "description": "Minimum read score of input reads.",
-                    "name": "minReadScore",
+                    "name": "Minimum ReadScore",
                     "option_id": "pblaa.task_options.min_read_score",
                     "type": "number"
                 },
@@ -569,7 +523,7 @@
                     "pblaa.task_options.min_read_score": {
                         "default": 0.75,
                         "description": "Minimum read score of input reads.",
-                        "title": "minReadScore",
+                        "title": "Minimum ReadScore",
                         "type": "number"
                     }
                 },
@@ -584,7 +538,7 @@
                 "pb_option": {
                     "default": 3.75,
                     "description": "Minimum SNR of input reads.",
-                    "name": "minSnr",
+                    "name": "Minimum SNR",
                     "option_id": "pblaa.task_options.min_snr",
                     "type": "number"
                 },
@@ -592,7 +546,7 @@
                     "pblaa.task_options.min_snr": {
                         "default": 3.75,
                         "description": "Minimum SNR of input reads.",
-                        "title": "minSnr",
+                        "title": "Minimum SNR",
                         "type": "number"
                     }
                 },
@@ -607,7 +561,7 @@
                 "pb_option": {
                     "default": 0.100000001490116,
                     "description": "Minimum fraction of reads favoring the minor phase required to split a haplotype.",
-                    "name": "minSplitFraction",
+                    "name": "Minimum Allele/Haplotype Read Fraction",
                     "option_id": "pblaa.task_options.min_split_fraction",
                     "type": "number"
                 },
@@ -615,7 +569,7 @@
                     "pblaa.task_options.min_split_fraction": {
                         "default": 0.100000001490116,
                         "description": "Minimum fraction of reads favoring the minor phase required to split a haplotype.",
-                        "title": "minSplitFraction",
+                        "title": "Minimum Allele/Haplotype Read Fraction",
                         "type": "number"
                     }
                 },
@@ -630,7 +584,7 @@
                 "pb_option": {
                     "default": 20,
                     "description": "Minimum number reads favoring the minor phase required to split a haplotype.",
-                    "name": "minSplitReads",
+                    "name": "Minimum Allele/Haplotype Reads",
                     "option_id": "pblaa.task_options.min_split_reads",
                     "type": "integer"
                 },
@@ -638,7 +592,7 @@
                     "pblaa.task_options.min_split_reads": {
                         "default": 20,
                         "description": "Minimum number reads favoring the minor phase required to split a haplotype.",
-                        "title": "minSplitReads",
+                        "title": "Minimum Allele/Haplotype Reads",
                         "type": "integer"
                     }
                 },
@@ -653,7 +607,7 @@
                 "pb_option": {
                     "default": 500,
                     "description": "Global likelihood improvement required to split a haplotype.",
-                    "name": "minSplitScore",
+                    "name": "Minimum Allele/Haplotype Score",
                     "option_id": "pblaa.task_options.min_split_score",
                     "type": "number"
                 },
@@ -661,7 +615,7 @@
                     "pblaa.task_options.min_split_score": {
                         "default": 500,
                         "description": "Global likelihood improvement required to split a haplotype.",
-                        "title": "minSplitScore",
+                        "title": "Minimum Allele/Haplotype Score",
                         "type": "number"
                     }
                 },
@@ -745,7 +699,7 @@
                 "pb_option": {
                     "default": "amplicon_analysis_summary.csv",
                     "description": "Output file for summary report.",
-                    "name": "Report File",
+                    "name": "Report Filename",
                     "option_id": "pblaa.task_options.report_file",
                     "type": "string"
                 },
@@ -753,7 +707,7 @@
                     "pblaa.task_options.report_file": {
                         "default": "amplicon_analysis_summary.csv",
                         "description": "Output file for summary report.",
-                        "title": "Report File",
+                        "title": "Report Filename",
                         "type": "string"
                     }
                 },
@@ -768,7 +722,7 @@
                 "pb_option": {
                     "default": "amplicon_analysis.fastq",
                     "description": "Output file for high-quality results.",
-                    "name": "resultFile",
+                    "name": "Result Filename",
                     "option_id": "pblaa.task_options.result_file",
                     "type": "string"
                 },
@@ -776,7 +730,7 @@
                     "pblaa.task_options.result_file": {
                         "default": "amplicon_analysis.fastq",
                         "description": "Output file for high-quality results.",
-                        "title": "resultFile",
+                        "title": "Result Filename",
                         "type": "string"
                     }
                 },
@@ -791,7 +745,7 @@
                 "pb_option": {
                     "default": 42,
                     "description": "RNG seed, modulates reservoir filtering of reads.",
-                    "name": "RNG seed",
+                    "name": "RNG Seed",
                     "option_id": "pblaa.task_options.rng_seed",
                     "type": "integer"
                 },
@@ -799,7 +753,7 @@
                     "pblaa.task_options.rng_seed": {
                         "default": 42,
                         "description": "RNG seed, modulates reservoir filtering of reads.",
-                        "title": "RNG seed",
+                        "title": "RNG Seed",
                         "type": "integer"
                     }
                 },
@@ -814,7 +768,7 @@
                 "pb_option": {
                     "default": "amplicon_analysis_subreads",
                     "description": "Output prefix for subreads report.",
-                    "name": "Subreads Report Prefix",
+                    "name": "Subreads Report Filename Prefix",
                     "option_id": "pblaa.task_options.subreads_report_prefix",
                     "type": "string"
                 },
@@ -822,7 +776,7 @@
                     "pblaa.task_options.subreads_report_prefix": {
                         "default": "amplicon_analysis_subreads",
                         "description": "Output prefix for subreads report.",
-                        "title": "Subreads Report Prefix",
+                        "title": "Subreads Report Filename Prefix",
                         "type": "string"
                     }
                 },
@@ -837,7 +791,7 @@
                 "pb_option": {
                     "default": 0,
                     "description": "Report only the top N consensus sequences for each barcode, set <1 to disable.",
-                    "name": "takeN",
+                    "name": "Take Top N Sequences",
                     "option_id": "pblaa.task_options.take_n",
                     "type": "integer"
                 },
@@ -845,7 +799,7 @@
                     "pblaa.task_options.take_n": {
                         "default": 0,
                         "description": "Report only the top N consensus sequences for each barcode, set <1 to disable.",
-                        "title": "takeN",
+                        "title": "Take Top N Sequences",
                         "type": "integer"
                     }
                 },
@@ -860,7 +814,7 @@
                 "pb_option": {
                     "default": 0,
                     "description": "Trim N bases from each end of each consensus.",
-                    "name": "trimEnds",
+                    "name": "Trim Sequence Ends",
                     "option_id": "pblaa.task_options.trim_ends",
                     "type": "integer"
                 },
@@ -868,7 +822,7 @@
                     "pblaa.task_options.trim_ends": {
                         "default": 0,
                         "description": "Trim N bases from each end of each consensus.",
-                        "title": "trimEnds",
+                        "title": "Trim Sequence Ends",
                         "type": "integer"
                     }
                 },
@@ -883,5 +837,5 @@
         "tool_contract_id": "pblaa.tasks.laa"
     },
     "tool_contract_id": "pblaa.tasks.laa",
-    "version": "pblaa 2.1.0 (commit 3642f5e*) | unanimity 2.0.4 (commit 2dd7309*)"
+    "version": "pblaa 2.1.2 (commit 3bf6a5f-dirty) | unanimity 2.0.5 (commit 8199c0b-dirty)"
 }
