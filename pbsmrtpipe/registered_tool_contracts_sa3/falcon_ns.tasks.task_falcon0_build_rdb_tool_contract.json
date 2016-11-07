@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.14",
         "description": "Quick tool task_falcon0_build_rdb falcon_ns.tasks.task_falcon0_build_rdb",
         "input_types": [
             {
@@ -34,7 +34,7 @@
             },
             {
                 "default_name": "dazzler.db",
-                "description": "DAZZLER database file",
+                "description": "description for <FileType id=PacBio.FileTypes.txt name=file >",
                 "file_type_id": "PacBio.FileTypes.txt",
                 "id": "dazzler.db_id",
                 "title": "Database Overview"

@@ -5,7 +5,7 @@
         "serialization": "json"
     },
     "tool_contract": {
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.14",
         "description": "Quick tool task_falcon0_run_merge_consensus_jobs falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs",
         "input_types": [
             {
