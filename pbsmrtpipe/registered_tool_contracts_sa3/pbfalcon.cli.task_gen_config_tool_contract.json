@@ -102,6 +102,29 @@
                         "title": "FALCON cfg overrides"
                     }
                 }
+            },
+            {
+                "pb_option": {
+                    "default": false,
+                    "type": "boolean",
+                    "option_id": "falcon_ns.task_options.HGAP_AggressiveAsm_bool",
+                    "name": "Aggressive option",
+                    "description": "Greedy option for LA4Falcon. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual"
+                },
+                "title": "JSON Schema for falcon_ns.task_options.HGAP_AggressiveAsm_bool",
+                "required": [
+                    "falcon_ns.task_options.HGAP_AggressiveAsm_bool"
+                ],
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "falcon_ns.task_options.HGAP_AggressiveAsm_bool": {
+                        "default": false,
+                        "type": "boolean",
+                        "description": "Greedy option for LA4Falcon. For more details on the available options, see https://github.com/PacificBiosciences/FALCON/wiki/Manual",
+                        "title": "Aggressive option"
+                    }
+                }
             }
         ],
         "output_types": [
