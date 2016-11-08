@@ -221,7 +221,7 @@ def hgap_lean():
     hgap_run = _get_hgap_pypeflow(hgap_cfg, logging_cfg, subreadset)
     return hgap_prepare + hgap_run
 
-@dev_register("hgap_fat", "Assembly (HGAP 5 beta)", tags=())
+@dev_register("hgap_fat", "Assembly (HGAP 5 beta)", tags=("internal",))
 def hgap_fat():
     """GUI polished HGAP pipeline.
     BAM input comes from the SubreadSet.
