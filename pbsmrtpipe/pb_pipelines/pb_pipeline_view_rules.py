@@ -77,8 +77,8 @@ def _laa_report_rules():
     return [
         ("pbreports.tasks.amplicon_analysis_input-out-0", FileTypes.REPORT, True),
         ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT, True),
-        ("pbcoretools.tasks.split_laa_fastq-out-0", FileTypes.GZIP, False, "Consensus Amplicons (FASTQ)"),
-        ("pbcoretools.tasks.split_laa_fastq-out-1", FileTypes.GZIP, False, "Chimeric/Noise Sequences (FASTQ)")
+        ("pbcoretools.tasks.split_laa_fastq-out-0", FileTypes.GZIP, False, "Consensus Sequences (FASTQ)"),
+        ("pbcoretools.tasks.split_laa_fastq-out-1", FileTypes.GZIP, False, "Chimeric/Noise Consensus Sequences (FASTQ)")
     ]
 
 
