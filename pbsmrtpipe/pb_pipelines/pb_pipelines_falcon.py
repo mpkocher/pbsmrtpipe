@@ -184,8 +184,11 @@ def get_falcon_pipeline_fat():
         (ref, "pbreports.tasks.coverage_report:0"),
         ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.coverage_report:1")
     ]
+    fasta_out = [
+        ("genomic_consensus.tasks.variantcaller:1", "pbcoretools.tasks.contigset2fasta:0")
+    ]
 
-    return falcon + sum_cov + polished_report + mapping_report + coverage_report
+    return falcon + sum_cov + polished_report + mapping_report + coverage_report + fasta_out
 
 def _get_hgap_pypeflow(i_cfg, i_logging_cfg, i_subreadset):
     return [

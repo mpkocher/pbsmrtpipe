@@ -22,7 +22,7 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ],
-        "_comment": "Created by v0.4.11",
+        "_comment": "Created by v0.4.13",
         "name": "bam2fasta export",
         "input_types": [
             {
