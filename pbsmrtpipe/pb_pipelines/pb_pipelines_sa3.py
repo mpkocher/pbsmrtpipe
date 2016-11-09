@@ -26,6 +26,7 @@ class Constants(object):
     ENTRY_DS_SUBREAD = to_entry("eid_subread")
     ENTRY_DS_ALIGN = to_entry("eid_alignment")
     ENTRY_DS_CCS = to_entry("eid_ccs")
+    ENTRY_DS_GMAPREF = to_entry("eid_gmapref_dataset")
 
     # This should only be used for internal use
     ENTRY_COND_JSON = to_entry("cond_json")
@@ -660,7 +661,7 @@ def ds_isoseq_with_genome():
                                             flnc_ds="pbtranscript.tasks.classify:1",
                                             nfl_ds="pbtranscript.tasks.classify:2")
     b3 = _core_isoseq_collapse(hq_isoforms_hq="pbtranscript.tasks.combine_cluster_bins:4",
-                               gmap_ref_ds=to_entry("eid_gmapref_dataset"),
+                               gmap_ref_ds=Constants.ENTRY_DS_GMAPREF,
                                sample_prefix_pickle="pbtranscript.tasks.combine_cluster_bins:7")
     return b1 + b2 + b3
 
@@ -709,7 +710,7 @@ def pb_isoseq_cluster_with_genome():
                                             flnc_ds=to_entry("e_flnc_fa"),
                                             nfl_ds=to_entry("e_nfl_fa"))
     b2 = _core_isoseq_collapse(hq_isoforms_hq="pbtranscript.tasks.combine_cluster_bins:4",
-                               gmap_ref_ds=to_entry("eid_gmapref_dataset"),
+                               gmap_ref_ds=Constants.ENTRY_DS_GMAPREF,
                                sample_prefix_pickle="pbtranscript.tasks.combine_cluster_bins:7")
     return b1 + b2
 
@@ -721,7 +722,7 @@ def pb_isoseq_collapse():
     continue to collapse, count and filter isoforms, requiring a reference genome GMAP dataset.
     """
     return _core_isoseq_collapse(hq_isoforms_hq=to_entry("hq_isoforms_hq"),
-                                 gmap_ref_ds=to_entry("eid_gmapref_dataset"),
+                                 gmap_ref_ds=Constants.ENTRY_DS_GMAPREF,
                                  sample_prefix_pickle=to_entry("sample_prefix_pickle"))
 
 # XXX will resurrect in the future
