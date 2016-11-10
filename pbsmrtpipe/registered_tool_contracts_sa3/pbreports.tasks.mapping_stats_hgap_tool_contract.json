@@ -2,7 +2,7 @@
     "version": "0.1",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbreports.report.mapping_stats_gap --resolved-tool-contract",
+        "exe": "python -m pbreports.report.mapping_stats_hgap --resolved-tool-contract",
         "env": {}
     },
     "tool_contract_id": "pbreports.tasks.mapping_stats_hgap",
