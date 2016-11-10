@@ -9,7 +9,7 @@
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.scattered",
         "resource_types": [],
-        "description": "\nSpecialized scatter task which spawns pickle with scripts\nto multiple pickles each containing a script\n",
+        "description": "\nSpecialized scatter task which spawns an input pickle file\ncontaining scripts into at most max_nchunk scattered pickles.\n\nInput pickle file is dict{p_id: args}, where args is\ndict{'script_fn': script_fn, 'script_dir': script_dir}.\n\nInput txt file is a sentinel file.\n\nEach scattered pickle file has the same data type, but likely\ncontains less items.\n",
         "schema_options": [
             {
                 "pb_option": {
