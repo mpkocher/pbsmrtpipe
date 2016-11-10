@@ -143,6 +143,7 @@ def hgap4_view_rules():
     return [
         ("pbcoretools.tasks.bam2fasta-out-0", FileTypes.FASTA , True),
         ("pbcoretools.tasks.fasta2fofn-out-0", FileTypes.FOFN , True),
+        ("pbcoretools.tasks.contigset2fasta-out-0", FileTypes.FASTA, False, "Polished Assembly"),
         ("falcon_ns.tasks.task_falcon_make_fofn_abs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon0_build_rdb-out-0", FileTypes.TXT , True),
         ("falcon_ns.tasks.task_falcon0_build_rdb-out-1", FileTypes.TXT,True),
