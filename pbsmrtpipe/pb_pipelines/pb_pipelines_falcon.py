@@ -179,7 +179,10 @@ def get_falcon_pipeline_fat():
     # takes alignment summary GFF, polished assembly fastQ
     polished_report = [('pbreports.tasks.summarize_coverage:0', 'pbreports.tasks.polished_assembly:0'),
                        ('genomic_consensus.tasks.variantcaller:2', 'pbreports.tasks.polished_assembly:1')]
-    mapping_report = [(aln, "pbreports.tasks.mapping_stats:0")]
+    mapping_report = [
+        (aln, "pbreports.tasks.mapping_stats_hgap:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.mapping_stats_hgap:1")
+    ]
     coverage_report = [
         (ref, "pbreports.tasks.coverage_report:0"),
         ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.coverage_report:1")
