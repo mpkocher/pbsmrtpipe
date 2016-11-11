@@ -37,6 +37,20 @@
                 "file_type_id": "PacBio.FileTypes.generic_fofn",
                 "id": "fofn_id",
                 "title": "FOFN of daligner output (merged .las, stage-0)"
+            },
+            {
+                "default_name": "merge",
+                "description": "json of LAmerge scripts",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "json_id",
+                "title": "json of LAmerge scripts, stage-0"
+            },
+            {
+                "default_name": "cons",
+                "description": "json of LA4Falcon scripts",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "json_id",
+                "title": "json of LA4Falcon scripts, stage-0"
             }
         ],
         "resource_types": [],
