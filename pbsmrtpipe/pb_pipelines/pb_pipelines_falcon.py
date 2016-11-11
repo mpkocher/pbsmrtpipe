@@ -36,9 +36,9 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
           ('falcon_ns.tasks.task_falcon0_run_daligner_jobs:0', 'falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:2'),
          ]
     # br3: execute LAmerge scripts (e.g., m_00001/merge_00001.sh) to create raw_reads.*.las
-    br3 = [('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:1', 'falcon_ns.tasks.task_falcon0_merge:0')]     # merge.pickle
+    br3 = [('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:1', 'falcon_ns.tasks.task_falcon0_merge:0')]     # merge.json
     # br4: execute LA4Falcon scripts (e.g., preads/c_00001.sh) to create out.0000*.fasta
-    br4 = [('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:2', 'falcon_ns.tasks.task_falcon0_cons:0'),      # cons.pickle
+    br4 = [('falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs:2', 'falcon_ns.tasks.task_falcon0_cons:0'),      # cons.json
            ('falcon_ns.tasks.task_falcon0_merge:0',                    'falcon_ns.tasks.task_falcon0_cons:1')       # merge_done.txt, sentinel
           ]
     bp0 = [
@@ -56,9 +56,9 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
           ('falcon_ns.tasks.task_falcon1_run_daligner_jobs:0', 'falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:2'),
          ]
     # bp3: execute LAmerge scripts (e.g., m_00001/merge_00001.sh) to create preads.*.las
-    bp3 = [('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:1', 'falcon_ns.tasks.task_falcon1_merge:0')]     # merge.pickle
+    bp3 = [('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:1', 'falcon_ns.tasks.task_falcon1_merge:0')]     # merge.json
     # bp4: execute db2falcon scripts (e.g., run_db2falcon.sh) to create falcon db.
-    bp4 = [('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:2', 'falcon_ns.tasks.task_falcon1_db2falcon:0'), # db2falcon.pickle
+    bp4 = [('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:2', 'falcon_ns.tasks.task_falcon1_db2falcon:0'), # db2falcon.json
            ('falcon_ns.tasks.task_falcon1_merge:0',                    'falcon_ns.tasks.task_falcon1_db2falcon:1')  # merge_done.txt, sentinel
           ]
     bf = [
