@@ -101,7 +101,7 @@ def _pbalign_alignmentset_rules():
 
 
 @register_pipeline_rules("sa3_ds_barcode", "3.2")
-def barcode_view_rules(): 
+def barcode_view_rules():
     return _barcode_report_rules()
 
 
@@ -155,8 +155,16 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon1_build_pdb-out-0", FileTypes.TXT , True),
         ("falcon_ns.tasks.task_falcon0_run_daligner_jobs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-1", FileTypes.JSON , False),
+        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-2", FileTypes.JSON , False),
+        ("falcon_ns.tasks.task_falcon0_merge-out-0", FileTypes.TXT , False),
+        ("falcon_ns.tasks.task_falcon0_cons-out-0", FileTypes.TXT , False),
         ("falcon_ns.tasks.task_falcon1_run_daligner_jobs-out-0", FileTypes.FOFN , True),
         ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-0", FileTypes.FOFN , True),
+        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-1", FileTypes.JSON , False),
+        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-2", FileTypes.JSON , False),
+        ("falcon_ns.tasks.task_falcon1_merge-out-0", FileTypes.TXT , False),
+        ("falcon_ns.tasks.task_falcon1_db2falcon-out-0", FileTypes.TXT , False),
         ("falcon_ns.tasks.task_falcon2_run_asm-out-0", FileTypes.FASTA, True),
         ("falcon_ns.tasks.task_falcon_gen_config-out-0", FileTypes.CFG , True),
         ("falcon_ns.tasks.task_falcon0_build_rdb-out-2", FileTypes.TXT , True),
@@ -177,7 +185,7 @@ def hgap5_view_rules():
         ("falcon_ns.tasks.task_hgap_run-out-2", FileTypes.REPORT, True),
         ("falcon_ns.tasks.task_hgap_run-out-3", FileTypes.LOG, True)
     ]
- 
+
 
 @register_pipeline_rules("sa3_ds_isoseq", "3.2")
 def isoseq_view_rules():
@@ -207,7 +215,7 @@ def isoseq_classify_view_rules():
 
 
 @register_pipeline_rules("sa3_ds_laa", "3.2")
-def laa_view_rules(): 
+def laa_view_rules():
     r1 = [
         ("pblaa.tasks.laa-out-3", FileTypes.CSV, True)
     ]
