@@ -40,17 +40,17 @@
             },
             {
                 "default_name": "merge",
-                "description": "pickle of LAmerge scripts",
-                "file_type_id": "PacBio.FileTypes.pickle",
-                "id": "pickle_id",
-                "title": "pickle of LAmerge scripts, stage-1"
+                "description": "json of LAmerge scripts",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "json_id",
+                "title": "json of LAmerge scripts, stage-1"
             },
             {
                 "default_name": "db2falcon",
-                "description": "pickle of db2falcon scripts",
-                "file_type_id": "PacBio.FileTypes.pickle",
-                "id": "pickle_id",
-                "title": "pickle of db2falcon scripts, stage-1"
+                "description": "json of db2falcon scripts",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "json_id",
+                "title": "json of db2falcon scripts, stage-1"
             }
         ],
         "resource_types": [],

@@ -40,17 +40,17 @@
             },
             {
                 "default_name": "merge",
-                "description": "pickle of LAmerge scripts",
-                "file_type_id": "PacBio.FileTypes.pickle",
-                "id": "pickle_id",
-                "title": "pickle of LAmerge scripts, stage-0"
+                "description": "json of LAmerge scripts",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "json_id",
+                "title": "json of LAmerge scripts, stage-0"
             },
             {
                 "default_name": "cons",
-                "description": "pickle of LA4Falcon scripts",
-                "file_type_id": "PacBio.FileTypes.pickle",
-                "id": "pickle_id",
-                "title": "pickle of LA4Falcon scripts, stage-0"
+                "description": "json of LA4Falcon scripts",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "json_id",
+                "title": "json of LA4Falcon scripts, stage-0"
             }
         ],
         "resource_types": [],

@@ -9,10 +9,10 @@
         "description": "Quick tool task_falcon1_db2falcon falcon_ns.tasks.task_falcon1_db2falcon",
         "input_types": [
             {
-                "description": "description for PacBio.FileTypes.pickle_0",
-                "file_type_id": "PacBio.FileTypes.pickle",
-                "id": "Label PacBio.FileTypes.pickle_0",
-                "title": "<OutputFileType PacBio.FileTypes.pickle pickle_id >"
+                "description": "description for PacBio.FileTypes.json_0",
+                "file_type_id": "PacBio.FileTypes.json",
+                "id": "Label PacBio.FileTypes.json_0",
+                "title": "<OutputFileType PacBio.FileTypes.json json_id >"
             },
             {
                 "description": "description for PacBio.FileTypes.txt_1",
