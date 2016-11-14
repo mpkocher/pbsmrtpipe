@@ -725,34 +725,6 @@ def pb_isoseq_collapse():
                                  gmap_ref_ds=Constants.ENTRY_DS_GMAPREF,
                                  sample_prefix_pickle=to_entry("sample_prefix_pickle"))
 
-# XXX will resurrect in the future
-#@sa3_register("sa3_ds_isoseq_classify_align"),
-#                   "IsoSeq Classification and GMAP Alignment", "0.1.0",
-#                   tags=("isoseq", ),
-#                   task_options=ISOSEQ_TASK_OPTIONS)
-#def ds_isoseq_classify_align():
-#    b1 = _core_isoseq_classify("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
-#    b2 = [
-#        # full-length, non-chimeric transcripts
-#        ("pbtranscript.tasks.classify:1", "pbtranscript.tasks.gmap:0"),
-#        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
-#    ]
-#    return b1 + b2
-#
-#
-#@sa3_register("sa3_ds_isoseq_align"),
-#                   "IsoSeq Pipeline plus GMAP alignment", "0.1.0",
-#                   tags=("isoseq", ),
-#                   task_options=ISOSEQ_TASK_OPTIONS)
-#def ds_isoseq_align():
-#    b1 = _core_isoseq_cluster("pbsmrtpipe.pipelines.sa3_ds_ccs:pbccs.tasks.ccs:0")
-#    b2 = [
-#        # use high-quality isoforms here? or something else?
-#        ("pbtranscript.tasks.ice_quiver_postprocess:2",
-#         "pbtranscript.tasks.gmap:0"),
-#        (Constants.ENTRY_DS_REF, "pbtranscript.tasks.gmap:1")
-#    ]
-#    return b1 + b2
 
 @sa3_register("sa3_ds_subreads_to_fastx", "Convert BAM to FASTX", "0.1.0", tags=(Tags.CONVERTER,))
 def ds_subreads_to_fastx():
