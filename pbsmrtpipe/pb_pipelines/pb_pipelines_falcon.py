@@ -201,8 +201,8 @@ def get_falcon_pipeline_fat():
         (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.mapping_stats_hgap:1")
     ]
     coverage_report = [
-        (ref, "pbreports.tasks.coverage_report:0"),
-        ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.coverage_report:1")
+        (ref, "pbreports.tasks.coverage_report_hgap:0"),
+        ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.coverage_report_hgap:1")
     ]
     fasta_out = [
         ("genomic_consensus.tasks.variantcaller:1", "pbcoretools.tasks.contigset2fasta:0")
