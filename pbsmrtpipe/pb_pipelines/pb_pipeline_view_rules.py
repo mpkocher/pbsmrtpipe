@@ -171,6 +171,14 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon_config-out-0", FileTypes.JSON, True),
         ("pbreports.tasks.polished_assembly-out-0", FileTypes.REPORT , True),
         ("falcon_ns.tasks.task_report_preassembly_yield-out-0", FileTypes.REPORT , True),
+        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-2", FileTypes.JSON, True),
+        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-1", FileTypes.JSON, True),
+        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-1", FileTypes.JSON, True),
+        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-2", FileTypes.JSON, True),
+        ("falcon_ns.tasks.task_falcon0_merge-out-0", FileTypes.TXT, True),
+        ("falcon_ns.tasks.task_falcon0_cons-out-0", FileTypes.TXT, True),
+        ("falcon_ns.tasks.task_falcon1_merge-out-0", FileTypes.TXT, True),
+        ("falcon_ns.tasks.task_falcon1_db2falcon-out-0", FileTypes.TXT, True),
         ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Draft Assembly")
     ] + _mapping_report_rules()
 
