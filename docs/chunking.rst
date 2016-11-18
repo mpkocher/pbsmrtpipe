@@ -47,7 +47,7 @@ Taken from `testkit-data/dev_local_fasta_chunk <https://github.com/PacificBiosci
 More examples of chunking tools and examples are in `pbcoretools <https://github.com/PacificBiosciences/pbcoretools>`_
 
 
-In this testkit-job, the "pbsmrtpipe.tasks.dev_filter_fasta" has a companion chunked task and . The task as one input a **Fasta** File and emits a single **Fasta** file type.
+In this testkit-job, the `"pbsmrtpipe.tasks.dev_filter_fasta" <https://github.com/PacificBiosciences/pbsmrtpipe/blob/master/pbsmrtpipe/pb_tasks/dev.py#L191>`_ has a companion `chunked task <https://github.com/PacificBiosciences/pbsmrtpipe/tree/master/pbsmrtpipe/chunk_operators/operator_chunk_dev_filter_fasta.xml>`_ . The task has one input a **Fasta** File and emits a single **Fasta** file type.
 
 For simplicity, scatter Tasks have the same function signature as Task to be scattered. This creates a simple one-to-one mapping of the inputs of the original task to the inputs of the scattered task.
 
@@ -75,6 +75,7 @@ On startup, pbsmrtpipe will load the XML operators and will apply them if a task
 There will be a log message of the form:
 
 ::
+
     [DEBUG] 2016-08-18 01:47:49,748Z [status.__name__ add_chunkable_task_nodes_to_bgraph 1090] Starting to chunk task type pbsmrtpipe.tasks.dev_filter_fasta with chunk-group 72d80506-0d68-4574-ba71-2b61ddc1dd12 for operator pbsmrtpipe.operators.chunk_dev_filter_fasta
     [INFO] 2016-08-18 01:47:49,783Z [status.__name__ apply_chunk_operator 1239] Successfully applying chunk operator ['pbsmrtpipe.operators.chunk_dev_filter_fasta'] to TaskScatterBindingNode pbcoretools.tasks.dev_scatter_filter_fasta-1 to generate 7 tasks.
 
@@ -111,16 +112,14 @@ Example: for pbcoretools.tasks.dev_scatter_filter_fasta in `pbsmrtpipe/chunk_ope
 Step 1.
 -------
 
-At the **workflow level**, the original inputs of the task ("pbsmrtpipe.tasks.dev_filter_fasta") to be scattered will be "re-mapped" to the scatter task ("pbcoretools.tasks.dev_scatter_filter_fasta"). The scatter task will be run to generate a scatter.chunk.json file.
-
-scattered_chunk.json from original fasta file).
+At the **workflow level**, the original inputs of the task ("pbsmrtpipe.tasks.dev_filter_fasta") to be scattered will be "re-mapped" to the scatter task `("pbcoretools.tasks.dev_scatter_filter_fasta") <https://github.com/PacificBiosciences/pbcoretools/blob/master/pbcoretools/tasks/scatter_filter_fasta.py>`_. The scatter task will be run to generate a scatter.chunk.json file from the original fasta file.
 
 The workflow will use the ToolContract and ResolvedToolContract interfaces to call tasks. For purposes of transparency, the "raw" CLI interface will use to communicate the chunking mechanism.
 
 
 .. code-block:: bash
 
-    $> python -m pbcoretools.tasks.scatter_filter_fasta --chunk_key fasta_id --max_nchunks 7 /Users/mkocher/gh_projects/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbsmrtpipe.tasks.dev_txt_to_fasta-0/file.fasta scatter.chunk.json
+    $> python -m pbcoretools.tasks.scatter_filter_fasta --chunk_key fasta_id --max_nchunks 7 /WHEREVER/pbsmrtpipe/testkit-data/dev_local_fasta_chunk/job_output/tasks/pbsmrtpipe.tasks.dev_txt_to_fasta-0/file.fasta scatter.chunk.json
 
 The `--chunk_key` value is provided to communicate (from the workflow engine) the specific chunk value inside the `PipelineChunk` data model.
 
@@ -179,7 +178,7 @@ Step 3.
 
 Call the required gather tasks to create the final gathered files.
 
-Gather tasks for `pbsmrtpipe.tasks.dev_filter_fasta` only require 1 gather output. In general, if a task has N outputs, it must defined N gather tasks. Each gather task takes a chunked JSON file and a chunk-key and will emit a single file.
+Gather tasks for `pbsmrtpipe.tasks.dev_filter_fasta <https://github.com/PacificBiosciences/pbcoretools/blob/master/pbcoretools/tasks/gather_fasta.py>`_ only require 1 gather output. In general, if a task has N outputs, it must defined N gather tasks. Each gather task takes a chunked JSON file and a chunk-key and will emit a single file.
 
 Example
 
