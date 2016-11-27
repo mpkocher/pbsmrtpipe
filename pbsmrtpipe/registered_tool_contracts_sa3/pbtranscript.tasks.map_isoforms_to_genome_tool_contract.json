@@ -39,14 +39,14 @@
         ],
         "output_types": [
             {
-                "title": "SAM file",
-                "description": "Gmap output sam",
+                "title": "Gmap SAM Mapping HQ Isoforms to Genome",
+                "description": "Gmap output sam mapping HQ isoforms to reference",
                 "default_name": "gmap_output",
                 "id": "gmap_output_sam",
                 "file_type_id": "PacBio.FileTypes.sam"
             }
         ],
-        "_comment": "Created by v0.3.30",
+        "_comment": "Created by v0.4.14",
         "name": "pbtranscript.tasks.map_isoforms_to_genome",
         "input_types": [
             {

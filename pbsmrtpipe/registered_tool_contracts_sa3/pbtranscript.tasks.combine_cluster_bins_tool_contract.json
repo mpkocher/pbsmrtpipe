@@ -11,14 +11,14 @@
         "resource_types": [
             "$tmpdir"
         ],
-        "description": "Constants used TOOL_ID",
+        "description": "\nCombine results from all cluster bins, including consensus isoforms,\npolished HQ|LQ isoforms, cluster_summary.csv and cluster_report.json\n",
         "schema_options": [
             {
                 "pb_option": {
                     "default": 0.99,
                     "type": "number",
                     "option_id": "pbtranscript.task_options.hq_quiver_min_accuracy",
-                    "name": "Minimum Quiver Accuracy",
+                    "name": "Minimum Quiver|Arrow Accuracy",
                     "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality (default: 0.99)"
                 },
                 "title": "JSON Schema for pbtranscript.task_options.hq_quiver_min_accuracy",
@@ -32,7 +32,7 @@
                         "default": 0.99,
                         "type": "number",
                         "description": "Minimum allowed quiver accuracy to classify an isoform as hiqh-quality (default: 0.99)",
-                        "title": "Minimum Quiver Accuracy"
+                        "title": "Minimum Quiver|Arrow Accuracy"
                     }
                 }
             },
@@ -157,14 +157,14 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             },
             {
-                "title": "Pickle",
-                "description": "Pickle mapping HQ (LQ) sample prefixes with ICE dir",
+                "title": "HQ LQ Sample Prefix Dict",
+                "description": "Pickle mapping HQ (LQ) sample prefixes to ICE dir",
                 "default_name": "hq_lq_prefix_dict",
                 "id": "hq_lq_prefix_dict",
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by v0.4.14",
         "name": "pbtranscript.tasks.combine_cluster_bins",
         "input_types": [
             {
