@@ -126,7 +126,7 @@ class ButlerTask(Butler):
 
 
 def _to_pbsmrtpipe_cmd(prefix_mode, output_dir, entry_points_d, preset_json, preset_xml, debug, force_distribute, force_chunk, base_exe=EXE):
-    ep_str = " ".join([' -e ' + ":".join([k, v]) for k, v in entry_points_d.iteritems()])
+    ep_str = " ".join([' -e ' + ":\"".join([k, v]) + "\"" for k, v in entry_points_d.iteritems()])
     d_str = '--debug' if debug else " "
     p_str = " " if preset_xml is None else "--preset-xml={p}".format(p=preset_xml)
     j_str = " " if preset_json is None else "--preset-json={j}".format(j=preset_json)
