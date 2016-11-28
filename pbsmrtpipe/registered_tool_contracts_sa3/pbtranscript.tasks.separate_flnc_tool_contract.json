@@ -85,14 +85,14 @@
         ],
         "output_types": [
             {
-                "title": "Binned transcripts pickle file",
+                "title": "Bins of FLNC Reads",
                 "description": "output bins in pickle.",
                 "default_name": "separate_flnc",
                 "id": "out_pickle",
                 "file_type_id": "PacBio.FileTypes.pickle"
             }
         ],
-        "_comment": "Created by v0.3.30",
+        "_comment": "Created by v0.4.14",
         "name": "pbtranscript.tasks.separate_flnc",
         "input_types": [
             {
