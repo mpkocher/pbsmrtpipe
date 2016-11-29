@@ -195,8 +195,7 @@ def hgap5_view_rules():
     ]
 
 
-@register_pipeline_rules("sa3_ds_isoseq", "3.2")
-def isoseq_view_rules():
+def _isoseq_view_rules():
     return _isoseq_report_rules() + _ccs_report_rules() + [
         ("pbtranscript.tasks.separate_flnc-out-0", FileTypes.PICKLE, True),
         ("pbtranscript.tasks.create_chunks-out-0", FileTypes.PICKLE, False),
@@ -222,10 +221,15 @@ def isoseq_view_rules():
     ]
 
 
+@register_pipeline_rules("sa3_ds_isoseq", "3.2")
+def isoseq_view_rules():
+    return _isoseq_view_rules()
+
+
 @register_pipeline_rules("sa3_ds_isoseq_with_genome", "3.2")
 def isoseq_with_genome_view_rules():
     """View rules for isoseq with genome."""
-    return isoseq_view_rules() + [
+    return _isoseq_view_rules() + [
         ("pbtranscript.tasks.map_isoforms_to_genome-out-0", FileTypes.SAM, True),
         ("pbtranscript.tasks.post_mapping_to_genome-out-0", FileTypes.FASTQ, True),
         ("pbtranscript.tasks.post_mapping_to_genome-out-1", FileTypes.GFF, True),

@@ -54,7 +54,10 @@ test-contracts:
 test-chunk-operators:
 	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
 
-test-sanity: test-contracts test-pipelines test-chunk-operators test-loader write-pipeline-templates
+test-view-rules:
+	python -m pbsmrtpipe.pb_pipelines.pb_pipeline_view_rules --output-dir /tmp
+
+test-sanity: test-contracts test-pipelines test-chunk-operators test-loader write-pipeline-templates test-view-rules
 
 test-suite: test-sanity test-unit test-dev write-pipeline-templates
 
