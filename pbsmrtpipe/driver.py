@@ -65,6 +65,7 @@ slog = logging.getLogger('status.' + __name__)
 
 class Constants(object):
     SHUTDOWN = "SHUTDOWN"
+    TERM_FILE = ".TERMINATED"
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
     EXIT_TERMINATED = 7
@@ -202,7 +203,7 @@ def _write_terminate_script(output_dir):
     pid = os.getpid()
     kill_script = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID_KILL_FILE_SCRIPT)
     #FIXME(nechols)(2016-11-29) this is a bit hacky
-    term_file = os.path.join(output_dir, ".TERMINATED")
+    term_file = os.path.join(output_dir, Constants.TERM_FILE)
 
     # kill using the process group id to make sure that the signal is sent
     # to the children in a non-tty
@@ -450,7 +451,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     stead_state_n = 50
     # sleep for 5 sec
     dt_stead_state = 4
-    term_file = os.path.join(output_dir, ".TERMINATED")
+    term_file = os.path.join(output_dir, Constants.TERM_FILE)
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
 
@@ -998,11 +999,10 @@ def workflow_exception_exitcode_handler(func):
             print "Shutting down."
             run_time = time.time() - started_at
             run_time_min = run_time / 60.0
-            _m = "Failed"
-            if exit_code == 0:
-                _m = "was Successful"
-            elif exit_code == 7:
-                _m = "was Terminated"
+            _m = {
+                0: "was Successful",
+                7: "was Terminated"
+            }.get(exit_code, "Failed")
             _d = dict(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=exit_code)
             msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) with exit code {c}".format(**_d)
 
