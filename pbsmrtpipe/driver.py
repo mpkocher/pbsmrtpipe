@@ -65,10 +65,6 @@ slog = logging.getLogger('status.' + __name__)
 
 class Constants(object):
     SHUTDOWN = "SHUTDOWN"
-    TERM_FILE = ".TERMINATED"
-    EXIT_SUCCESS = 0
-    EXIT_FAILURE = 1
-    EXIT_TERMINATED = 7
 
 def _init_bg(bg, ep_d):
     """Resolving/Initializing BindingGraph with supplied EntryPoints"""
@@ -203,7 +199,7 @@ def _write_terminate_script(output_dir):
     pid = os.getpid()
     kill_script = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID_KILL_FILE_SCRIPT)
     #FIXME(nechols)(2016-11-29) this is a bit hacky
-    term_file = os.path.join(output_dir, Constants.TERM_FILE)
+    term_file = os.path.join(output_dir, GlobalConstants.TERM_FILE)
 
     # kill using the process group id to make sure that the signal is sent
     # to the children in a non-tty
@@ -451,7 +447,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     stead_state_n = 50
     # sleep for 5 sec
     dt_stead_state = 4
-    term_file = os.path.join(output_dir, Constants.TERM_FILE)
+    term_file = os.path.join(output_dir, GlobalConstants.TERM_FILE)
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
 
@@ -700,18 +696,19 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         was_successful = B.was_workflow_successful(bg)
         s_ = TaskStates.SUCCESSFUL if was_successful else TaskStates.FAILED
         write_report_(bg, s_, was_successful)
+        #FIXME(nechols)(2016-11-30) very hacky workaround
         if was_successful:
-            exit_code = Constants.EXIT_SUCCESS
+            exit_code = GlobalConstants.EXIT_SUCCESS
         elif os.path.exists(term_file):
             raise PipelineRuntimeKeyboardInterrupt("Job was terminated, ignoring child process errors")
         else:
-            exit_code = Constants.EXIT_FAILURE
+            exit_code = GlobalConstants.EXIT_FAILURE
 
     except PipelineRuntimeKeyboardInterrupt:
         write_report_(bg, TaskStates.KILLED, False)
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
-        exit_code = Constants.EXIT_TERMINATED
+        exit_code = GlobalConstants.EXIT_TERMINATED
 
     except Exception as e:
         slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=str(e)))

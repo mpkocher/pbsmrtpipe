@@ -21,8 +21,12 @@ PBSMRTPIPE_PID_KILL_FILE_SCRIPT = ".pbsmrtpipe-terminate.sh"
 
 # Map of exception types to exit codes.
 EXCEPTION_TO_EXIT_CODE = {KeyboardInterrupt: 7, IOError: 2, socket.error: 7}
+TERM_FILE = ".TERMINATED"
+EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
+EXIT_TERMINATED = 7
 # For Unknown error
-DEFAULT_EXIT_CODE = 1
+DEFAULT_EXIT_CODE = EXIT_FAILURE
 
 DEEP_DEBUG = False
 
