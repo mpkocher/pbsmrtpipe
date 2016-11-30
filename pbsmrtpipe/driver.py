@@ -65,7 +65,9 @@ slog = logging.getLogger('status.' + __name__)
 
 class Constants(object):
     SHUTDOWN = "SHUTDOWN"
-
+    EXIT_SUCCESS = 0
+    EXIT_FAILURE = 1
+    EXIT_TERMINATED = 7
 
 def _init_bg(bg, ep_d):
     """Resolving/Initializing BindingGraph with supplied EntryPoints"""
@@ -199,6 +201,8 @@ def _write_terminate_script(output_dir):
 
     pid = os.getpid()
     kill_script = os.path.join(output_dir, GlobalConstants.PBSMRTPIPE_PID_KILL_FILE_SCRIPT)
+    #FIXME(nechols)(2016-11-29) this is a bit hacky
+    term_file = os.path.join(output_dir, ".TERMINATED")
 
     # kill using the process group id to make sure that the signal is sent
     # to the children in a non-tty
@@ -225,7 +229,7 @@ killtree() {
 
 """
 
-    sx += "\nkilltree {i} INT".format(i=pid)
+    sx += "echo {i} > {f}\nkilltree {i} INT".format(i=pid, f=term_file)
 
     __writer(kill_script, sx)
 
@@ -430,6 +434,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # write initial report.
     DU.write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg, TaskStates.RUNNING, False, 0.0)
 
+    exit_code = None
     # For book-keeping
     # task id -> tnode
     tid_to_tnode = {}
@@ -445,6 +450,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     stead_state_n = 50
     # sleep for 5 sec
     dt_stead_state = 4
+    term_file = os.path.join(output_dir, ".TERMINATED")
     try:
         log.debug("Starting execution loop... in process {p}".format(p=os.getpid()))
 
@@ -693,12 +699,18 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         was_successful = B.was_workflow_successful(bg)
         s_ = TaskStates.SUCCESSFUL if was_successful else TaskStates.FAILED
         write_report_(bg, s_, was_successful)
+        if was_successful:
+            exit_code = Constants.EXIT_SUCCESS
+        elif os.path.exists(term_file):
+            raise PipelineRuntimeKeyboardInterrupt("Job was terminated, ignoring child process errors")
+        else:
+            exit_code = Constants.EXIT_FAILURE
 
     except PipelineRuntimeKeyboardInterrupt:
         write_report_(bg, TaskStates.KILLED, False)
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
-        was_successful = False
+        exit_code = Constants.EXIT_TERMINATED
 
     except Exception as e:
         slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=str(e)))
@@ -713,7 +725,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
 
-    return True if was_successful else False
+    return exit_code
 
 
 def _write_final_results_message(state):
@@ -930,11 +942,9 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
 
     state = False
     try:
-        state = __exe_workflow(global_registry, entry_points_d, bg, task_opts,
+        exit_code = __exe_workflow(global_registry, entry_points_d, bg, task_opts,
                                workflow_level_opts, output_dir,
                                workers, shutdown_event, service_uri)
-        # Need to be clearer about this
-        exit_code = 0 if state else GlobalConstants.DEFAULT_EXIT_CODE
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
             emsg = "received SIGINT. Attempting to abort gracefully."
@@ -988,7 +998,11 @@ def workflow_exception_exitcode_handler(func):
             print "Shutting down."
             run_time = time.time() - started_at
             run_time_min = run_time / 60.0
-            _m = "was Successful" if exit_code == 0 else "Failed"
+            _m = "Failed"
+            if exit_code == 0:
+                _m = "was Successful"
+            elif exit_code == 7:
+                _m = "was Terminated"
             _d = dict(s=_m, r=run_time, x=pbsmrtpipe.get_version(), m=run_time_min, c=exit_code)
             msg = "Completed execution pbsmrtpipe v{x}. Workflow {s} in {r:.2f} sec ({m:.2f} min) with exit code {c}".format(**_d)
 
