@@ -198,25 +198,25 @@ def hgap5_view_rules():
 def _isoseq_view_rules():
     return _isoseq_report_rules() + _ccs_report_rules() + [
         ("pbtranscript.tasks.separate_flnc-out-0", FileTypes.PICKLE, True),
-        ("pbtranscript.tasks.create_chunks-out-0", FileTypes.PICKLE, False),
-        ("pbtranscript.tasks.create_chunks-out-1", FileTypes.PICKLE, False),
-        ("pbtranscript.tasks.create_chunks-out-2", FileTypes.PICKLE, False),
-        ("pbtranscript.tasks.combine_cluster_bins-out-0", FileTypes.FASTA, True),
+        ("pbtranscript.tasks.create_chunks-out-0", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.create_chunks-out-1", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.create_chunks-out-2", FileTypes.PICKLE, True),
+        ("pbtranscript.tasks.combine_cluster_bins-out-0", FileTypes.FASTA, False),
         ("pbtranscript.tasks.combine_cluster_bins-out-1", FileTypes.JSON, True),
-        ("pbtranscript.tasks.combine_cluster_bins-out-2", FileTypes.CSV, True),
-        ("pbtranscript.tasks.combine_cluster_bins-out-3", FileTypes.DS_CONTIG, True),
-        ("pbtranscript.tasks.combine_cluster_bins-out-4", FileTypes.FASTQ, True),
-        ("pbtranscript.tasks.combine_cluster_bins-out-5", FileTypes.DS_CONTIG, True),
-        ("pbtranscript.tasks.combine_cluster_bins-out-6", FileTypes.FASTQ, True),
+        ("pbtranscript.tasks.combine_cluster_bins-out-2", FileTypes.CSV, False),
+        ("pbtranscript.tasks.combine_cluster_bins-out-3", FileTypes.DS_CONTIG, False),
+        ("pbtranscript.tasks.combine_cluster_bins-out-4", FileTypes.FASTQ, False),
+        ("pbtranscript.tasks.combine_cluster_bins-out-5", FileTypes.DS_CONTIG, False),
+        ("pbtranscript.tasks.combine_cluster_bins-out-6", FileTypes.FASTQ, False),
         ("pbtranscript.tasks.combine_cluster_bins-out-7", FileTypes.PICKLE, True),
         ("pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle-out-0",
-         FileTypes.TXT, False),
-        ("pbtranscript.tasks.cluster_bins-out-0", FileTypes.TXT, False),
-        ("pbtranscript.tasks.ice_partial_cluster_bins-out-0", FileTypes.TXT, False),
-        ("pbtranscript.tasks.ice_polish_cluster_bins-out-0", FileTypes.TXT, False),
+         FileTypes.TXT, True),
+        ("pbtranscript.tasks.cluster_bins-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.ice_partial_cluster_bins-out-0", FileTypes.TXT, True),
+        ("pbtranscript.tasks.ice_polish_cluster_bins-out-0", FileTypes.TXT, True),
         ("pbtranscript.tasks.gather_polished_isoforms_in_each_bin-out-0",
-         FileTypes.TXT, False),
-        ("pbtranscript.tasks.ice_cleanup-out-0", FileTypes.TXT, False),
+         FileTypes.TXT, True),
+        ("pbtranscript.tasks.ice_cleanup-out-0", FileTypes.TXT, True),
         ("pbreports.tasks.isoseq_cluster-out-0", FileTypes.REPORT, True)
     ]
 
@@ -230,13 +230,13 @@ def isoseq_view_rules():
 def isoseq_with_genome_view_rules():
     """View rules for isoseq with genome."""
     return _isoseq_view_rules() + [
-        ("pbtranscript.tasks.map_isoforms_to_genome-out-0", FileTypes.SAM, True),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-0", FileTypes.FASTQ, True),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-1", FileTypes.GFF, True),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-2", FileTypes.TXT, True),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-3", FileTypes.TXT, True),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-4", FileTypes.TXT, True),
-        ("pbtranscript.tasks.scatter_contigset_gmap-out-0", FileTypes.CHUNK, False)
+        ("pbtranscript.tasks.map_isoforms_to_genome-out-0", FileTypes.SAM, False),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-0", FileTypes.FASTQ, False),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-1", FileTypes.GFF, False),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-2", FileTypes.TXT, False),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-3", FileTypes.TXT, False),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-4", FileTypes.TXT, False),
+        ("pbtranscript.tasks.scatter_contigset_gmap-out-0", FileTypes.CHUNK, True)
     ]
 
 
