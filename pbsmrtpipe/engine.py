@@ -24,6 +24,17 @@ slog = logging.getLogger('status.' + __name__)
 
 def backticks(cmd, merge_stderr=True):
     """
+
+    :param cmd: Single string of command to execute
+    :type cmd: str
+
+    This interface has some legacy related issues.
+    The output type of stdout and stderr are different
+
+    The stdout is a list[str]
+    The stderr is a str
+
+    :rtype (int, list[str], str):
     Returns rcode, stdout, stderr
     """
     if merge_stderr:

@@ -451,7 +451,7 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     # the cluster.stderr and cluster.stdout
     with open(qstdout, 'a') as qf:
         if cstdout:
-            qf.write(str(cstdout) + "\n")
+            qf.write("\n".join(cstdout) + "\n")
         qf.write(msg_ + "\n")
 
     with open(qstderr, 'a') as f:
