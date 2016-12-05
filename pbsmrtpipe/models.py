@@ -195,6 +195,12 @@ class TaskStates(object):
     def FAILURE_STATES(cls):
         return cls.FAILED, cls.KILLED
 
+    @staticmethod
+    def from_int(i):
+        return {
+            0: TaskStates.SUCCESSFUL,
+            7: TaskStates.KILLED}.get(i, TaskStates.FAILED)
+
 
 class MetaTask(object):
 
