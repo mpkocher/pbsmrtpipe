@@ -66,6 +66,8 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
             ('falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs:0', 'falcon_ns.tasks.task_falcon2_run_asm:1'),  # fofn of preads.*.las
             ('falcon_ns.tasks.task_falcon1_db2falcon:0',                'falcon_ns.tasks.task_falcon2_run_asm:2')   # db2falcon_done.txt, sentinel
          ]
+    rm = [('falcon_ns.tasks.task_falcon2_run_asm:0', 'falcon_ns.tasks.task_falcon2_rm_las:0')] # sentinel fasta to trigger clean up
+
     report_pay = [
           ('falcon_ns.tasks.task_falcon_config:0',
                         'falcon_ns.tasks.task_report_preassembly_yield:0'),
@@ -78,7 +80,7 @@ def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
     ]
     results = dict()
     results['asm'] = 'falcon_ns.tasks.task_falcon2_run_asm:0'
-    return b0 + br0 + br1 + br2 + br3 + br4 + bp0 + bp1 + bp2 + bp3 + bp4 + bf + report_pay, results
+    return b0 + br0 + br1 + br2 + br3 + br4 + bp0 + bp1 + bp2 + bp3 + bp4 + bf + rm + report_pay, results
 
 def _get_polished_falcon_pipeline():
     subreadset = Constants.ENTRY_DS_SUBREAD

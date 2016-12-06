@@ -179,6 +179,7 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon0_cons-out-0", FileTypes.TXT, True),
         ("falcon_ns.tasks.task_falcon1_merge-out-0", FileTypes.TXT, True),
         ("falcon_ns.tasks.task_falcon1_db2falcon-out-0", FileTypes.TXT, True),
+        ("falcon_ns.tasks.task_falcon2_rm_las-out-0", FileTypes.TXT, True),
         ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Draft Assembly")
     ] + _mapping_report_rules()
 
