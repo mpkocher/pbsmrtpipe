@@ -13,6 +13,12 @@
                 "file_type_id": "PacBio.FileTypes.Fasta",
                 "id": "Label PacBio.FileTypes.Fasta_0",
                 "title": "<OutputFileType PacBio.FileTypes.Fasta fasta_id >"
+            },
+            {
+                "description": "description for PacBio.FileTypes.txt_1",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "Label PacBio.FileTypes.txt_1",
+                "title": "<FileType id=PacBio.FileTypes.txt name=file >"
             }
         ],
         "is_distributed": true,
