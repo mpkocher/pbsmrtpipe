@@ -188,7 +188,7 @@ UNROLLED_TASK_OPTIONS = {
     "pbalign.task_options.no_split_subreads": True,
     "pbalign.task_options.hit_policy": "leftmost",
     "pbalign.task_options.concordant": False,
-    "pbalign.task_options.algorithm_options": "--bestn 1 --forwardOnly --fastMaxInterval --maxAnchorsPerPosition 30000 --ignoreHQRegions --minPctIdentity 60"
+    "pbalign.task_options.algorithm_options": "--bestn 1 --forwardOnly --fastMaxInterval --maxAnchorsPerPosition 30000 --minPctIdentity 60"
 }
 
 # XXX this is identical to sa3_ds_align but with modified task options
