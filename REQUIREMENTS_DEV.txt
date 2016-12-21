@@ -14,4 +14,3 @@ sphinx-argparse
 sphinx-bootstrap-theme
 #pygraphviz
 mock
-sphinx-bootstrap-theme
