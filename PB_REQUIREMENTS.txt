@@ -1,15 +1,8 @@
-numpy
-h5py
-jinja2
-networkx
+-r REQUIREMENTS_CI.txt
 # Install from github
 -e git://github.com/PacificBiosciences/pbcore.git@master#egg=pbcore
 -e git://github.com/PacificBiosciences/pbcommand.git#egg=pbcommand
 -e git://github.com/PacificBiosciences/pbcoretools.git#egg=pbcoretools
-pyparsing==1.5.7
-pydot
-jsonschema
-xmlbuilder
 # this doesn't play well with the 2.3 SMRTAnalysis build
 #semantic_version
 #sphinx-bootstrap-theme

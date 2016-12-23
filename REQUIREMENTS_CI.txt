@@ -1,0 +1,11 @@
+cython
+numpy
+h5py
+jinja2
+networkx
+pysam
+jsonschema
+xmlbuilder
+functools32
+pyparsing==1.5.7
+pydot
