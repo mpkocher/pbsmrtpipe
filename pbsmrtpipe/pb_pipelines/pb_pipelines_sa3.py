@@ -1,8 +1,10 @@
 import logging
 import functools
 
+from pbcommand.models.common import to_pipeline_ns
+
 from pbsmrtpipe.core import register_pipeline
-from pbsmrtpipe.constants import to_pipeline_ns, ENTRY_PREFIX
+from pbsmrtpipe.constants import ENTRY_PREFIX
 
 log = logging.getLogger(__name__)
 

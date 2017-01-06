@@ -1,8 +1,9 @@
 import logging
 import itertools
 
+from pbcommand.models.common import to_pipeline_ns
+
 from pbsmrtpipe.core import register_pipeline
-from pbsmrtpipe.constants import to_pipeline_ns
 
 from .pb_pipelines_sa3 import Constants, Tags
 
@@ -176,3 +177,15 @@ def get_reference_ds_report():
     bs = list(itertools.chain(*[to_b(x) for x in xrange(max_txt_tasks)]))
 
     return b1 + b2 + bs
+
+
+MISC_TASK_OPTIONS = {
+    "pbcommand.task_options.alpha": 50,
+    "pbcommand.task_options.ploidy": "diploid",
+    "pbcommand.task_options.epsilon": 0.01
+}
+@dev_register("dev_task_options", "Dev Task Option Support Pipeline", tags=("local", ), task_options=MISC_TASK_OPTIONS)
+def get_dev_task_options_pipeline():
+    """Simple example pipeline"""
+    b1 = [('$entry:e_01', 'pbcommand.tasks.dev_mixed_app:0')]
+    return b1

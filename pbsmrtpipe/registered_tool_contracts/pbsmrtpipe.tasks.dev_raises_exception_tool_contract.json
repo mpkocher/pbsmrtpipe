@@ -15,7 +15,7 @@
                 "title": "<FileType id=PacBio.FileTypes.txt name=file >"
             }
         ],
-        "is_distributed": true,
+        "is_distributed": false,
         "name": "Tool dev_raises_exception",
         "nproc": 1,
         "output_types": [

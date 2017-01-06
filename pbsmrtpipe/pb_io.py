@@ -12,16 +12,16 @@ import itertools
 from avro.datafile import DataFileWriter, DataFileReader
 from avro.io import DatumWriter, DatumReader, validate
 import jsonschema
-from pbcommand.models.parser import JsonSchemaTypes
 from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
+from pbcommand.models.parser import PacBioOption
 from pbcommand.models import (PipelineChunk,
                               ToolContractTask,
                               GatherToolContractTask,
                               ScatterToolContractTask,
                               PipelinePreset)
-from pbcommand.models.common import REGISTERED_FILE_TYPES
+from pbcommand.models.common import REGISTERED_FILE_TYPES, to_workflow_option_ns
 from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from,
                                               load_pipeline_presets_from)
 from xmlbuilder import XMLBuilder
@@ -39,9 +39,9 @@ from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
                                GatherChunk, ScatterChunk, Scatter,
                                ToolContractMetaTask, WorkflowLevelOptions,
                                ScatterToolContractMetaTask,
-                               GatherToolContractMetaTask, PacBioOption,
+                               GatherToolContractMetaTask,
                                PipelineBinding, IOBinding, Pipeline)
-from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME,to_opt_type_ns)
+from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
@@ -67,7 +67,6 @@ class PresetRecord(PipelinePreset):
 
 def _to_wopt_id(s):
     """Workflow Level Options"""
-    from pbsmrtpipe.constants import to_workflow_option_ns
     return to_workflow_option_ns(s)
 
 
@@ -741,37 +740,6 @@ def _pipeline_to_task_options(rtasks, p):
     return options.values()
 
 
-def _jschema_to_pacbio_option_type_id(jschema_type):
-    # This should get pushed down into pbcommand
-    # and eventually remove all of the JsonSchema models
-
-    types_d = {JsonSchemaTypes.BOOL: to_opt_type_ns("boolean"),
-               JsonSchemaTypes.INT: to_opt_type_ns("integer"),
-               JsonSchemaTypes.STR: to_opt_type_ns("string"),
-               JsonSchemaTypes.NUM: to_opt_type_ns("float")}
-
-    if jschema_type in types_d:
-        return types_d[jschema_type]
-
-    raise KeyError("Unsupported type {t} Supported types. {d}".format(t=jschema_type, d=types_d))
-
-
-def _option_jschema_to_pb_option(opt_jschema_d):
-    """Convert from JsonSchema option to PacBioOption"""
-    opt_id = opt_jschema_d['pb_option']['option_id']
-
-    name = opt_jschema_d['pb_option']['name']
-    default = opt_jschema_d['pb_option']['default']
-    desc = opt_jschema_d['pb_option']['description']
-
-    # This should be migrated to PacBio option type ids, Example pacbio.option_types.int32
-    jschema_type = opt_jschema_d['pb_option']['type']
-
-    pb_option_type_id = _jschema_to_pacbio_option_type_id(jschema_type)
-
-    return PacBioOption(opt_id, name, default, desc, pb_option_type_id)
-
-
 def _to_entry_bindings(rtasks, a, b):
 
     def _to_binding_io_d(x):
@@ -803,7 +771,7 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     for jtopt in joptions:
         try:
-            pbopt = _option_jschema_to_pb_option(jtopt)
+            pbopt = PacBioOption.from_dict(jtopt)
             task_pboptions.append(pbopt)
         except Exception as e:
             log.error("Failed to convert {p}\n".format(p=jtopt))

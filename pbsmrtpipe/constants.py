@@ -97,37 +97,3 @@ CLUSTER_MANAGER_DIR = None
 TMP_DIR = os.getenv('TMP_DIR', '/tmp')
 EXIT_ON_FAILIURE = False
 DEBUG_MODE = False
-
-
-class PacBioNamespaces(object):
-    # File Types
-    #PBSMRTPIPE_FILE_PREFIX = 'pbsmrtpipe.files'
-    # NEW File Type Identifier style Prefix
-    NEW_PBSMRTPIPE_FILE_PREFIX = "PacBio.FileTypes"
-    # New DataSet Identifier Prefix
-    DATASET_FILE_PREFIX = "PacBio.DataSet"
-    # Task Ids
-    PBSMRTPIPE_TASK_PREFIX = 'pbsmrtpipe.tasks'
-    # Task Options
-    PBSMRTPIPE_TASK_OPTS_PREFIX = 'pbsmrtpipe.task_options'
-    # Workflow Level Options
-    PBSMRTPIPE_OPTS_PREFIX = 'pbsmrtpipe.options'
-    # Constants
-    PBSMRTPIPE_CONSTANTS_PREFIX = 'pbsmrtpipe.constants'
-    # Pipelines
-    PBSMRTPIPE_PIPELINES = "pbsmrtpipe.pipelines"
-    # OptionTypes (this should really be in pbcommand
-    OPTION_TYPE = "pbsmrtpipe.option_types"
-
-
-def __to_type(prefix, name):
-    return ".".join([prefix, name])
-
-to_constant_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_CONSTANTS_PREFIX)
-to_file_ns = functools.partial(__to_type, PacBioNamespaces.NEW_PBSMRTPIPE_FILE_PREFIX)
-to_ds_ns = functools.partial(__to_type, PacBioNamespaces.DATASET_FILE_PREFIX)
-to_task_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TASK_OPTS_PREFIX)
-to_task_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_TASK_PREFIX)
-to_workflow_option_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_OPTS_PREFIX)
-to_pipeline_ns = functools.partial(__to_type, PacBioNamespaces.PBSMRTPIPE_PIPELINES)
-to_opt_type_ns = functools.partial(__to_type, PacBioNamespaces.OPTION_TYPE)

@@ -77,7 +77,7 @@ def run_rtc(rtc):
 
 
 @registry("dev_raises_exception", "0.1.0", FileTypes.TXT, FileTypes.TXT,
-          is_distributed=True)
+          is_distributed=False)
 def run_rtc(rtc):
     """Task that deliberately raises an exception, for testing failure mode"""
     assert 0

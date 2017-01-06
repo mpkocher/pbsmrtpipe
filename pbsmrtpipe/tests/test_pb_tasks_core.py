@@ -2,9 +2,9 @@ import os
 import unittest
 import logging
 
-from pbsmrtpipe.constants import to_file_ns
+from pbcommand.models.common import FileType, FileTypes, to_file_ns
+
 import pbsmrtpipe.core
-from pbcommand.models.common import FileType, FileTypes
 from pbsmrtpipe.models import RunnableTask
 import pbsmrtpipe.loader as L
 
