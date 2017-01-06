@@ -2,7 +2,8 @@
 import logging
 
 import jsonschema
-from pbsmrtpipe.constants import to_task_option_ns
+
+from pbcommand.models.common import to_task_option_ns
 
 
 log = logging.getLogger(__name__)

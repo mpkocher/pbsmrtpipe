@@ -1,7 +1,8 @@
 import logging
 
+from pbcommand.models.common import to_pipeline_ns
+
 from pbsmrtpipe.core import register_pipeline
-from pbsmrtpipe.constants import to_pipeline_ns
 
 from .pb_pipelines_sa3 import Constants, Tags, _core_align, _core_gc
 
