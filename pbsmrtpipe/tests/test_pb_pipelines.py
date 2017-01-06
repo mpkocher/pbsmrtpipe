@@ -17,7 +17,7 @@ import pbsmrtpipe.cluster as C
 import pbsmrtpipe.pb_io as IO
 
 from pbsmrtpipe.schema_opt_utils import to_opt_id
-from pbsmrtpipe.constants import to_pipeline_ns
+from pbcommand.models.common import to_pipeline_ns
 
 from base import TEST_DATA_DIR, get_temp_file
 
