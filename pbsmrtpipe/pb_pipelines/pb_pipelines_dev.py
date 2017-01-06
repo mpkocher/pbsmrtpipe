@@ -187,5 +187,5 @@ MISC_TASK_OPTIONS = {
 @dev_register("dev_task_options", "Dev Task Option Support Pipeline", tags=("local", ), task_options=MISC_TASK_OPTIONS)
 def get_dev_task_options_pipeline():
     """Simple example pipeline"""
-    b1 = [('$entry:e_01', 'pbsmrtpipe.tasks.dev_mixed_app:0')]
+    b1 = [('$entry:e_01', 'pbcommand.tasks.dev_mixed_app:0')]
     return b1
