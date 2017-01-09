@@ -31,6 +31,18 @@
         "resource_types": [],
         "schema_options": [
             {
+                "choices": [
+                    "alpha",
+                    "beta",
+                    "gamma"
+                ],
+                "default": "alpha",
+                "description": "Option test_msg description",
+                "id": "pbsmrtpipe.task_options.test_msg",
+                "name": "Option test_msg",
+                "optionTypeId": "choice_string"
+            },
+            {
                 "default": 0,
                 "description": "Option dev_sleep_time_sec description",
                 "id": "pbsmrtpipe.task_options.dev_sleep_time_sec",
@@ -42,5 +54,5 @@
         "tool_contract_id": "pbsmrtpipe.tasks.dev_hello_worlder"
     },
     "tool_contract_id": "pbsmrtpipe.tasks.dev_hello_worlder",
-    "version": "0.2.1"
+    "version": "0.2.2"
 }

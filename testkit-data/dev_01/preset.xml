@@ -43,6 +43,12 @@
         <option id="pbsmrtpipe.task_options.dev_fasta_min_length">
             <value>25</value>
         </option>
+
+        <option id="pbsmrtpipe.task_options.test_msg">
+	<!-- <value>bad-value-gamma</value> -->
+            <value>gamma</value>
+        </option>
+
     </task-options>
 
 </pipeline-template-preset>

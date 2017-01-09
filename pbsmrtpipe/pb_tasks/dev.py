@@ -88,11 +88,16 @@ def run_rtc(rtc):
     return subread_dataset_report(rtc.task.input_files[0], rtc.task.output_files[0])
 
 
-@registry('dev_hello_worlder', '0.2.1', FileTypes.TXT, FileTypes.TXT, is_distributed=False, nproc=2, options=dict(dev_sleep_time_sec=0))
+@registry('dev_hello_worlder', '0.2.2', FileTypes.TXT, FileTypes.TXT, is_distributed=False, nproc=2,
+          options=dict(dev_sleep_time_sec=0, test_msg=("alpha", "beta", "gamma")))
 def run_rtc(rtc):
-    max_sleep_time = rtc.task.options[_to_opt_id('dev_sleep_time_sec')]
+    # Add test_msg option to test choice support in integration/e2e tests
+    ropt = rtc.task.options
+    max_sleep_time = ropt[_to_opt_id('dev_sleep_time_sec')]
+    test_msg = ropt[_to_opt_id('test_msg')]
     sleep_time = random.randint(0, max_sleep_time)
     # Longer running jobs
+    log.info("Test message choice value '{m}'".format(m=test_msg))
     log.info("Sleeping for {} sec form max sleep time {}".format(sleep_time, max_sleep_time))
     time.sleep(sleep_time)
     return run_main_dev_hello_world(rtc.task.input_files[0], rtc.task.output_files[0])
