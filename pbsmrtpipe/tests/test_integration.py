@@ -178,9 +178,11 @@ class TestWritePresets(unittest.TestCase):
 
     def test_write_pipeline_preset_json(self):
         ofn = tempfile.NamedTemporaryFile(suffix=".json").name
-        CMD = "pbsmrtpipe show-template-details pbsmrtpipe.pipelines.dev_diagnostic_stress -j {f}".format(f=ofn)
-        rcode, stdout, stderr, run_time = backticks(CMD)
-        self.assertEqual(rcode, 0)
+        pipeline_id = "pbsmrtpipe.pipelines.dev_diagnostic_stress"
+        cmd = "pbsmrtpipe show-template-details {i} -j {f}".format(f=ofn, i=pipeline_id)
+        rcode, stdout, stderr, run_time = backticks(cmd)
+        fail_msg = "Failed (exit code {e}) to show template details cmd: {c} {m} ".format(i=pipeline_id, e=rcode, c=cmd, m=str(stderr))
+        self.assertEqual(rcode, 0, fail_msg)
         with open(ofn) as f:
             d = json.load(f)
             self.assertEqual(len(d['taskOptions']), 2)

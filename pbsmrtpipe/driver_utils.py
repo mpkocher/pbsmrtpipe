@@ -373,16 +373,6 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
     IO.write_env_to_json(env_path)
     log.info("wrote current env to {e}".format(e=env_path))
 
-    try:
-        sa_system, sa_components = IO.get_smrtanalysis_system_and_components_from_env()
-        log.info(sa_system)
-        for c in sa_components:
-            log.info(c)
-    except Exception:
-        # black hole exception
-        log.warn("unable to determine SMRT Analysis version.")
-        pass
-
     slog.info("completed setting up job directory resources and logs in {r}".format(r=job_root_dir))
     return job_resources, ds, master_log_df
 

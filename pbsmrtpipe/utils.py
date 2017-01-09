@@ -29,6 +29,14 @@ log = logging.getLogger(__name__)
 slog = logging.getLogger(SLOG_PREFIX + __name__)
 
 
+def get_or_else(option_t, default):
+    # Port of Option[T] from scala
+    if option_t is None:
+        return default
+    else:
+        return option_t
+
+
 def validate_type_or_raise(obj, klasses, msg=None):
     if not isinstance(obj, klasses):
         emsg = "{o} Got type {x}, expected type {y}.".format(o=obj, x=type(obj), y=klasses)

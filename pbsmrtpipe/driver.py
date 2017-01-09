@@ -743,17 +743,18 @@ def _validate_entry_points_or_raise(entry_points_d):
 
 
 def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_template_xml_or_pipeline,
-                          entry_points_d, preset_jsons, preset_xmls, rc_preset_or_none, force_distribute=None, force_chunk_mode=None, debug_mode=None):
+                          entry_points_d, preset_jsons, preset_xmls, rc_preset_or_none,
+                          force_distribute=None, force_chunk_mode=None, debug_mode=None):
     """
-    Load and resolve input IO layer
+    Load and resolve input IO layer, specifically, load presets and workflow
+    options, resolve and merge.
 
-    # Load Presets and Workflow Options. Resolve and Merge
-    # The Order of loading is
-    # - rc, workflow.xml, then preset.xml
-    # force_distribute will attempt to override ALL settings (if cluster_manager is defined)
+    The Order of loading is: rc (from ENV), workflow.xml, then preset.xml
+
+    Supplying force_distribute will attempt to override ALL settings (if cluster_manager is defined)
 
     :returns: A tuple of Workflow Bindings, Workflow Level Options, Task Opts, ClusterRenderer)
-    :rtype: (List[(str, str)], WorkflowLevelOpts, {TaskId:value}, ClusterRenderer)
+    :rtype: (list[(str, str)], WorkflowLevelOpts, {TaskId:value}, ClusterRenderer)
     """
 
     # Load Presets and Workflow Options. Resolve and Merge
@@ -785,6 +786,7 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
         slog.info("successfully loaded workflow template.")
 
     preset_xml_record = preset_json_record = None
+
     if preset_jsons:
         slog.info("Loading preset(s) {p}".format(p=preset_jsons))
         preset_json_record = IO.parse_pipeline_preset_jsons(preset_jsons)
@@ -820,11 +822,12 @@ def _load_io_for_workflow(registered_tasks, registered_pipelines, workflow_templ
     # override distributed mode only if provided.
     if isinstance(force_distribute, bool):
         workflow_level_opts.distributed_mode = force_distribute
-    workflow_level_opts = IO.validate_or_modify_workflow_level_options(workflow_level_opts)
 
+    slog.info("attempting to validate supplied workflow level options.")
+    workflow_level_opts = IO.validate_or_modify_workflow_level_options(workflow_level_opts)
     slog.info("Successfully validated workflow options.")
 
-    slog.info("validating supplied task options.")
+    slog.info("attempting to validate supplied task options.")
     topts = IO.validate_raw_task_options(registered_tasks, topts)
     slog.info("successfully loaded and validated task options.")
 

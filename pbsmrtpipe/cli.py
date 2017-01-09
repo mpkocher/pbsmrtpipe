@@ -193,9 +193,9 @@ def _args_run_show_templates(args):
                               json_output_dir=args.output_templates_json)
 
 
-def write_task_options_to_preset_xml_and_print(opts, output_file, warning_msg):
-    if opts:
-        IO.write_schema_task_options_to_xml(opts, output_file)
+def write_task_options_to_preset_xml_and_print(task_options_d, output_file, warning_msg):
+    if task_options_d:
+        IO.write_schema_task_options_to_xml(task_options_d, output_file)
         print "Wrote preset to {x}".format(x=output_file)
     else:
         print warning_msg
@@ -215,14 +215,15 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
 
     from pbsmrtpipe.pb_io import binding_str_to_task_id_and_instance_id
 
-    task_options = {}
+    pb_options = []
 
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]
         print "**** Pipeline Summary ****"
-        print "id         : {i}".format(i=pipeline.idx)
-        print "version    : {i}".format(i=pipeline.version)
-        print "name       : {x}".format(x=pipeline.display_name)
+        print "id            : {i}".format(i=pipeline.idx)
+        print "version       : {i}".format(i=pipeline.version)
+        print "name          : {x}".format(x=pipeline.display_name)
+        # print "Schema version: {}".format(pipeline.schema_version)
         if pipeline.tags:
             print "Tags       : {t} ".format(t=",".join(pipeline.tags))
         print "Description: \n {x}".format(x=pipeline.description.strip())
@@ -238,27 +239,26 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
                         if task is None:
                             log.warn("Unable to load task {x}".format(x=task_id))
                         else:
-                            for k, vx in task.option_schemas.iteritems():
-                                if k in pipeline.task_options:
-                                    # this is kinda not awesome. there's the double API here
-                                    # pbcommand and pbsmrtpipe need to be converted to
-                                    # use a non-jsonschema model
-                                    v = copy.deepcopy(vx)
-                                    v['properties'][k]['default'] = pipeline.task_options[k]
-                                    v['pb_option']['default'] = pipeline.task_options[k]
-                                    task_options[k] = v
+                            for pb_opt in task.option_schemas:
+                                if pb_opt.option_id in pipeline.task_options:
+                                    x = copy.deepcopy(pb_opt)
+                                    value = pipeline.task_options[pb_opt.option_id]
+                                    x.default = value
+                                    pb_options.append(x)
                                 else:
-                                    task_options[k] = copy.deepcopy(vx)
+                                    pb_options.append(pb_opt)
 
         warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
+        task_options_d = {o.option_id: o.default for o in pb_options}
+
         if isinstance(output_preset_xml, str):
-            write_task_options_to_preset_xml_and_print(task_options, output_preset_xml, warn_msg)
+            write_task_options_to_preset_xml_and_print(task_options_d, output_preset_xml, warn_msg)
 
         if isinstance(output_preset_json, str):
-            write_presets_json_and_print(pipeline, task_options, output_preset_json, warn_msg)
+            write_presets_json_and_print(pipeline, task_options_d, output_preset_json, warn_msg)
 
-        if task_options:
-            _print_option_schemas(task_options)
+        if pb_options:
+            _print_pacbio_options(pb_options)
         else:
             print "No default task options"
 
@@ -332,6 +332,23 @@ def _print_option_schemas(option_schemas_d):
             print
 
 
+def _print_pacbio_options(pacbio_options):
+    """
+    :type pacbio_options: pbcommand.models.BasePacBioOption
+    :return:
+    """
+    print "Number of Options {n}".format(n=len(pacbio_options))
+    if pacbio_options:
+        for i, pb_option in enumerate(pacbio_options):
+            n = i + 1
+            print "Option #{n} Id : {i}".format(n=n, i=pb_option.option_id)
+            print "\tType Id      : {}".format(pb_option.OPTION_TYPE_ID)
+            print "\tDefault      : {}".format(pb_option.default)
+            print "\tDisplay Name : {}".format(pb_option.name)
+            print "\tDescription  : {}".format(pb_option.description)
+            print
+
+
 def run_show_task_details(task_id):
 
     r_tasks, _, _, _ = __dynamically_load_all()
@@ -345,7 +362,8 @@ def run_show_task_details(task_id):
     else:
         print sep
         print meta_task.summary()
-        _print_option_schemas(meta_task.option_schemas)
+        print "Option type for MetaTask", type(meta_task.option_schemas)
+        _print_pacbio_options(meta_task.option_schemas)
 
     return 0
 
@@ -362,10 +380,7 @@ def _args_run_show_task_details(args):
         meta_task = rtasks[args.task_id]
 
         if isinstance(meta_task.option_schemas, dict):
-            opts = meta_task.option_schemas
-        elif isinstance(meta_task.option_schemas, (list, tuple)):
-            # DI list
-            opts = meta_task.option_schemas[0]
+            opts = {o.option_id:o for o in meta_task.option_schemas}
         else:
             raise TypeError("Malformed task {t}".format(t=meta_task))
 

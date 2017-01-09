@@ -53,7 +53,7 @@ def _load_all_tool_contracts(module_name, registered_tasks_d, filter_filename_fu
                 meta_task = processing_func(json_file)
                 log.debug(meta_task)
                 if meta_task.task_id in registered_tasks_d:
-                     log.warn("MetaTask {i} already loaded".format(i=meta_task.task_id))
+                    log.warn("MetaTask {i} already loaded".format(i=meta_task.task_id))
                 registered_tasks_d[meta_task.task_id] = meta_task
             except Exception as e:
                 log.error("Failed loading Static Task from '{x}'".format(x=json_file))
