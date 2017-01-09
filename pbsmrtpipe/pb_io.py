@@ -52,36 +52,6 @@ slog = logging.getLogger('status.' + __name__)
 BuilderRecord = namedtuple("BuilderRecord", ['bindings', 'task_options', 'workflow_options'])
 
 
-class RawOpt(object):
-    def __init__(self, ix, raw_value):
-        self.ix = ix
-        self.raw_value = raw_value
-
-    def __repr__(self):
-        _d = dict(i=self.ix,
-                  v=self.raw_value,
-                  k=self.__class__.__name__)
-        return "<{k} id:{i} value:{v}>".format(**_d)
-
-
-class OptionStore(object):
-
-    def __init__(self, items):
-        self.items = {i.ix: i for i in items}
-
-    def add(self, item):
-        self.items[item.ix] = item
-
-    def update(self, store):
-        # follows the same pattern as dict.update
-        for k, v in store.objs.iteritems():
-            self.items[k] = v
-
-    def __repr__(self):
-        _d = dict(k=self.__class__.__name__, n=len(self.items))
-        return "<{k items:{n}>".format(**_d)
-
-
 # FIXME this is inconsistent with the pbcommand model - please deprecate
 class PresetRecord(PipelinePreset):
 
