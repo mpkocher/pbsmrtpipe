@@ -35,10 +35,10 @@
   ],
   "taskOptions": [
     {
-      "id": "my_option",
+      "id": "pbsmrtpipe.task_options.my_option",
       "name": "My Option",
       "default": 1234,
-      "optionTypeId": "pbsmrtpipe.option_types.integer",
+      "optionTypeId": "integer",
       "description": "My Value"
     }
   ],
@@ -48,7 +48,7 @@
       "name": "Max #Chunks",
       "default": 7,
       "description": "Max Number of Chunks",
-      "optionTypeId":"pbsmrtpipe.option_types.integer"
+      "optionTypeId":"integer"
     }
   ]
 }
