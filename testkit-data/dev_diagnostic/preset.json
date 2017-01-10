@@ -1,0 +1,19 @@
+{
+  "_comment": "Dev diagnostic presets",
+  "pipelineId": "pbsmrtpipe.pipelines.dev_diagnostic",
+  "presetId": "task-options-test",
+  "name": "task-options-test",
+  "description": "Test propagation of task options",
+  "options": {
+    "pbsmrtpipe.options.chunk_mode": false
+  },
+  "taskOptions": {
+    "pbsmrtpipe.task_options.dev_diagnostic_strict": true,
+    "pbsmrtpipe.task_options.test_int": 2,
+    "pbsmrtpipe.task_options.test_float": 1.234,
+    "pbsmrtpipe.task_options.test_str": "Hello, world",
+    "pbsmrtpipe.task_options.test_choice_str": "B",
+    "pbsmrtpipe.task_options.test_choice_int": 3,
+    "pbsmrtpipe.task_options.test_choice_float": 1.0
+  }
+}
