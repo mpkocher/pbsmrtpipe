@@ -84,6 +84,8 @@ def crude_coerce_type_from_str(s, type_or_types):
     :param s: raw string
     :param type_or_types: List or single value of option type (as a string) to coerce Example "bool"
     """
+    # FIXME. This has a bunch of legacy non-sense of mixed jsonschema-ish
+    # and PacBioOption. Until
 
     def _to_bool(x):
         _d = {'true': True, 'false': False}
@@ -95,11 +97,16 @@ def crude_coerce_type_from_str(s, type_or_types):
         raise TypeError
 
     # need to better handle null here
+    # Adding more slop here to handle the PacBioOption.OPTION_TYPE_ID
     _coerce = {'integer': int,
                'number': float,
                'null': lambda x: None,
                "string": str,
-               "boolean": _to_bool}
+               "boolean": _to_bool,
+               "choice_integer": int,
+               "choice_string": str,
+               "choice_float": float
+               }
 
     if not isinstance(type_or_types, (list, tuple)):
         type_or_types = [type_or_types]

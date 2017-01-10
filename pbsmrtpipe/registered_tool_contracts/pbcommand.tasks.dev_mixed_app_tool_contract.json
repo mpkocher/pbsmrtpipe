@@ -17,7 +17,7 @@
                     "default": 25,
                     "option_id": "pbcommand.task_options.alpha",
                     "choices": null,
-                    "optionTypeId": "pbsmrtpipe.option_types.integer",
+                    "optionTypeId": "integer",
                     "type": "integer",
                     "description": "Alpha description"
                 },

@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "tags": ["tag-01", "tag-02"],
   "description": "Pipeline Description",
+  "schemaVersion": "2.0.0",
   "_comment": "For the entry points, these will be distilled down to a set of entry points",
   "entryPoints": [
     {
@@ -35,10 +36,10 @@
   ],
   "taskOptions": [
     {
-      "id": "my_option",
+      "id": "pbsmrtpipe.task_options.my_option",
       "name": "My Option",
       "default": 1234,
-      "optionTypeId": "pbsmrtpipe.option_types.integer",
+      "optionTypeId": "integer",
       "description": "My Value"
     }
   ],
@@ -48,7 +49,7 @@
       "name": "Max #Chunks",
       "default": 7,
       "description": "Max Number of Chunks",
-      "optionTypeId":"pbsmrtpipe.option_types.integer"
+      "optionTypeId":"integer"
     }
   ]
 }

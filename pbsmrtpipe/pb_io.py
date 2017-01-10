@@ -1,6 +1,7 @@
 import copy
 import os
 import sys
+import types
 import functools
 import logging
 from collections import namedtuple, OrderedDict
@@ -15,7 +16,6 @@ import jsonschema
 from pbcommand.resolver import (resolve_tool_contract,
                                 resolve_scatter_tool_contract,
                                 resolve_gather_tool_contract)
-from pbcommand.models.parser import PacBioOption
 from pbcommand.models import (PipelineChunk,
                               ToolContractTask,
                               GatherToolContractTask,
@@ -23,7 +23,8 @@ from pbcommand.models import (PipelineChunk,
                               PipelinePreset)
 from pbcommand.models.common import REGISTERED_FILE_TYPES, to_workflow_option_ns
 from pbcommand.pb_io.tool_contract_io import (load_tool_contract_from,
-                                              load_pipeline_presets_from)
+                                              load_pipeline_presets_from,
+                                              pacbio_option_from_dict)
 from xmlbuilder import XMLBuilder
 
 # For version info
@@ -34,14 +35,13 @@ from pbsmrtpipe.exceptions import (PipelineTemplateIdNotFoundError,
 import pbsmrtpipe.schema_opt_utils as OP
 from pbsmrtpipe.schema_opt_utils import crude_coerce_type_from_str
 import pbsmrtpipe.cluster as C
-from pbsmrtpipe.models import (SmrtAnalysisComponent, SmrtAnalysisSystem,
-                               ChunkOperator, Gather,
+from pbsmrtpipe.models import (ChunkOperator, Gather,
                                GatherChunk, ScatterChunk, Scatter,
                                ToolContractMetaTask, WorkflowLevelOptions,
                                ScatterToolContractMetaTask,
                                GatherToolContractMetaTask,
                                PipelineBinding, IOBinding, Pipeline)
-from pbsmrtpipe.constants import (ENV_PRESET, SEYMOUR_HOME)
+from pbsmrtpipe.constants import ENV_PRESET
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.schemas import PT_SCHEMA, PTVR_SCHEMA
 
@@ -254,11 +254,11 @@ def _get_exit_on_failure():
 
 def validate_or_modify_workflow_level_options(wopts):
     """
-    This will adjust or modify intra-option dependencies.
+    This will adjust or modify intra-option dependencies to be internally
+    consistent or will raise a Value Error.
 
     :type wopts: WorkflowLevelOptions
-    :param wopts:
-    :return:
+    :rtype: WorkflowLevelOptions
     """
     # Check if tmp dir
 
@@ -337,6 +337,7 @@ def _has_entry_points_and_bindings(root):
 
 
 def __parse_options(child_name, root):
+    """Returns a List of tuples [(id, value), ...] """
     options = []
 
     opts = root.findall(child_name)
@@ -349,7 +350,7 @@ def __parse_options(child_name, root):
             assert len(vs) == 1
             v = vs[0]
             value = v.text
-            if value == "\"\"": # XXX special case for empty str values
+            if value == "\"\"":  # XXX special case for empty str values
                 value = ""
             options.append((i, value))
 
@@ -367,33 +368,90 @@ parse_task_options = functools.partial(__parse_options, Constants.TASK_OPTIONS)
 parse_workflow_options = functools.partial(__parse_options, Constants.WORKFLOW_OPTIONS)
 
 
-def _raw_option_with_schema(option_id, raw_value, schema):
+def __validator(validator_func, emsg_prefix):
+    """
 
-    option_id = option_id.strip()
+    :param validator_func:
+    :type validator_func: (Any) -> bool
+    :param emsg_prefix: str
+    """
+    def fg(value):
+        emsg = emsg_prefix + "Incompatible task type {i} for '{x}'".format(i=type(value), x=value)
+        if validator_func(value):
+            return value
+        else:
+            raise TypeError(emsg)
 
-    schema_option_id = schema['pb_option']['option_id']
+    return fg
 
-    if option_id == schema_option_id:
-        pb_type = schema['pb_option']['type']
-        coerced_value = crude_coerce_type_from_str(raw_value, pb_type)
-        if pb_type == "string" and raw_value is None:
+
+def __is_instance(type_):
+    def f(value):
+        return isinstance(value, type_)
+    return f
+
+# F(v) -> v or will raise TypeError
+validate_str = __validator(__is_instance(types.StringType), "Expected string type ")
+# FIXME, Int might need a special validator isinstance(True, types.IntType) -> True
+validate_int = __validator(__is_instance(types.IntType), "Expected integer type ")
+validate_float = __validator(__is_instance(types.FloatType), "Expected float type")
+validate_boolean = __validator(__is_instance(types.BooleanType), "Expected type boolean ")
+
+PB_OPTION_TYPE_VALIDATORS = {}
+
+
+def _raw_option_with_schema(option_id, raw_value, pacbio_option):
+    """
+    This will attempt to coerce and validate the raw option type provided.
+
+    The option id provided must be the same or as the provided PacBioOption
+    instance, otherwise a KeyError will be raised.
+
+    :type pacbio_option: PacBioOption
+    :type option_id: str
+
+    :param option_id:
+    :param raw_value:
+    :param pacbio_option:
+    :return:
+    """
+    error_msg = "Incompatible option id '{i}' and " \
+                "defined option type id '{o}'".format(i=option_id, o=pacbio_option.OPTION_TYPE_ID)
+
+    if option_id == pacbio_option.option_id:
+        # from raw string, try to coerce to the expected type
+        coerced_value = crude_coerce_type_from_str(raw_value, pacbio_option.OPTION_TYPE_ID)
+
+        if pacbio_option.OPTION_TYPE_ID == "string" and raw_value is None:
             coerced_value = ""
-        _ = jsonschema.validate(schema, {option_id: coerced_value})
-        value = coerced_value
-    else:
-        raise KeyError("Incompatible option id '{o}' and schema id '{i}'".format(o=option_id, i=schema_option_id))
 
-    return value
+        _ = pacbio_option.validate_option(coerced_value)
+        return coerced_value
+    else:
+        raise KeyError(error_msg)
+
+
+def _registered_tasks_to_pacbio_options(registered_tasks):
+    """
+    :type registered_tasks: dict[str,ToolContractMetaTask]
+    :rtype: dict[str, PacBioOption]
+    """
+    pacbio_options_d = {}
+
+    for task in registered_tasks.values():
+        for pb_opt in task.option_schemas:
+            pacbio_options_d[pb_opt.option_id] = pb_opt
+
+    return pacbio_options_d
 
 
 def validate_raw_task_option(registered_tasks, option_id, raw_value):
-    opts = {}
-    for m in registered_tasks.values():
-        if m.option_schemas:
-            opts.update(m.option_schemas)
 
-    if option_id in opts:
-        value = _raw_option_with_schema(option_id, raw_value, opts[option_id])
+    pacbio_options_d = _registered_tasks_to_pacbio_options(registered_tasks)
+
+    if option_id in pacbio_options_d:
+        pacbio_option = pacbio_options_d[option_id]
+        value = _raw_option_with_schema(option_id, raw_value, pacbio_option)
     else:
         log.warn("UNKNOWN Task Option with id '{i}'. Ignoring option".format(i=option_id))
         value = None
@@ -404,14 +462,11 @@ def validate_raw_task_option(registered_tasks, option_id, raw_value):
 def validate_raw_task_options(registered_tasks, raw_opts_d):
     """
     Validates that the raw (CLI/XML) provided values are compatible with
-    the json/schemas of all the tasks
-    """
-    opts = {}
-    for option_id, raw_value, in raw_opts_d.iteritems():
-        value = validate_raw_task_option(registered_tasks, option_id, raw_value)
-        opts[option_id] = value
+    the json/schemas of all the tasks.
 
-    return opts
+    Returns a dict of {task-id: value}
+    """
+    return {i: validate_raw_task_option(registered_tasks, i, v) for i, v in raw_opts_d.iteritems()}
 
 
 def validate_workflow_options(d):
@@ -444,6 +499,7 @@ def validate_workflow_options(d):
 
 
 def parse_entry_points(r):
+    """:rtype: list[(str, str)]"""
     entry_points = []
     ens = r.findall(Constants.ENTRY_POINTS)
     enps = ens[0].findall(Constants.ENTRY_POINT)
@@ -455,6 +511,7 @@ def parse_entry_points(r):
 
 
 def parse_bindings(r):
+    """:rtype: list[(str, str)]"""
     bs = []
     bxs = r.findall(Constants.BINDINGS)
     bx = bxs[0]
@@ -481,20 +538,23 @@ def __parse_explicit_bindings(root, registered_pipelines):
     # fixme the registered pipelines are necessary to keep the interface
     bindings = parse_bindings(root)
     epoints = parse_entry_points(root)
-    bs =  bindings + epoints
+    bs = bindings + epoints
     task_options = {}
     return bs, task_options
 
 
 def __parse_pipeline_template_xml(binding_func, file_name, registered_pipelines):
+    """:rtype: BuilderRecord"""
 
     t = ElementTree(file=file_name)
     r = t.getroot()
 
     bindings, task_opts = binding_func(r, registered_pipelines)
+
     # Values from XML file. Returned as a [(k, v), ] similar to the bindings
     task_options = dict(parse_task_options(r))
-    # Override the pipeline templated defined task option defaults with
+
+    # Override the pipeline template defined task option defaults with
     # the values in the XML
     task_options.update(task_opts)
     wopts_tlist = parse_workflow_options(r)
@@ -508,8 +568,7 @@ _parse_pipeline_template = functools.partial(__parse_pipeline_template_xml, __pa
 
 
 def parse_pipeline_preset_xml(file_name, validate=True):
-    if not os.path.exists(file_name):
-        raise IOError("Unable to find preset in {f}".format(f=file_name))
+    """:rtype: PresetRecord"""
 
     t = ElementTree(file=file_name)
     r = t.getroot()
@@ -527,12 +586,18 @@ def parse_pipeline_preset_xml(file_name, validate=True):
 
 
 def parse_pipeline_preset_json(file_name, validate=True):
+    """
+    :type file_name: str
+    :type validate: bool
+    :rtype: PresetRecord"""
+
     if not os.path.exists(file_name):
         raise IOError("Unable to find preset in {f}".format(f=file_name))
     p = load_pipeline_presets_from(file_name)
     wopts_tlist = [(k,v) for (k,v) in p.options.iteritems()]
     if validate:
         wopts_tlist = validate_workflow_options(p.options)
+
     return PresetRecord(
         options=wopts_tlist, # FIXME
         task_options=[(k,v) for (k,v) in p.task_options.iteritems()],
@@ -543,6 +608,7 @@ def parse_pipeline_preset_json(file_name, validate=True):
 
 
 def _parse_pipeline_preset_files(parser, file_names):
+    """:rtype: PresetRecord"""
     task_options = {}
     workflow_options = {}
     prs = [parser(file_name, False) for file_name in file_names]
@@ -567,7 +633,7 @@ parse_pipeline_preset_jsons = functools.partial(_parse_pipeline_preset_files,
 def parse_pipeline_template_xml(file_name, registered_pipelines):
     """
 
-    :param file_name:
+    :type file_name: str
     :rtype: BuilderRecord
     """
 
@@ -590,6 +656,7 @@ def load_preset_from_env(env_name=None):
     """
     Load the Preset from ENV variable
 
+    :rtype: PresetRecord | None
     """
     if env_name is None:
         env_name = ENV_PRESET
@@ -624,12 +691,27 @@ def schema_options_to_xml(option_type_name, schema_options_d):
     return x
 
 
+def pacbio_options_to_xml(option_type_name, task_options_d):
+    """Option type name is the task-option or option"""
+
+    x = XMLBuilder(Constants.WORKFLOW_TEMPLATE_PRESET_ROOT)
+
+    # Need to do this getattr to get around how the API works
+    with getattr(x, option_type_name):
+        for option_id, value in task_options_d:
+            if value is not None:
+                with x.option(id=option_id):
+                    x.value(str(value))
+
+    return x
+
+
 def schema_task_options_to_xml(schema_options_d):
     return schema_options_to_xml(Constants.TASK_OPTIONS, schema_options_d)
 
 
-def write_schema_task_options_to_xml(schema_options_d, output_file):
-    xml = schema_task_options_to_xml(schema_options_d)
+def write_schema_task_options_to_xml(task_options_d, output_file):
+    xml = pacbio_options_to_xml(Constants.TASK_OPTIONS, task_options_d)
     with open(output_file, 'w') as w:
         w.write(str(xml))
     return 0
@@ -639,27 +721,29 @@ def schema_workflow_options_to_xml(schema_options_d):
     return schema_options_to_xml(Constants.WORKFLOW_OPTIONS, schema_options_d)
 
 
-def _write_presets_json(cmd, pipeline_id, task_schema_options_d, workflow_schema_options_d, output_file):
-    task_options_d = {}
-    for option_id, schema in task_schema_options_d.iteritems():
-        default_value = schema['properties'][option_id]['default']
-        task_options_d[option_id] = default_value
+def _write_presets_json(cmd, pipeline_id, task_options_d, workflow_schema_options_d, output_file):
+
     workflow_options_d = {}
     for option_id, schema in workflow_schema_options_d.iteritems():
         default_value = schema['properties'][option_id]['default']
         workflow_options_d[option_id] = default_value
+
     preset_name = "default-workflow"
     if pipeline_id is not None:
         pipeline_id_short = pipeline_id.split(".")[-1]
         preset_name = "default-{i}".format(i=pipeline_id_short)
-    d = PipelinePreset(
+
+    p = PipelinePreset(
         options=workflow_options_d,
         task_options=task_options_d,
         pipeline_id=pipeline_id,
         preset_id=preset_name,
         name=preset_name,
-        description="Default presets for {i}".format(i=pipeline_id)).to_dict()
+        description="Default presets for {i}".format(i=pipeline_id))\
+
+    d = p.to_dict()
     d["_comment"] = "Generated by '{c}'".format(c=cmd)
+
     return _write_json(d, output_file, sort_keys=False)
 
 
@@ -670,7 +754,7 @@ def write_pipeline_presets_json(p, schema_options_d, output_file):
 
 def write_workflow_presets_json(schema_options_d, output_file):
     cmd = "pbsmrtpipe show-workflow-options -j {o}".format(o=output_file)
-    return _write_presets_json(cmd, None, {}, schema_options_d, output_file)
+    return _write_presets_json(cmd, None, [], schema_options_d, output_file)
 
 
 def pipeline_to_xml(p):
@@ -718,24 +802,37 @@ def sanity_entry_point(e_raw):
 
 
 def _pipeline_to_task_options(rtasks, p):
-    """Returns a list of SchemaOption """
+    """
+    Returns a list of PacBioOption(s) instances.
+
+    The TC can be in either v1 or new v2 schema format. The new pipeline template
+    format will ONLY support task options written as PacBioOption format
+
+    :rtype: list[pbcommand.models.PacBioOption]
+    """
     bs = itertools.chain(*p.all_bindings)
 
     task_ids = [_to_task_id_and_index(b) for b in bs if not b.startswith("$entry:")]
     tids = {x for x, _ in task_ids}
     rtsks = [rtasks[tid] for tid in tids]
 
-    # {id:schema-opt}
+    # {id:PacBioOption}
     options = {}
     for task in rtsks:
-        if task.option_schemas:
-            for k, v in task.option_schemas.iteritems():
-                if k not in options:
-                    options[k] = copy.deepcopy(v)
-                    option_id = options[k]["pb_option"]["option_id"]
-                    if option_id in p.task_options:
-                        default = p.task_options[option_id]
-                        options[k]["pb_option"]["default"] = default
+        option_schemas = task.option_schemas
+        if option_schemas:
+            # Handle V1 and V2 Schema formats of the task options
+
+            if isinstance(option_schemas, dict):
+                for pb_opt in task.option_schemas:
+                    options[pb_opt.option_id] = pb_opt
+
+            elif isinstance(option_schemas, (list, tuple)):
+                # handle Schema v2
+                for pb_opt in option_schemas:
+                    options[pb_opt.option_id] = pb_opt
+            else:
+                raise TypeError("Invalid task option schema format. Expected list, got {}".format(type(option_schemas)))
 
     return options.values()
 
@@ -764,18 +861,12 @@ def pipeline_template_to_dict(pipeline, rtasks):
     Convert and write the pipeline template to avro compatible dict
 
     :type pipeline: Pipeline
+    :rtype: dict
     """
+    # Workflow Level Options
     options = []
-    task_pboptions = []
-    joptions = _pipeline_to_task_options(rtasks, pipeline)
-
-    for jtopt in joptions:
-        try:
-            pbopt = PacBioOption.from_dict(jtopt)
-            task_pboptions.append(pbopt)
-        except Exception as e:
-            log.error("Failed to convert {p}\n".format(p=jtopt))
-            raise e
+    # PacBioTaskOption(s) list
+    task_pb_opts = _pipeline_to_task_options(rtasks, pipeline)
 
     # The Pipeline entry points and bindings should have been objects, not these encoded "simple" versions.
     # This generates a bunch of dictionary-mania nonsense
@@ -800,17 +891,19 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
     # Sort the Task Options by id to group by namespace and have slightly
     # better diffs on the json files
-    sorted_task_options_d = sorted([x.to_dict() for x in task_pboptions], key=lambda x: x['id'])
+    sorted_task_options_d = sorted([x.to_dict() for x in task_pb_opts], key=lambda x: x['id'])
+
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
-                _comment=comment,
+                comment=comment,
                 version=pipeline.version,
                 entryPoints=entry_points_d.values(),
                 bindings=[b.to_dict() for b in bindings],
                 tags=tags,
                 options=options,
                 taskOptions=sorted_task_options_d,
-                description=desc)
+                description=desc,
+                schemaVersion="2.0.0")
 
 
 def _write_json(d, output_file, sort_keys=True):
@@ -907,7 +1000,10 @@ def load_pipeline_template_from(d_or_path):
 
     bindings = {_load_bindings(x) for x in d['bindings']}
     epoints = list(itertools.chain(*[_load_entry_binding(ei) for ei in d['entryPoints']]))
-    task_options = {t['id']:t['default'] for t in d['taskOptions']}
+
+    pacbio_task_options = [pacbio_option_from_dict(opt_d) for opt_d in d['taskOptions']]
+    # The pipeline instance only needs to the key-value pair
+    task_options = {pbopt.option_id: pbopt.default for pbopt in pacbio_task_options}
 
     p = Pipeline(d['id'], d['name'], d['version'], d['description'], bindings, epoints, tags=d['tags'], task_options=task_options)
     return p
@@ -936,37 +1032,6 @@ def write_pipeline_templates_to_avro(pipelines, rtasks_d, output_dir):
 
 def write_pipeline_templates_to_json(pipelines, rtasks_d, output_dir):
     return _write_pipeline_templates_to_x(write_pipeline_template_to_json, "_pipeline_template.json", pipelines, rtasks_d, output_dir)
-
-
-def get_smrtanalysis_components(root):
-    cs = [x.findall("component") for x in root.findall("components")][0]
-    attrs = "build version name".split()
-
-    def get_attrs(ce):
-        return [ce.get(a) for a in attrs]
-
-    return [SmrtAnalysisComponent(*get_attrs(c)) for c in cs]
-
-
-def get_smrtanalysis_system(root_xml):
-    cr = root_xml.findall("components")[0]
-
-    def _get_value(name):
-        return cr.get(name)
-    return SmrtAnalysisSystem(_get_value("build"), _get_value("version"))
-
-
-def get_smrtanalysis_system_and_components(file_name):
-    et = ElementTree(file=file_name)
-    r = et.getroot()
-    return get_smrtanalysis_system(r), get_smrtanalysis_components(r)
-
-
-def get_smrtanalysis_system_and_components_from_env():
-    """Helper method to grab the resources from SMRTAnalysis config.xml"""
-    path = os.environ[SEYMOUR_HOME]
-    config_xml = os.path.join(path, "etc", "config.xml")
-    return get_smrtanalysis_system_and_components(config_xml)
 
 
 def write_env_to_json(json_file):
@@ -1008,6 +1073,7 @@ def load_pipeline_chunks_from_json(path):
 
 
 def parse_operator_xml(f):
+    """:rtype: ChunkOperator"""
 
     et = ElementTree(file=f)
     r = et.getroot()
@@ -1114,8 +1180,6 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     def _get_ft(x_):
         return REGISTERED_FILE_TYPES[x_]
 
-    schema_option_d = {opt['pb_option']['option_id']: opt for opt in tc.task.options}
-
     # resolve strings to FileType instances
     input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
     output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
@@ -1126,11 +1190,11 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     task_type = validate_task_type(tc.task.is_distributed)
 
     if isinstance(tc.task, ScatterToolContractTask):
-        meta_task = _to_meta_scatter_task(tc, task_type, input_types, output_types, schema_option_d, max_nchunks, 'chunk-key')
+        meta_task = _to_meta_scatter_task(tc, task_type, input_types, output_types, tc.task.options, max_nchunks, 'chunk-key')
     elif isinstance(tc.task, GatherToolContractTask):
-        meta_task = _to_meta_gather_task(tc, task_type, input_types, output_types, schema_option_d)
+        meta_task = _to_meta_gather_task(tc, task_type, input_types, output_types, tc.task.options)
     elif isinstance(tc.task, ToolContractTask):
-        meta_task = _to_meta_task(tc, task_type, input_types, output_types, schema_option_d, output_file_names)
+        meta_task = _to_meta_task(tc, task_type, input_types, output_types, tc.task.options, output_file_names)
     else:
         raise TypeError("Unsupported Type {t} {x}".format(x=tc.task, t=type(tc.task)))
 

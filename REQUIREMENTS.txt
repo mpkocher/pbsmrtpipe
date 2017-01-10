@@ -1,7 +1,7 @@
 jinja2
 networkx
 pbcore >= 1.2.10
-pbcommand >= 0.5.0
+pbcommand >= 0.5.2
 jsonschema
 xmlbuilder
 requests

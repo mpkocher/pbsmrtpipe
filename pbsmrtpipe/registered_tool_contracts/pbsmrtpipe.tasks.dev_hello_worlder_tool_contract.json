@@ -4,8 +4,9 @@
         "exe": "python -m pbsmrtpipe.pb_tasks.dev  run-rtc  ",
         "serialization": "json"
     },
+    "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by v0.4.4",
+        "_comment": "Created by pbcommand 0.5.2",
         "description": "Quick tool dev_hello_worlder pbsmrtpipe.tasks.dev_hello_worlder",
         "input_types": [
             {
@@ -30,32 +31,28 @@
         "resource_types": [],
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": 0,
-                    "description": "Option dev_sleep_time_sec description",
-                    "name": "Option dev_sleep_time_sec",
-                    "option_id": "pbsmrtpipe.task_options.dev_sleep_time_sec",
-                    "type": "integer"
-                },
-                "properties": {
-                    "pbsmrtpipe.task_options.dev_sleep_time_sec": {
-                        "default": 0,
-                        "description": "Option dev_sleep_time_sec description",
-                        "title": "Option dev_sleep_time_sec",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "pbsmrtpipe.task_options.dev_sleep_time_sec"
+                "choices": [
+                    "alpha",
+                    "beta",
+                    "gamma"
                 ],
-                "title": "JSON Schema for pbsmrtpipe.task_options.dev_sleep_time_sec",
-                "type": "object"
+                "default": "alpha",
+                "description": "Option test_msg description",
+                "id": "pbsmrtpipe.task_options.test_msg",
+                "name": "Option test_msg",
+                "optionTypeId": "choice_string"
+            },
+            {
+                "default": 0,
+                "description": "Option dev_sleep_time_sec description",
+                "id": "pbsmrtpipe.task_options.dev_sleep_time_sec",
+                "name": "Option dev_sleep_time_sec",
+                "optionTypeId": "integer"
             }
         ],
         "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pbsmrtpipe.tasks.dev_hello_worlder"
     },
     "tool_contract_id": "pbsmrtpipe.tasks.dev_hello_worlder",
-    "version": "0.2.1"
+    "version": "0.2.2"
 }

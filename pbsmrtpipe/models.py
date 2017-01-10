@@ -195,6 +195,7 @@ class MetaTask(object):
         self.input_types = input_types
         self.output_types = output_types
         self.resource_types = resource_types
+        # dict of {option_id: value}
         self.option_schemas = option_schemas
         self.nproc = nproc
         self.is_distributed = is_distributed
@@ -236,20 +237,22 @@ class MetaTask(object):
         outs = ["{k} summary id:{i}".format(i=self.task_id, k=self.__class__.__name__)]
         sep = '-' * 20
 
+        f = outs.append
+
         def _sep():
-            outs.append(sep)
+            f(sep)
 
         def _to_io_str(attr_name, description):
             attr = getattr(self, attr_name)
-            outs.append(" {x} ({n})".format(n=len(attr), x=description))
+            f(" {x} ({n})".format(n=len(attr), x=description))
             _sep()
-            for i, io_type in enumerate(attr):
-                outs.append(" ".join([str(i).rjust(3), str(io_type)]))
+            for ix, io_type in enumerate(attr):
+                f(" ".join([str(ix).rjust(3), str(io_type)]))
 
         if self.description:
             _sep()
-            outs.append("Description:")
-            outs.append(self.description)
+            f("Description:")
+            f(self.description)
 
         _sep()
         _to_io_str('input_types', "Input Types")
@@ -259,41 +262,26 @@ class MetaTask(object):
         def to_f_(s):
             return str(s).ljust(20)
 
-        def _to_di_str(attr_name, description):
-            attr = getattr(self, attr_name)
-            desc = to_f_(description)
-            if isinstance(attr, (str, int)):
-                outs.append(" {x}: {v}".format(x=desc, v=attr))
-            else:
-                outs.append(" {x}: DI list (n) items".format(x=desc, n=len(attr)))
-
         _sep()
-        _to_di_str("is_distributed", "Is Distributed")
-        _to_di_str("nproc", "nproc")
+        f("Is Distributed : {}".format(self.is_distributed))
+        f("nproc           : {}".format(self.nproc))
 
-        if isinstance(self.option_schemas, dict):
-            outs.append(" : ".join([to_f_(" Number of Options"), str(len(self.option_schemas))]))
-        elif isinstance(self.option_schemas, (list, tuple)):
-            if self.option_schemas:
-                _to_di_str("Number of Options", len(self.option_schemas[0]))
-        else:
-            # should never get here
-            log.warn("Malformed task options {o}".format(o=self.option_schemas))
+        f(" : ".join([to_f_(" Number of Options"), str(len(self.option_schemas))]))
 
         if self.resource_types:
-            outs.append(" Resources Types: {r}".format(r=self.resource_types))
+            f(" Resources Types: {r}".format(r=self.resource_types))
 
         if self.mutable_files:
-            outs.append(" Mutable Files: {m}".format(m=self.mutable_files))
+            f(" Mutable Files: {m}".format(m=self.mutable_files))
 
         _sep()
         if self.output_file_names:
-            outs.append(" Override Output files names ({n})".format(n=len(self.output_file_names)))
+            f(" Override Output files names ({n})".format(n=len(self.output_file_names)))
             xs = zip(self.output_types, self.output_file_names)
             for i, x in enumerate(xs):
                 type_, name_ext_ = x
                 name_ = ".".join(name_ext_)
-                outs.append(" {i}: {t} -> {x} ".format(i=str(i).rjust(3), x=name_, t=type_))
+                f(" {i}: {t} -> {x} ".format(i=str(i).rjust(3), x=name_, t=type_))
 
         _sep()
         return "\n".join(outs)

@@ -66,14 +66,14 @@
             "description": "Option dev_message description", 
             "id": "pbsmrtpipe.task_options.dev_message", 
             "name": "Option dev_message", 
-            "optionTypeId": "pbsmrtpipe.option_types.string"
+            "optionTypeId": "string"
         }, 
         {
             "default": 0, 
             "description": "Option dev_sleep_time_sec description", 
             "id": "pbsmrtpipe.task_options.dev_sleep_time_sec", 
             "name": "Option dev_sleep_time_sec", 
-            "optionTypeId": "pbsmrtpipe.option_types.integer"
+            "optionTypeId": "integer"
         }
     ], 
     "version": "0.1.0"

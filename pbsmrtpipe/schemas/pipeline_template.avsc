@@ -5,29 +5,42 @@
   "fields": [
     {
       "name": "id",
-      "type": "string"
+      "type": "string",
+      "doc": "Globally Unique pipeline id. Must have the form {namespace}.pipeline.{identifier}. Both the namespace and the indentifer must [A-z0-9_]. (Example 'pbsmrtpipe.pipelines.alpha1')"
+    },
+     {
+      "name": "schemaVersion",
+      "type": "string",
+       "doc": "Semantic version string of the Resolved Pipeline Template schema version (Example '2.0.0')"
     },
     {
       "name": "name",
-      "type": "string"
+      "type": "string",
+      "doc": "Display name of the Resolved Pipeline Template (example: 'My Pipeline')"
+
     },
     {
       "name": "description",
-      "type": "string"
+      "type": "string",
+      "doc": "Description of the Resolved Pipeline Template"
+
     },
     {
       "name": "version",
-      "type": "string"
+      "type": "string",
+      "doc": "Semantic version of the Pipeline. This should be incremented using the suggests of semver.org. For example, add a new pipeline template options. (example: '1.2.3')"
     },
     {
       "name": "tags",
       "type": {
         "type": "array",
         "items": "string"
-      }
+      },
+      "doc": "Tags to classify the type of pipeline template (example: ['resequencing', 'dev']"
     },
     {
       "name": "entryPoints",
+      "doc": "Entry points of the Pipeline template. entryId must be unique across all EntryPoints within the list.",
       "type": {
         "type": "array",
         "items": {
@@ -35,17 +48,17 @@
           "name": "EntryPoint",
           "fields": [
             {
-              "doc": "Entry Id",
+              "doc": "Entry Id of the Pipeline Template. This must be unique locally.",
               "name": "entryId",
               "type": "string"
             },
             {
-              "doc": "PacBio File Type identifier",
+              "doc": "PacBio File Type identifier. (example: PacBio.DataSet.BarcodeSet)",
               "name": "fileTypeId",
               "type": "string"
             },
             {
-              "doc": "Display Name",
+              "doc": "Display Name of Entry Point (example: 'Fasta Contigs' )",
               "name": "name",
               "type": "string"
             },
@@ -63,7 +76,7 @@
                       "type": "int"
                     },
                     {
-                      "doc": "FIXME",
+                      "doc": "Instance id of binding type",
                       "name": "instanceId",
                       "type": "int"
                     },
@@ -174,7 +187,7 @@
             {
               "name": "optionTypeId",
               "type": "string",
-              "doc": "Explicit pacbio option type id (e.g., pacbio.option_types.boolean). This must be consistent with the 'type' field"
+              "doc": "Explicit pacbio option type id (e.g., string, boolean). This must be consistent with the 'type' field"
             }
           ]
         }

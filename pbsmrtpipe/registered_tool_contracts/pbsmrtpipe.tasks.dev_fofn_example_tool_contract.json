@@ -4,8 +4,9 @@
         "exe": "python -m pbsmrtpipe.pb_tasks.dev  run-rtc  ",
         "serialization": "json"
     },
+    "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by v0.4.4",
+        "_comment": "Created by pbcommand 0.5.2",
         "description": "Quick tool dev_fofn_example pbsmrtpipe.tasks.dev_fofn_example",
         "input_types": [
             {
