@@ -903,7 +903,7 @@ def pipeline_template_to_dict(pipeline, rtasks):
                 options=options,
                 taskOptions=sorted_task_options_d,
                 description=desc,
-                schema_version="2.0.0")
+                schemaVersion="2.0.0")
 
 
 def _write_json(d, output_file, sort_keys=True):
