@@ -1,5 +1,9 @@
+
+import traceback
 import logging
 import unittest
+import json
+import os.path
 
 log = logging.getLogger(__name__)
 
@@ -96,3 +100,44 @@ class TestBase(_TestBase):
 
 class TestTaskBase(TestBase):
     pass
+
+
+class TestValuesLoader(TestBase):
+
+    """
+    Base class for tests that load a JSON dictionary of expected values.
+    """
+    JSON_FILE = "test_values.json"
+    HAVE_TEST_VALUES = False
+    _FAILURE_TRACEBACK = None
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Load expected values from the test's JSON dictionary.
+        This is tolerant of errors, which will be re-raised in setUp().
+        """
+        super(TestValuesLoader, cls).setUpClass()
+        json_file = os.path.join(cls.job_dir, cls.JSON_FILE)
+        if not os.path.isfile(json_file):
+            json_file = os.path.join(os.getcwd(), cls.JSON_FILE)
+            if not os.path.isfile(json_file):
+                log.warning("Missing %s" % cls.JSON_FILE)
+                return
+            else:
+                log.info("Using test values in %s" % json_file)
+        log.info('about to load test_values')
+        try:
+            with open(json_file, 'r') as f:
+                cls.test_values = json.load(f)
+        except (IOError, OSError, ValueError) as e:
+            log.error("Error loading %s: %s" % (json_file, e))
+            tb = traceback.format_exc()
+            cls._FAILURE_TRACEBACK = "%s:\n%s" % (str(e), tb)
+        else:
+            cls.HAVE_TEST_VALUES = True
+
+    def setUp(self):
+        super(TestValuesLoader, self).setUp()
+        if self._FAILURE_TRACEBACK is not None:
+            self.fail("setUpClass failed:\n%s" % self._FAILURE_TRACEBACK)

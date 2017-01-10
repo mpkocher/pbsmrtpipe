@@ -159,7 +159,16 @@ def run_rtc(rtc):
     return 0
 
 
-@registry('dev_reference_ds_report', '0.1.0', FileTypes.DS_REF, FileTypes.REPORT, is_distributed=False, nproc=3, options=dict(dev_diagnostic_strict=False))
+dev_diagnostic_options = dict(
+    dev_diagnostic_strict=False,
+    test_str="asdf",
+    test_int=1,
+    test_float=3.14,
+    test_choice_str=["A", "B", "C"],
+    test_choice_int=[1, 2, 3],
+    test_choice_float=[0.01, 0.1, 1.0])
+
+@registry('dev_reference_ds_report', '0.1.0', FileTypes.DS_REF, FileTypes.REPORT, is_distributed=False, nproc=3, options=dev_diagnostic_options)
 def run_rtc(rtc):
     reference_ds = ReferenceSet(rtc.task.input_files[0])
     return run_reference_dataset_report(reference_ds, rtc.task.output_files[0])

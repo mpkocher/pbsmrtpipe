@@ -185,7 +185,7 @@ class TestWritePresets(unittest.TestCase):
         self.assertEqual(rcode, 0, fail_msg)
         with open(ofn) as f:
             d = json.load(f)
-            self.assertEqual(len(d['taskOptions']), 3)
+            self.assertEqual(len(d['taskOptions']), 9)
 
     def test_write_workflow_preset_json(self):
         from pbsmrtpipe.pb_io import REGISTERED_WORKFLOW_OPTIONS

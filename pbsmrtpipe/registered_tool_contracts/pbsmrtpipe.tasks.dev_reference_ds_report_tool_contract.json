@@ -31,11 +31,68 @@
         "resource_types": [],
         "schema_options": [
             {
+                "choices": [
+                    0.01,
+                    0.1,
+                    1.0
+                ],
+                "default": 0.01,
+                "description": "Option test_choice_float description",
+                "id": "pbsmrtpipe.task_options.test_choice_float",
+                "name": "Option test_choice_float",
+                "optionTypeId": "choice_float"
+            },
+            {
+                "choices": [
+                    "A",
+                    "B",
+                    "C"
+                ],
+                "default": "A",
+                "description": "Option test_choice_str description",
+                "id": "pbsmrtpipe.task_options.test_choice_str",
+                "name": "Option test_choice_str",
+                "optionTypeId": "choice_string"
+            },
+            {
+                "choices": [
+                    1,
+                    2,
+                    3
+                ],
+                "default": 1,
+                "description": "Option test_choice_int description",
+                "id": "pbsmrtpipe.task_options.test_choice_int",
+                "name": "Option test_choice_int",
+                "optionTypeId": "choice_integer"
+            },
+            {
+                "default": 3.14,
+                "description": "Option test_float description",
+                "id": "pbsmrtpipe.task_options.test_float",
+                "name": "Option test_float",
+                "optionTypeId": "float"
+            },
+            {
                 "default": false,
                 "description": "Option dev_diagnostic_strict description",
                 "id": "pbsmrtpipe.task_options.dev_diagnostic_strict",
                 "name": "Option dev_diagnostic_strict",
                 "optionTypeId": "boolean"
+            },
+            {
+                "default": "asdf",
+                "description": "Option test_str description",
+                "id": "pbsmrtpipe.task_options.test_str",
+                "name": "Option test_str",
+                "optionTypeId": "string"
+            },
+            {
+                "default": 1,
+                "description": "Option test_int description",
+                "id": "pbsmrtpipe.task_options.test_int",
+                "name": "Option test_int",
+                "optionTypeId": "integer"
             }
         ],
         "task_type": "pbsmrtpipe.task_types.standard",
