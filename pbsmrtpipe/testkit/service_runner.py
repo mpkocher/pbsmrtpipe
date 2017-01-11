@@ -10,6 +10,7 @@ import logging
 import os
 import sys
 
+from pbcommand.models.common import TaskOptionTypes
 from pbcommand.cli import (get_default_argparser_with_base_opts,
                            pacbio_args_runner)
 from pbcommand.utils import setup_log
@@ -22,7 +23,6 @@ from pbsmrtpipe.testkit.butler import config_parser_to_butler
 from pbsmrtpipe.testkit.loader import (parse_cfg_file,
     dtype_and_uuid_from_dataset_xml)
 from pbsmrtpipe.testkit.runner import run_butler_tests
-from pbsmrtpipe.constants import to_opt_type_ns
 
 log = logging.getLogger(__name__)
 
@@ -38,13 +38,13 @@ def get_task_and_workflow_options(testkit_cfg):
     parsed_cfg = config_parser_to_butler(testkit_cfg)
     workflow_options, task_options = [], []
     def __get_option_type(val):
-        option_type = to_opt_type_ns("string")
+        option_type = TaskOptionTypes.STR
         if isinstance(val, bool):
-            option_type = to_opt_type_ns("boolean")
+            option_type = TaskOptionTypes.BOOL
         elif isinstance(val, int):
-            option_type = to_opt_type_ns("integer")
+            option_type = TaskOptionTypes.INT
         elif isinstance(val, float):
-            option_type = to_opt_type_ns("float")
+            option_type = TaskOptionTypes.FLOAT
         elif val is None:
             val = ""
         return option_type, val
