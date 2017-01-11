@@ -99,6 +99,7 @@ def crude_coerce_type_from_str(s, type_or_types):
     # need to better handle null here
     # Adding more slop here to handle the PacBioOption.OPTION_TYPE_ID
     _coerce = {'integer': int,
+               "float": float,
                'number': float,
                'null': lambda x: None,
                "string": str,
