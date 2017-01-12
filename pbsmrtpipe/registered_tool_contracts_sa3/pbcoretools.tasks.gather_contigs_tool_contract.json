@@ -5,7 +5,7 @@
         "exe": "python -m pbcoretools.tasks.gather_contigs --resolved-tool-contract ",
         "env": {}
     },
-    "tool_contract_id": "pbcoretools.tasks.gather_contigset",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.gathered",
         "resource_types": [],
@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.DataSet.ContigSet"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "name": "Dev ContigSet Gather",
         "input_types": [
             {
@@ -33,5 +33,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.gather_contigset"
-    }
+    },
+    "tool_contract_id": "pbcoretools.tasks.gather_contigset"
 }

@@ -5,34 +5,18 @@
         "exe": "python -m pbcoretools.tasks.scatter_alignments_reference_basemods --resolved-tool-contract ",
         "env": {}
     },
-    "tool_contract_id": "pbcoretools.tasks.alignment_contig_scatter_basemods",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.scattered",
         "resource_types": [],
         "description": "Pacbio DataSet AlignmentSet",
         "schema_options": [
             {
-                "pb_option": {
-                    "default": 12,
-                    "type": "integer",
-                    "option_id": "pbcoretools.task_options.scatter_alignments_reference_max_nchunks",
-                    "name": "Max NChunks",
-                    "description": "Maximum number of Chunks"
-                },
-                "title": "JSON Schema for pbcoretools.task_options.scatter_alignments_reference_max_nchunks",
-                "required": [
-                    "pbcoretools.task_options.scatter_alignments_reference_max_nchunks"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbcoretools.task_options.scatter_alignments_reference_max_nchunks": {
-                        "default": 12,
-                        "type": "integer",
-                        "description": "Maximum number of Chunks",
-                        "title": "Max NChunks"
-                    }
-                }
+                "optionTypeId": "integer",
+                "default": 12,
+                "id": "pbcoretools.task_options.scatter_alignments_reference_max_nchunks",
+                "name": "Max NChunks",
+                "description": "Maximum number of Chunks"
             }
         ],
         "output_types": [
@@ -44,7 +28,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "nchunks": "$max_nchunks",
         "name": "Scatter AlignmentSet",
         "input_types": [
@@ -68,5 +52,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.alignment_contig_scatter_basemods"
-    }
+    },
+    "tool_contract_id": "pbcoretools.tasks.alignment_contig_scatter_basemods"
 }

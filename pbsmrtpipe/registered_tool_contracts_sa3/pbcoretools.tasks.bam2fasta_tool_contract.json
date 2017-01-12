@@ -5,7 +5,7 @@
         "exe": "python -m pbcoretools.tasks.bam2fasta --resolved-tool-contract",
         "env": {}
     },
-    "tool_contract_id": "pbcoretools.tasks.bam2fasta",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard",
         "resource_types": [
@@ -22,7 +22,7 @@
                 "file_type_id": "PacBio.FileTypes.Fasta"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "name": "bam2fasta export",
         "input_types": [
             {
@@ -35,5 +35,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.bam2fasta"
-    }
+    },
+    "tool_contract_id": "pbcoretools.tasks.bam2fasta"
 }

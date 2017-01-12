@@ -4,8 +4,9 @@
         "exe": "python -m pbcoretools.tasks.converters  run-rtc  ",
         "serialization": "json"
     },
+    "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "description": "Quick tool h5_subreads_to_subread pbcoretools.tasks.h5_subreads_to_subread",
         "input_types": [
             {

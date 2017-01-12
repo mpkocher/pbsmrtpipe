@@ -5,7 +5,7 @@
         "exe": "python -m pbalign.tasks.consolidate_alignments --resolved-tool-contract ",
         "env": {}
     },
-    "tool_contract_id": "pbalign.tasks.consolidate_alignments",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard",
         "resource_types": [
@@ -14,50 +14,18 @@
         "description": "\nConsolidate AlignmentSet .bam files\n",
         "schema_options": [
             {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "pbalign.task_options.consolidate_aligned_bam",
-                    "name": "Consolidate .bam",
-                    "description": "Merge chunked/gathered .bam files"
-                },
-                "title": "JSON Schema for pbalign.task_options.consolidate_aligned_bam",
-                "required": [
-                    "pbalign.task_options.consolidate_aligned_bam"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbalign.task_options.consolidate_aligned_bam": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "Merge chunked/gathered .bam files",
-                        "title": "Consolidate .bam"
-                    }
-                }
+                "optionTypeId": "boolean",
+                "default": false,
+                "id": "pbalign.task_options.consolidate_aligned_bam",
+                "name": "Consolidate .bam",
+                "description": "Merge chunked/gathered .bam files"
             },
             {
-                "pb_option": {
-                    "default": 1,
-                    "type": "integer",
-                    "option_id": "pbalign.task_options.consolidate_n_files",
-                    "name": "Number of .bam files",
-                    "description": "Number of .bam files to create in consolidate mode"
-                },
-                "title": "JSON Schema for pbalign.task_options.consolidate_n_files",
-                "required": [
-                    "pbalign.task_options.consolidate_n_files"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbalign.task_options.consolidate_n_files": {
-                        "default": 1,
-                        "type": "integer",
-                        "description": "Number of .bam files to create in consolidate mode",
-                        "title": "Number of .bam files"
-                    }
-                }
+                "optionTypeId": "integer",
+                "default": 1,
+                "id": "pbalign.task_options.consolidate_n_files",
+                "name": "Number of .bam files",
+                "description": "Number of .bam files to create in consolidate mode"
             }
         ],
         "output_types": [
@@ -69,7 +37,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "name": "AlignmentSet consolidate",
         "input_types": [
             {
@@ -82,5 +50,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbalign.tasks.consolidate_alignments"
-    }
+    },
+    "tool_contract_id": "pbalign.tasks.consolidate_alignments"
 }

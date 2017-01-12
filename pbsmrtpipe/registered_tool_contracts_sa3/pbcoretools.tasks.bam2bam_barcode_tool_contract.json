@@ -4,8 +4,9 @@
         "exe": "python -m pbcoretools.tasks.converters  run-rtc  ",
         "serialization": "json"
     },
+    "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "description": "Quick tool bam2bam_barcode pbcoretools.tasks.bam2bam_barcode",
         "input_types": [
             {
@@ -36,27 +37,11 @@
         "resource_types": [],
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": "symmetric",
-                    "description": "Option score_mode description",
-                    "name": "Option score_mode",
-                    "option_id": "pbcoretools.task_options.score_mode",
-                    "type": "string"
-                },
-                "properties": {
-                    "pbcoretools.task_options.score_mode": {
-                        "default": "symmetric",
-                        "description": "Option score_mode description",
-                        "title": "Option score_mode",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "pbcoretools.task_options.score_mode"
-                ],
-                "title": "JSON Schema for pbcoretools.task_options.score_mode",
-                "type": "object"
+                "default": "symmetric",
+                "description": "Option score_mode description",
+                "id": "pbcoretools.task_options.score_mode",
+                "name": "Option score_mode",
+                "optionTypeId": "string"
             }
         ],
         "task_type": "pbsmrtpipe.task_types.standard",

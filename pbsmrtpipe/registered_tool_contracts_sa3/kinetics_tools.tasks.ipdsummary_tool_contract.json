@@ -5,103 +5,39 @@
         "exe": "python -m kineticsTools.ipdSummary --resolved-tool-contract",
         "env": {}
     },
-    "tool_contract_id": "kinetics_tools.tasks.ipd_summary",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.standard",
         "resource_types": [],
         "description": "\nTool for detecting DNA base-modifications from kinetic signatures.\n",
         "schema_options": [
             {
-                "pb_option": {
-                    "default": 0.01,
-                    "type": "number",
-                    "option_id": "kinetics_tools.task_options.pvalue",
-                    "name": "P-value",
-                    "description": "P-value cutoff"
-                },
-                "title": "JSON Schema for kinetics_tools.task_options.pvalue",
-                "required": [
-                    "kinetics_tools.task_options.pvalue"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "kinetics_tools.task_options.pvalue": {
-                        "default": 0.01,
-                        "type": "number",
-                        "description": "P-value cutoff",
-                        "title": "P-value"
-                    }
-                }
+                "optionTypeId": "float",
+                "default": 0.01,
+                "id": "kinetics_tools.task_options.pvalue",
+                "name": "P-value",
+                "description": "P-value cutoff"
             },
             {
-                "pb_option": {
-                    "default": 3000000000000,
-                    "type": "integer",
-                    "option_id": "kinetics_tools.task_options.max_length",
-                    "name": "Max sequence length",
-                    "description": "Maximum number of bases to process per contig"
-                },
-                "title": "JSON Schema for kinetics_tools.task_options.max_length",
-                "required": [
-                    "kinetics_tools.task_options.max_length"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "kinetics_tools.task_options.max_length": {
-                        "default": 3000000000000,
-                        "type": "integer",
-                        "description": "Maximum number of bases to process per contig",
-                        "title": "Max sequence length"
-                    }
-                }
+                "optionTypeId": "integer",
+                "default": 3000000000000,
+                "id": "kinetics_tools.task_options.max_length",
+                "name": "Max sequence length",
+                "description": "Maximum number of bases to process per contig"
             },
             {
-                "pb_option": {
-                    "default": "",
-                    "type": "string",
-                    "option_id": "kinetics_tools.task_options.identify",
-                    "name": "Identify basemods",
-                    "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A and/or m4C."
-                },
-                "title": "JSON Schema for kinetics_tools.task_options.identify",
-                "required": [
-                    "kinetics_tools.task_options.identify"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "kinetics_tools.task_options.identify": {
-                        "default": "",
-                        "type": "string",
-                        "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A and/or m4C.",
-                        "title": "Identify basemods"
-                    }
-                }
+                "optionTypeId": "string",
+                "default": "",
+                "id": "kinetics_tools.task_options.identify",
+                "name": "Identify basemods",
+                "description": "Specific modifications to identify (comma-separated list).  Currrent options are m6A and/or m4C."
             },
             {
-                "pb_option": {
-                    "default": false,
-                    "type": "boolean",
-                    "option_id": "kinetics_tools.task_options.compute_methyl_fraction",
-                    "name": "Compute methyl fraction",
-                    "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, along with 95% confidence interval bounds."
-                },
-                "title": "JSON Schema for kinetics_tools.task_options.compute_methyl_fraction",
-                "required": [
-                    "kinetics_tools.task_options.compute_methyl_fraction"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "kinetics_tools.task_options.compute_methyl_fraction": {
-                        "default": false,
-                        "type": "boolean",
-                        "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, along with 95% confidence interval bounds.",
-                        "title": "Compute methyl fraction"
-                    }
-                }
+                "optionTypeId": "boolean",
+                "default": false,
+                "id": "kinetics_tools.task_options.compute_methyl_fraction",
+                "name": "Compute methyl fraction",
+                "description": "When identifying specific modifications (m4C and/or m6A), enabling this option will estimate the methylated fraction, along with 95% confidence interval bounds."
             }
         ],
         "output_types": [
@@ -127,7 +63,7 @@
                 "file_type_id": "PacBio.FileTypes.h5"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "name": "ipdSummary",
         "input_types": [
             {
@@ -146,5 +82,6 @@
         "nproc": "$max_nproc",
         "is_distributed": true,
         "tool_contract_id": "kinetics_tools.tasks.ipd_summary"
-    }
+    },
+    "tool_contract_id": "kinetics_tools.tasks.ipd_summary"
 }

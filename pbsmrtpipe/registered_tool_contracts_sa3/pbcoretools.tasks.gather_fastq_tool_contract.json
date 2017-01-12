@@ -5,34 +5,18 @@
         "exe": "python -m pbcoretools.tasks.gather_fastq --resolved-tool-contract ",
         "env": {}
     },
-    "tool_contract_id": "pbcoretools.tasks.gather_fastq",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.gathered",
         "resource_types": [],
         "description": "Gather Fastq",
         "schema_options": [
             {
-                "pb_option": {
-                    "default": "$chunk:fastq_id",
-                    "type": "string",
-                    "option_id": "pbcoretools.task_options.dev_scatter_chunk_key",
-                    "name": "Chunk key",
-                    "description": "Chunk key to use (format $chunk:{chunk-key}"
-                },
-                "title": "JSON Schema for pbcoretools.task_options.dev_scatter_chunk_key",
-                "required": [
-                    "pbcoretools.task_options.dev_scatter_chunk_key"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbcoretools.task_options.dev_scatter_chunk_key": {
-                        "default": "$chunk:fastq_id",
-                        "type": "string",
-                        "description": "Chunk key to use (format $chunk:{chunk-key}",
-                        "title": "Chunk key"
-                    }
-                }
+                "optionTypeId": "string",
+                "default": "$chunk:fastq_id",
+                "id": "pbcoretools.task_options.dev_scatter_chunk_key",
+                "name": "Chunk key",
+                "description": "Chunk key to use (format $chunk:{chunk-key}"
             }
         ],
         "output_types": [
@@ -44,7 +28,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "name": "Gather Fastq",
         "input_types": [
             {
@@ -57,5 +41,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.gather_fastq"
-    }
+    },
+    "tool_contract_id": "pbcoretools.tasks.gather_fastq"
 }

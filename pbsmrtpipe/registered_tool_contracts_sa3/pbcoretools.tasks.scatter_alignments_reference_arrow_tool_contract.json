@@ -2,7 +2,7 @@
     "version": "0.1.3",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbcoretools.tasks.scatter_alignments_reference --resolved-tool-contract ",
+        "exe": "python -m pbcoretools.tasks.scatter_alignments_reference_arrow --resolved-tool-contract ",
         "env": {}
     },
     "schema_version": "2.0.0",
@@ -51,7 +51,7 @@
         ],
         "nproc": 1,
         "is_distributed": true,
-        "tool_contract_id": "pbcoretools.tasks.alignment_contig_scatter"
+        "tool_contract_id": "pbcoretools.tasks.alignment_zmw_scatter"
     },
-    "tool_contract_id": "pbcoretools.tasks.alignment_contig_scatter"
+    "tool_contract_id": "pbcoretools.tasks.alignment_zmw_scatter"
 }
