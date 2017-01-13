@@ -4,8 +4,9 @@
         "exe": "python -m pbcoretools.tasks.converters  run-rtc  ",
         "serialization": "json"
     },
+    "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "description": "Quick tool fasta_to_gmap_reference pbcoretools.tasks.fasta_to_gmap_reference",
         "input_types": [
             {
@@ -30,73 +31,25 @@
         "resource_types": [],
         "schema_options": [
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": "",
-                    "description": "Option reference_name description",
-                    "name": "Option reference_name",
-                    "option_id": "pbcoretools.task_options.reference_name",
-                    "type": "string"
-                },
-                "properties": {
-                    "pbcoretools.task_options.reference_name": {
-                        "default": "",
-                        "description": "Option reference_name description",
-                        "title": "Option reference_name",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "pbcoretools.task_options.reference_name"
-                ],
-                "title": "JSON Schema for pbcoretools.task_options.reference_name",
-                "type": "object"
+                "default": "",
+                "description": "Option reference_name description",
+                "id": "pbcoretools.task_options.reference_name",
+                "name": "Option reference_name",
+                "optionTypeId": "string"
             },
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": "haploid",
-                    "description": "Option ploidy description",
-                    "name": "Option ploidy",
-                    "option_id": "pbcoretools.task_options.ploidy",
-                    "type": "string"
-                },
-                "properties": {
-                    "pbcoretools.task_options.ploidy": {
-                        "default": "haploid",
-                        "description": "Option ploidy description",
-                        "title": "Option ploidy",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "pbcoretools.task_options.ploidy"
-                ],
-                "title": "JSON Schema for pbcoretools.task_options.ploidy",
-                "type": "object"
+                "default": "haploid",
+                "description": "Option ploidy description",
+                "id": "pbcoretools.task_options.ploidy",
+                "name": "Option ploidy",
+                "optionTypeId": "string"
             },
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "pb_option": {
-                    "default": "",
-                    "description": "Option organism description",
-                    "name": "Option organism",
-                    "option_id": "pbcoretools.task_options.organism",
-                    "type": "string"
-                },
-                "properties": {
-                    "pbcoretools.task_options.organism": {
-                        "default": "",
-                        "description": "Option organism description",
-                        "title": "Option organism",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "pbcoretools.task_options.organism"
-                ],
-                "title": "JSON Schema for pbcoretools.task_options.organism",
-                "type": "object"
+                "default": "",
+                "description": "Option organism description",
+                "id": "pbcoretools.task_options.organism",
+                "name": "Option organism",
+                "optionTypeId": "string"
             }
         ],
         "task_type": "pbsmrtpipe.task_types.standard",

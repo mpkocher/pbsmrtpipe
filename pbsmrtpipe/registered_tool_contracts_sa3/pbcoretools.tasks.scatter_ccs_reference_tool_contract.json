@@ -5,57 +5,25 @@
         "exe": "python -m pbcoretools.tasks.scatter_ccs_reference --resolved-tool-contract ",
         "env": {}
     },
-    "tool_contract_id": "pbcoretools.tasks.ccsset_align_scatter",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.scattered",
         "resource_types": [],
         "description": "Scatter ConsensusRead DataSet",
         "schema_options": [
             {
-                "pb_option": {
-                    "default": 5,
-                    "type": "integer",
-                    "option_id": "pbcoretools.task_options.scatter_subread_max_nchunks",
-                    "name": "Max NChunks",
-                    "description": "Maximum number of Chunks"
-                },
-                "title": "JSON Schema for pbcoretools.task_options.scatter_subread_max_nchunks",
-                "required": [
-                    "pbcoretools.task_options.scatter_subread_max_nchunks"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbcoretools.task_options.scatter_subread_max_nchunks": {
-                        "default": 5,
-                        "type": "integer",
-                        "description": "Maximum number of Chunks",
-                        "title": "Max NChunks"
-                    }
-                }
+                "optionTypeId": "integer",
+                "default": 5,
+                "id": "pbcoretools.task_options.scatter_subread_max_nchunks",
+                "name": "Max NChunks",
+                "description": "Maximum number of Chunks"
             },
             {
-                "pb_option": {
-                    "default": "$chunk:fasta_id",
-                    "type": "string",
-                    "option_id": "pbcoretools.task_options.scatter_subreadset_chunk_key",
-                    "name": "Chunk key",
-                    "description": "Chunk key to use (format $chunk:{chunk-key}"
-                },
-                "title": "JSON Schema for pbcoretools.task_options.scatter_subreadset_chunk_key",
-                "required": [
-                    "pbcoretools.task_options.scatter_subreadset_chunk_key"
-                ],
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "pbcoretools.task_options.scatter_subreadset_chunk_key": {
-                        "default": "$chunk:fasta_id",
-                        "type": "string",
-                        "description": "Chunk key to use (format $chunk:{chunk-key}",
-                        "title": "Chunk key"
-                    }
-                }
+                "optionTypeId": "string",
+                "default": "$chunk:fasta_id",
+                "id": "pbcoretools.task_options.scatter_subreadset_chunk_key",
+                "name": "Chunk key",
+                "description": "Chunk key to use (format $chunk:{chunk-key}"
             }
         ],
         "output_types": [
@@ -67,7 +35,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "nchunks": "$max_nchunks",
         "name": "ConsensusReadSet scatter",
         "input_types": [
@@ -91,5 +59,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.ccsset_align_scatter"
-    }
+    },
+    "tool_contract_id": "pbcoretools.tasks.ccsset_align_scatter"
 }

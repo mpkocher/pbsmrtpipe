@@ -5,7 +5,7 @@
         "exe": "python -m pbcoretools.tasks.gather_alignments --resolved-tool-contract ",
         "env": {}
     },
-    "tool_contract_id": "pbcoretools.tasks.gather_alignmentset",
+    "schema_version": "2.0.0",
     "tool_contract": {
         "task_type": "pbsmrtpipe.task_types.gathered",
         "resource_types": [],
@@ -20,7 +20,7 @@
                 "file_type_id": "PacBio.DataSet.AlignmentSet"
             }
         ],
-        "_comment": "Created by v0.4.13",
+        "_comment": "Created by pbcommand 0.5.4",
         "name": "Dev Alignments Gather",
         "input_types": [
             {
@@ -33,5 +33,6 @@
         "nproc": 1,
         "is_distributed": true,
         "tool_contract_id": "pbcoretools.tasks.gather_alignmentset"
-    }
+    },
+    "tool_contract_id": "pbcoretools.tasks.gather_alignmentset"
 }
