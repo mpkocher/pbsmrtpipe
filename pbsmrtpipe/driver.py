@@ -1100,6 +1100,10 @@ def _filter_chunk_operators(bg, chunk_operators_d):
 def _task_to_entry_point_ids(meta_task):
     """Generate entry points from a meta-task. $entry:e_0, $entry:e_1, ...
 
+    From the commandline, the usage would be
+
+    -e e_0:/path/to/file1.txt -e e_1:/path/to/file2.txt
+
     This is used to automatically create pipeline entry points from the
     positional inputs of the task.
     """
@@ -1147,7 +1151,7 @@ def _validate_task_entry_points_or_raise(meta_task, entry_points_d):
 @workflow_exception_exitcode_handler
 def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators,
                     entry_points_d, task_id, output_dir, preset_jsons, preset_xmls, rc_preset_or_none,
-                    service_config,
+                    service_uri,
                     force_distribute=None,
                     force_chunk_mode=None,
                     debug_mode=None):
@@ -1188,4 +1192,4 @@ def run_single_task(registered_file_types_d, registered_tasks_d, chunk_operators
                                      cluster_render)
 
     return exe_workflow(global_registry, entry_points_d, bg, task_opts,
-                        workflow_level_opts, output_dir, service_config)
+                        workflow_level_opts, output_dir, service_uri)

@@ -5,6 +5,7 @@ import types
 import functools
 import logging
 from collections import namedtuple, OrderedDict
+import warnings
 from xml.etree.cElementTree import ElementTree
 import collections
 import json
@@ -694,11 +695,12 @@ def schema_options_to_xml(option_type_name, schema_options_d):
 def pacbio_options_to_xml(option_type_name, task_options_d):
     """Option type name is the task-option or option"""
 
+    warnings.warn("JSON is the recommended format. XML writing will removed", DeprecationWarning)
     x = XMLBuilder(Constants.WORKFLOW_TEMPLATE_PRESET_ROOT)
 
     # Need to do this getattr to get around how the API works
     with getattr(x, option_type_name):
-        for option_id, value in task_options_d:
+        for option_id, value in task_options_d.iteritems():
             if value is not None:
                 with x.option(id=option_id):
                     x.value(str(value))
