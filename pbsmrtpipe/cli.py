@@ -9,6 +9,7 @@ import urlparse
 from pbcommand.cli.utils import main_runner, args_executer, subparser_builder
 from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli import get_default_argparser
+from pbcommand.models.common import BaseChoiceType #FIXME this should be exposed from models
 from pbcommand.validators import validate_file
 from pbsmrtpipe.core import binding_str_is_entry_id
 from pbsmrtpipe.tools.diagnostics import (run_diagnostics,
@@ -60,9 +61,14 @@ def _add_template_id_option(p):
     return p
 
 
-def _add_task_id_option(p):
-    p.add_argument('task_id', type=str, help="Show details of registered Task by id.")
+def _add_task_id_option(p, help_msg="Show details of registered Task by id."):
+    p.add_argument('task_id', type=str, help=help_msg)
     return p
+
+
+def _add_task_id_run_option(p):
+    m = "Run a single task by Tool Contract Id (e.g., pbcommand.tasks.dev_txt_hello). Use 'pbsmrtpipe show-tasks' to get a complete list of registered tasks. "
+    return _add_task_id_option(p, help_msg=m)
 
 
 def _validate_dir_or_create(p):
@@ -81,10 +87,10 @@ def _add_output_dir_option(p):
     return p
 
 
-def _add_entry_point_option(p):
+def _add_entry_point_option(p, help_msg="Entry Points using 'entry_idX:/path/to/file.txt' format."):
     p.add_argument('-e', '--entry', dest="entry_points", required=True,
                    action="append",
-                   nargs="+", type=_validate_entry, help="Entry Points using 'entry_idX:/path/to/file.txt' format.")
+                   nargs="+", type=_validate_entry, help=help_msg)
     return p
 
 
@@ -316,6 +322,10 @@ def _args_run_show_tasks(args):
 
 
 def _print_option_schemas(option_schemas_d):
+    """This is the legacy JSONSchema-ish supported model
+
+    .. note: This will be deprecated.
+    """
 
     def _get_v(oid, s, name):
         return s['properties'][oid][name]
@@ -337,15 +347,25 @@ def _print_pacbio_options(pacbio_options):
     :type pacbio_options: pbcommand.models.BasePacBioOption
     :return:
     """
+    pad = 15
+
+    def to_s(name, value):
+        return name.rjust(pad) + " : {}".format(value)
+
+    def printer(name, value):
+        print to_s(name, value)
+
     print "Number of Options {n}".format(n=len(pacbio_options))
     if pacbio_options:
         for i, pb_option in enumerate(pacbio_options):
             n = i + 1
-            print "Option #{n} Id : {i}".format(n=n, i=pb_option.option_id)
-            print "\tType Id      : {}".format(pb_option.OPTION_TYPE_ID)
-            print "\tDefault      : {}".format(pb_option.default)
-            print "\tDisplay Name : {}".format(pb_option.name)
-            print "\tDescription  : {}".format(pb_option.description)
+            printer("Option #{n} Id".format(n=n), pb_option.option_id)
+            printer("Type Id", pb_option.OPTION_TYPE_ID)
+            printer("Default", pb_option.default)
+            if isinstance(pb_option, BaseChoiceType):
+                printer("Choices", pb_option.choices)
+            printer("Display Name", pb_option.name)
+            printer("Description", pb_option.description)
             print
 
 
@@ -380,7 +400,7 @@ def _args_run_show_task_details(args):
         meta_task = rtasks[args.task_id]
 
         if isinstance(meta_task.option_schemas, dict):
-            opts = {o.option_id:o for o in meta_task.option_schemas}
+            opts = {o.option_id: o for o in meta_task.option_schemas}
         else:
             raise TypeError("Malformed task {t}".format(t=meta_task))
 
@@ -390,8 +410,13 @@ def _args_run_show_task_details(args):
 
 
 def _cli_entry_point_args_to_dict(args_entry_points):
-    # argparse is kinda stupid, or I don't know how to use the API
-    # entry_points=[[('entry_idX', 'docs/index.rst')], [('entry_2', 'docs/wf_example.py')]]
+    """Translates the entry points from argparse style to the a dict of
+
+    {e_0:/path/to/f1.txt, e_1:/path/to/f2.txt}
+
+    argparse is kinda stupid, or I don't know how to use the API
+    entry_points=[[('entry_idX', 'docs/index.rst')], [('entry_2', 'docs/wf_example.py')]]
+    """
     ep_d = {}
     for elist in args_entry_points:
         for k, v in elist:
@@ -467,7 +492,7 @@ def _validate_uri(value):
 
 def _add_webservice_config(p):
     p.add_argument('--service-uri', type=_validate_uri, default=None,
-                   help="Remote Webservices to send update and log status to. (JSON file with host, port).")
+                   help="Remote Webservice URI to send status updates to.")
     return p
 
 
@@ -507,6 +532,12 @@ def add_show_template_details_parser_options(p):
     return p
 
 
+def _add_entry_point_single_task_option(p):
+    m = "Entry Points should be defined as e_{x}:/path/to/file for " \
+        "each positional index of the Task. Example, for a task with 2 inputs, -e e_0:/path/to/f1.txt -e e_1:/path/to/f2.txt"
+    return _add_entry_point_option(p, help_msg=m)
+
+
 def add_task_parser_options(p):
 
     funcs = [
@@ -515,9 +546,10 @@ def add_task_parser_options(p):
         _add_webservice_config,
         _add_rc_preset_xml_option,
         _add_preset_xml_option,
+        _add_preset_json_option,
         _add_output_dir_option,
-        _add_entry_point_option,
-        _add_task_id_option,
+        _add_entry_point_single_task_option,
+        _add_task_id_run_option,
         add_log_debug_option]
 
     f = compose(*funcs)
@@ -547,14 +579,15 @@ def _args_task_runner(args):
         log.info(args)
 
     registered_tasks, registered_file_types, chunk_operators, pipelines = __dynamically_load_all()
+
+    # This will return a dict of {e_ix:/path/to/f1.txt, e_iy:/path/to/f1.txt}
     ep_d = _cli_entry_point_args_to_dict(args.entry_points)
-    # the code expects entry: version
-    ee_pd = {'entry:' + ei: v for ei, v in ep_d.iteritems() if not ei.startswith('entry:')}
 
     force_distribute, force_chunk = resolve_dist_chunk_overrides(args)
     preset_xmls = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_xml]
+    preset_jsons = [os.path.abspath(os.path.expandvars(p)) for p in args.preset_json]
     return D.run_single_task(registered_file_types, registered_tasks, chunk_operators,
-                             ee_pd, args.task_id, args.output_dir,
+                             ep_d, args.task_id, args.output_dir, preset_jsons,
                              preset_xmls, args.preset_rc_xml, args.service_uri,
                              force_distribute=force_distribute,
                              force_chunk_mode=force_chunk, debug_mode=args.debug)
@@ -648,8 +681,6 @@ def _args_show_chunk_operator_summary(args):
         print "WARNING. No Chunk operators loaded"
 
     return 0
-
-
 
 
 def _add_required_preset_xml_option(p):
