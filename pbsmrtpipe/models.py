@@ -523,7 +523,7 @@ class Pipeline(object):
         self.idx = idx
         self.version = version
         self.display_name = display_name
-        self.description = description
+        self.description = description.strip()
 
         # set of [(a, b), ...]
         self.bindings = {x for x in bindings}
