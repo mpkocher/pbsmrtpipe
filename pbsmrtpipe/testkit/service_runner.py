@@ -18,7 +18,8 @@ from pbcommand.services import ServiceAccessLayer, ServiceEntryPoint
 from pbcommand.services.cli import run_analysis_job
 import pbcommand.services
 
-from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_json
+from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_json, validate_raw_task_options
+import pbsmrtpipe.loader as L
 from pbsmrtpipe.testkit.butler import config_parser_to_butler
 from pbsmrtpipe.testkit.loader import (parse_cfg_file,
     dtype_and_uuid_from_dataset_xml)
@@ -48,11 +49,13 @@ def get_task_and_workflow_options(testkit_cfg):
         elif val is None:
             val = ""
         return option_type, val
+    rtasks_d, _, _, _ = L.load_all()
     if not parsed_cfg.preset_xml in [None, '']:
         if not parsed_cfg.preset_json in [None, '']:
             raise ValueError("Please use either preset_json or preset_xml, not both")
         presets = parse_pipeline_preset_xml(parsed_cfg.preset_xml)
-        for option_id, option_value in presets.task_options:
+        task_opts_d = validate_raw_task_options(rtasks_d, dict(presets.task_options))
+        for option_id, option_value in task_opts_d.iteritems():
             log.info("task_option: {i} = {v}".format(i=option_id,
                                                      v=option_value))
             option_type, option_value = __get_option_type(option_value)
