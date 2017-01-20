@@ -55,11 +55,12 @@ test-chunk-operators:
 	python -c "import pbsmrtpipe.loader as L; L.load_and_validate_chunk_operators()"
 
 test-view-rules:
-	python -m pbsmrtpipe.pb_pipelines.pb_pipeline_view_rules --output-dir /tmp
+	mkdir -p extras/pipeline-view-rules
+	python -m pbsmrtpipe.pb_pipelines.pb_pipeline_view_rules --output-dir extras/pipeline-view-rules
 
 test-sanity: test-contracts test-pipelines test-chunk-operators test-loader write-pipeline-templates test-view-rules
 
-test-suite: test-sanity test-unit test-dev write-pipeline-templates
+test-suite: test-sanity test-unit test-dev write-pipeline-templates show-workflow-options
 
 test-clean-suite: install test-suite
 
@@ -105,3 +106,6 @@ repl:
 pipeline-docs:
 	pbsmrtpipe show-templates --output-templates-json extras/pipeline-templates-json
 	python -m pbsmrtpipe.tools.resources_to_rst extras/pipeline-templates-json -o pipeline-docs
+
+show-workflow-options:
+	pbsmrtpipe show-workflow-options | grep "^Option" | sed 's/.*:\ *//; s/.*\.//;' > extras/workflow_options.txt
