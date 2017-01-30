@@ -14,6 +14,8 @@ import types
 import functools
 import uuid
 import platform
+import datetime
+import pytz
 
 from pbcommand.pb_io import (write_resolved_tool_contract,
                              write_tool_contract,
@@ -21,6 +23,7 @@ from pbcommand.pb_io import (write_resolved_tool_contract,
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
 from pbcommand.utils import log_traceback
 from pbcommand.models import (FileTypes, DataStoreFile)
+from pbcommand.services.service_access_layer import JobServiceClient
 from pbsmrtpipe.utils import nfs_exists_check
 
 from pbcore.io import getDataSetUuid
@@ -264,7 +267,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     slog.info("starting to execute {m} workflow with assigned job_id {i}".format(i=job_id, m=m_))
     slog.info("system {m} {x} nproc:{n}".format(m=platform.system(), n=multiprocessing.cpu_count(), x=platform.node()))
     slog.info("exe'ing workflow Cluster renderer {c}".format(c=global_registry.cluster_renderer))
-    slog.info("Service URI: {i} {t} (fqdn = {h})".format(i=service_uri_or_none, t=type(service_uri_or_none), h=socket.getfqdn()))
+    slog.info("FDQN of host {h}".format(h=socket.getfqdn()))
+    if service_uri_or_none is None:
+        slog.info("Job Service URL is None. No updates will be sent")
+    else:
+        slog.info("Job Service URL: {i}".format(i=service_uri_or_none))
     slog.info("Max number of Chunks  {n} ".format(n=workflow_opts.max_nchunks))
     slog.info("Max number of nproc   {n}".format(n=workflow_opts.max_nproc))
     slog.info("Max number of workers {n}".format(n=workflow_opts.max_nworkers))
@@ -331,6 +338,14 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
 
+    # TODO(mpkocher)(1-29-2017) Make this configurable
+    service_ignore_errors = True
+
+    if service_uri_or_none is None:
+        service_job_client = None
+    else:
+        service_job_client = JobServiceClient(service_uri_or_none, ignore_errors=service_ignore_errors)
+
     def _to_run_time():
         return time.time() - started_at
 
@@ -346,7 +361,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # factories for getting a Worker instance
     # utils for getting the running func and worker type
-    def _to_worker(w_is_distributed, wid, task_id, manifest_path_):
+    def _to_worker(w_is_distributed, wid, task_uuid, task_id, manifest_path_):
         # the IO loading will forceful set this to None
         # if the cluster manager not defined or cluster_mode is False
         if global_registry.cluster_renderer is None or not w_is_distributed:
@@ -354,11 +369,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         else:
             r_func = T.run_task_manifest_on_cluster
         return TaskManifestWorker(q_out, shutdown_event, worker_sleep_time,
-                                  r_func, task_id, manifest_path_, name=wid)
+                                  r_func, task_uuid, task_id, manifest_path_, name=wid)
 
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
-    def write_report_(bg_, current_state_, was_successful_):
+    def write_workflow_report_(bg_, current_state_, was_successful_):
         return DU.write_update_main_workflow_report(job_id, job_resources, bg_, current_state_, was_successful_, _to_run_time())
 
     def write_task_summary_report(bg_):
@@ -367,30 +382,49 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         R.write_report_to_html(task_summary_report, p)
 
     def services_log_update_progress(source_id_, level_, message_):
-        if service_uri_or_none is not None:
+        if service_job_client is not None:
             total_log_uri = "{u}/log".format(u=service_uri_or_none)
-            WS.log_pbsmrtpipe_progress(total_log_uri, message_, level_, source_id_, ignore_errors=True)
+            service_job_client.log_workflow_progress(total_log_uri, message_, level_, source_id_)
+
+    def services_create_job_task(task_uuid_, task_id_, task_type_id_, name_):
+        if service_job_client is not None:
+            created_at = datetime.datetime.now(pytz.utc)
+            service_job_client.create_task(task_uuid_, task_id_, task_type_id_, name_)
+
+    def services_update_job_task(task_uuid_, task_state_, message_, error_message=None):
+        if service_job_client is not None:
+            service_job_client.update_task_status(task_uuid_, task_state_, message_, error_message=error_message)
 
     def services_add_datastore_file(datastore_file_):
-        if service_uri_or_none is not None:
-            total_ds_uri = "{u}/datastore".format(u=service_uri_or_none)
-            log.debug("Adding datastore file to services {d}".format(d=datastore_file_))
-            WS.add_datastore_file(total_ds_uri, datastore_file_, ignore_errors=True)
+        if service_job_client is not None:
+            log.info("Adding datastore file to services {d}".format(d=datastore_file_))
+            service_job_client.add_datastore_file(datastore_file_)
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
                 len(tnode_.meta_task.output_file_descriptions) ==
                 len(tnode_.meta_task.output_types) == len(task_.output_files))
+
         for i_file, (file_type_, path_, name, description) in enumerate(zip(
                 tnode_.meta_task.output_types, task_.output_files,
                 tnode_.meta_task.output_file_display_names,
                 tnode_.meta_task.output_file_descriptions)):
+
+            # This is the job unique output id that can be used by tools
+            # looking to get a specific datastore file from the output of
+            # pipeline
             source_id = "{t}-out-{i}".format(t=task_.task_id, i=i_file)
+
             if tnode_.meta_task.datastore_source_id is not None:
                 source_id = tnode_.meta_task.datastore_source_id
+
             ds_uuid = _get_or_create_uuid_from_file(path_, file_type_)
             is_chunked_ = _is_chunked_task_node_type(tnode_)
-            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_, is_chunked=is_chunked_, name=name, description=description)
+
+            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_,
+                                     is_chunked=is_chunked_,
+                                     name=name,
+                                     description=description)
             ds.add(ds_file_)
             ds.write_update_json(job_resources.datastore_json)
 
@@ -408,10 +442,13 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         log the error messages extracted from TaskResult
         :type task_result: TaskResult
         """
+        terse_msg = "Task {i} FAILED in {s:.2f} sec".format(i=task_result.task_id)
         mx = "Task {i} {m}".format(i=task_id_, m=task_result.error_message)
         slog.error(mx)
         log.error(mx)
         services_log_update_progress("pbsmrtpipe::{i}".format(i=task_id_), WS.LogLevels.ERROR, mx)
+        # is this detailed error message too large?
+        services_update_job_task(task_result.task_uuid, TaskStates.FAILED, terse_msg, error_message=task_result.error_message)
 
     def has_available_slots(n):
         if max_total_nproc is None:
@@ -419,7 +456,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         return total_nproc + n <= max_total_nproc
 
     # Misc setup
-    write_report_(bg, TaskStates.CREATED, False)
+    write_workflow_report_(bg, TaskStates.CREATED, False)
     # write empty analysis reports
     write_analysis_report(analysis_file_links)
 
@@ -501,7 +538,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             # This should only be triggered after events. The main reason
             # to keep updating it was the html report is up to date with the
             # runtime
-            write_report_(bg, TaskStates.RUNNING, is_completed)
+            write_workflow_report_(bg, TaskStates.RUNNING, is_completed)
 
             if is_completed:
                 msg_ = "Workflow is completed. breaking out."
@@ -519,38 +556,40 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 niterations = 0
                 log.debug("Task result {r}".format(r=result))
 
-                tid_, state_, msg_, run_time_ = result
-                tnode_ = tid_to_tnode[tid_]
+                tnode_ = tid_to_tnode[result.task_id]
                 task_ = tnode_to_task[tnode_]
 
                 # Process Successful Task Result
-                if state_ == TaskStates.SUCCESSFUL:
+                if result.state == TaskStates.SUCCESSFUL:
                     msg_ = "Task was successful {r}".format(r=result)
                     slog.info(msg_)
 
                     # this will raise if a task output is failed to be resolved
-                    B.validate_outputs_and_update_task_to_success(bg, tnode_, run_time_, bg.node[tnode_]['task'].output_files)
+                    B.validate_outputs_and_update_task_to_success(bg, tnode_, result.run_time_sec, bg.node[tnode_]['task'].output_files)
                     slog.info("Successfully validated outputs of {t}".format(t=repr(tnode_)))
 
-                    services_log_update_progress("pbsmrtpipe::{i}".format(i=tid_), WS.LogLevels.INFO, msg_)
+                    services_log_update_progress("pbsmrtpipe::{i}".format(i=result.task_id), WS.LogLevels.INFO, msg_)
                     B.update_task_output_file_nodes(bg, tnode_, tnode_to_task[tnode_])
                     B.resolve_successor_binding_file_path(bg)
 
                     total_nproc -= task_.nproc
-                    w_ = workers.pop(tid_)
+                    w_ = workers.pop(result.task_id)
                     _terminate_worker(w_)
 
                     # Update Analysis Reports and Register output files to Datastore
                     _update_analysis_reports_and_datastore(tnode_, task_)
 
+                    update_msg_ = "Successfully completed task {i} in {s:.2f} sec".format(s=result.run_time_sec, i=task_.task_id)
+                    services_update_job_task(task_.uuid, TaskStates.SUCCESSFUL, update_msg_)
+
                     # BU.write_binding_graph_images(bg, job_resources.workflow)
                 else:
                     # Process Non-Successful Task Result
-                    B.update_task_state(bg, tnode_, state_)
-                    _log_task_failure_and_call_services(result, tid_)
+                    B.update_task_state(bg, tnode_, result.state)
+                    _log_task_failure_and_call_services(result, result.task_id)
 
                     # let the remaining running jobs continue
-                    w_ = workers.pop(tid_)
+                    w_ = workers.pop(result.task_id)
                     _terminate_worker(w_)
 
                     total_nproc -= task_.nproc
@@ -564,7 +603,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
                 s_ = TaskStates.FAILED if has_failed else TaskStates.RUNNING
 
-                write_report_(bg, s_, False)
+                write_workflow_report_(bg, s_, False)
                 write_task_summary_report(bg)
 
             elif isinstance(result, types.NoneType):
@@ -653,7 +692,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 runnable_task.write_json(runnable_task_path)
 
                 # Create an instance of Worker
-                w = _to_worker(tnode.meta_task.is_distributed, "worker-task-{i}".format(i=tid), tid, runnable_task_path)
+                w = _to_worker(tnode.meta_task.is_distributed, "worker-task-{i}".format(i=tid), task.uuid, tid, runnable_task_path)
 
                 workers[tid] = w
                 w.start()
@@ -666,6 +705,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 log.debug(msg_)
                 tid_to_tnode[tid] = tnode
                 services_log_update_progress("pbsmrtpipe::{i}".format(i=tnode.idx), WS.LogLevels.INFO, msg_)
+                # This should use the TC name
+                task_name = "Task {i}".format(i=task.task_id)
+                services_create_job_task(task.uuid, task.task_id, task.task_type_id, task_name)
                 # BU.write_binding_graph_images(bg, job_resources.workflow)
 
             elif isinstance(tnode, EntryOutBindingFileNode):
@@ -695,8 +737,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
         was_successful = B.was_workflow_successful(bg)
         s_ = TaskStates.SUCCESSFUL if was_successful else TaskStates.FAILED
-        write_report_(bg, s_, was_successful)
-        #FIXME(nechols)(2016-11-30) very hacky workaround
+        write_workflow_report_(bg, s_, was_successful)
+        # FIXME(nechols)(2016-11-30) very hacky workaround
         if was_successful:
             exit_code = GlobalConstants.EXIT_SUCCESS
         elif os.path.exists(term_file):
@@ -705,7 +747,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             exit_code = GlobalConstants.EXIT_FAILURE
 
     except PipelineRuntimeKeyboardInterrupt:
-        write_report_(bg, TaskStates.KILLED, False)
+        write_workflow_report_(bg, TaskStates.KILLED, False)
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
         exit_code = GlobalConstants.EXIT_TERMINATED
@@ -713,7 +755,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     except Exception as e:
         slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=str(e)))
         # update workflow reports to failed
-        write_report_(bg, TaskStates.FAILED, False)
+        write_workflow_report_(bg, TaskStates.FAILED, False)
         write_task_summary_report(bg)
         services_log_update_progress("pbsmrtpipe", WS.LogLevels.ERROR, "Error {e}".format(e=e))
         BU.write_binding_graph_images(bg, job_resources.workflow)
@@ -941,11 +983,11 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
     manager = multiprocessing.Manager()
     shutdown_event = manager.Event()
 
-    state = False
+    exit_code = 10
     try:
         exit_code = __exe_workflow(global_registry, entry_points_d, bg, task_opts,
-                               workflow_level_opts, output_dir,
-                               workers, shutdown_event, service_uri)
+                                   workflow_level_opts, output_dir,
+                                   workers, shutdown_event, service_uri)
     except Exception as e:
         if isinstance(e, KeyboardInterrupt):
             emsg = "received SIGINT. Attempting to abort gracefully."
@@ -954,12 +996,12 @@ def exe_workflow(global_registry, entry_points_d, bg, task_opts, workflow_level_
 
         log.exception(emsg)
         exit_code = GlobalConstants.EXCEPTION_TO_EXIT_CODE.get(e.__class__, GlobalConstants.DEFAULT_EXIT_CODE)
-        state = False
 
     finally:
         # Each of these calls needs to be wrapped in a try black hole
         if workers:
             _terminate_all_workers(workers.values(), shutdown_event)
+        state = True if exit_code == 0 else False
         _write_final_results_message(state)
 
     return exit_code

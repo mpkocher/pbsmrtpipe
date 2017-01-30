@@ -613,11 +613,12 @@ class TaskManifestWorker(multiprocessing.Process):
 
     """This fundamental unit that runs a "Manifest" or Tool Contract (ToDo)"""
 
-    def __init__(self, q_out, event, sleep_time, run_manifest_func, task_id, manifest_path, group=None, name=None, target=None):
+    def __init__(self, q_out, event, sleep_time, run_manifest_func, task_uuid, task_id, manifest_path, group=None, name=None, target=None):
         self.q_out = q_out
         self.event = event
         self.sleep_time = sleep_time
         self.task_id = task_id
+        self.task_uuid = task_uuid
         self.manifest_path = manifest_path
 
         # runner func (path/to/manifest.json ->) (task_id, state, message, run_time)
@@ -629,21 +630,21 @@ class TaskManifestWorker(multiprocessing.Process):
         self.event.set()
 
     def run(self):
-        log.info("Starting process:{p} {k} worker {i} task id {t}".format(k=self.__class__.__name__, i=self.name, t=self.task_id, p=self.pid))
+        log.info("Starting process:{p} {k} worker {i} task-id:{t} task-uuid:{u}".format(k=self.__class__.__name__, i=self.name, p=self.pid, t=self.task_id, u=self.task_uuid))
 
         try:
             if os.path.exists(self.manifest_path):
                 log.debug("Running task {i} with func {f}".format(i=self.task_id, f=self.runner_func.__name__))
                 state, msg, run_time = self.runner_func(self.manifest_path)
-                self.q_out.put(TaskResult(self.task_id, state, msg, round(run_time, 2)))
+                self.q_out.put(TaskResult(self.task_uuid, self.task_id, state, msg, round(run_time, 2)))
             else:
                 emsg = "Unable to find manifest {p}".format(p=self.manifest_path)
                 run_time = 1
-                self.q_out.put(TaskResult(self.task_id, "failed", emsg, round(run_time, 2)))
+                self.q_out.put(TaskResult(self.task_uuid, self.task_id, "failed", emsg, round(run_time, 2)))
         except Exception as ex:
             emsg = "Unhandled exception in Worker {n} running task {i}. Exception {e}".format(n=self.name, i=self.task_id, e=ex.message)
             log.exception(emsg)
-            self.q_out.put(TaskResult(self.task_id, "failed", emsg, 0.0))
+            self.q_out.put(TaskResult(self.task_uuid, self.task_id, "failed", emsg, 0.0))
 
-        log.info("exiting Worker {i} (pid {p}) {k}.run".format(k=self.__class__.__name__, i=self.name, p=self.pid))
+        log.info("exiting Worker {i} (pid {p}) task-id:{t} task-uuid:{u} {k}.run".format(k=self.__class__.__name__, i=self.name, p=self.pid, t=self.task_id, u=self.task_uuid))
         return True

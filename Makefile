@@ -9,7 +9,7 @@ install:
 	@pip install ./
 	@echo "Installed version pbsmrtpipe $(shell pbsmrtpipe --version)"
 
-clean: doc-clean
+clean: doc-clean clean-testkit
 	rm -rf build/;\
 	find . -name "*.egg-info" | xargs rm -rf;\
 	rm -rf dist/;\
