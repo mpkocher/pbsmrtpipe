@@ -76,7 +76,22 @@ def datetime_to_string(dt):
 class Constants(object):
     CHUNK_KEY_PREFIX = "$chunk."
 
-TaskResult = namedtuple('TaskResult', "task_id state error_message run_time_sec")
+
+class TaskResult(object):
+    def __init__(self, task_uuid, task_id, state, error_message, run_time_sec):
+        self.task_uuid = task_uuid
+        self.task_id = task_id
+        self.state = state
+        self.error_message = error_message
+        self.run_time_sec = run_time_sec
+
+    def __repr__(self):
+        _d = dict(i=self.task_id,
+                  u=self.task_uuid,
+                  s=self.state,
+                  r=self.run_time_sec,
+                  k=self.__class__.__name__)
+        return "<{k} id:{i} state:{s} runtime:{r} sec uuid:{u} >".format(**_d)
 
 _JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
 JobResources = namedtuple("JobResources", _JOB_ATTRS)
@@ -360,8 +375,10 @@ class MetaGatherTask(MetaTask):
 class Task(object):
     # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
 
-    def __init__(self, task_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
-        self.uuid = str(uuid.uuid4())
+    def __init__(self, task_uuid, task_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
+        # globablly unique task id
+        self.uuid = task_uuid
+        # locally unique task id that is user friendly
         self.task_id = task_id
         # the tool_contract id, or id defined in the python Task
         self.task_type_id = task_id
@@ -415,7 +432,7 @@ class Task(object):
 
     @staticmethod
     def from_d(d):
-        return Task(d['task_id'], d['is_distributed'],
+        return Task(d['uuid'], d['task_id'], d['is_distributed'],
                     d['input_files'], d['output_files'],
                     d['options'], d['nproc'],
                     d['resources'], d['cmds'], d['output_dir'])
@@ -423,8 +440,8 @@ class Task(object):
 
 class ScatterTask(Task):
 
-    def __init__(self, task_id, task_type, input_files, output_files, resolved_opts, nproc, resources, cmd, nchunks, output_dir, chunk_keys):
-        super(ScatterTask, self).__init__(task_id, task_type, input_files, output_files, resolved_opts, nproc, resources, cmd, output_dir)
+    def __init__(self, task_uuid, task_id, task_type, input_files, output_files, resolved_opts, nproc, resources, cmd, nchunks, output_dir, chunk_keys):
+        super(ScatterTask, self).__init__(task_uuid, task_id, task_type, input_files, output_files, resolved_opts, nproc, resources, cmd, output_dir)
         self.nchunks = nchunks
         self.chunk_keys = chunk_keys
 
@@ -499,7 +516,10 @@ class RunnableTask(object):
         else:
             cr = None
 
+        # this duplication of task ids should just be flattened out by clarifying
+        # at the model level
         return dict(id=self.task.task_id,
+                    uuid=self.task.uuid,
                     task=t, env={},
                     cluster=cr,
                     version=pbsmrtpipe.get_version(),

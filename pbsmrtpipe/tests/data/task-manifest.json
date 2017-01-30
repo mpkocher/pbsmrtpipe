@@ -23,7 +23,8 @@
     ], 
     "resources": [
       "/var/folders/_c/8_r02r4s7vl3kx1pt92sbcmr0000gn/T/tmpI1DGy6.file"
-    ], 
+    ],
+    "uuid": "6400ff86-e70e-11e6-b3b8-3c15c2cc8f8",
     "task_id": "pbsmrtpipe.tasks.dev_hello_worlder"
   }, 
   "version": "0.14.1"

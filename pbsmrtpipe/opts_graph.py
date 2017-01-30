@@ -7,6 +7,7 @@ import functools
 import re
 import types
 import pprint
+import uuid
 import jsonschema
 
 from pbcommand.models import FileTypes, TaskTypes, SymbolTypes
@@ -205,16 +206,18 @@ def meta_task_to_task(meta_task,
     ofiles = to_resolve_files_func(output_dir, input_files, meta_task.output_types, meta_task.output_file_names, meta_task.mutable_files)
     log.debug(("Resolved output files", ofiles))
 
+    task_uuid = str(uuid.uuid4())
+
     if isinstance(meta_task, (MetaScatterTask, ScatterToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, r_task_options, r_nproc, rfiles, r_nchunks)
-        t = ScatterTask(meta_task.task_id, meta_task.is_distributed, input_files, ofiles,
+        t = ScatterTask(task_uuid, meta_task.task_id, meta_task.is_distributed, input_files, ofiles,
                         r_task_options, r_nproc, rfiles, cmd_str, r_nproc, output_dir, meta_task.chunk_keys)
     elif isinstance(meta_task, (MetaGatherTask, GatherToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, r_task_options, r_nproc, rfiles)
-        t = GatherTask(meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
+        t = GatherTask(task_uuid, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
     elif isinstance(meta_task, (MetaTask, ToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, r_task_options, r_nproc, rfiles)
-        t = Task(meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
+        t = Task(task_uuid, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
     else:
         raise TypeError("Unsupported meta task type {m}".format(m=meta_task))
 
