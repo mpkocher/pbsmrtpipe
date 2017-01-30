@@ -76,3 +76,4 @@ extras/pipeline-templates-json/*
 0.stderr
 0.stdout
 pipeline-docs
+extras/pipeline-view-rules/*

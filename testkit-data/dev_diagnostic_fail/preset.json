@@ -1,0 +1,13 @@
+{
+  "_comment": "Dev diagnostic presets",
+  "pipelineId": "pbsmrtpipe.pipelines.dev_diagnostic",
+  "presetId": "task-options-test",
+  "name": "task-options-test",
+  "description": "Test propagation of task options",
+  "options": {
+    "pbsmrtpipe.options.chunk_mode": false
+  },
+  "taskOptions": {
+    "pbsmrtpipe.task_options.raise_exception": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "task_options": {
+    "pbsmrtpipe": {
+      "dev_diagnostic_strict": true,
+      "test_int": 2,
+      "test_float": 1.234,
+      "test_str": "Hello, world",
+      "test_choice_str": "B",
+      "test_choice_int": 3,
+      "test_choice_float": 1.0
+    }
+  }
+}
