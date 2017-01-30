@@ -88,7 +88,7 @@ def run_rtc(rtc):
           options={"raise_exception":False})
 def run_rtc_optional_failure(rtc):
     if rtc.task.options["pbsmrtpipe.task_options.raise_exception"]:
-        assert 0
+        raise ValueError("raise_exception=True, failing task!")
     with open(rtc.task.output_files[0], 'w') as w:
         w.write("Hello, world!")
     return 0
