@@ -338,10 +338,13 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
 
+    # TODO(mpkocher)(1-29-2017) Make this configurable
+    service_ignore_errors = True
+
     if service_uri_or_none is None:
         service_job_client = None
     else:
-        service_job_client = JobServiceClient(service_uri_or_none, ignore_errors=True)
+        service_job_client = JobServiceClient(service_uri_or_none, ignore_errors=service_ignore_errors)
 
     def _to_run_time():
         return time.time() - started_at
@@ -394,24 +397,34 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     def services_add_datastore_file(datastore_file_):
         if service_job_client is not None:
-            total_ds_uri = "{u}/datastore".format(u=service_uri_or_none)
-            log.debug("Adding datastore file to services {d}".format(d=datastore_file_))
-            service_job_client.add_datastore_file(total_ds_uri, datastore_file_)
+            log.info("Adding datastore file to services {d}".format(d=datastore_file_))
+            service_job_client.add_datastore_file(datastore_file_)
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
                 len(tnode_.meta_task.output_file_descriptions) ==
                 len(tnode_.meta_task.output_types) == len(task_.output_files))
+
         for i_file, (file_type_, path_, name, description) in enumerate(zip(
                 tnode_.meta_task.output_types, task_.output_files,
                 tnode_.meta_task.output_file_display_names,
                 tnode_.meta_task.output_file_descriptions)):
+
+            # This is the job unique output id that can be used by tools
+            # looking to get a specific datastore file from the output of
+            # pipeline
             source_id = "{t}-out-{i}".format(t=task_.task_id, i=i_file)
+
             if tnode_.meta_task.datastore_source_id is not None:
                 source_id = tnode_.meta_task.datastore_source_id
+
             ds_uuid = _get_or_create_uuid_from_file(path_, file_type_)
             is_chunked_ = _is_chunked_task_node_type(tnode_)
-            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_, is_chunked=is_chunked_, name=name, description=description)
+
+            ds_file_ = DataStoreFile(ds_uuid, source_id, file_type_.file_type_id, path_,
+                                     is_chunked=is_chunked_,
+                                     name=name,
+                                     description=description)
             ds.add(ds_file_)
             ds.write_update_json(job_resources.datastore_json)
 
