@@ -83,6 +83,17 @@ def run_rtc(rtc):
     assert 0
 
 
+@registry("dev_optional_failure", "0.1.0", FileTypes.DS_REF, FileTypes.TXT,
+          is_distributed=False,
+          options={"raise_exception":False})
+def run_rtc_optional_failure(rtc):
+    if rtc.task.options["pbsmrtpipe.task_options.raise_exception"]:
+        raise ValueError("raise_exception=True, failing task!")
+    with open(rtc.task.output_files[0], 'w') as w:
+        w.write("Hello, world!")
+    return 0
+
+
 @registry("dev_subread_report", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.REPORT, is_distributed=False)
 def run_rtc(rtc):
     return subread_dataset_report(rtc.task.input_files[0], rtc.task.output_files[0])

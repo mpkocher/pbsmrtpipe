@@ -156,7 +156,10 @@ def get_dist_dev_pipeline():
 def get_reference_ds_report():
     """Generate a simple report and plot from Reference DataSet"""
 
-    b = [(Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.dev_reference_ds_report:0")]
+    b = [
+        (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.dev_reference_ds_report:0"),
+        (Constants.ENTRY_DS_REF, "pbsmrtpipe.tasks.dev_optional_failure:0")
+    ]
 
     return b
 

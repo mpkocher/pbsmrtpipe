@@ -1,0 +1,17 @@
+{
+  "testId": "dev_diagnostic_fail",
+  "description": "Dev example for task failure - this should exit with code 1",
+  "author": "nechols",
+  "debug": true,
+  "pipelineId": "pbsmrtpipe.pipelines.dev_diagnostic",
+  "presetJson": "preset.json",
+  "entryPoints": [
+    {
+      "entryId": "eid_ref_dataset",
+      "path": "../dev_diagnostic/referenceset.xml"
+    }
+  ],
+  "pythonTests": {
+    "pbsmrtpipe.testkit.core": ["test_zero", "test_resources", "test_datastore", "test_datastore_chunking"]
+  }
+}
