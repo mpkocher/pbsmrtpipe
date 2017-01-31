@@ -383,8 +383,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     def services_log_update_progress(source_id_, level_, message_):
         if service_job_client is not None:
-            total_log_uri = "{u}/log".format(u=service_uri_or_none)
-            service_job_client.log_workflow_progress(total_log_uri, message_, level_, source_id_)
+            service_job_client.log_workflow_progress(message_, level_, source_id_)
 
     def services_create_job_task(task_uuid_, task_id_, task_type_id_, name_):
         if service_job_client is not None:
