@@ -249,7 +249,7 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
                                 if pb_opt.option_id in pipeline.task_options:
                                     x = copy.deepcopy(pb_opt)
                                     value = pipeline.task_options[pb_opt.option_id]
-                                    x.default = value
+                                    x._default = value # XXX hacky
                                     pb_options.append(x)
                                 else:
                                     pb_options.append(pb_opt)

@@ -169,15 +169,14 @@ class TestLoadResolvedPipelineTemplate(unittest.TestCase):
                 self.assertEqual(len(pipeline_loaded.task_options),
                                  len(pipeline_loaded2.task_options))
 
-                # FIXME THIS IS BROKEN
                 n = 1
-                # for k, v in pipeline.task_options.iteritems():
-                #     if k in pipeline_loaded2.task_options:
-                #         v2 = pipeline_loaded2.task_options[k]
-                #         msg = "task option #{n} {k} expected '{v}' got '{x}'".format(k=k, v=v, x=v2, n=n)
-                #         self.assertEqual(v, v2, msg)
-                #         print "Valid " + msg
-                #         n += 1
+                for k, v in pipeline.task_options.iteritems():
+                    if k in pipeline_loaded2.task_options:
+                        v2 = pipeline_loaded2.task_options[k]
+                        msg = "task option #{n} {k} expected '{v}' got '{x}'".format(k=k, v=v, x=v2, n=n)
+                        self.assertEqual(v, v2, msg)
+                        print "Valid " + msg
+                        n += 1
 
     def test_load_pipeline_template_json(self):
         path = os.path.join(TEST_DATA_DIR, "example_pipeline_template_01.json")

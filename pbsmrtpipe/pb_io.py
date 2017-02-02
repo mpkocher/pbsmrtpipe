@@ -894,6 +894,9 @@ def pipeline_template_to_dict(pipeline, rtasks):
     # Sort the Task Options by id to group by namespace and have slightly
     # better diffs on the json files
     sorted_task_options_d = sorted([x.to_dict() for x in task_pb_opts], key=lambda x: x['id'])
+    for opt_dict in sorted_task_options_d:
+        if opt_dict['id'] in pipeline.task_options:
+            opt_dict['default'] = pipeline.task_options[opt_dict['id']]
 
     return dict(id=pipeline.pipeline_id,
                 name=pipeline.display_name,
