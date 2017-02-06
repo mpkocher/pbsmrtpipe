@@ -441,7 +441,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         log the error messages extracted from TaskResult
         :type task_result: TaskResult
         """
-        terse_msg = "Task {i} FAILED in {s:.2f} sec".format(i=task_result.task_id)
+        terse_msg = "Task {i} FAILED in {s:.2f} sec".format(i=task_result.task_id, s=task_result.run_time_sec)
         mx = "Task {i} {m}".format(i=task_id_, m=task_result.error_message)
         slog.error(mx)
         log.error(mx)
