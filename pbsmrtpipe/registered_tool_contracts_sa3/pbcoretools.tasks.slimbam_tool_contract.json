@@ -1,0 +1,46 @@
+{
+    "driver": {
+        "env": {},
+        "exe": "python -m pbcoretools.tasks.converters  run-rtc  ",
+        "serialization": "json"
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "_comment": "Created by pbcommand 0.6.0",
+        "description": "Quick tool slimbam pbcoretools.tasks.slimbam",
+        "input_types": [
+            {
+                "description": "description for PacBio.DataSet.SubreadSet_0",
+                "file_type_id": "PacBio.DataSet.SubreadSet",
+                "id": "Label PacBio.DataSet.SubreadSet_0",
+                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file >"
+            }
+        ],
+        "is_distributed": true,
+        "name": "Tool slimbam",
+        "nproc": "$max_nproc",
+        "output_types": [
+            {
+                "default_name": "file",
+                "description": "description for <DataSetFileType id=PacBio.DataSet.SubreadSet name=file >",
+                "file_type_id": "PacBio.DataSet.SubreadSet",
+                "id": "Label PacBio.DataSet.SubreadSet_0",
+                "title": "<DataSetFileType id=PacBio.DataSet.SubreadSet name=file >"
+            }
+        ],
+        "resource_types": [],
+        "schema_options": [
+            {
+                "default": "slimbam",
+                "description": "Option slimbam_exe description",
+                "id": "pbcoretools.task_options.slimbam_exe",
+                "name": "Option slimbam_exe",
+                "optionTypeId": "string"
+            }
+        ],
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "tool_contract_id": "pbcoretools.tasks.slimbam"
+    },
+    "tool_contract_id": "pbcoretools.tasks.slimbam",
+    "version": "0.1.0"
+}

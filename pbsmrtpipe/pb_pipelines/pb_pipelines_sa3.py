@@ -238,13 +238,13 @@ _OPTIONS = RESEQUENCING_TASK_OPTIONS.copy()
 @sa3_register("sa3_ds_resequencing_fat",
               "Resequencing", "0.1.0",
               task_options=_OPTIONS, tags=Tags.RESEQ_RPT)
-def ds_fat_resequencing():
+def ds_fat_resequencing(subreads=Constants.ENTRY_DS_SUBREAD):
     """
     Full Resequencing Pipeline - Blasr mapping and Genomic Consensus, plus
     additional reports
     """
 
-    filt = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.filterdataset:0")]
+    filt = [(subreads, "pbcoretools.tasks.filterdataset:0")]
     aln = _core_align_plus("pbcoretools.tasks.filterdataset:0", Constants.ENTRY_DS_REF)
     return filt + aln + _core_gc_plus("pbalign.tasks.pbalign:0", Constants.ENTRY_DS_REF)
 
@@ -409,9 +409,9 @@ def ds_laa():
     return _core_laa_plus(Constants.ENTRY_DS_SUBREAD)
 
 
-def _core_barcode():
+def _core_barcode(subreads=Constants.ENTRY_DS_SUBREAD):
     return [
-        (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.bam2bam_barcode:0"),
+        (subreads, "pbcoretools.tasks.bam2bam_barcode:0"),
         (Constants.ENTRY_DS_BARCODE, "pbcoretools.tasks.bam2bam_barcode:1"),
         ("pbcoretools.tasks.bam2bam_barcode:0", "pbreports.tasks.barcode_report:0"),
         (Constants.ENTRY_DS_BARCODE, "pbreports.tasks.barcode_report:1")
@@ -754,3 +754,15 @@ def ds_fasta_to_reference():
     Convert a FASTA file to a GmapReferenceSet
     """
     return [(Constants.ENTRY_REF_FASTA, "pbcoretools.tasks.fasta_to_gmap_reference:0")]
+
+
+@sa3_register("pb_slimbam_reseq", "Resequencing starting from internal BAM", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL,Tags.DEV))
+def pb_slimbam_reseq():
+    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.slimbam:0")]
+    return b1 + ds_fat_resequencing("pbcoretools.tasks.slimbam:0")
+
+
+@sa3_register("pb_slimbam_barcode", "Resequencing starting from internal BAM", "0.1.0", tags=(Tags.CONVERTER,Tags.INTERNAL,Tags.DEV))
+def pb_slimbam_barcode():
+    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.slimbam:0")]
+    return b1 + _core_barcode("pbcoretools.tasks.slimbam:0")
