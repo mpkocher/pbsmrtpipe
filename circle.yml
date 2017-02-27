@@ -4,6 +4,12 @@ machine:
 
 dependencies:
   pre:
+    - sudo apt-get install -y graphviz
+    - pip install --upgrade pip
+    - pip install packaging
+    - pip install appdirs
+    - pip install six
+    - pip install setuptools==33.1.1
     - pip install cython
     - pip install -r PB_REQUIREMENTS.txt
     - pip install -r REQUIREMENTS.txt
