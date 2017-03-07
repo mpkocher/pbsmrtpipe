@@ -21,7 +21,7 @@
             }
         ],
         "_comment": "Created by pbcommand 0.5.4",
-        "name": "Minorseq Report",
+        "name": "Minor Variants Report",
         "input_types": [
             {
                 "description": "Juliet Summary JSON",
