@@ -2,7 +2,7 @@
     "version": "0.1",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbreports.report.minorseq --resolved-tool-contract ",
+        "exe": "python -m pbreports.report.minor_variants --resolved-tool-contract ",
         "env": {}
     },
     "schema_version": "2.0.0",
@@ -32,8 +32,8 @@
         ],
         "nproc": 1,
         "is_distributed": true,
-        "tool_contract_id": "pbreports.tasks.minorseq_report"
+        "tool_contract_id": "pbreports.tasks.minor_variants_report"
     },
-    "tool_contract_id": "pbreports.tasks.minorseq_report"
+    "tool_contract_id": "pbreports.tasks.minor_variants_report"
 }
 

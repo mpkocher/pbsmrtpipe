@@ -790,7 +790,7 @@ def _core_minorseq(ds_ccs, ds_ref):
         ("minorseq.tasks.cleric:0", "minorseq.tasks.juliet:0")
     ]
     report = [
-        ("minorseq.tasks.juliet:1", "pbreports.tasks.minorseq_report:0")
+        ("minorseq.tasks.juliet:1", "pbreports.tasks.minor_variants_report:0")
     ]
     return align + fuse + align2 + cleric + juliet + report
 
