@@ -174,7 +174,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
             elif binding_str_is_advanced_task_id(b_in):
                 # "advanced" binding in form ($entry:e_01, {task-id}:{instance-id}:{index})
                 pipeline.entry_bindings.add((b_out, b_in))
-            elif binding_str_is_task_id(b_in):
+            elif binding_str_is_task_id(b_in) or binding_str_is_advanced_task_id(b_in):
                 # ($entry:e_01, "pbsmrtpipe.tasks.dev_task_01:0)
                 pipeline.entry_bindings.add((b_out, b_in))
             elif _binding_str_match(RX_BINDING_PIPELINE_ENTRY, b_in):
@@ -188,7 +188,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
                 raise MalformedPipelineError("Unsupported value in-binding format '{b}' from Binding -> {x}".format(b=b_in, x=(b_out, b_in)))
 
         # is regular task -> task bindings
-        elif binding_str_is_task_id(b_out):
+        elif binding_str_is_task_id(b_out) or binding_str_is_advanced_task_id(b_out):
             # simplest case
             # print ("task -> task binding", b_out, b_in)
             pipeline.bindings.add((b_out, b_in))
