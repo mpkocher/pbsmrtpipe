@@ -46,6 +46,7 @@ class Tags(object):
     ISOSEQ = "isoseq"
     DENOVO = "denovo"
     SAT = "sat"
+    MINORVAR = "minorvariants"
 
     BARCODE = "barcode"
 
@@ -766,3 +767,36 @@ def pb_slimbam_reseq():
 def pb_slimbam_barcode():
     b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.slimbam:0")]
     return b1 + _core_barcode("pbcoretools.tasks.slimbam:0")
+
+
+def _core_minorseq(ds_ccs, ds_ref):
+    align = [
+        (ds_ccs, "pbalign.tasks.align_minorvariants:0:0"),
+        (ds_ref, "pbalign.tasks.align_minorvariants:0:1")
+    ]
+    fuse = [
+        ("pbalign.tasks.align_minorvariants:0", "minorseq.tasks.fuse:0")
+    ]
+    align2 = [
+        (ds_ccs, "pbalign.tasks.align_minorvariants:1:0"),
+        ("minorseq.tasks.fuse:0", "pbalign.tasks.align_minorvariants:1:1")
+    ]
+    cleric = [
+        ("pbalign.tasks.align_minorvariants:1:0", "minorseq.tasks.cleric:0"),
+        (ds_ref, "minorseq.tasks.cleric:1"),
+        ("minorseq.tasks.fuse:0", "minorseq.tasks.cleric:2")
+    ]
+    juliet = [
+        ("minorseq.tasks.cleric:0", "minorseq.tasks.juliet:0")
+    ]
+    return align + fuse + align2 + cleric + juliet
+
+
+@sa3_register("pb_minorseq", "Minor Variants analysis starting from CCS", "0.1.0", tags=(Tags.INTERNAL,Tags.MINORVAR))
+def pb_minorseq_from_ccs():
+    return _core_minorseq(Constants.ENTRY_DS_CCS, Constants.ENTRY_DS_REF)
+
+
+@sa3_register("sa3_ds_minorseq", "Minor Variants analysis", "0.1.0", tags=(Tags.MINORVAR))
+def ds_minorseq():
+    return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
