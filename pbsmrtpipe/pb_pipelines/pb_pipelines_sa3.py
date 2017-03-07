@@ -789,7 +789,10 @@ def _core_minorseq(ds_ccs, ds_ref):
     juliet = [
         ("minorseq.tasks.cleric:0", "minorseq.tasks.juliet:0")
     ]
-    return align + fuse + align2 + cleric + juliet
+    report = [
+        ("minorseq.tasks.juliet:1", "pbreports.tasks.minorseq_report:0")
+    ]
+    return align + fuse + align2 + cleric + juliet + report
 
 
 @sa3_register("pb_minorseq", "Minor Variants analysis starting from CCS", "0.1.0", tags=(Tags.INTERNAL,Tags.MINORVAR))
