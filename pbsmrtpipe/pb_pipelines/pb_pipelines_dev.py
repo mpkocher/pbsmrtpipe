@@ -192,3 +192,13 @@ def get_dev_task_options_pipeline():
     """Simple example pipeline"""
     b1 = [('$entry:e_01', 'pbcommand.tasks.dev_mixed_app:0')]
     return b1
+
+
+@dev_register("dev_diagnostic_subreads", "SubreadSet Reports and validation", tags=(Tags.RPT, "subreads", "pbvalidate"))
+def get_subreads_reports():
+    return [
+        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.filter_stats_report_xml:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.adapter_report_xml:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.loading_report_xml:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.pbvalidate:0")
+    ]
