@@ -10,9 +10,9 @@ source tmp/venv/bin/activate
 export PIP_CACHE_DIR=$PWD/.pip_cache
 find $PIP_CACHE_DIR -name '*-linux_x86_64.whl' -delete || true
 
+(cd repos/pbcommand && make install)
 pip install -r REQUIREMENTS_CI.txt
 pip install -r REQUIREMENTS.txt
-(cd repos/pbcommand && make install)
 (cd repos/pbcore && make install)
 (cd repos/pbcoretools && make install)
 
