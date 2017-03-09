@@ -1,0 +1,109 @@
+{
+    "version": "0.1",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pysiv2.tasks.minor_variants --resolved-tool-contract",
+        "env": {}
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [
+            "$tmpdir"
+        ],
+        "description": "\nWrapper for handling de-multiplexing of barcoded samples in the Minor Variants\nworkflow.\n",
+        "schema_options": [
+            {
+                "optionTypeId": "boolean",
+                "default": false,
+                "id": "juliet.task_options.debug",
+                "name": "Debug",
+                "description": "Debug returns all amino acids, irrelevant of their significance."
+            },
+            {
+                "optionTypeId": "float",
+                "default": 0.0,
+                "id": "juliet.task_options.deletion_rate",
+                "name": "DeletionRate",
+                "description": "Deletion Rate, specify to override the learned rate"
+            },
+            {
+                "optionTypeId": "string",
+                "default": "amino",
+                "id": "juliet.task_options.execution_mode",
+                "name": "Execution mode",
+                "description": "Execution mode: amino, phasing, or error"
+            },
+            {
+                "optionTypeId": "boolean",
+                "default": false,
+                "id": "juliet.task_options.merge_outliers",
+                "name": "Merge Outliers",
+                "description": "Merge outliers haplotypes."
+            },
+            {
+                "optionTypeId": "boolean",
+                "default": false,
+                "id": "juliet.task_options.only_known_drms",
+                "name": "Only Known DRMs",
+                "description": "Only report known DRM positions."
+            },
+            {
+                "optionTypeId": "string",
+                "default": "",
+                "id": "juliet.task_options.region",
+                "name": "Region of Interest",
+                "description": "Genomic region of interest, reads will be clipped to that region, empty means all reads."
+            },
+            {
+                "optionTypeId": "float",
+                "default": 0.0,
+                "id": "juliet.task_options.substitution_rate",
+                "name": "Substitution Rate",
+                "description": "Substitution Rate, specify to override the learned rate"
+            },
+            {
+                "optionTypeId": "string",
+                "default": "",
+                "id": "juliet.task_options.target_config",
+                "name": "Target config",
+                "description": "Path to the JSON target config, containing regions of interest, the JSON string itself, or a predefined config tag like <HIV>"
+            }
+        ],
+        "output_types": [
+            {
+                "title": "JSON results",
+                "description": "JSON results",
+                "default_name": "juliet_report",
+                "id": "json_out",
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ],
+        "_comment": "Created by pbcommand 0.6.0",
+        "name": "Minor Variants analysis",
+        "input_types": [
+            {
+                "description": "ConsensusAlignmentSet XML",
+                "title": "Aligned CCS Reads",
+                "id": "aligned_ccs",
+                "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
+            },
+            {
+                "description": "ReferenceSet XML",
+                "title": "Reference",
+                "id": "reference",
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            },
+            {
+                "description": "ConsensusReadSet XML",
+                "title": "Unmapped CCS reads",
+                "id": "ccs_unmapped",
+                "file_type_id": "PacBio.DataSet.ConsensusReadSet"
+            }
+        ],
+        "nproc": "$max_nproc",
+        "is_distributed": true,
+        "tool_contract_id": "pysiv2.tasks.minor_variants"
+    },
+    "tool_contract_id": "pysiv2.tasks.minor_variants"
+}

@@ -769,6 +769,7 @@ def pb_slimbam_barcode():
     return b1 + _core_barcode("pbcoretools.tasks.slimbam:0")
 
 
+# XXX obsolete due to multiplexing requirement
 def _core_minorseq(ds_ccs, ds_ref):
     align = [
         (ds_ccs, "pbalign.tasks.align_minorvariants:0:0"),
@@ -795,11 +796,35 @@ def _core_minorseq(ds_ccs, ds_ref):
     return align + fuse + align2 + cleric + juliet + report
 
 
+def _core_minorseq_multiplexed(ds_ccs, ds_ref):
+    align = [
+        (ds_ccs, "pbalign.tasks.align_minorvariants:0:0"),
+        (ds_ref, "pbalign.tasks.align_minorvariants:0:1")
+    ]
+    julietflow = [
+        ("pbalign.tasks.align_minorvariants:0", "pysiv2.tasks.minor_variants:0"),
+        (ds_ref, "pysiv2.tasks.minor_variants:1"),
+        (ds_ccs, "pysiv2.tasks.minor_variants:2")
+    ]
+    report = [
+        ("pysiv2.tasks.minor_variants:1", "pbreports.tasks.minor_variants_report:0")
+    ]
+    return align + julietflow #+ report
+
+
 @sa3_register("pb_minorseq", "Minor Variants analysis starting from CCS", "0.1.0", tags=(Tags.INTERNAL,Tags.MINORVAR))
 def pb_minorseq_from_ccs():
-    return _core_minorseq(Constants.ENTRY_DS_CCS, Constants.ENTRY_DS_REF)
+    return _core_minorseq_multiplexed(Constants.ENTRY_DS_CCS, Constants.ENTRY_DS_REF)
 
 
-@sa3_register("sa3_ds_minorseq", "Minor Variants analysis", "0.1.0", tags=(Tags.MINORVAR))
+@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR))
 def ds_minorseq():
-    return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
+    return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
+
+
+@sa3_register("sa3_ds_barcode_minorseq", "Minor Variants Analysis with Barcoding", "0.1.0", tags=(Tags.MINORVAR,Tags.BARCODE))
+def ds_barcode_minorseq():
+    b1 = _core_barcode()
+    subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
+    b2 = _core_ccs(subreadset)
+    return b1 + b2 + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
