@@ -72,13 +72,6 @@
         ],
         "output_types": [
             {
-                "title": "HTML report",
-                "description": "HTML report",
-                "default_name": "juliet_report",
-                "id": "html_out",
-                "file_type_id": "PacBio.FileTypes.html"
-            },
-            {
                 "title": "JSON results",
                 "description": "JSON results",
                 "default_name": "juliet_report",
