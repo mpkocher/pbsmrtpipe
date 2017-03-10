@@ -605,9 +605,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 write_workflow_report_(bg, s_, False)
                 write_task_summary_report(bg)
 
-            elif isinstance(result, types.NoneType):
-                pass
-            else:
+            elif not isinstance(result, types.NoneType):
                 log.error("Unexpected queue result type {t} {r}".format(t=type(result), r=result))
 
             if has_failed:
