@@ -24,9 +24,7 @@ def __validate_output_file_names(output_types, output_file_names):
     if isinstance(output_file_names, (list, tuple)):
         for x in output_file_names:
             if isinstance(x, (list, tuple)):
-                if len(x) == 2:
-                    pass
-                else:
+                if len(x) != 2:
                     errors.append("Malformed output file name {x}. Expected 2-tuple (str, str).".format(x=x))
         if len(output_file_names) == len(output_types):
             # this is only branch where the outputs and override outputs file names are valid
