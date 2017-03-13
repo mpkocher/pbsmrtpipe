@@ -47,6 +47,7 @@ class Tags(object):
     DENOVO = "denovo"
     SAT = "sat"
     MINORVAR = "minorvariants"
+    SV = "sv"
 
     BARCODE = "barcode"
 
@@ -833,3 +834,25 @@ def ds_barcode_minorseq():
     subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
     b2 = _core_ccs(subreadset)
     return b1 + b2 + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
+
+
+def _core_sv(ds_subread, ds_ref):
+    config = [
+        (ds_subread, 'pbsv_pbsmrtpipe.tasks.config:0')
+    ]
+    align = [
+        ('pbsv_pbsmrtpipe.tasks.config:0', 'pbsv_pbsmrtpipe.tasks.align:0'),
+        (ds_subread, 'pbsv_pbsmrtpipe.tasks.align:1'),
+        (ds_ref, 'pbsv_pbsmrtpipe.tasks.align:2')
+    ]
+    call = [
+        ('pbsv_pbsmrtpipe.tasks.config:0', 'pbsv_pbsmrtpipe.tasks.call:0'),
+        ('pbsv_pbsmrtpipe.tasks.align:0', 'pbsv_pbsmrtpipe.tasks.call:1'),
+        (ds_ref, 'pbsv_pbsmrtpipe.tasks.call:2')
+    ]
+    return config + align + call
+
+
+@sa3_register("sa3_ds_sv", "Structural Variants analysis starting from subreads", "0.1.0", tags=(Tags.SV,))
+def ds_sv():
+    return _core_sv(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
