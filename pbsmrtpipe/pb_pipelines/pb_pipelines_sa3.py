@@ -838,17 +838,17 @@ def ds_barcode_minorseq():
 
 def _core_sv(ds_subread, ds_ref):
     config = [
-        (ds_subread, 'pbsv_pbsmrtpipe.tasks.config:0')
+        (ds_subread, 'pbsvtools.tasks.config:0')
     ]
     align = [
-        ('pbsv_pbsmrtpipe.tasks.config:0', 'pbsv_pbsmrtpipe.tasks.align:0'),
-        (ds_subread, 'pbsv_pbsmrtpipe.tasks.align:1'),
-        (ds_ref, 'pbsv_pbsmrtpipe.tasks.align:2')
+        ('pbsvtools.tasks.config:0', 'pbsvtools.tasks.align:0'),
+        (ds_subread, 'pbsvtools.tasks.align:1'),
+        (ds_ref, 'pbsvtools.tasks.align:2')
     ]
     call = [
-        ('pbsv_pbsmrtpipe.tasks.config:0', 'pbsv_pbsmrtpipe.tasks.call:0'),
-        ('pbsv_pbsmrtpipe.tasks.align:0', 'pbsv_pbsmrtpipe.tasks.call:1'),
-        (ds_ref, 'pbsv_pbsmrtpipe.tasks.call:2')
+        ('pbsvtools.tasks.config:0', 'pbsvtools.tasks.call:0'),
+        ('pbsvtools.tasks.align:0', 'pbsvtools.tasks.call:1'),
+        (ds_ref, 'pbsvtools.tasks.call:2')
     ]
     return config + align + call
 

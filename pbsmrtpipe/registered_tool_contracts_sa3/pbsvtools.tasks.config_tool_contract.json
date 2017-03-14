@@ -2,7 +2,7 @@
     "version": "0.1.0",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbsv_pbsmrtpipe.tasks.config --resolved-tool-contract ",
+        "exe": "python -m pbsvtools.tasks.config --resolved-tool-contract ",
         "env": {}
     },
     "schema_version": "2.0.0",
@@ -16,7 +16,7 @@
             {
                 "optionTypeId": "integer",
                 "default": 50,
-                "id": "pbsv_pbsmrtpipe.task_options.svlength",
+                "id": "pbsvtools.task_options.svlength",
                 "name": "length of structural variant in basepairs",
                 "description": "length of structural variant in basepairs"
             }
@@ -31,18 +31,18 @@
             }
         ],
         "_comment": "Created by pbcommand 0.6.0",
-        "name": "pbsv_pbsmrtpipe.tasks.config",
+        "name": "pbsvtools.tasks.config",
         "input_types": [
             {
-                "description": "Sentinel file",
-                "title": "Sentinel In",
-                "id": "sentinel",
-                "file_type_id": "PacBio.FileTypes.txt"
+                "description": "PacBio SubreadSet",
+                "title": "SubreadSet In",
+                "id": "subreads_in",
+                "file_type_id": "PacBio.DataSet.SubreadSet"
             }
         ],
         "nproc": 1,
         "is_distributed": true,
-        "tool_contract_id": "pbsv_pbsmrtpipe.tasks.config"
+        "tool_contract_id": "pbsvtools.tasks.config"
     },
-    "tool_contract_id": "pbsv_pbsmrtpipe.tasks.config"
+    "tool_contract_id": "pbsvtools.tasks.config"
 }
