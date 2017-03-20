@@ -1,0 +1,46 @@
+{
+    "version": "0.1",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbreports.report.minor_variants --resolved-tool-contract ",
+        "env": {}
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [],
+        "description": "\nSummarizes the Juliet Minor Variants Summary\n",
+        "schema_options": [],
+        "output_types": [
+            {
+                "title": "Minor Variants Report",
+                "description": "Filename of JSON output report",
+                "default_name": "report",
+                "id": "report",
+                "file_type_id": "PacBio.FileTypes.JsonReport"
+            },
+            {
+                "title": "Minor Variants Table",
+                "description": "Supplementary table for JSON output report",
+                "default_name": "table",
+                "id": "table",
+                "file_type_id": "PacBio.FileTypes.CSV"
+            }
+        ],
+        "_comment": "Created by pbcommand 0.5.4",
+        "name": "Minor Variants Report",
+        "input_types": [
+            {
+                "description": "Juliet Summary JSON",
+                "title": "JSON Report",
+                "id": "json_report",
+                "file_type_id": "PacBio.FileTypes.json"
+            }
+        ],
+        "nproc": 1,
+        "is_distributed": true,
+        "tool_contract_id": "pbreports.tasks.minor_variants_report"
+    },
+    "tool_contract_id": "pbreports.tasks.minor_variants_report"
+}
+
