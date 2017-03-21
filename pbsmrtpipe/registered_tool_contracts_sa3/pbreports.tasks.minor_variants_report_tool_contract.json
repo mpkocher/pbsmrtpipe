@@ -24,7 +24,7 @@
                 "description": "Supplementary table for JSON output report",
                 "default_name": "table",
                 "id": "table",
-                "file_type_id": "PacBio.FileTypes.CSV"
+                "file_type_id": "PacBio.FileTypes.csv"
             }
         ],
         "_comment": "Created by pbcommand 0.5.4",
