@@ -808,9 +808,9 @@ def _core_minorseq_multiplexed(ds_ccs, ds_ref):
         (ds_ccs, "pysiv2.tasks.minor_variants:2")
     ]
     report = [
-        ("pysiv2.tasks.minor_variants:1", "pbreports.tasks.minor_variants_report:0")
+        ("pysiv2.tasks.minor_variants:0", "pbreports.tasks.minor_variants_report:0")
     ]
-    return align + julietflow #+ report
+    return align + julietflow + report
 
 
 @sa3_register("pb_minorseq", "Minor Variants analysis starting from CCS", "0.1.0", tags=(Tags.INTERNAL,Tags.MINORVAR))
