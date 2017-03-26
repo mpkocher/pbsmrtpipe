@@ -15,7 +15,7 @@
             {
                 "title": "BAM",
                 "description": "Gathered sorted BAM",
-                "default_name": "Gathered sorted BAM",
+                "default_name": "gathered_sorted",
                 "id": "bam_out",
                 "file_type_id": "PacBio.FileTypes.bam"
             }
