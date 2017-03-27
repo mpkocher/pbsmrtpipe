@@ -17,9 +17,16 @@
             {
                 "title": "Structural variants in BED",
                 "description": "structural variants in BED",
-                "default_name": "sv_out",
-                "id": "sv_out",
+                "default_name": "structural_variants",
+                "id": "structural_variants_bed",
                 "file_type_id": "PacBio.FileTypes.bed"
+            },
+            {
+                "title": "Structural variants in VCF",
+                "description": "structural variants in VCF",
+                "default_name": "structural_variants",
+                "id": "structural_variants_vcf",
+                "file_type_id": "PacBio.FileTypes.vcf"
             }
         ],
         "_comment": "Created by pbcommand 0.6.0",
