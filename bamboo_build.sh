@@ -11,8 +11,8 @@ find $PIP_CACHE_DIR -name '*-linux_x86_64.whl' -delete || true
 
 (cd repos/pbcommand && make install)
 pip install -r REQUIREMENTS_CI.txt
-pip install -r REQUIREMENTS.txt
 (cd repos/pbcore && make install)
+pip install -r REQUIREMENTS.txt
 (cd repos/pbcoretools && make install)
 
 python setup.py install

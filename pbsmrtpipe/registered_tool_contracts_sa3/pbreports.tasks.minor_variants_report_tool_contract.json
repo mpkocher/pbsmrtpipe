@@ -22,7 +22,7 @@
             {
                 "title": "Minor Variants Table",
                 "description": "Supplementary table for JSON output report",
-                "default_name": "table",
+                "default_name": "variant_summary",
                 "id": "table",
                 "file_type_id": "PacBio.FileTypes.csv"
             }
