@@ -19,14 +19,19 @@
                 <task-output>genomic_consensus.tasks.variantcaller:0</task-output>
             </chunk>
             <chunk>
+                <gather-task-id>pbcoretools.tasks.gather_vcf</gather-task-id>
+                <chunk-key>$chunk.vcf_id</chunk-key>
+                <task-output>genomic_consensus.tasks.variantcaller:1</task-output>
+            </chunk>
+            <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_contigset</gather-task-id>
                 <chunk-key>$chunk.fasta_id</chunk-key>
-                <task-output>genomic_consensus.tasks.variantcaller:1</task-output>
+                <task-output>genomic_consensus.tasks.variantcaller:2</task-output>
             </chunk>
             <chunk>
                 <gather-task-id>pbcoretools.tasks.gather_fastq</gather-task-id>
                 <chunk-key>$chunk.fastq_id</chunk-key>
-                <task-output>genomic_consensus.tasks.variantcaller:2</task-output>
+                <task-output>genomic_consensus.tasks.variantcaller:3</task-output>
             </chunk>
         </chunks>
     </gather>
