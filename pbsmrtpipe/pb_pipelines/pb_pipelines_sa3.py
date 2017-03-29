@@ -94,8 +94,7 @@ def _core_align_plus(subread_ds, reference_ds):
 def _core_gc(alignment_ds, reference_ds):
     b1 = [(reference_ds, "genomic_consensus.tasks.variantcaller:1"),
           (alignment_ds, "genomic_consensus.tasks.variantcaller:0")]
-    b2 = [("genomic_consensus.tasks.variantcaller:0", "genomic_consensus.tasks.gff2vcf:0"),
-          ("genomic_consensus.tasks.variantcaller:0", "genomic_consensus.tasks.gff2bed:0")]
+    b2 = [("genomic_consensus.tasks.variantcaller:0", "genomic_consensus.tasks.gff2bed:0")]
     return b1 + b2
 
 
