@@ -215,7 +215,7 @@ def get_falcon_pipeline_fat():
         ("pbreports.tasks.summarize_coverage:0", "pbreports.tasks.coverage_report_hgap:1")
     ]
     fasta_out = [
-        ("genomic_consensus.tasks.variantcaller:1", "pbcoretools.tasks.contigset2fasta:0")
+        ("genomic_consensus.tasks.variantcaller:2", "pbcoretools.tasks.contigset2fasta:0")
     ]
 
     return falcon + sum_cov + polished_report + mapping_report + coverage_report + fasta_out
