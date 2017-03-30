@@ -188,7 +188,7 @@ def load_pipeline_bindings(registered_pipeline_d, pipeline_id, display_name, ver
                 raise MalformedPipelineError("Unsupported value in-binding format '{b}' from Binding -> {x}".format(b=b_in, x=(b_out, b_in)))
 
         # is regular task -> task bindings
-        elif binding_str_is_task_id(b_out):
+        elif binding_str_is_task_id(b_out) or binding_str_is_advanced_task_id(b_out):
             # simplest case
             # print ("task -> task binding", b_out, b_in)
             pipeline.bindings.add((b_out, b_in))

@@ -1,0 +1,38 @@
+{
+    "version": "0.1.0",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbcoretools.tasks.gather_vcf --resolved-tool-contract ",
+        "env": {}
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.gathered",
+        "resource_types": [],
+        "description": "General Chunk Vcf Gather",
+        "schema_options": [],
+        "output_types": [
+            {
+                "title": "Vcf",
+                "description": "Gathered Vcf",
+                "default_name": "gathered",
+                "id": "vcf_out",
+                "file_type_id": "PacBio.FileTypes.vcf"
+            }
+        ],
+        "_comment": "Created by pbcommand 0.6.0",
+        "name": "Dev Vcf Gather",
+        "input_types": [
+            {
+                "description": "Gathered CHUNK Json with Vcf chunk key",
+                "title": "GCHUNK Json",
+                "id": "cjson_in",
+                "file_type_id": "PacBio.FileTypes.CHUNK"
+            }
+        ],
+        "nproc": 1,
+        "is_distributed": true,
+        "tool_contract_id": "pbcoretools.tasks.gather_vcf"
+    },
+    "tool_contract_id": "pbcoretools.tasks.gather_vcf"
+}

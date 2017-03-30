@@ -1,0 +1,64 @@
+{
+    "version": "0.1.3",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbcoretools.tasks.scatter_ccs_aligned_barcodes --resolved-tool-contract ",
+        "env": {}
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.scattered",
+        "resource_types": [],
+        "description": "Scatter ConsensusAlignment DataSet by barcodess",
+        "schema_options": [
+            {
+                "optionTypeId": "integer",
+                "default": 5,
+                "id": "pbcoretools.task_options.scatter_ccs_aln_max_nchunks",
+                "name": "Max NChunks",
+                "description": "Maximum number of Chunks"
+            }
+        ],
+        "output_types": [
+            {
+                "title": "Chunk ConsensusAlignmentSet",
+                "description": "PacBio Chunked JSON ConsensusAlignmentSet",
+                "default_name": "ccsalignmentsset_chunked",
+                "id": "chunk_report_json",
+                "file_type_id": "PacBio.FileTypes.CHUNK"
+            }
+        ],
+        "_comment": "Created by pbcommand 0.6.0",
+        "nchunks": "$max_nchunks",
+        "name": "ConsensusAlignmentSet barcode scatter",
+        "input_types": [
+            {
+                "description": "ConsensusAlignmentSet XML",
+                "title": "ConsensusAlignmentSet",
+                "id": "alignments",
+                "file_type_id": "PacBio.DataSet.ConsensusAlignmentSet"
+            },
+            {
+                "description": "ReferenceSet XML",
+                "title": "ReferenceSet",
+                "id": "reference",
+                "file_type_id": "PacBio.DataSet.ReferenceSet"
+            },
+            {
+                "description": "ConsensusReadSet XML",
+                "title": "ConsensusReadSet",
+                "id": "ccs",
+                "file_type_id": "PacBio.DataSet.ConsensusReadSet"
+            }
+        ],
+        "chunk_keys": [
+            "$chunk.ccs_alignmentset_id",
+            "$chunk.reference_id",
+            "$chunk.ccsset_id"
+        ],
+        "nproc": 1,
+        "is_distributed": true,
+        "tool_contract_id": "pbcoretools.tasks.scatter_ccs_aligned_barcodes"
+    },
+    "tool_contract_id": "pbcoretools.tasks.scatter_ccs_aligned_barcodes"
+}

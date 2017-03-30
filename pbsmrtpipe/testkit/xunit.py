@@ -119,7 +119,7 @@ class XunitTestSuite(object):
                             result=test_case.result, etype=etype,
                             text=text):
 
-                if test_case.result == 'failures':
+                if test_case.result in 'failures':
                     x.error(type=test_case.etype, message=test_case.message)
                 elif test_case.result == 'failure':
                     x.failure(type=test_case.etype, message=test_case.message)

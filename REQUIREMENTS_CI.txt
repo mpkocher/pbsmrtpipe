@@ -1,6 +1,5 @@
 cython
 numpy
-h5py
 jinja2
 networkx
 pysam

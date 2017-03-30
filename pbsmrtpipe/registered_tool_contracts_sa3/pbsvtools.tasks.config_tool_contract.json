@@ -1,0 +1,48 @@
+{
+    "version": "0.1.0",
+    "driver": {
+        "serialization": "json",
+        "exe": "python -m pbsvtools.tasks.config --resolved-tool-contract ",
+        "env": {}
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "resource_types": [
+            "$tmpdir"
+        ],
+        "description": "Generate config for structural variants pipeline",
+        "schema_options": [
+            {
+                "optionTypeId": "integer",
+                "default": 50,
+                "id": "pbsvtools.task_options.svlength",
+                "name": "length of structural variant in basepairs",
+                "description": "length of structural variant in basepairs"
+            }
+        ],
+        "output_types": [
+            {
+                "title": "PBSV CONFIG",
+                "description": "Structural variants config",
+                "default_name": "pbsv",
+                "id": "pbsv",
+                "file_type_id": "PacBio.FileTypes.cfg"
+            }
+        ],
+        "_comment": "Created by pbcommand 0.6.0",
+        "name": "pbsvtools.tasks.config",
+        "input_types": [
+            {
+                "description": "PacBio SubreadSet",
+                "title": "SubreadSet In",
+                "id": "subreads_in",
+                "file_type_id": "PacBio.DataSet.SubreadSet"
+            }
+        ],
+        "nproc": 1,
+        "is_distributed": true,
+        "tool_contract_id": "pbsvtools.tasks.config"
+    },
+    "tool_contract_id": "pbsvtools.tasks.config"
+}
