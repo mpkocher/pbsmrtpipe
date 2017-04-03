@@ -849,7 +849,11 @@ def _core_sv(ds_subread, ds_ref):
         ('pbsvtools.tasks.align:0', 'pbsvtools.tasks.call:1'),
         (ds_ref, 'pbsvtools.tasks.call:2')
     ]
-    return config + align + call
+    report = [
+    ('pbsvtools.tasks.call:2', 'pbreports.tasks.structural_variants_report:0'),
+    ('pbsvtools.tasks.call:3', 'pbreports.tasks.structural_variants_report:1')
+    ]
+    return config + align + call + report
 
 
 @sa3_register("sa3_ds_sv", "Structural Variants analysis starting from subreads", "0.1.0", tags=(Tags.SV,))
