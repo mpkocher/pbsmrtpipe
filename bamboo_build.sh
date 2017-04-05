@@ -7,7 +7,6 @@ export CFLAGS="-I/mnt/software/a/anaconda2/4.2.0/include"
 PIP="pip --cache-dir=$bamboo_build_working_directory/.pip"
 type module >& /dev/null || . /mnt/software/Modules/current/init/bash
 module load gcc/4.9.2
-module load graphviz/2.28.0
 
 rm -rf   build
 mkdir -p build/bin build/lib build/include build/share
