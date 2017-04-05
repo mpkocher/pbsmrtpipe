@@ -2,6 +2,7 @@ import logging
 import functools
 
 from pbcommand.models.common import to_pipeline_ns
+from pbcommand.models import FileTypes
 
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import ENTRY_PREFIX
@@ -32,6 +33,21 @@ class Constants(object):
 
     # This should only be used for internal use
     ENTRY_COND_JSON = to_entry("cond_json")
+
+    ENTRY_FILE_TYPES = {
+        ENTRY_RS_MOVIE_XML: FileTypes.RS_MOVIE_XML,
+        ENTRY_INPUT_XML: FileTypes.INPUT_XML,
+        ENTRY_REF_FASTA: FileTypes.FASTA,
+        ENTRY_DS_REF: FileTypes.DS_REF,
+        ENTRY_DS_BARCODE: FileTypes.DS_BARCODE,
+        ENTRY_BAM_ALIGNMENT: FileTypes.BAM,
+        ENTRY_DS_HDF: FileTypes.DS_SUBREADS_H5,
+        ENTRY_DS_SUBREAD: FileTypes.DS_SUBREADS,
+        ENTRY_DS_ALIGN: FileTypes.DS_ALIGN,
+        ENTRY_DS_CCS: FileTypes.DS_CCS,
+        ENTRY_DS_GMAPREF: FileTypes.DS_GMAP_REF,
+        ENTRY_COND_JSON: FileTypes.COND_RESEQ
+    }
 
 
 class Tags(object):
@@ -798,8 +814,8 @@ def _core_minorseq(ds_ccs, ds_ref):
 
 def _core_minorseq_multiplexed(ds_ccs, ds_ref):
     align = [
-        (ds_ccs, "pbalign.tasks.align_minorvariants:0:0"),
-        (ds_ref, "pbalign.tasks.align_minorvariants:0:1")
+        (ds_ccs, "pbalign.tasks.align_minorvariants:0"),
+        (ds_ref, "pbalign.tasks.align_minorvariants:1")
     ]
     julietflow = [
         ("pbalign.tasks.align_minorvariants:0", "pysiv2.tasks.minor_variants:0"),
@@ -822,7 +838,7 @@ MV_CCS_OPTS = {
     "pbccs.task_options.rich_qvs": True
 }
 
-@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR), task_options=MV_CCS_OPTS)
+@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR,), task_options=MV_CCS_OPTS)
 def ds_minorseq():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
 

@@ -3,6 +3,8 @@ import pprint
 import unittest
 import logging
 
+from pbcommand.models import FileTypes
+
 import pbsmrtpipe.loader as L
 import pbsmrtpipe.graph.bgraph as BU
 from pbsmrtpipe.pb_io import (pipeline_template_to_dict,
@@ -13,6 +15,17 @@ from pbsmrtpipe.schemas import validate_pipeline_template
 from base import get_temp_file
 
 log = logging.getLogger(__name__)
+
+
+def validate_entry_points(d):
+    from pbsmrtpipe.pb_pipelines.pb_pipelines_sa3 import Constants, to_entry
+    for ep in d['entryPoints']:
+        eid = to_entry(ep['entryId'])
+        if eid in Constants.ENTRY_FILE_TYPES:
+            file_type_id = Constants.ENTRY_FILE_TYPES[eid].file_type_id
+            if ep['fileTypeId'] != file_type_id:
+                raise ValueError("Expected {r} for {e}, got {t}".format(
+                                 r=file_type_id, e=eid, t=ep['fileTypeId']))
 
 
 class TestPipelineSanity(unittest.TestCase):
@@ -38,6 +51,7 @@ class TestPipelineSanity(unittest.TestCase):
                 bg = BU.binding_strs_to_binding_graph(rtasks, pipeline.all_bindings)
                 BU.validate_binding_graph_integrity(bg)
 
+                validate_entry_points(d)
                 # pprint.pprint(d)
 
                 # for debugging purposes
@@ -57,9 +71,9 @@ class TestPipelineSanity(unittest.TestCase):
                 self.assertIsInstance(pipeline_d, dict)
 
             except Exception as e:
-                m = emsg + "Error " + e.message
+                m = emsg + " Error: " + e.message
                 log.error(m)
-                errors.append(emsg)
+                errors.append(m)
                 log.error(emsg)
                 log.error(e)
 
