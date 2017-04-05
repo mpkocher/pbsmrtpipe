@@ -7,6 +7,7 @@ export CFLAGS="-I/mnt/software/a/anaconda2/4.2.0/include"
 PIP="pip --cache-dir=$bamboo_build_working_directory/.pip"
 type module >& /dev/null || . /mnt/software/Modules/current/init/bash
 module load gcc/4.9.2
+module load graphviz/2.28.0
 
 rm -rf   build
 mkdir -p build/bin build/lib build/include build/share
@@ -17,7 +18,12 @@ $PIP install --user \
   $NX3PBASEURL/pythonpkgs/xmlbuilder-1.0-cp27-none-any.whl \
   $NX3PBASEURL/pythonpkgs/tabulate-0.7.5-cp27-none-any.whl \
   $NX3PBASEURL/pythonpkgs/pysam-0.9.1.4-cp27-cp27mu-linux_x86_64.whl \
-  $NX3PBASEURL/pythonpkgs/avro-1.7.7-cp27-none-any.whl
+  $NX3PBASEURL/pythonpkgs/avro-1.7.7-cp27-none-any.whl \
+  $NX3PBASEURL/pythonpkgs/Jinja2-2.7.3-cp27-none-any.whl \
+  $NX3PBASEURL/pythonpkgs/pyparsing-1.5.7-cp27-none-any.whl \
+  $NX3PBASEURL/pythonpkgs/pydot-1.0.28-cp27-none-any.whl \
+  $NX3PBASEURL/pythonpkgs/pycrypto-2.6.1-cp27-cp27mu-linux_x86_64.whl \
+  $NX3PBASEURL/pythonpkgs/Fabric-1.10.1-cp27-none-any.whl
 $PIP install --user -e repos/pbcommand
 $PIP install --user -e repos/pbcore
 $PIP install --user -e repos/pbcoretools
