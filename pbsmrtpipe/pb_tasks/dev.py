@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import time
+import xml.dom.minidom
 
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.pb_io.report import fofn_to_report
@@ -231,6 +232,22 @@ def run_rtc(rtc):
         f.write("Dev Mock converting ReferenceSet {}\n".format(rtc.task.input_files[0]))
         f.write("to text file {}".format(rtc.task.output_files[0]))
 
+    return 0
+
+
+@registry("dev_verify_chemistry", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.TXT, is_distributed=False, options=dict(chemistry_version="unknown"))
+def run_chem_bundle_check(rtc):
+    """Dev task for verifying chemistry bundle propagation"""
+    CHEM_DIR = os.getenv("SMRT_CHEMISTRY_BUNDLE_DIR")
+    manifest = os.path.join(CHEM_DIR, "manifest.xml")
+    dom = xml.dom.minidom.parse(manifest)
+    version = dom.getElementsByTagName("Version")[0].lastChild.data
+    expected = rtc.task.options["pbsmrtpipe.task_options.chemistry_version"]
+    msg = "Expected version {e}, got {v}".format(e=expected, v=version)
+    assert version == expected, msg
+    with open(rtc.task.output_files[0], 'w') as f:
+        f.write("SMRT_CHEMISTRY_BUNDLE_DIR={f}".format(f=rtc.task.input_files[0]))
+        f.write("VERSION={v}".format(v=version))
     return 0
 
 
