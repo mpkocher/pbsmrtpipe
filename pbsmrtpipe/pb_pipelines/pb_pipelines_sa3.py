@@ -798,8 +798,8 @@ def _core_minorseq(ds_ccs, ds_ref):
 
 def _core_minorseq_multiplexed(ds_ccs, ds_ref):
     align = [
-        (ds_ccs, "pbalign.tasks.align_minorvariants:0:0"),
-        (ds_ref, "pbalign.tasks.align_minorvariants:0:1")
+        (ds_ccs, "pbalign.tasks.align_minorvariants:0"),
+        (ds_ref, "pbalign.tasks.align_minorvariants:1")
     ]
     julietflow = [
         ("pbalign.tasks.align_minorvariants:0", "pysiv2.tasks.minor_variants:0"),
@@ -822,7 +822,7 @@ MV_CCS_OPTS = {
     "pbccs.task_options.rich_qvs": True
 }
 
-@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR), task_options=MV_CCS_OPTS)
+@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR,), task_options=MV_CCS_OPTS)
 def ds_minorseq():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
 
