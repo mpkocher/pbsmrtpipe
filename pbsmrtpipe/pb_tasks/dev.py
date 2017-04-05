@@ -238,7 +238,7 @@ def run_rtc(rtc):
 @registry("dev_verify_chemistry", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.TXT, is_distributed=False, options=dict(chemistry_version="unknown"))
 def run_chem_bundle_check(rtc):
     """Dev task for verifying chemistry bundle propagation"""
-    CHEM_DIR = os.getenv("SMRT_CHEMISTRY_BUNDLE_DIR")
+    CHEM_DIR = os.environ["SMRT_CHEMISTRY_BUNDLE_DIR"]
     manifest = os.path.join(CHEM_DIR, "manifest.xml")
     dom = xml.dom.minidom.parse(manifest)
     version = dom.getElementsByTagName("Version")[0].lastChild.data
