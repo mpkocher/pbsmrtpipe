@@ -872,6 +872,6 @@ def _core_sv(ds_subread, ds_ref):
     return config + align + call + report
 
 
-@sa3_register("sa3_ds_sv", "Structural Variants analysis starting from subreads", "0.1.0", tags=(Tags.SV,))
+@sa3_register("sa3_ds_sv", "Structural Variants Analysis", "0.1.0", tags=(Tags.SV,))
 def ds_sv():
     return _core_sv(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)
