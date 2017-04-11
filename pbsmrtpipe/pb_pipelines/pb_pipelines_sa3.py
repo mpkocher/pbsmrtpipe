@@ -469,7 +469,7 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5
 
 
-@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.1.0", tags=(Tags.CCS, ), task_options=CCS_TASK_OPTIONS)
+@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.2.0", tags=(Tags.CCS, ), task_options=CCS_TASK_OPTIONS)
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
@@ -478,7 +478,7 @@ def ds_ccs():
     return b1 + _core_ccs("pbcoretools.tasks.filterdataset:0")
 
 
-@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.1.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
+@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
 def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
@@ -499,7 +499,7 @@ def _core_ccs_align(ccs_ds):
     return b3+b4
 
 
-@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.1.0", tags=(Tags.CCS, Tags.MAP, ), task_options=CCS_TASK_OPTIONS)
+@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.2.0", tags=(Tags.CCS, Tags.MAP, ), task_options=CCS_TASK_OPTIONS)
 def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
