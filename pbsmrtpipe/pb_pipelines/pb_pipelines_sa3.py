@@ -474,7 +474,8 @@ def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
     """
-    return _core_ccs(Constants.ENTRY_DS_SUBREAD)
+    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.filterdataset:0")]
+    return b1 + _core_ccs("pbcoretools.tasks.filterdataset:0")
 
 
 @sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.1.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
@@ -483,9 +484,9 @@ def ds_barcode_ccs():
     Internal pipeline for testing barcoding in combination with CCS
     """
     b1 = _core_barcode()
-    subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
-    b2 = _core_ccs(subreadset)
-    return b1 + b2
+    b2 = [("pbcoretools.tasks.bam2bam_barcode:0", "pbcoretools.tasks.filterdataset:0")]
+    b3 = _core_ccs("pbcoretools.tasks.filterdataset:0")
+    return b1 + b2 + b3
 
 
 def _core_ccs_align(ccs_ds):
