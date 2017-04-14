@@ -16,6 +16,7 @@ import uuid
 import platform
 import datetime
 import pytz
+import tempfile
 
 from pbcommand.pb_io import (write_resolved_tool_contract,
                              write_tool_contract,
@@ -256,6 +257,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # this used for the cluster submission.
     job_id = random.randint(100000, 999999)
     started_at = time.time()
+    tempfile.tempdir = workflow_opts.tmp_dir
 
     m_ = "Distributed" if workflow_opts.distributed_mode is not None else "Local"
 

@@ -2,6 +2,7 @@ import logging
 import functools
 
 from pbcommand.models.common import to_pipeline_ns
+from pbcommand.models import FileTypes
 
 from pbsmrtpipe.core import register_pipeline
 from pbsmrtpipe.constants import ENTRY_PREFIX
@@ -32,6 +33,21 @@ class Constants(object):
 
     # This should only be used for internal use
     ENTRY_COND_JSON = to_entry("cond_json")
+
+    ENTRY_FILE_TYPES = {
+        ENTRY_RS_MOVIE_XML: FileTypes.RS_MOVIE_XML,
+        ENTRY_INPUT_XML: FileTypes.INPUT_XML,
+        ENTRY_REF_FASTA: FileTypes.FASTA,
+        ENTRY_DS_REF: FileTypes.DS_REF,
+        ENTRY_DS_BARCODE: FileTypes.DS_BARCODE,
+        ENTRY_BAM_ALIGNMENT: FileTypes.BAM,
+        ENTRY_DS_HDF: FileTypes.DS_SUBREADS_H5,
+        ENTRY_DS_SUBREAD: FileTypes.DS_SUBREADS,
+        ENTRY_DS_ALIGN: FileTypes.DS_ALIGN,
+        ENTRY_DS_CCS: FileTypes.DS_CCS,
+        ENTRY_DS_GMAPREF: FileTypes.DS_GMAP_REF,
+        ENTRY_COND_JSON: FileTypes.COND_RESEQ
+    }
 
 
 class Tags(object):
@@ -453,23 +469,24 @@ def _core_ccs(subread_ds):
     return b3 + b4 + b5
 
 
-@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.1.0", tags=(Tags.CCS, ), task_options=CCS_TASK_OPTIONS)
+@sa3_register("sa3_ds_ccs", "Circular Consensus Sequences (CCS 2)", "0.2.0", tags=(Tags.CCS, ), task_options=CCS_TASK_OPTIONS)
 def ds_ccs():
     """
     Basic ConsensusRead (CCS) pipeline, starting from subreads.
     """
-    return _core_ccs(Constants.ENTRY_DS_SUBREAD)
+    b1 = [(Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.filterdataset:0")]
+    return b1 + _core_ccs("pbcoretools.tasks.filterdataset:0")
 
 
-@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.1.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
+@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
 def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
     """
     b1 = _core_barcode()
-    subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
-    b2 = _core_ccs(subreadset)
-    return b1 + b2
+    b2 = [("pbcoretools.tasks.bam2bam_barcode:0", "pbcoretools.tasks.filterdataset:0")]
+    b3 = _core_ccs("pbcoretools.tasks.filterdataset:0")
+    return b1 + b2 + b3
 
 
 def _core_ccs_align(ccs_ds):
@@ -482,7 +499,7 @@ def _core_ccs_align(ccs_ds):
     return b3+b4
 
 
-@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.1.0", tags=(Tags.CCS, Tags.MAP, ), task_options=CCS_TASK_OPTIONS)
+@sa3_register("sa3_ds_ccs_align", "CCS Mapping", "0.2.0", tags=(Tags.CCS, Tags.MAP, ), task_options=CCS_TASK_OPTIONS)
 def ds_align_ccs():
     """
     ConsensusRead (CCS) + Mapping pipeline, starting from subreads.
@@ -798,8 +815,8 @@ def _core_minorseq(ds_ccs, ds_ref):
 
 def _core_minorseq_multiplexed(ds_ccs, ds_ref):
     align = [
-        (ds_ccs, "pbalign.tasks.align_minorvariants:0:0"),
-        (ds_ref, "pbalign.tasks.align_minorvariants:0:1")
+        (ds_ccs, "pbalign.tasks.align_minorvariants:0"),
+        (ds_ref, "pbalign.tasks.align_minorvariants:1")
     ]
     julietflow = [
         ("pbalign.tasks.align_minorvariants:0", "pysiv2.tasks.minor_variants:0"),
@@ -822,7 +839,7 @@ MV_CCS_OPTS = {
     "pbccs.task_options.rich_qvs": True
 }
 
-@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR), task_options=MV_CCS_OPTS)
+@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR,), task_options=MV_CCS_OPTS)
 def ds_minorseq():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
 
@@ -849,9 +866,13 @@ def _core_sv(ds_subread, ds_ref):
         ('pbsvtools.tasks.align:0', 'pbsvtools.tasks.call:1'),
         (ds_ref, 'pbsvtools.tasks.call:2')
     ]
-    return config + align + call
+    report = [
+    ('pbsvtools.tasks.call:2', 'pbreports.tasks.structural_variants_report:0'),
+    ('pbsvtools.tasks.call:3', 'pbreports.tasks.structural_variants_report:1')
+    ]
+    return config + align + call + report
 
 
-@sa3_register("sa3_ds_sv", "Structural Variants analysis starting from subreads", "0.1.0", tags=(Tags.SV,))
+@sa3_register("sa3_ds_sv", "Structural Variants Analysis", "0.1.0", tags=(Tags.SV,))
 def ds_sv():
     return _core_sv(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)

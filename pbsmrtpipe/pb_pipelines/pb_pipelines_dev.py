@@ -202,3 +202,8 @@ def get_subreads_reports():
         (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.loading_report_xml:0"),
         (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.pbvalidate:0")
     ]
+
+
+@dev_register("dev_verify_chemistry", "Verify Chemistry Bundle Version", tags=("subreads",))
+def get_verify_chemistry():
+    return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_chemistry:0")]

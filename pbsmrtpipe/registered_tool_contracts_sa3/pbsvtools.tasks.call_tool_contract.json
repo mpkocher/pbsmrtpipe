@@ -27,6 +27,20 @@
                 "default_name": "structural_variants",
                 "id": "structural_variants_vcf",
                 "file_type_id": "PacBio.FileTypes.vcf"
+            },
+            {
+                "title": "Structural variants summary in JSON",
+                "description": "structural variant summary in JSON",
+                "default_name": "structural_variants_summary",
+                "id": "sv_anno",
+                "file_type_id": "PacBio.FileTypes.json"
+            },
+            {
+                "title": "Structural variant lengths in JSON",
+                "description": "structural variant lengths in JSON",
+                "default_name": "structural_variants_lengths",
+                "id": "sv_lengths",
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ],
         "_comment": "Created by pbcommand 0.6.0",
