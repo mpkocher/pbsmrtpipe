@@ -23,7 +23,7 @@
             {
                 "default_name": "ccs.fastq",
                 "description": "Consensus sequences generated from CCS2",
-                "file_type_id": "PacBio.FileTypes.gzip",
+                "file_type_id": "PacBio.FileTypes.tgz",
                 "id": "fastq_gz",
                 "title": "Consensus Sequences (FASTQ)"
             }
