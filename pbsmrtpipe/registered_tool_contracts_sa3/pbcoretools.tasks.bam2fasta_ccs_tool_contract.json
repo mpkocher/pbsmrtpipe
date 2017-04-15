@@ -23,7 +23,7 @@
             {
                 "default_name": "ccs.fasta",
                 "description": "Consensus sequences generated from CCS2",
-                "file_type_id": "PacBio.FileTypes.gzip",
+                "file_type_id": "PacBio.FileTypes.tgz",
                 "id": "fasta_gz",
                 "title": "Consensus Sequences (FASTA)"
             }
