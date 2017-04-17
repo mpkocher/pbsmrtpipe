@@ -6,7 +6,7 @@
     },
     "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by pbcommand 0.5.4",
+        "_comment": "Created by pbcommand 0.6.2",
         "description": "Quick tool bam2bam_barcode pbcoretools.tasks.bam2bam_barcode",
         "input_types": [
             {
@@ -37,16 +37,21 @@
         "resource_types": [],
         "schema_options": [
             {
+                "choices": [
+                    "symmetric",
+                    "asymmetric",
+                    "tailed"
+                ],
                 "default": "symmetric",
-                "description": "Option score_mode description",
+                "description": "Select method of barcode pairing and orientation. Use 'Tailed' for Barcode Universal Primers.",
                 "id": "pbcoretools.task_options.score_mode",
-                "name": "Option score_mode",
-                "optionTypeId": "string"
+                "name": "Score Mode",
+                "optionTypeId": "choice_string"
             }
         ],
         "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pbcoretools.tasks.bam2bam_barcode"
     },
     "tool_contract_id": "pbcoretools.tasks.bam2bam_barcode",
-    "version": "0.1.0"
+    "version": "0.2.0"
 }
