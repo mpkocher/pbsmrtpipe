@@ -63,11 +63,31 @@
                 "description": "Substitution Rate, specify to override the learned rate"
             },
             {
+                "name": "Target config",
+                "default": "none",
+                "choices": [
+                    "none",
+                    "HIV",
+                    "HIV-PB",
+                    "ABL1"
+                ],
+                "optionTypeId": "choice_string",
+                "id": "juliet.task_options.target_config",
+                "description": "Predefined target config tag: [\"\", \"HIV\", \"ABL1\"]"
+            },
+            {
                 "optionTypeId": "string",
                 "default": "",
-                "id": "juliet.task_options.target_config",
+                "id": "juliet.task_options.target_config_file",
+                "name": "Target config file",
+                "description": "Path to the target config JSON file"
+            },
+            {
+                "optionTypeId": "string",
+                "default": "",
+                "id": "juliet.task_options.target_config_json",
                 "name": "Target config",
-                "description": "Path to the JSON target config, containing regions of interest, the JSON string itself, or a predefined config tag like <HIV>"
+                "description": "Target config JSON string"
             }
         ],
         "output_types": [
@@ -79,7 +99,7 @@
                 "file_type_id": "PacBio.FileTypes.json"
             }
         ],
-        "_comment": "Created by pbcommand 0.6.0",
+        "_comment": "Created by pbcommand 0.6.2",
         "name": "Minor Variants analysis",
         "input_types": [
             {
