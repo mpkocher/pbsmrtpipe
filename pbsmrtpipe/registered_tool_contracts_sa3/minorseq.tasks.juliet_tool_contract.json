@@ -87,9 +87,29 @@
                 "optionTypeId": "float"
             },
             {
-                "default": "",
-                "description": "Path to the JSON target config, containing regions of interest, the JSON string itself, or a predefined config tag like <HIV>",
+                "choices": [
+                    "none",
+                    "HIV",
+                    "HIV-PB",
+                    "ABL1"
+                ],
+                "default": "none",
+                "description": "Predefined target config tag: [\"\", \"HIV\", \"ABL1\"]",
                 "id": "juliet.task_options.target_config",
+                "name": "Target config",
+                "optionTypeId": "choice_string"
+            },
+            {
+                "default": "",
+                "description": "Path to the target config JSON file",
+                "id": "juliet.task_options.target_config_file",
+                "name": "Target config file",
+                "optionTypeId": "string"
+            },
+            {
+                "default": "",
+                "description": "Target config JSON string",
+                "id": "juliet.task_options.target_config_json",
                 "name": "Target config",
                 "optionTypeId": "string"
             }
@@ -98,5 +118,5 @@
         "tool_contract_id": "minorseq.tasks.juliet"
     },
     "tool_contract_id": "minorseq.tasks.juliet",
-    "version": "1.0.0 (commit a937092-dirty)"
+    "version": "1.2.0 (commit 6e12f1a)"
 }
