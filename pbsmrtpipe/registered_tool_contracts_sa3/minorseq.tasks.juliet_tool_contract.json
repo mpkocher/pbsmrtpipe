@@ -46,23 +46,23 @@
             },
             {
                 "default": 0.0,
-                "description": "Deletion Rate, specify to override the learned rate",
+                "description": "Deletion Rate, specify to override the learned rate.",
                 "id": "juliet.task_options.deletion_rate",
-                "name": "DeletionRate",
+                "name": "Deletion Rate",
                 "optionTypeId": "float"
             },
             {
-                "default": "amino",
-                "description": "Execution mode: amino, phasing, or error",
-                "id": "juliet.task_options.execution_mode",
-                "name": "Execution mode",
-                "optionTypeId": "string"
+                "default": false,
+                "description": "Merge outlier haplotypes.",
+                "id": "juliet.task_options.merge_outliers",
+                "name": "Merge Outliers",
+                "optionTypeId": "boolean"
             },
             {
                 "default": false,
-                "description": "Merge outliers haplotypes.",
-                "id": "juliet.task_options.merge_outliers",
-                "name": "Merge Outliers",
+                "description": "Phase variants and cluster haplotypes.",
+                "id": "juliet.task_options.mode_phasing",
+                "name": "Phase Variants",
                 "optionTypeId": "boolean"
             },
             {
@@ -81,7 +81,7 @@
             },
             {
                 "default": 0.0,
-                "description": "Substitution Rate, specify to override the learned rate",
+                "description": "Substitution Rate, specify to override the learned rate.",
                 "id": "juliet.task_options.substitution_rate",
                 "name": "Substitution Rate",
                 "optionTypeId": "float"
@@ -94,23 +94,23 @@
                     "ABL1"
                 ],
                 "default": "none",
-                "description": "Predefined target config tag: [\"\", \"HIV\", \"ABL1\"]",
+                "description": "Predefined target config tag, one of \"none\", \"HIV\", or \"ABL1\".",
                 "id": "juliet.task_options.target_config",
-                "name": "Target config",
+                "name": "Target Config",
                 "optionTypeId": "choice_string"
             },
             {
                 "default": "",
-                "description": "Path to the target config JSON file",
+                "description": "Path to the target config JSON file.",
                 "id": "juliet.task_options.target_config_file",
-                "name": "Target config file",
+                "name": "Target Config file",
                 "optionTypeId": "string"
             },
             {
                 "default": "",
-                "description": "Target config JSON string",
+                "description": "Target config JSON string.",
                 "id": "juliet.task_options.target_config_json",
-                "name": "Target config",
+                "name": "Target Config",
                 "optionTypeId": "string"
             }
         ],
@@ -118,5 +118,5 @@
         "tool_contract_id": "minorseq.tasks.juliet"
     },
     "tool_contract_id": "minorseq.tasks.juliet",
-    "version": "1.2.0 (commit 6e12f1a)"
+    "version": "1.3.0 (commit c2447ba)"
 }
