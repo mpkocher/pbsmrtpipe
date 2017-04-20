@@ -96,7 +96,7 @@
                 "default": "none",
                 "description": "Predefined target config tag, one of \"none\", \"HIV\", or \"ABL1\".",
                 "id": "juliet.task_options.target_config",
-                "name": "Target Config",
+                "name": "Target",
                 "optionTypeId": "choice_string"
             },
             {

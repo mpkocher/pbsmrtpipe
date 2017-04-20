@@ -63,7 +63,7 @@
                 "description": "Substitution Rate, specify to override the learned rate."
             },
             {
-                "name": "Target Config",
+                "name": "Target",
                 "default": "none",
                 "choices": [
                     "none",
