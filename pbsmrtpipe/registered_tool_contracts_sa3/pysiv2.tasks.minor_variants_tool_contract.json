@@ -1,5 +1,5 @@
 {
-    "version": "0.1",
+    "version": "0.2",
     "driver": {
         "serialization": "json",
         "exe": "python -m pysiv2.tasks.minor_variants --resolved-tool-contract",
@@ -97,6 +97,13 @@
                 "default_name": "juliet_report",
                 "id": "json_out",
                 "file_type_id": "PacBio.FileTypes.json"
+            },
+            {
+                "title": "HTML reports",
+                "description": "Tarball of HTML reports",
+                "default_name": "juliet_report",
+                "id": "reported_variants_per_barcode",
+                "file_type_id": "PacBio.FileTypes.tgz"
             }
         ],
         "_comment": "Created by pbcommand 0.6.2",
