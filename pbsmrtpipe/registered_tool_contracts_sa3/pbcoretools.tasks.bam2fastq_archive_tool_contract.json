@@ -23,7 +23,7 @@
             {
                 "default_name": "reads.fastq",
                 "description": "Sequence data converted to FASTQ format",
-                "file_type_id": "PacBio.FileTypes.gzip",
+                "file_type_id": "PacBio.FileTypes.tgz",
                 "id": "fastq",
                 "title": "FASTQ file(s)"
             }

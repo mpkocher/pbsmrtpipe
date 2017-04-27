@@ -23,7 +23,7 @@
             {
                 "default_name": "reads.fasta",
                 "description": "Seqeunce data converted to FASTA Format",
-                "file_type_id": "PacBio.FileTypes.gzip",
+                "file_type_id": "PacBio.FileTypes.tgz",
                 "id": "fasta_gz",
                 "title": "FASTA file(s)"
             }

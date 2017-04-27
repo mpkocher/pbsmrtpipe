@@ -2,7 +2,7 @@ jinja2
 networkx
 pbcore >= 1.2.10
 # pbcommand needs to be updated consistently use semver. It's currently using a N-1
-pbcommand >= 0.6.0,<0.7.0
+pbcommand >= 0.6.2,<0.7.0
 jsonschema
 xmlbuilder
 requests
