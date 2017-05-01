@@ -67,27 +67,18 @@
                 "default": "none",
                 "choices": [
                     "none",
-                    "HIV",
-                    "HIV-PB",
-                    "ABL1"
+                    "HIV"
                 ],
                 "optionTypeId": "choice_string",
                 "id": "juliet.task_options.target_config",
-                "description": "Predefined target config tag, one of \"none\", \"HIV\", or \"ABL1\"."
+                "description": "Predefined target config tag, one of \"none\" or \"HIV\"."
             },
             {
                 "optionTypeId": "string",
                 "default": "",
-                "id": "juliet.task_options.target_config_file",
-                "name": "Target Config file",
-                "description": "Path to the target config JSON file."
-            },
-            {
-                "optionTypeId": "string",
-                "default": "",
-                "id": "juliet.task_options.target_config_json",
+                "id": "juliet.task_options.target_config_universal",
                 "name": "Target Config",
-                "description": "Target config JSON string."
+                "description": "Path to the target config JSON file, predefined target config tag, or the JSON string."
             }
         ],
         "output_types": [
