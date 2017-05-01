@@ -67,39 +67,30 @@
                 "default": "none",
                 "choices": [
                     "none",
-                    "HIV",
-                    "HIV-PB",
-                    "ABL1"
+                    "HIV"
                 ],
                 "optionTypeId": "choice_string",
                 "id": "juliet.task_options.target_config",
-                "description": "Predefined target config tag, one of \"none\", \"HIV\", or \"ABL1\"."
+                "description": "Predefined target config tag, one of \"none\" or \"HIV\"."
             },
             {
                 "optionTypeId": "string",
                 "default": "",
-                "id": "juliet.task_options.target_config_file",
-                "name": "Target Config file",
-                "description": "Path to the target config JSON file."
-            },
-            {
-                "optionTypeId": "string",
-                "default": "",
-                "id": "juliet.task_options.target_config_json",
+                "id": "juliet.task_options.target_config_universal",
                 "name": "Target Config",
-                "description": "Target config JSON string."
+                "description": "Path to the target config JSON file, predefined target config tag, or the JSON string."
             }
         ],
         "output_types": [
             {
-                "title": "JSON results",
+                "title": "JSON Results",
                 "description": "JSON results",
                 "default_name": "juliet_report",
                 "id": "json_out",
                 "file_type_id": "PacBio.FileTypes.json"
             },
             {
-                "title": "HTML reports",
+                "title": "Minor Variants HTML Reports",
                 "description": "Tarball of HTML reports",
                 "default_name": "juliet_report",
                 "id": "reported_variants_per_barcode",
