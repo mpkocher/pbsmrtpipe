@@ -15,28 +15,28 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "Structural variants in BED",
+                "title": "Structural variants",
                 "description": "structural variants in BED",
                 "default_name": "structural_variants",
                 "id": "structural_variants_bed",
                 "file_type_id": "PacBio.FileTypes.bed"
             },
             {
-                "title": "Structural variants in VCF",
+                "title": "Structural variants",
                 "description": "structural variants in VCF",
                 "default_name": "structural_variants",
                 "id": "structural_variants_vcf",
                 "file_type_id": "PacBio.FileTypes.vcf"
             },
             {
-                "title": "Structural variants summary in JSON",
+                "title": "Structural variants summary",
                 "description": "structural variant summary in JSON",
                 "default_name": "structural_variants_summary",
                 "id": "sv_anno",
                 "file_type_id": "PacBio.FileTypes.json"
             },
             {
-                "title": "Structural variant lengths in JSON",
+                "title": "Structural variant lengths",
                 "description": "structural variant lengths in JSON",
                 "default_name": "structural_variants_lengths",
                 "id": "sv_lengths",

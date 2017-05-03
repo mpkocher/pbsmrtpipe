@@ -17,8 +17,8 @@
                 "optionTypeId": "integer",
                 "default": 50,
                 "id": "pbsvtools.task_options.svlength",
-                "name": "length of structural variant in basepairs",
-                "description": "length of structural variant in basepairs"
+                "name": "minimum length of structural variant (bp)",
+                "description": "minimum length of structural variant in basepairs"
             }
         ],
         "output_types": [

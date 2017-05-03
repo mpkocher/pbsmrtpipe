@@ -15,7 +15,7 @@
         "schema_options": [],
         "output_types": [
             {
-                "title": "PBSV aligned, chained, sorted bam",
+                "title": "Aligned reads",
                 "description": "sorted chained Bam alignments of `pbsv align`",
                 "default_name": "sorted_chained",
                 "id": "sorted_chained",
