@@ -18,7 +18,7 @@
                 "default": 50,
                 "id": "pbsvtools.task_options.svlength",
                 "name": "minimum length of structural variant (bp)",
-                "description": "minimum length of structural variant in basepairs"
+                "description": "A structural variant must involve at least this many basepairs to be output."
             },
             {
                 "optionTypeId": "integer",
