@@ -1,3 +1,5 @@
+
+import functools
 import os
 import logging
 import types
@@ -152,3 +154,13 @@ def monkey_patch(cls):
 
     log.debug("Completed monkey_patch on {c}".format(c=cls.__name__))
     return cls
+
+
+def pb_requirements(*reqs):
+    """
+    Method decorator for specifying linked JIRA issues.
+    """
+    def decorator(test_item):
+        test_item.__pb_requirements__ = list(reqs)
+        return test_item
+    return decorator
