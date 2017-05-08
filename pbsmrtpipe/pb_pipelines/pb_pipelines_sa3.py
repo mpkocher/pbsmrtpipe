@@ -838,7 +838,8 @@ def pb_minorseq_from_ccs():
 
 MV_CCS_OPTS = {
     "pbccs.task_options.min_predicted_accuracy": 0.99,
-    "pbccs.task_options.rich_qvs": True
+    "pbccs.task_options.rich_qvs": True,
+    "juliet.task_options.mode_phasing": True
 }
 
 @sa3_register("sa3_ds_minorseq", "Minor Variants Analysis [Beta]", "0.1.0", tags=(Tags.MINORVAR,Tags.BETA), task_options=MV_CCS_OPTS)
