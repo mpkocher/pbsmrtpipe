@@ -48,9 +48,11 @@ def _patch_test_cases_with_job_dir(test_cases, job_dir):
             # log.debug("Setting job dir on {c}".format(c=t))
 
 
-def _write_xunit_output(test_cases, result, output_xml, job_id):
+def _write_xunit_output(test_cases, result, output_xml, job_id,
+                        requirements=()):
     """Returns a XunitTestSuite instance"""
-    xml = X.convert_suite_and_result_to_xunit(test_cases, result)
+    xml = X.convert_suite_and_result_to_xunit(test_cases, result,
+        requirements=requirements)
 
     log.debug("Writing Xunit XML output to {f}".format(f=output_xml))
     with open(output_xml, 'w+') as f:
@@ -78,7 +80,8 @@ def _write_xunit_output(test_cases, result, output_xml, job_id):
     return xsuite
 
 
-def run_butler_tests(test_cases, output_dir, output_xml, job_id):
+def run_butler_tests(test_cases, output_dir, output_xml, job_id,
+                     requirements=()):
     """
 
     :return:
@@ -95,7 +98,8 @@ def run_butler_tests(test_cases, output_dir, output_xml, job_id):
     test_suite.run(result)
     #log.debug(result)
 
-    xml = _write_xunit_output(test_cases, result, output_xml, job_id)
+    xml = _write_xunit_output(test_cases, result, output_xml, job_id,
+                              requirements=requirements)
     log.info(str(xml))
 
     return 0 if result.wasSuccessful() else 1
@@ -164,7 +168,7 @@ def run_butler(butler, test_cases, output_xml,
 
         if test_cases is not None:
             slog.info("Running in test-only mode")
-            trcode = run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
+            trcode = run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id, requirements=butler.requirements)
         else:
             trcode = 0
 
@@ -211,7 +215,7 @@ def _args_run_butler(args):
         # in test only mode, only emit to stdout (to avoid overwritten the
         # log file
         setup_logger(None, level=log_level)
-        return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id)
+        return run_butler_tests(test_cases, butler.output_dir, output_xml, butler.job_id, butler.requirements)
     else:
         rcode = run_butler(butler, test_cases, output_xml, log_file,
                            log_level=log_level,

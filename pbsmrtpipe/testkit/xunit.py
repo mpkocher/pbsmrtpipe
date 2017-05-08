@@ -20,7 +20,7 @@ _RESULT_STATES = 'success skipped error failure'.split()
 
 class XunitTestSuite(object):
 
-    def __init__(self, name, tests, run_time=None):
+    def __init__(self, name, tests, run_time=None, pb_requirements=()):
         """
 
         :param name: (str) Name of test suite
@@ -32,6 +32,7 @@ class XunitTestSuite(object):
                 raise TypeError("Expected {k} got {t}.".format(t=type(t), k=XunitTestCase.__class__.__name__))
         self._tests = tests
         self._run_time = run_time
+        self._pb_requirements = pb_requirements
 
     @staticmethod
     def from_xml(file_name):
@@ -104,6 +105,10 @@ class XunitTestSuite(object):
     def nfailure(self):
         return len(self.failure)
 
+    @property
+    def requirements(self):
+        return self._pb_requirements
+
     def to_xml(self):
         """Return an XML instance of the suite"""
 
@@ -130,6 +135,10 @@ class XunitTestSuite(object):
                 else:
                     # Successful testcase
                     pass
+        if len(self._pb_requirements):
+            with x.properties():
+                for req in self._pb_requirements:
+                    x.property(name="Requirement", value=req)
         return x
 
     def to_dict(self):
@@ -203,6 +212,7 @@ def _parser(file_name):
             text = None
             message = None
             etype = None
+            rtime = None
 
             for e in el:
                 if e.tag in ('failure', 'skipped', 'error'):
@@ -216,8 +226,15 @@ def _parser(file_name):
                               message=message, etype=etype)
             tests.append(t)
 
+        # Properties linking to JIRA issues
+        pb_requirements = []
+        for el in root.findall("properties"):
+            for p in el.findall("property"):
+                pb_requirements.append(p.attrib['value'])
+
         xunit_test_suite = XunitTestSuite(suite_name, tests,
-                                          run_time=suite_run_time)
+                                          run_time=suite_run_time,
+                                          pb_requirements=pb_requirements)
 
     else:
         msg = "Unable to find tag 'testsuite' in {f}".format(f=file_name)
@@ -228,7 +245,8 @@ def _parser(file_name):
     return xunit_test_suite
 
 
-def convert_suite_and_result_to_xunit(suite, result, name="PysivXunitTestSuite"):
+def convert_suite_and_result_to_xunit(suite, result,
+        name="PysivXunitTestSuite", requirements=()):
     """Custom a test suite and result to XML.
 
     The name is used to set the xml suitename for jenkins.
@@ -276,11 +294,15 @@ def convert_suite_and_result_to_xunit(suite, result, name="PysivXunitTestSuite")
         # return m, n, mn, d
         return ".".join([m, n, mn])
 
+    requirements = set(requirements)
     all_test_cases = {}
     for s in suite:
         if isinstance(s, unittest.suite.TestSuite):
             for tc in s:
-                all_test_cases[_to_key(tc)] = None
+                key = _to_key(tc)
+                all_test_cases[key] = None
+                m = getattr(tc, tc._testMethodName)
+                requirements.update(getattr(m, "__pb_requirements__", []))
         else:
             raise TypeError("Unsupported test suite case ({x})".format(x=type(s)))
 
@@ -314,7 +336,9 @@ def convert_suite_and_result_to_xunit(suite, result, name="PysivXunitTestSuite")
             else:
                 # print "Success", idx
                 pass
-
+    with x.properties() as p:
+        for req in sorted(list(requirements)):
+            p.property(name="Requirement", value=req)
     return x
 
 
@@ -339,5 +363,6 @@ def xunit_file_to_jenkins(xunit_file, job_name):
         t.classname = "_".join([test_case.classname, job_name])
         tests.append(t)
 
-    jenkins_suite = XunitTestSuite(job_name, tests)
+    jenkins_suite = XunitTestSuite(job_name, tests,
+                                   pb_requirements=xsuite.requirements)
     return jenkins_suite.to_xml()

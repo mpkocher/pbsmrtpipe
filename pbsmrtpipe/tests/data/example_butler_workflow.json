@@ -9,6 +9,7 @@
     "entryId": "eid_ref_dataset",
     "path": "/path/to/referenceset.xml"
   }],
+  "requirements": ["SL-1", "SL-2"],
   "description": "Run resequencing pipeline",
   "jobType": "pbsmrtpipe",
   "outputDir": "job_output",

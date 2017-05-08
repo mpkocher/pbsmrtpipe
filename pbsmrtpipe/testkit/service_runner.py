@@ -145,7 +145,8 @@ def run_butler_tests_from_cfg(testkit_cfg, output_dir, output_xml,
         test_cases=test_cases,
         output_dir=output_dir,
         output_xml=output_xml,
-        job_id=job_id)
+        job_id=job_id,
+        requirements=butler.requirements)
     return exit_code
 
 
