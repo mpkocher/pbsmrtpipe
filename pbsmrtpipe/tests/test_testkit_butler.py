@@ -26,7 +26,10 @@ class _TestSanity(unittest.TestCase):
 
 
 class TestParsingButlerWorkflowCfg(_TestSanity):
-    pass
+
+    def test_requirements(self):
+        b = self._to_butler()
+        self.assertEqual(list(b.requirements), ["SL-1", "SL-2"])
 
 
 class TestParsingButlerWorkflowCfgWithPrefix(_TestSanity):
@@ -37,6 +40,10 @@ class TestParsingButlerWorkflowCfgWithPrefix(_TestSanity):
         log.debug(b)
         self.assertIsInstance(b.preset_xml, str)
 
+    def test_requirements(self):
+        b = self._to_butler()
+        self.assertEqual(list(b.requirements), ["SL-1", "SL-2"])
+
 
 class TestParsingButlerTaskCfg(_TestSanity):
     FILE_NAME = 'example_butler_task.cfg'
@@ -45,3 +52,7 @@ class TestParsingButlerTaskCfg(_TestSanity):
 
 class TestParsingButlerWorkflowJson(_TestSanity):
     FILE_NAME = "example_butler_workflow.json"
+
+    def test_requirements(self):
+        b = self._to_butler()
+        self.assertEqual(list(b.requirements), ["SL-1", "SL-2"])

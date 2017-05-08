@@ -1,5 +1,6 @@
 
 from xml.etree import ElementTree
+import tempfile
 import unittest
 
 from pbcommand.testkit import pb_requirements
@@ -15,7 +16,7 @@ def _get_and_run_test_suite():
         @pb_requirements("SL-2")
         def test_2(self):
             self.assertTrue(False)
-        @pb_requirements("SL-3")
+        @pb_requirements("SL-3", "SL-4")
         @unittest.skip("Skipped")
         def test_3(self):
             self.assertTrue(True)
@@ -32,7 +33,6 @@ class TestXunitOutput(unittest.TestCase):
         suite, result = _get_and_run_test_suite()
         x = X.convert_suite_and_result_to_xunit([suite], result,
             name="pbsmrtpipe.tests.test_xunit_output")
-        print x
         root = ElementTree.fromstring(str(x))
         self.assertEqual(root.tag, "testsuite")
         self.assertEqual(root.attrib["failures"], "1")
@@ -43,4 +43,19 @@ class TestXunitOutput(unittest.TestCase):
         for el in root.findall("properties"):
             for p in el.findall("property"):
                 requirements.append(p.attrib["value"])
-        self.assertEqual(requirements, ["SL-1","SL-2","SL-3"])
+        self.assertEqual(requirements, ["SL-1","SL-2","SL-3","SL-4"])
+
+    def test_xunit_file_to_jenkins(self):
+        suite, result = _get_and_run_test_suite()
+        x = X.convert_suite_and_result_to_xunit([suite], result,
+            name="pbsmrtpipe.tests.test_xunit_output")
+        xunit_file = tempfile.NamedTemporaryFile(suffix=".xml").name
+        with open(xunit_file, "w") as xml_out:
+            xml_out.write(str(x))
+        j = X.xunit_file_to_jenkins(xunit_file, "my_testkit_job")
+        root = ElementTree.fromstring(str(j))
+        requirements = []
+        for el in root.findall("properties"):
+            for p in el.findall("property"):
+                requirements.append(p.attrib["value"])
+        self.assertEqual(requirements, ["SL-1","SL-2","SL-3","SL-4"])
