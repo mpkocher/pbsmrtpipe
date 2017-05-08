@@ -2,8 +2,9 @@
 from xml.etree import ElementTree
 import unittest
 
+from pbcommand.testkit import pb_requirements
+
 from pbsmrtpipe.testkit import xunit as X
-from pbsmrtpipe.testkit.base import pb_requirements
 
 
 def _get_and_run_test_suite():
