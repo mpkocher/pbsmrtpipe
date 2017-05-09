@@ -1,5 +1,5 @@
 {
-    "version": "0.2",
+    "version": "0.3",
     "driver": {
         "serialization": "json",
         "exe": "python -m pysiv2.tasks.minor_variants --resolved-tool-contract",
@@ -94,10 +94,10 @@
                 "description": "Tarball of HTML reports",
                 "default_name": "juliet_report",
                 "id": "reported_variants_per_barcode",
-                "file_type_id": "PacBio.FileTypes.tgz"
+                "file_type_id": "PacBio.FileTypes.zip"
             }
         ],
-        "_comment": "Created by pbcommand 0.6.2",
+        "_comment": "Created by pbcommand 0.6.3",
         "name": "Minor Variants analysis",
         "input_types": [
             {
