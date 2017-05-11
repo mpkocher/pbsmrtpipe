@@ -77,6 +77,8 @@ class Tags(object):
     INTERNAL = "internal"
     # Mulit-analysis jobs
     COND = "conditions"
+    # Beta pipelines
+    BETA = "beta"
 
     RESEQ = (MAP, CONSENSUS)
     RESEQ_INTERNAL = (MAP, CONSENSUS, INTERNAL)
@@ -834,17 +836,18 @@ def pb_minorseq_from_ccs():
     return _core_minorseq_multiplexed(Constants.ENTRY_DS_CCS, Constants.ENTRY_DS_REF)
 
 
-MV_CCS_OPTS = {
+MV_OPTS = {
     "pbccs.task_options.min_predicted_accuracy": 0.99,
-    "pbccs.task_options.rich_qvs": True
+    "pbccs.task_options.rich_qvs": True,
+    "juliet.task_options.mode_phasing": True
 }
 
-@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis", "0.1.0", tags=(Tags.MINORVAR,), task_options=MV_CCS_OPTS)
+@sa3_register("sa3_ds_minorseq", "Minor Variants Analysis [Beta]", "0.1.0", tags=(Tags.MINORVAR,Tags.BETA), task_options=MV_OPTS)
 def ds_minorseq():
     return _core_ccs(Constants.ENTRY_DS_SUBREAD) + _core_minorseq_multiplexed("pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
 
 
-@sa3_register("sa3_ds_barcode_minorseq", "Minor Variants Analysis with Barcoding", "0.1.0", tags=(Tags.MINORVAR,Tags.BARCODE), task_options=MV_CCS_OPTS)
+@sa3_register("sa3_ds_barcode_minorseq", "Minor Variants Analysis with Barcoding [Beta]", "0.1.0", tags=(Tags.MINORVAR,Tags.BARCODE,Tags.BETA), task_options=MV_OPTS)
 def ds_barcode_minorseq():
     b1 = _core_barcode()
     subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
@@ -873,6 +876,6 @@ def _core_sv(ds_subread, ds_ref):
     return config + align + call + report
 
 
-@sa3_register("sa3_ds_sv", "Structural Variants Analysis", "0.1.0", tags=(Tags.SV,))
+@sa3_register("sa3_ds_sv", "Structural Variant Calling [Beta]", "0.1.0", tags=(Tags.SV,))
 def ds_sv():
     return _core_sv(Constants.ENTRY_DS_SUBREAD, Constants.ENTRY_DS_REF)

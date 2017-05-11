@@ -17,8 +17,22 @@
                 "optionTypeId": "integer",
                 "default": 50,
                 "id": "pbsvtools.task_options.svlength",
-                "name": "length of structural variant in basepairs",
-                "description": "length of structural variant in basepairs"
+                "name": "minimum length of structural variant (bp)",
+                "description": "A structural variant must involve at least this many basepairs to be output."
+            },
+            {
+                "optionTypeId": "integer",
+                "default": 2,
+                "id": "pbsvtools.task_options.min_readcount",
+                "name": "minimum reads that support variant (count)",
+                "description": "At least this number of reads must provide evidence for a structural variant to output it. Separate subreads from a ZMW count only once."
+            },
+            {
+                "optionTypeId": "float",
+                "default": 0.2,
+                "id": "pbsvtools.task_options.min_readfraction",
+                "name": "minimum reads that support variant (percent)",
+                "description": "At least this percent of reads that span a structural variant locus must provide evidence for a variant to output it. Separate subreads from a ZMW count only once for support and overall coverage."
             }
         ],
         "output_types": [

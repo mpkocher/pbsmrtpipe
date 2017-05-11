@@ -9,10 +9,10 @@ from .pb_pipelines_sa3 import Constants, Tags, _core_align, _core_gc
 log = logging.getLogger(__name__)
 
 
-def dev_register(relative_id, display_name, tags=(), task_options=None):
+def dev_register(relative_id, display_name, tags=(), task_options=None, version="0.1.0"):
     pipeline_id = to_pipeline_ns(relative_id)
     ptags = list(set(tags + (Tags.DENOVO, )))
-    return register_pipeline(pipeline_id, display_name, "0.1.0", tags=ptags, task_options=task_options)
+    return register_pipeline(pipeline_id, display_name, version, tags=ptags, task_options=task_options)
 
 def _get_falcon_pipeline(i_cfg, i_fasta_fofn):
     """Basic falcon pipeline components.
@@ -112,8 +112,7 @@ def _get_polished_falcon_pipeline():
     aln = 'pbalign.tasks.pbalign:0'
     ref = 'pbcoretools.tasks.fasta2referenceset:0'
 
-    polish = _core_align(subreadset, ref) + _core_gc(aln,
-                                                     ref)
+    polish = _core_align("pbcoretools.tasks.filterdataset:0", ref) + _core_gc(aln, ref)
     results = dict()
     results['aln'] = aln
     results['ref'] = ref
@@ -188,7 +187,7 @@ def get_falcon_pipeline_lean():
     return falcon
 
 @dev_register("polished_falcon_fat", "Assembly (HGAP 4)",
-        task_options=RESEQUENCING_TASK_OPTIONS)
+        task_options=RESEQUENCING_TASK_OPTIONS, version="0.2.0")
 def get_falcon_pipeline_fat():
     """Same as polished_falcon_lean, but with reports.
     """
@@ -208,7 +207,7 @@ def get_falcon_pipeline_fat():
                        ('genomic_consensus.tasks.variantcaller:3', 'pbreports.tasks.polished_assembly:1')]
     mapping_report = [
         (aln, "pbreports.tasks.mapping_stats_hgap:0"),
-        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.mapping_stats_hgap:1")
+        ("pbcoretools.tasks.filterdataset:0", "pbreports.tasks.mapping_stats_hgap:1")
     ]
     coverage_report = [
         (ref, "pbreports.tasks.coverage_report_hgap:0"),

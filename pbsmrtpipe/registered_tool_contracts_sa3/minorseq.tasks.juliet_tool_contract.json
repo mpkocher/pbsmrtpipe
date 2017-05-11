@@ -89,27 +89,18 @@
             {
                 "choices": [
                     "none",
-                    "HIV",
-                    "HIV-PB",
-                    "ABL1"
+                    "HIV"
                 ],
                 "default": "none",
-                "description": "Predefined target config tag, one of \"none\", \"HIV\", or \"ABL1\".",
+                "description": "Predefined target config tag, one of \"none\" or \"HIV\".",
                 "id": "juliet.task_options.target_config",
                 "name": "Target",
                 "optionTypeId": "choice_string"
             },
             {
                 "default": "",
-                "description": "Path to the target config JSON file.",
-                "id": "juliet.task_options.target_config_file",
-                "name": "Target Config file",
-                "optionTypeId": "string"
-            },
-            {
-                "default": "",
-                "description": "Target config JSON string.",
-                "id": "juliet.task_options.target_config_json",
+                "description": "Path to the target config JSON file, predefined target config tag, or the JSON string.",
+                "id": "juliet.task_options.target_config_universal",
                 "name": "Target Config",
                 "optionTypeId": "string"
             }
@@ -118,5 +109,5 @@
         "tool_contract_id": "minorseq.tasks.juliet"
     },
     "tool_contract_id": "minorseq.tasks.juliet",
-    "version": "1.3.0 (commit c2447ba)"
+    "version": "1.4.0 (commit 4fe4c2b)"
 }

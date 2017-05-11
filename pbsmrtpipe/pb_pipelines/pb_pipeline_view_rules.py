@@ -276,6 +276,13 @@ def resequencing_view_rules():
         ("genomic_consensus.tasks.variantcaller-out-2", FileTypes.FASTQ, False, "Consensus Sequences")
 ]
 
+@register_pipeline_rules("sa3_ds_sv", "3.2")
+def structural_variant_view_rules():
+    return [
+        ("pbsvtools.tasks.call-out-2", FileTypes.JSON, True),
+        ("pbsvtools.tasks.call-out-3", FileTypes.JSON, True),
+    ]
+
 def main(argv):
     logging.basicConfig(level=logging.INFO)
     p = argparse.ArgumentParser(description=__doc__)

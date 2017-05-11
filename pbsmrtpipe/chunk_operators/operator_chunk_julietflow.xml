@@ -19,6 +19,11 @@
                 <chunk-key>$chunk.json_id</chunk-key>
                 <task-output>pysiv2.tasks.minor_variants:0</task-output>
             </chunk>
+            <chunk>
+                <gather-task-id>pbcoretools.tasks.gather_zip</gather-task-id>
+                <chunk-key>$chunk.zip_id</chunk-key>
+                <task-output>pysiv2.tasks.minor_variants:1</task-output>
+            </chunk>
         </chunks>
     </gather>
 </chunk-operator>
