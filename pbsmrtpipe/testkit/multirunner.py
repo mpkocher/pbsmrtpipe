@@ -12,6 +12,7 @@ from pbcommand.validators import validate_file
 from pbcommand.utils import setup_log
 
 from pbsmrtpipe.testkit.runner import add_ignore_test_failures_option
+from pbsmrtpipe.testkit.xunit import merge_junit_files
 import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.utils import compose
 from pbsmrtpipe.engine import backticks
@@ -68,6 +69,19 @@ def _validate_testkit_cfg_fofn(path):
 validate_testkit_cfg_fofn = compose(_validate_testkit_cfg_fofn, validate_file)
 
 
+def merge_junit_results(testkit_cfgs, output_file, file_base):
+    junit_files = []
+    for testkit_cfg in testkit_cfgs:
+        junit_file = os.path.join(os.path.dirname(testkit_cfg), file_base)
+        if os.path.exists(junit_file):
+            junit_files.append(junit_file)
+    if len(junit_files) == 0:
+        log.error("No JUnit XML outputs found")
+    else:
+        merge_junit_files(output_file, junit_files)
+        log.info("Wrote combined test results to {f}".format(f=output_file))
+
+
 def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=""):
     os.chdir(os.path.dirname(testkit_cfg))
     cmd = "{e} --debug {m} {c}".format(c=testkit_cfg, e=_EXE, m=misc_opts)
@@ -81,7 +95,7 @@ def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=""):
     return testkit_cfg, rcode, stdout, stderr, run_time
 
 
-def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only=False, force_chunk_mode=False, disable_chunk_mode=False, ignore_test_failures=True):
+def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only=False, force_chunk_mode=False, disable_chunk_mode=False, ignore_test_failures=True, junit_out=None):
     """Run all the butler cfgs in parallel or serial (nworkers=1)
 
     :param testkit_cfgs: (list of str) list of absolute paths to butler.cfgs)
@@ -135,6 +149,9 @@ def run_testkit_cfgs(testkit_cfgs, nworkers, force_distributed=False, local_only
     print msg
     log.info(msg)
 
+    if junit_out is not None:
+        merge_junit_results(testkit_cfgs, junit_out,
+                            "job_output/jenkins_testkit_xunit.xml")
     # should this propagate the rcodes from siv_butler calls?
     return 0 if nfailed == 0 else -1
 
@@ -147,7 +164,7 @@ def _args_run_multi_testkit_cfg(args):
 
     return run_testkit_cfgs(testkit_cfgs, nworkers, args.force_distributed,
         args.local_only, args.force_chunk_mode, args.disable_chunk_mode,
-        args.ignore_test_failures)
+        args.ignore_test_failures, os.path.abspath(args.junit_out))
 
 
 def get_parser():
@@ -164,6 +181,9 @@ def get_parser():
     p.add_argument('testkit_cfg_fofn', type=validate_testkit_cfg_fofn,
                    help="File of butler.cfg file name relative to the current dir (e.g., RS_Resquencing/testkit.cfg")
     p.add_argument('-n', '--nworkers', type=int, default=1, help="Number of jobs to concurrently run.")
+    p.add_argument("-j", "--junit-xml", dest="junit_out", action="store",
+                   default="junit_combined_results.xml",
+                   help="JUnit output file for all tests")
 
     p.set_defaults(func=_args_run_multi_testkit_cfg)
     return p

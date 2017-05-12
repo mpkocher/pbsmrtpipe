@@ -9,7 +9,7 @@ import datetime
 import unittest
 import unittest.suite
 
-from xml.etree.ElementTree import ElementTree, ParseError
+from xml.etree.ElementTree import Element, ElementTree, ParseError
 
 from xmlbuilder import XMLBuilder
 
@@ -366,3 +366,19 @@ def xunit_file_to_jenkins(xunit_file, job_name):
     jenkins_suite = XunitTestSuite(job_name, tests,
                                    pb_requirements=xsuite.requirements)
     return jenkins_suite.to_xml()
+
+
+def merge_junit_files(output_file, input_files):
+    root_out = Element("testsuites")
+    xml_out = ElementTree(root_out)
+    for input_file in input_files:
+        xml_in = ElementTree(file=input_file)
+        root = xml_in.getroot()
+        if root.tag == 'testsuite':
+            root_out.append(root)
+        else:
+            assert root.tag == "testsuites"
+            for suite in root.findall("testsuite"):
+                root_out.append(suite)
+    with open(output_file, "w") as x:
+        xml_out.write(x)
