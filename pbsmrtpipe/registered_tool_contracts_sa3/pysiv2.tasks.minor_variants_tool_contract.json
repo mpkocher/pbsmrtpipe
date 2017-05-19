@@ -53,7 +53,7 @@
                 "default": "",
                 "id": "juliet.task_options.region",
                 "name": "Region of Interest",
-                "description": "Genomic region of interest, reads will be clipped to that region, empty means all reads."
+                "description": "Clip reads to this genomic region. Empty means all reads."
             },
             {
                 "optionTypeId": "float",
