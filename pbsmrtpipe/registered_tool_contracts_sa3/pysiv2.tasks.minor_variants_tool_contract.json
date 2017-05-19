@@ -45,8 +45,8 @@
                 "optionTypeId": "boolean",
                 "default": false,
                 "id": "juliet.task_options.only_known_drms",
-                "name": "Only Known DRMs",
-                "description": "Only report known DRM positions."
+                "name": "Only Report Variants in Target Config",
+                "description": "Only report variants that confer drug resistance, as listed in the target configuration file."
             },
             {
                 "optionTypeId": "string",
@@ -63,7 +63,7 @@
                 "description": "Substitution Rate, specify to override the learned rate."
             },
             {
-                "name": "Target",
+                "name": "Target Config",
                 "default": "none",
                 "choices": [
                     "none",
