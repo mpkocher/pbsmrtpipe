@@ -45,15 +45,15 @@
                 "optionTypeId": "boolean",
                 "default": false,
                 "id": "juliet.task_options.only_known_drms",
-                "name": "Only Known DRMs",
-                "description": "Only report known DRM positions."
+                "name": "Only Report Variants in Target Config",
+                "description": "Only report variants that confer drug resistance, as listed in the target configuration file."
             },
             {
                 "optionTypeId": "string",
                 "default": "",
                 "id": "juliet.task_options.region",
                 "name": "Region of Interest",
-                "description": "Genomic region of interest, reads will be clipped to that region, empty means all reads."
+                "description": "Clip reads to this genomic region. Empty means all reads."
             },
             {
                 "optionTypeId": "float",
@@ -63,7 +63,7 @@
                 "description": "Substitution Rate, specify to override the learned rate."
             },
             {
-                "name": "Target",
+                "name": "Target Config",
                 "default": "none",
                 "choices": [
                     "none",
