@@ -38,13 +38,6 @@
                 "id": "genomic_consensus.task_options.min_coverage",
                 "name": "Minimum coverage",
                 "description": "The minimum site coverage that must be achieved for variant calls and consensus to be calculated for a site."
-            },
-            {
-                "optionTypeId": "boolean",
-                "default": false,
-                "id": "genomic_consensus.task_options.diploid",
-                "name": "Diploid mode (experimental)",
-                "description": "Enable detection of heterozygous variants (experimental)"
             }
         ],
         "output_types": [
@@ -77,7 +70,7 @@
                 "file_type_id": "PacBio.FileTypes.Fastq"
             }
         ],
-        "_comment": "Created by pbcommand 0.6.0",
+        "_comment": "Created by pbcommand 0.6.2",
         "name": "variantCaller",
         "input_types": [
             {
