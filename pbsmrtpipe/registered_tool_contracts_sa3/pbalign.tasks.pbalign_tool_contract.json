@@ -38,14 +38,14 @@
                 "optionTypeId": "float",
                 "default": 70.0,
                 "id": "pbalign.task_options.min_accuracy",
-                "name": "Min. concordance",
+                "name": "Minimum concordance",
                 "description": "Minimum required alignment concordance"
             },
             {
                 "optionTypeId": "integer",
                 "default": 50,
                 "id": "pbalign.task_options.min_length",
-                "name": "Min. length",
+                "name": "Minimum length",
                 "description": "Minimum required alignment length"
             },
             {
