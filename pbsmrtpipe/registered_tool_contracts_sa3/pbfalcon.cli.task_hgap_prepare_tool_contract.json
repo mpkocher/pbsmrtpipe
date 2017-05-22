@@ -16,7 +16,7 @@
                     "default": "5000000",
                     "type": "string",
                     "option_id": "falcon_ns.task_options.HGAP_GenomeLength_str",
-                    "name": "Genome length",
+                    "name": "Genome Length",
                     "description": "Approx. number of base pairs expected in the genome. We choose many hidden settings automatically, based on this. (To learn what we generate, see fc_*.cfg, currently called 'falcon_ns.tasks.task_falcon0_build_rdb-PacBio.FileTypes.txt' amongst output files.)"
                 },
                 "title": "JSON Schema for falcon_ns.task_options.HGAP_GenomeLength_str",

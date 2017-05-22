@@ -15,8 +15,8 @@
                 "optionTypeId": "integer",
                 "default": 25,
                 "id": "pbreports.task_options.max_contigs",
-                "name": "Max contigs",
-                "description": "Max number of contigs to plot. Defaults to 25."
+                "name": "Maximum contigs",
+                "description": "Maximum number of contigs to plot. Defaults to 25."
             }
         ],
         "output_types": [
