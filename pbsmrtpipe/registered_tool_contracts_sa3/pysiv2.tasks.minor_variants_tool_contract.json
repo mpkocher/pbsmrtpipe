@@ -67,11 +67,11 @@
                 "default": "none",
                 "choices": [
                     "none",
-                    "HIV"
+                    "HIV_HXB2"
                 ],
                 "optionTypeId": "choice_string",
                 "id": "juliet.task_options.target_config",
-                "description": "Predefined target config tag, one of \"none\" or \"HIV\"."
+                "description": "Predefined target config tag, one of \"none\" or \"HIV_HXB2\"."
             },
             {
                 "optionTypeId": "string",

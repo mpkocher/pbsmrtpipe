@@ -67,14 +67,14 @@
             },
             {
                 "default": false,
-                "description": "Only report known DRM positions.",
+                "description": "Only report variants that confer drug resistance, as listed in the target configuration file.",
                 "id": "juliet.task_options.only_known_drms",
-                "name": "Only Known DRMs",
+                "name": "Only Report Variants in Target Config",
                 "optionTypeId": "boolean"
             },
             {
                 "default": "",
-                "description": "Genomic region of interest, reads will be clipped to that region, empty means all reads.",
+                "description": "Clip reads to this genomic region. Empty means all reads.",
                 "id": "juliet.task_options.region",
                 "name": "Region of Interest",
                 "optionTypeId": "string"
@@ -89,12 +89,12 @@
             {
                 "choices": [
                     "none",
-                    "HIV"
+                    "HIV_HXB2"
                 ],
                 "default": "none",
-                "description": "Predefined target config tag, one of \"none\" or \"HIV\".",
+                "description": "Predefined target config tag, one of \"none\" or \"HIV_HXB2\".",
                 "id": "juliet.task_options.target_config",
-                "name": "Target",
+                "name": "Target Config",
                 "optionTypeId": "choice_string"
             },
             {
@@ -109,5 +109,5 @@
         "tool_contract_id": "minorseq.tasks.juliet"
     },
     "tool_contract_id": "minorseq.tasks.juliet",
-    "version": "1.4.0 (commit 4fe4c2b)"
+    "version": "1.7.4 (commit dd91c23)"
 }
