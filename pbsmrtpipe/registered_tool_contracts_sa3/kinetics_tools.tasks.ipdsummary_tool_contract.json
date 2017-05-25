@@ -22,7 +22,7 @@
                 "optionTypeId": "integer",
                 "default": 3000000000000,
                 "id": "kinetics_tools.task_options.max_length",
-                "name": "Max sequence length",
+                "name": "Maximum sequence length",
                 "description": "Maximum number of bases to process per contig"
             },
             {

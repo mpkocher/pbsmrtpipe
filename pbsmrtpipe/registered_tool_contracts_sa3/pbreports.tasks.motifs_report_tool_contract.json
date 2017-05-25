@@ -15,7 +15,7 @@
                 "optionTypeId": "integer",
                 "default": 10,
                 "id": "pbreports.task_options.max_motifs_plot",
-                "name": "Max. number of motifs in QV plot",
+                "name": "Maximum number of motifs in QV plot",
                 "description": "Control number of motifs whose QVs are plotted"
             }
         ],

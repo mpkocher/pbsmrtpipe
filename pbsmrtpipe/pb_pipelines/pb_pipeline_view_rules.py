@@ -281,6 +281,8 @@ def structural_variant_view_rules():
     return [
         ("pbsvtools.tasks.call-out-2", FileTypes.JSON, True),
         ("pbsvtools.tasks.call-out-3", FileTypes.JSON, True),
+        ("pbreports.tasks.structural_variants_report-out-0", FileTypes.REPORT, True),
+        ("pbsvtools.tasks.config-out-0", FileTypes.CFG, True)
     ]
 
 def main(argv):

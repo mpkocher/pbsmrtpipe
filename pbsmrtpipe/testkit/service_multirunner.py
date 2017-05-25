@@ -4,7 +4,9 @@ Parallel wrapper for pbtestkit-service-runner, similar to pbtestkit-multirunner
 """
 
 import multiprocessing
+import itertools
 import functools
+import argparse
 import operator
 import logging
 import time
@@ -16,7 +18,7 @@ from pbcommand.cli import (get_default_argparser_with_base_opts,
 from pbcommand.utils import setup_log
 
 from pbsmrtpipe.testkit.multirunner import (validate_testkit_cfg_fofn,
-    testkit_cfg_fofn_to_files)
+    testkit_cfg_fofn_to_files, merge_junit_results)
 from pbsmrtpipe.engine import backticks
 
 __version__ = '0.1.0'
@@ -47,10 +49,16 @@ def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=Constants.MISC_OPTS,
     return testkit_cfg, rcode, stdout, stderr, run_time
 
 
-def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
+def testkit_cfg_fofns_to_files(fofns):
+    return list(itertools.chain(
+        *(testkit_cfg_fofn_to_files(os.path.abspath(fofn.name)) for fofn in fofns)))
+
+
+def run_services_testkit_jobs(host, port, testkit_cfg_fofns, nworkers=1,
                               ignore_test_failures=False, time_out=1800,
-                              sleep_time=2, import_only=False):
-    testkit_cfgs = testkit_cfg_fofn_to_files(testkit_cfg_fofn)
+                              sleep_time=2, import_only=False, junit_out=None):
+    assert isinstance(testkit_cfg_fofns, list)
+    testkit_cfgs = testkit_cfg_fofns_to_files(testkit_cfg_fofns)
     nworkers = min(len(testkit_cfgs), nworkers)
     results = []
     started_at = time.time()
@@ -104,6 +112,8 @@ def run_services_testkit_jobs(host, port, testkit_cfg_fofn, nworkers=1,
     d = dict(n=njobs, x=nfailed, s=int(run_time), m=run_time / 60.0)
     msg = "Completed {n} jobs in {s} sec ({m:.2f} min) {x} failed.".format(**d)
     log.info(msg)
+    if junit_out is not None:
+        merge_junit_results(testkit_cfgs, junit_out, "jenkins_test-output.xml")
     # should this propagate the rcodes from siv_butler calls?
     return 0 if nfailed == 0 else -1
 
@@ -112,20 +122,23 @@ def args_runner(args):
     return run_services_testkit_jobs(
         host=args.host,
         port=args.port,
-        testkit_cfg_fofn=args.testkit_cfg_fofn,
+        testkit_cfg_fofns=args.testkit_cfg_fofn,
         nworkers=args.nworkers,
         ignore_test_failures=args.ignore_test_failures,
         time_out=args.time_out,
         sleep_time=args.sleep,
-        import_only=args.import_only)
+        import_only=args.import_only,
+        junit_out=os.path.abspath(args.junit_out))
 
 
 def get_parser():
     p = get_default_argparser_with_base_opts(
         version=__version__,
         description=__doc__)
-    p.add_argument("testkit_cfg_fofn", type=validate_testkit_cfg_fofn,
-                  help="Text file listing testkit.cfg files to run")
+    p.add_argument("testkit_cfg_fofn", nargs="+",
+                   type=argparse.FileType("r"),
+                   help="Text file listing testkit.cfg files to run; you "+
+                        "may provide more than one of these")
     p.add_argument("-u", "--host", dest="host", action="store",
                    default=Constants.HOST)
     p.add_argument("-p", "--port", dest="port", action="store",
@@ -142,6 +155,9 @@ def get_parser():
                         "itself failed, regardless of test outcome")
     p.add_argument("--import-only", dest="import_only", action="store_true",
                    help="Import datasets without running pipelines")
+    p.add_argument("-j", "--junit-xml", dest="junit_out", action="store",
+                   default="junit_combined_results.xml",
+                   help="JUnit output file for all tests")
     return p
 
 
