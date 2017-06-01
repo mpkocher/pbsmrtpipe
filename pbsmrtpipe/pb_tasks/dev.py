@@ -95,7 +95,16 @@ def run_rtc_optional_failure(rtc):
     return 0
 
 
-@registry("dev_subread_report", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.REPORT, is_distributed=False)
+dev_diagnostic_options = dict(
+    dev_diagnostic_strict=False,
+    test_str="asdf",
+    test_int=1,
+    test_float=3.14,
+    test_choice_str=["A", "B", "C"],
+    test_choice_int=[1, 2, 3],
+    test_choice_float=[0.01, 0.1, 1.0])
+
+@registry("dev_subread_report", "0.2.0", FileTypes.DS_SUBREADS, FileTypes.REPORT, is_distributed=False, options=dev_diagnostic_options)
 def run_rtc(rtc):
     return subread_dataset_report(rtc.task.input_files[0], rtc.task.output_files[0])
 
@@ -170,15 +179,6 @@ def run_rtc(rtc):
                 w.write(f.readline())
     return 0
 
-
-dev_diagnostic_options = dict(
-    dev_diagnostic_strict=False,
-    test_str="asdf",
-    test_int=1,
-    test_float=3.14,
-    test_choice_str=["A", "B", "C"],
-    test_choice_int=[1, 2, 3],
-    test_choice_float=[0.01, 0.1, 1.0])
 
 @registry('dev_reference_ds_report', '0.1.0', FileTypes.DS_REF, FileTypes.REPORT, is_distributed=False, nproc=3, options=dev_diagnostic_options)
 def run_rtc(rtc):

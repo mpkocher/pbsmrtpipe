@@ -197,9 +197,7 @@ def get_dev_task_options_pipeline():
 @dev_register("dev_diagnostic_subreads", "SubreadSet Reports and validation", tags=(Tags.RPT, "subreads", "pbvalidate"))
 def get_subreads_reports():
     return [
-        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.filter_stats_report_xml:0"),
-        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.adapter_report_xml:0"),
-        (Constants.ENTRY_DS_SUBREAD, "pbreports.tasks.loading_report_xml:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_subread_report:0"),
         (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.pbvalidate:0")
     ]
 

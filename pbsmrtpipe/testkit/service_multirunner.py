@@ -9,6 +9,7 @@ import functools
 import argparse
 import operator
 import logging
+import random
 import time
 import sys
 import os
@@ -21,7 +22,7 @@ from pbsmrtpipe.testkit.multirunner import (validate_testkit_cfg_fofn,
     testkit_cfg_fofn_to_files, merge_junit_results)
 from pbsmrtpipe.engine import backticks
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 log = logging.getLogger(__name__)
 
 class Constants(object):
@@ -36,11 +37,13 @@ class Constants(object):
 # FIXME(nechols)(2016-01-22): this should use API calls, but I'd like to
 # figure out how to deal sensibly with log output first
 def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=Constants.MISC_OPTS,
-                     sleep_time=0):
-    time.sleep(sleep_time)
+                     sleep_time=Constants.SLEEP_TIME):
+    time.sleep(random.randint(1, sleep_time*2))
     os.chdir(os.path.dirname(testkit_cfg))
-    cmd = "{e} --debug {m} {c}".format(c=testkit_cfg, e=Constants.EXE,
-        m=misc_opts)
+    cmd = "{e} --debug --sleep {t} {m} {c}".format(c=testkit_cfg,
+        e=Constants.EXE,
+        m=misc_opts,
+        t=sleep_time)
     rcode, stdout, stderr, run_time = backticks(cmd)
     if debug:
         log.debug(" ".join([str(i) for i in [cmd, rcode, stdout, stderr]]))
@@ -91,7 +94,6 @@ def run_services_testkit_jobs(host, port, testkit_cfg_fofns, nworkers=1,
         # otherwise be the case.
         pool = multiprocessing.Pool(nworkers)
         for i_cfg, testkit_cfg in enumerate(testkit_cfgs):
-            sleep_time = (i_cfg % nworkers) * Constants.SLEEP_TIME
             __run_testkit_cfg = functools.partial(_run_testkit_cfg,
                 misc_opts=misc_opts, sleep_time=sleep_time)
             log.debug("Running {c} with sleep time {t}".format(
@@ -147,7 +149,8 @@ def get_parser():
                    help="Number of jobs to concurrently run.")
     p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
                    help="Timeout for blocking after job submission")
-    p.add_argument("-s", "--sleep", dest="sleep", type=int, default=2,
+    p.add_argument("-s", "--sleep", dest="sleep", type=int,
+                   default=Constants.SLEEP_TIME,
                    help="Sleep time after job submission")
     p.add_argument("--ignore-test-failures", dest="ignore_test_failures",
                    action="store_true",
