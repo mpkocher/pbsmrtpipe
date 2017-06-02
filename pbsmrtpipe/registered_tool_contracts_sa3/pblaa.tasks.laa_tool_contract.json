@@ -171,7 +171,7 @@
                 "optionTypeId": "integer"
             },
             {
-                "default": 25,
+                "default": 26,
                 "description": "Minimum average barcode score to require of subreads.",
                 "id": "pblaa.task_options.min_barcode_score",
                 "name": "Minimum Barcode Score",
@@ -294,5 +294,5 @@
         "tool_contract_id": "pblaa.tasks.laa"
     },
     "tool_contract_id": "pblaa.tasks.laa",
-    "version": "pblaa 2.1.5 (commit 0bab444-dirty) | unanimity 3.0.0 (commit d5c6efd-dirty)"
+    "version": "pblaa 2.1.5 (commit 61fe486-dirty) | unanimity 3.0.0 (commit d5c6efd-dirty)"
 }
