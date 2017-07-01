@@ -20,6 +20,13 @@
                 "default_name": "prepared_referenceset",
                 "id": "prepared_referenceset",
                 "file_type_id": "PacBio.DataSet.ReferenceSet"
+            },
+            {
+                "title": "Reference Regions",
+                "description": "create an empty file as reference regions for pbsv call",
+                "default_name": "ref_regions",
+                "id": "ref_regions",
+                "file_type_id": "PacBio.FileTypes.txt"
             }
         ],
         "_comment": "Created by pbcommand 0.6.3",

@@ -279,10 +279,13 @@ def resequencing_view_rules():
 @register_pipeline_rules("sa3_ds_sv", "3.2")
 def structural_variant_view_rules():
     return [
-        ("pbsvtools.tasks.call-out-2", FileTypes.JSON, True),
-        ("pbsvtools.tasks.call-out-3", FileTypes.JSON, True),
+        ("pbsvtools.tasks.prepare_reference-out-0", FileTypes.DS_REF, True),
+        ("pbsvtools.tasks.prepare_reference-out-1", FileTypes.TXT, True),
+        ("pbsvtools.tasks.make_reports-out-0", FileTypes.JSON, True),
+        ("pbsvtools.tasks.make_reports-out-1", FileTypes.JSON, True),
         ("pbreports.tasks.structural_variants_report-out-0", FileTypes.REPORT, True),
         ("pbsvtools.tasks.config-out-0", FileTypes.CFG, True)
+
     ]
 
 def main(argv):

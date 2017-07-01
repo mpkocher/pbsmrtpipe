@@ -2,35 +2,35 @@
     "version": "0.1.0",
     "driver": {
         "serialization": "json",
-        "exe": "python -m pbsvtools.tasks.call --resolved-tool-contract ",
+        "exe": "python -m pbsvtools.tasks.scatter_call --resolved-tool-contract ",
         "env": {}
     },
     "schema_version": "2.0.0",
     "tool_contract": {
-        "task_type": "pbsmrtpipe.task_types.standard",
-        "resource_types": [
-            "$tmpdir"
+        "task_type": "pbsmrtpipe.task_types.scattered",
+        "resource_types": [],
+        "description": "Scatter aligned reads by reference for pbsvtools.tasks.call, virutally",
+        "schema_options": [
+            {
+                "optionTypeId": "integer",
+                "default": 24,
+                "id": "pbsmrtpipe.task_options.dev_scatter_max_nchunks",
+                "name": "Max NChunks",
+                "description": "Maximum number of Chunks"
+            }
         ],
-        "description": "Call structural variants from sorted chained bam.",
-        "schema_options": [],
         "output_types": [
             {
-                "title": "Structural variants",
-                "description": "structural variants in BED",
-                "default_name": "structural_variants",
-                "id": "structural_variants_bed",
-                "file_type_id": "PacBio.FileTypes.bed"
-            },
-            {
-                "title": "Structural variants",
-                "description": "structural variants in VCF",
-                "default_name": "structural_variants",
-                "id": "structural_variants_vcf",
-                "file_type_id": "PacBio.FileTypes.vcf"
+                "title": "Chunk JSON sv call tasks",
+                "description": "Chunk JSON sv call tasks",
+                "default_name": "call.chunked",
+                "id": "cjson_out",
+                "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ],
         "_comment": "Created by pbcommand 0.6.3",
-        "name": "pbsvtools.tasks.call",
+        "nchunks": "$max_nchunks",
+        "name": "pbsvtools.tasks.scatter_call",
         "input_types": [
             {
                 "description": "pbsv Config",
@@ -57,9 +57,15 @@
                 "file_type_id": "PacBio.FileTypes.txt"
             }
         ],
-        "nproc": "$max_nproc",
+        "chunk_keys": [
+            "$chunk.config_id",
+            "$chunk.bam_id",
+            "$chunk.ref_id",
+            "$chunk.txt_id"
+        ],
+        "nproc": 1,
         "is_distributed": true,
-        "tool_contract_id": "pbsvtools.tasks.call"
+        "tool_contract_id": "pbsvtools.tasks.scatter_call"
     },
-    "tool_contract_id": "pbsvtools.tasks.call"
+    "tool_contract_id": "pbsvtools.tasks.scatter_call"
 }

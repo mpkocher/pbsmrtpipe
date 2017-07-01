@@ -869,11 +869,13 @@ def _core_sv(ds_subread, ds_ref):
     call = [
         ('pbsvtools.tasks.config:0', 'pbsvtools.tasks.call:0'),
         ('pbsvtools.tasks.align:0', 'pbsvtools.tasks.call:1'),
-        ('pbsvtools.tasks.prepare_reference:0', 'pbsvtools.tasks.call:2')
+        ('pbsvtools.tasks.prepare_reference:0', 'pbsvtools.tasks.call:2'),
+        ('pbsvtools.tasks.prepare_reference:1', 'pbsvtools.tasks.call:3')
     ]
     report = [
-    ('pbsvtools.tasks.call:2', 'pbreports.tasks.structural_variants_report:0'),
-    ('pbsvtools.tasks.call:3', 'pbreports.tasks.structural_variants_report:1')
+        ('pbsvtools.tasks.call:0', 'pbsvtools.tasks.make_reports:0'), # bed
+        ('pbsvtools.tasks.make_reports:0', 'pbreports.tasks.structural_variants_report:0'),
+        ('pbsvtools.tasks.make_reports:1', 'pbreports.tasks.structural_variants_report:1')
     ]
     return prepare + config + align + call + report
 
