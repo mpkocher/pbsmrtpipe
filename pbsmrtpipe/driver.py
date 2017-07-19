@@ -401,6 +401,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             log.info("Adding datastore file to services {d}".format(d=datastore_file_))
             service_job_client.add_datastore_file(datastore_file_)
 
+    def services_update_datastore_file(datastore_file_):
+        if service_job_client is not None:
+            service_job_client.update_datastore_file(f.uuid, file_size=os.path.getsize(f.path))
+
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
                 len(tnode_.meta_task.output_file_descriptions) ==
@@ -763,6 +767,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     finally:
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
+        ds_files_by_id = {f.file_id:f for k,f in ds.files.iteritems()}
+        for file_id in ["master.log", "pbsmrtpipe.log"]:
+            source_id = "pbsmrtpipe::{f}".format(f=file_id)
+            if source_id in ds_files_by_id:
+                services_update_datastore_file(ds_files_by_id[source_id])
 
     return exit_code
 
