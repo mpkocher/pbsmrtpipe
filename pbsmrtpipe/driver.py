@@ -1,6 +1,7 @@
 from collections import deque
 import logging
 import os
+import copy
 import socket
 import time
 import sys
@@ -661,6 +662,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
 
+                task_tmp = copy.deepcopy(task)
                 if isinstance(tnode.meta_task, (ToolContractMetaTask, ScatterToolContractMetaTask, GatherToolContractMetaTask)):
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
@@ -689,9 +691,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                         write_resolved_tool_contract_avro(rtc, rtc_avro_path)
                     # for debugging
                     write_resolved_tool_contract(rtc, rtc_json_path)
+                    # workaround for SE-587
+                    task_tmp.resolved_options = rtc.task.options
 
                 runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
-                runnable_task = RunnableTask(task, global_registry.cluster_renderer)
+                runnable_task = RunnableTask(task_tmp, global_registry.cluster_renderer)
                 runnable_task.write_json(runnable_task_path)
 
                 # Create an instance of Worker
