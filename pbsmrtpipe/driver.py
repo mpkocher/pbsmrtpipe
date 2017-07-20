@@ -404,7 +404,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     def services_update_datastore_file(datastore_file_):
         if service_job_client is not None:
-            service_job_client.update_datastore_file(f.uuid, file_size=os.path.getsize(f.path))
+            service_job_client.update_datastore_file(datastore_file_.uuid, file_size=os.path.getsize(datastore_file_.path))
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
