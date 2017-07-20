@@ -14,14 +14,14 @@
             {
                 "optionTypeId": "integer",
                 "default": 5,
-                "id": "pbcoretools.task_options.scatter_subread_max_nchunks",
+                "id": "pbcoretools.task_options.scatter_ccs_max_nchunks",
                 "name": "Max NChunks",
                 "description": "Maximum number of Chunks"
             },
             {
                 "optionTypeId": "string",
                 "default": "$chunk:fasta_id",
-                "id": "pbcoretools.task_options.scatter_subreadset_chunk_key",
+                "id": "pbcoretools.task_options.scatter_ccsset_chunk_key",
                 "name": "Chunk key",
                 "description": "Chunk key to use (format $chunk:{chunk-key}"
             }
