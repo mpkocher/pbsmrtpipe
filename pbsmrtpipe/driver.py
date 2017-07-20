@@ -1,6 +1,7 @@
 from collections import deque
 import logging
 import os
+import copy
 import socket
 import time
 import sys
@@ -401,6 +402,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             log.info("Adding datastore file to services {d}".format(d=datastore_file_))
             service_job_client.add_datastore_file(datastore_file_)
 
+    def services_update_datastore_file(datastore_file_):
+        if service_job_client is not None:
+            service_job_client.update_datastore_file(f.uuid, file_size=os.path.getsize(f.path))
+
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
                 len(tnode_.meta_task.output_file_descriptions) ==
@@ -657,6 +662,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
 
+                task_tmp = copy.deepcopy(task)
                 if isinstance(tnode.meta_task, (ToolContractMetaTask, ScatterToolContractMetaTask, GatherToolContractMetaTask)):
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
@@ -685,9 +691,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                         write_resolved_tool_contract_avro(rtc, rtc_avro_path)
                     # for debugging
                     write_resolved_tool_contract(rtc, rtc_json_path)
+                    # workaround for SE-587
+                    task_tmp.resolved_options = rtc.task.options
 
                 runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
-                runnable_task = RunnableTask(task, global_registry.cluster_renderer)
+                runnable_task = RunnableTask(task_tmp, global_registry.cluster_renderer)
                 runnable_task.write_json(runnable_task_path)
 
                 # Create an instance of Worker
@@ -763,6 +771,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     finally:
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
+        ds_files_by_id = {f.file_id:f for k,f in ds.files.iteritems()}
+        for file_id in ["master.log", "pbsmrtpipe.log"]:
+            source_id = "pbsmrtpipe::{f}".format(f=file_id)
+            if source_id in ds_files_by_id:
+                services_update_datastore_file(ds_files_by_id[source_id])
 
     return exit_code
 
