@@ -1,5 +1,5 @@
 {
-    "version": "0.6",
+    "version": "1.2",
     "driver": {
         "serialization": "json",
         "exe": "python -m pbreports.report.barcode --resolved-tool-contract",
@@ -18,9 +18,16 @@
                 "default_name": "barcode_report",
                 "id": "report_json",
                 "file_type_id": "PacBio.FileTypes.JsonReport"
+            },
+            {
+                "title": "Barcode Report Details",
+                "description": "Barcode Details Table as CSV",
+                "default_name": "barcodes_report",
+                "id": "report_csv",
+                "file_type_id": "PacBio.FileTypes.csv"
             }
         ],
-        "_comment": "Created by pbcommand 0.5.4",
+        "_comment": "Created by pbcommand 0.6.5",
         "name": "barcode_report",
         "input_types": [
             {
