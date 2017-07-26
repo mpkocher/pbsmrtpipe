@@ -52,6 +52,13 @@
                 "optionTypeId": "integer"
             },
             {
+                "default": 0.82,
+                "description": "Minimum identity to the POA to use a subread. 0 disables this filter.",
+                "id": "pbccs.task_options.min_identity",
+                "name": "Minimum Identity",
+                "optionTypeId": "float"
+            },
+            {
                 "default": 10,
                 "description": "Minimum length of subreads to use for generating CCS.",
                 "id": "pbccs.task_options.min_length",
@@ -133,5 +140,5 @@
         "tool_contract_id": "pbccs.tasks.ccs"
     },
     "tool_contract_id": "pbccs.tasks.ccs",
-    "version": "2.1.0 (commit a4a184b)"
+    "version": "3.0.0 (commit d48dfdf)"
 }
