@@ -95,6 +95,14 @@ def run_rtc_optional_failure(rtc):
     return 0
 
 
+@registry("dev_optional_failure_subreads", "0.1.0", FileTypes.DS_SUBREADS,
+          FileTypes.TXT,
+          is_distributed=False,
+          options={"raise_exception":False})
+def run_rtc_optional_failure_subreads(rtc):
+    return run_rtc_optional_failure(rtc)
+
+
 dev_diagnostic_options = dict(
     dev_diagnostic_strict=False,
     test_str="asdf",

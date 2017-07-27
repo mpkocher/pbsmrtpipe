@@ -198,6 +198,7 @@ def get_dev_task_options_pipeline():
 def get_subreads_reports():
     return [
         (Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_subread_report:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_optional_failure_subreads:0"),
         (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.pbvalidate:0")
     ]
 
