@@ -59,7 +59,7 @@ def render_report(report, template_name="report.html"):
     import pbcommand.models.report as RM
 
     template = ENV.get_template(template_name)
-    print "TEMPLATE: " + template_name
+
     rattrs_d = [a.to_dict() for a in report.attributes if report.attributes]
     plot_groups_d = [pg.to_dict() for pg in report.plotGroups if report.plotGroups]
     tables_d = [table_to_jinja(t) for t in report.tables if report.tables]
@@ -112,7 +112,7 @@ def write_report_with_html_extras(report, output_file, extras_dir):
     """Write the css/js/html to output file directory"""
     d = _get_js_css_root_dir()
 
-    _ = write_report_to_html(report, output_file, template_name="index.html")
+    _ = write_report_to_html(report, output_file)
     copy_js_css(d, extras_dir)
     return 0
 
