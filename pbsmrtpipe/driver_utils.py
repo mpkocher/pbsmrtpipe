@@ -267,7 +267,7 @@ def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_su
     report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
     report_.write_json(report_path)
 
-    R.write_report_to_html(report_, os.path.join(job_resources.root, 'index.html'))
+    R.write_report_to_html(report_, os.path.join(job_resources.root, 'index.html'), template_name="index.html")
 
     return True
 

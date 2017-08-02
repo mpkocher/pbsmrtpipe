@@ -45,7 +45,7 @@ def table_to_jinja(table):
     return _d
 
 
-def render_report(report):
+def render_report(report, template_name="report.html"):
     """
     General rendering a pbreport Report model to a string
 
@@ -58,8 +58,8 @@ def render_report(report):
     """
     import pbcommand.models.report as RM
 
-    template = ENV.get_template("report.html")
-
+    template = ENV.get_template(template_name)
+    print "TEMPLATE: " + template_name
     rattrs_d = [a.to_dict() for a in report.attributes if report.attributes]
     plot_groups_d = [pg.to_dict() for pg in report.plotGroups if report.plotGroups]
     tables_d = [table_to_jinja(t) for t in report.tables if report.tables]
@@ -101,9 +101,9 @@ def _write_str_report(s, path, mode):
         f.write(s)
 
 
-def write_report_to_html(report, output_file):
+def write_report_to_html(report, output_file, template_name="report.html"):
     """Render the report and write the file"""
-    s = render_report(report)
+    s = render_report(report, template_name)
     _write_str_report(s, output_file, 'w')
     return 0
 
@@ -112,7 +112,7 @@ def write_report_with_html_extras(report, output_file, extras_dir):
     """Write the css/js/html to output file directory"""
     d = _get_js_css_root_dir()
 
-    _ = write_report_to_html(report, output_file)
+    _ = write_report_to_html(report, output_file, template_name="index.html")
     copy_js_css(d, extras_dir)
     return 0
 
