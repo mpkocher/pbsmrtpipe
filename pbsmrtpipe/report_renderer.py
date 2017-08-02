@@ -45,7 +45,7 @@ def table_to_jinja(table):
     return _d
 
 
-def render_report(report):
+def render_report(report, template_name="report.html"):
     """
     General rendering a pbreport Report model to a string
 
@@ -58,7 +58,7 @@ def render_report(report):
     """
     import pbcommand.models.report as RM
 
-    template = ENV.get_template("report.html")
+    template = ENV.get_template(template_name)
 
     rattrs_d = [a.to_dict() for a in report.attributes if report.attributes]
     plot_groups_d = [pg.to_dict() for pg in report.plotGroups if report.plotGroups]
@@ -101,9 +101,9 @@ def _write_str_report(s, path, mode):
         f.write(s)
 
 
-def write_report_to_html(report, output_file):
+def write_report_to_html(report, output_file, template_name="report.html"):
     """Render the report and write the file"""
-    s = render_report(report)
+    s = render_report(report, template_name)
     _write_str_report(s, output_file, 'w')
     return 0
 
