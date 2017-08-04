@@ -278,14 +278,9 @@ def _resequencing_view_rules():
 @register_pipeline_rules("polished_falcon_fat", "3.2")
 def hgap4_view_rules():
     whitelist = _to_whitelist([
-        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-1", FileTypes.JSON),
-        ("falcon_ns.tasks.task_falcon0_run_merge_consensus_jobs-out-2", FileTypes.JSON),
-        ("falcon_ns.tasks.task_falcon0_merge-out-0", FileTypes.TXT),
-        ("falcon_ns.tasks.task_falcon0_cons-out-0", FileTypes.TXT),
-        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-1", FileTypes.JSON),
-        ("falcon_ns.tasks.task_falcon1_run_merge_consensus_jobs-out-2", FileTypes.JSON),
-        ("falcon_ns.tasks.task_falcon1_merge-out-0", FileTypes.TXT),
-        ("falcon_ns.tasks.task_falcon1_db2falcon-out-0", FileTypes.TXT)
+        ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF),
+        ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
     ])
     blacklist = _to_blacklist([
         ("pbcoretools.tasks.bam2fasta-out-0", FileTypes.FASTA),
