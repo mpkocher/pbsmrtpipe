@@ -424,7 +424,7 @@ def ccs_barcoding_view_rules():
 #Circular Consensus Sequences (CCS 2)
 @register_pipeline_rules("sa3_ds_ccs", "3.2")
 def ccs_view_rules():
-    whitelist = ([
+    whitelist = _to_whitelist([
         ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
         ("pbcoretools.tasks.bam2fasta_ccs-out-0", FileTypes.TGZ),
         ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS)
@@ -438,7 +438,7 @@ def ccs_view_rules():
 #Convert BAM to FASTX
 @register_pipeline_rules("sa3_ds_subreads_to_fastx", "3.2")
 def bam2fastx_view_rules():
-    whitelist = ([
+    whitelist = _to_whitelist([
         ("pbcoretools.tasks.bam2fastq_archive-out-0", FileTypes.TGZ),
         ("pbcoretools.tasks.bam2fasta_archive-out-0", FileTypes.TGZ),
         ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
