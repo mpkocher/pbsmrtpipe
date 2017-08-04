@@ -32,27 +32,6 @@
                 "file_type_id": "PacBio.DataSet.SubreadSet",
                 "id": "bam_output",
                 "title": "Demultiplexed Reads"
-            },
-            {
-                "default_name": "lima_output",
-                "description": "Per Barcode Pair Counts by lima",
-                "file_type_id": "PacBio.FileTypes.txt",
-                "id": "counts_output",
-                "title": "Counts"
-            },
-            {
-                "default_name": "lima_output",
-                "description": "Per ZMW Report by lima",
-                "file_type_id": "PacBio.FileTypes.txt",
-                "id": "report_output",
-                "title": "Report"
-            },
-            {
-                "default_name": "lima_output",
-                "description": "Summary by lima",
-                "file_type_id": "PacBio.FileTypes.txt",
-                "id": "summary_output",
-                "title": "Symmary"
             }
         ],
         "resource_types": [],
@@ -84,6 +63,13 @@
                 "id": "lima.task_options.guess",
                 "name": "Guess",
                 "optionTypeId": "integer"
+            },
+            {
+                "default": false,
+                "description": "Do not output sorted indices per barcode pair, but keep identified order.",
+                "id": "lima.task_options.keep_idx_order",
+                "name": "Keep BC Idx order",
+                "optionTypeId": "boolean"
             },
             {
                 "default": false,
@@ -160,5 +146,5 @@
         "tool_contract_id": "barcoding.tasks.lima"
     },
     "tool_contract_id": "barcoding.tasks.lima",
-    "version": "0.25.0 (commit 46446ce-dirty)"
+    "version": "0.26.0 (commit 738de61)"
 }
