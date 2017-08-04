@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 
 """
@@ -126,97 +127,152 @@ def set_default_view_rules():
                                          "5.0", [])
 
 
-def _mapping_report_rules():
-    return [
-        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT, True),
-        ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT, True)
-    ]
+def _log_view_rules():
+    whitelist = _to_whitelist([
+        ("pbsmrtpipe::master.log", FileTypes.LOG),
+        ("pbsmrtpipe::pbsmrtpipe.log", FileTypes.LOG)
+    ])
+    return whitelist
 
 
-def _variant_report_rules():
-    return [
-        ("pbreports.tasks.variants_report-out-0", FileTypes.REPORT, True),
-        ("pbreports.tasks.top_variants-out-0", FileTypes.REPORT, True)
-    ]
+def _isoseq_cluster_view_rules():
+    whitelist = _to_whitelist([
+        ("pbtranscript.tasks.classify-out-2", FileTypes.DS_CONTIG),
+        ("pbtranscript.tasks.classify-out-1", FileTypes.DS_CONTIG),
+        ("pbtranscript.tasks.classify-out-0", FileTypes.DS_CONTIG),
+        ("pbtranscript.tasks.classify-out-4", FileTypes.CSV),
+        ("pbcoretools.tasks.bam2fasta_ccs-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
+        ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbtranscript.tasks.classify-out-3", FileTypes.JSON),
+        ("pbreports.tasks.isoseq_classify-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _log_view_rules()
 
-def _basemod_report_rules():
-    return [
-        ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF, True),
-        ("kinetics_tools.tasks.summarize_modifications-out-0", FileTypes.GFF, True)
-]
 
-def _isoseq_report_rules():
-    return [
-        ("pbtranscript.tasks.classify-out-3", FileTypes.JSON, True),
-        ("pbreports.tasks.isoseq_classify-out-0", FileTypes.REPORT, True)
-    ]
+def _isoseq_view_rules():
+    whitelist = _to_whitelist([
+        ("pbtranscript.tasks.combine_cluster_bins-out-0", FileTypes.FASTA),
+        ("pbtranscript.tasks.combine_cluster_bins-out-2", FileTypes.CSV),
+        ("pbtranscript.tasks.combine_cluster_bins-out-3", FileTypes.DS_CONTIG),
+        ("pbtranscript.tasks.combine_cluster_bins-out-4", FileTypes.FASTQ),
+        ("pbtranscript.tasks.combine_cluster_bins-out-5", FileTypes.DS_CONTIG),
+        ("pbtranscript.tasks.combine_cluster_bins-out-6", FileTypes.FASTQ),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbtranscript.tasks.separate_flnc-out-0", FileTypes.PICKLE),
+        ("pbtranscript.tasks.create_chunks-out-0", FileTypes.PICKLE),
+        ("pbtranscript.tasks.create_chunks-out-1", FileTypes.PICKLE),
+        ("pbtranscript.tasks.create_chunks-out-2", FileTypes.PICKLE),
+        ("pbtranscript.tasks.combine_cluster_bins-out-1", FileTypes.JSON),
+        ("pbtranscript.tasks.combine_cluster_bins-out-7", FileTypes.PICKLE),
+        ("pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle-out-0",
+         FileTypes.TXT),
+        ("pbtranscript.tasks.cluster_bins-out-0", FileTypes.TXT),
+        ("pbtranscript.tasks.ice_partial_cluster_bins-out-0", FileTypes.TXT),
+        ("pbtranscript.tasks.ice_polish_cluster_bins-out-0", FileTypes.TXT),
+        ("pbtranscript.tasks.gather_polished_isoforms_in_each_bin-out-0",
+         FileTypes.TXT),
+        ("pbtranscript.tasks.ice_cleanup-out-0", FileTypes.TXT),
+        ("pbreports.tasks.isoseq_cluster-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _isoseq_cluster_view_rules()
 
 
-def _laa_report_rules():
-    return [
-        ("pbreports.tasks.amplicon_analysis_input-out-0", FileTypes.REPORT, True),
-        ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT, True),
+def _isoseq_mapping_view_rules():
+    whitelist = _to_whitelist([
+        ("pbtranscript.tasks.map_isoforms_to_genome-out-0", FileTypes.SAM),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-0", FileTypes.FASTQ),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-1", FileTypes.GFF),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-2", FileTypes.TXT),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-3", FileTypes.TXT),
+        ("pbtranscript.tasks.post_mapping_to_genome-out-4", FileTypes.TXT)
+    ])
+    blacklist = _to_blacklist([
+        ("pbtranscript.tasks.scatter_contigset_gmap-out-0", FileTypes.CHUNK)
+    ])
+    return whitelist + blacklist + _isoseq_view_rules()
+
+
+def _laa_view_rules():
+    whitelist = _to_whitelist([
+        ("pblaa.tasks.laa-out-2", FileTypes.CSV),
+        ("pblaa.tasks.laa-out-1", FileTypes.FASTQ),
+        ("pblaa.tasks.laa-out-0", FileTypes.FASTQ)
+    ])
+    blacklist = _to_blacklist([
+        ("pblaa.tasks.laa-out-3", FileTypes.CSV),
+        ("pbreports.tasks.amplicon_analysis_input-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT))
+    ])
+    customlist = [
         ("pbcoretools.tasks.split_laa_fastq-out-0", FileTypes.GZIP, False, "Consensus Sequences (FASTQ)"),
         ("pbcoretools.tasks.split_laa_fastq-out-1", FileTypes.GZIP, False, "Chimeric/Noise Consensus Sequences (FASTQ)")
     ]
+    return whitelist + blacklist + customlist + _log_view_rules()
 
 
-def _barcode_report_rules():
-    return [
-        ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT, True)
+def _laa_barcode_view_rules():
+    whitelist = _to_whitelist([
+        ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS)
+    ])
+    return whitelist + _laa_view_rules()
+
+
+def _mv_view_rules():
+    whitelist = _to_whitelist([
+        ("pysiv2.tasks.minor_variants-out-1", FileTypes.ZIP),
+        ("pbreports.tasks.minor_variants_report-out-1", FileTypes.CSV),
+        ("pbreports.tasks.minor_variants_report-out-0", FileTypes.REPORT),
+        ("pysiv2.tasks.minor_variants-out-0", FileTypes.JSON),
+        ("pbalign.tasks.align_minorvariants-out-0", FileTypes.DS_ALIGN_CCS),
+        ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.bam2fasta_ccs-out-0", FileTypes.TGZ),
+        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT),
+        ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
+    ])
+    return whitelist + _log_view_rules()
+
+
+def _mv_barcode_view_rules():
+    whitelist = _to_whitelist([
+        ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS),
+        ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + _mv_view_rules()
+
+
+def _resequencing_view_rules():
+    whitelist = _to_whitelist([
+        ("genomic_consensus.tasks.summarize_consensus-out-0", FileTypes.GFF),
+        ("genomic_consensus.tasks.gff2bed-out-0", FileTypes.BED),
+        ("genomic_consensus.tasks.variantcaller-out-3", FileTypes.FASTQ),
+        ("genomic_consensus.tasks.variantcaller-out-0", FileTypes.GFF),
+        ("pbalign.tasks.consolidate_alignments-out-0", FileTypes.DS_ALIGN),
+        ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN),
+        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.variants_report-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.top_variants-out-0", FileTypes.REPORT)
+    ])
+    customlist = [
+        ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.VCF, False, "Consensus Sequences"),
+        ("genomic_consensus.tasks.variantcaller-out-2", FileTypes.DS_CONTIG, False, "Consensus Sequences")
     ]
+    return whitelist + blacklist + customlist + _log_view_rules()
 
-
-def _ccs_report_rules():
-    return [
-        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT, True)
-    ]
-
-
-def _pbalign_alignmentset_rules():
-    return [
-        ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN, True)
-    ]
-
-
-@register_pipeline_rules("sa3_ds_barcode", "3.2")
-def barcode_view_rules():
-    return _barcode_report_rules()
-
-
-@register_pipeline_rules("sa3_ds_ccs", "3.2")
-def ccs_view_rules():
-    return _ccs_report_rules()
-
-
-@register_pipeline_rules("sa3_ds_barcode_ccs", "3.2")
-def ccs_barcoding_view_rules():
-    return _ccs_report_rules() + _barcode_report_rules()
-
-
-@register_pipeline_rules("sa3_ds_ccs_align", "3.2")
-def ccs_mapping_view_rules():
-    return _ccs_report_rules() + _mapping_report_rules() + [
-        ("pbreports.tasks.mapping_stats_ccs-out-0", FileTypes.REPORT, True)
-    ]
-
-
-@register_pipeline_rules("ds_modification_detection", "3.2")
-def basemod_view_rules():
-    return _basemod_report_rules() + _mapping_report_rules() + _pbalign_alignmentset_rules() + [
-        ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True)
-    ]
-
-
-@register_pipeline_rules("ds_modification_motif_analysis", "3.2")
-def basemod_and_motif_view_rules():
-    return _basemod_report_rules() + _mapping_report_rules() + _pbalign_alignmentset_rules() + [
-        ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT, True),
-        ("pbreports.tasks.motifs_report-out-0", FileTypes.REPORT, True),
-        ("kinetics_tools.tasks.ipd_summary-out-0", FileTypes.GFF, True)
-    ]
-
-
+#HGAP
 @register_pipeline_rules("polished_falcon_fat", "3.2")
 def hgap4_view_rules():
     whitelist = _to_whitelist([
@@ -259,16 +315,217 @@ def hgap4_view_rules():
         ("falcon_ns.tasks.task_falcon1_db2falcon-out-0", FileTypes.TXT),
         ("falcon_ns.tasks.task_falcon0_rm_las-out-0", FileTypes.TXT),
         ("falcon_ns.tasks.task_falcon1_rm_las-out-0", FileTypes.TXT),
-        ("falcon_ns.tasks.task_falcon2_rm_las-out-0", FileTypes.TXT)
+        ("falcon_ns.tasks.task_falcon2_rm_las-out-0", FileTypes.TXT),
+        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT)
     ])
-    return blacklist + whitelist + [
+    customlist = [
         ("pbcoretools.tasks.contigset2fasta-out-0", FileTypes.FASTA, False, "Polished Assembly"),
         ("genomic_consensus.tasks.variantcaller-out-2", FileTypes.DS_CONTIG, False, "Polished Assembly"),
         ("genomic_consensus.tasks.variantcaller-out-3", FileTypes.FASTQ, False, "Polished Assembly"),
         ("pbcoretools.tasks.fasta2referenceset-out-0", FileTypes.DS_REF, False, "Draft Assembly")
-    ] + _mapping_report_rules()
+    ]
+    return blacklist + whitelist + customlist + _log_view_rules()
 
 
+#Barcoding
+@register_pipeline_rules("sa3_ds_barcode", "3.2")
+def barcode_view_rules():
+    whitelist = _to_whitelist([
+        ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#Base Modification Detection
+@register_pipeline_rules("ds_modification_detection", "3.2")
+def basemod_view_rules():
+    whitelist = _to_whitelist([
+        ("kinetics_tools.tasks.ipd_summary-out-2", FileTypes.H5),
+        ("kinetics_tools.tasks.ipd_summary-out-1", FileTypes.BIGWIG),
+        ("kinetics_tools.tasks.ipd_summary-out-0", FileTypes.GFF),
+        ("pbalign.tasks.consolidate_alignments-out-0", FileTypes.DS_ALIGN)
+    ])
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF),
+        ("kinetics_tools.tasks.summarize_modifications-out-0", FileTypes.GFF),
+        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT),
+        ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN),
+        ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#Base Modification and Motif Analysis
+@register_pipeline_rules("ds_modification_motif_analysis", "3.2")
+def basemod_and_motif_view_rules():
+    whitelist = _to_whitelist([
+        ("motif_maker.tasks.reprocess-out-0", FileTypes.GFF),
+        ("motif_maker.tasks.find_motifs-out-0", FileTypes.CSV),
+        ("kinetics_tools.tasks.ipd_summary-out-2", FileTypes.H5),
+        ("kinetics_tools.tasks.ipd_summary-out-1", FileTypes.BIGWIG),
+        ("pbalign.tasks.consolidate_alignments-out-0", FileTypes.DS_ALIGN)
+    ])
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF),
+        ("kinetics_tools.tasks.summarize_modifications-out-0", FileTypes.GFF),
+        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT),
+        ("pbalign.tasks.pbalign-out-0", FileTypes.DS_ALIGN),
+        ("pbreports.tasks.modifications_report-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.motifs_report-out-0", FileTypes.REPORT),
+        ("kinetics_tools.tasks.ipd_summary-out-0", FileTypes.GFF)
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#CCS Mapping
+@register_pipeline_rules("sa3_ds_ccs_align", "3.2")
+def ccs_mapping_view_rules():
+    whitelist = _to_whitelist([
+        ("pbreports.tasks.summarize_coverage_ccs-out-0", FileTypes.GFF),
+        ("pbalign.tasks.pbalign_ccs-out-0", FileTypes.DS_ALIGN_CCS),
+        ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.bam2fasta_ccs-out-0", FileTypes.TGZ),
+        ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT),
+        (("pbreports.tasks.mapping_stats_ccs-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#CCS with Barcoding
+@register_pipeline_rules("sa3_ds_barcode_ccs", "3.2")
+def ccs_barcoding_view_rules():
+    whitelist = _to_whitelist([
+        ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.bam2fasta_ccs-out-0", FileTypes.TGZ),
+        ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS),
+        ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS),
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT),
+        ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#Circular Consensus Sequences (CCS 2)
+@register_pipeline_rules("sa3_ds_ccs", "3.2")
+def ccs_view_rules():
+    whitelist = ([
+        ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.bam2fasta_ccs-out-0", FileTypes.TGZ),
+        ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS)
+    ])
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT)
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#Convert BAM to FASTX
+@register_pipeline_rules("sa3_ds_subreads_to_fastx", "3.2")
+def bam2fastx_view_rules():
+    whitelist = ([
+        ("pbcoretools.tasks.bam2fastq_archive-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.bam2fasta_archive-out-0", FileTypes.TGZ),
+        ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS)
+    ])
+    return whitelist + _log_view_rules()
+
+
+#Iso-Seq
+@register_pipeline_rules("sa3_ds_isoseq", "3.2")
+def isoseq_view_rules():
+    return _isoseq_view_rules()
+
+
+#Iso-Seq Classify Only
+@register_pipeline_rules("sa3_ds_isoseq_classify", "3.2")
+def isoseq_classify_view_rules():
+    return _isoseq_cluster_view_rules()
+
+
+#Iso-Seq with Mapping
+@register_pipeline_rules("sa3_ds_isoseq_with_genome", "3.2")
+def isoseq_with_genome_view_rules():
+    """View rules for isoseq with genome."""
+    return _isoseq_mapping_view_rules()
+
+
+#LAA with Barcoding
+@register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
+def laa_barcode_view_rules():
+    return _laa_barcode_view_rules()
+
+
+#Long Amplicon Analysis (LAA 2)
+@register_pipeline_rules("sa3_ds_laa", "3.2")
+def laa_view_rules():
+    return _laa_view_rules()
+
+
+#Minor Variants Analysis [Beta]
+@register_pipeline_rules("sa3_ds_minorseq", "3.2")
+def mv_view_rules():
+    return _mv_view_rules()
+
+
+#Minor Variants Analysis with Barcoding [Beta]
+@register_pipeline_rules("sa3_ds_barcode_minorseq", "3.2")
+def mv_barcode_view_rules():
+    return _mv_barcode_view_rules()
+
+
+#Resequencing
+@register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
+def resequencing_view_rules():
+    return _resequencing_view_rules()
+
+
+#SAT
+@register_pipeline_rules("sa3_sat", "3.2")
+def sat_view_rules():
+    blacklist = _to_blacklist([
+        ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT)
+    ])
+    return blacklist + _resequencing_view_rules()
+
+
+#Structural Variant Calling [Beta]
+@register_pipeline_rules("sa3_ds_sv", "3.2")
+def structural_variant_view_rules():
+    whitelist = _to_whitelist([
+        ("pbsvtools.tasks.call-out-0", FileTypes.BED),
+        ("pbsvtools.tasks.call-out-1", FileTypes.VCF),
+        ("pbsvtools.tasks.align-out-0", FileTypes.BAM)
+    ])
+    blacklist = _to_blacklist([
+        ("pbsvtools.tasks.prepare_reference-out-0", FileTypes.DS_REF),
+        ("pbsvtools.tasks.prepare_reference-out-1", FileTypes.TXT),
+        ("pbsvtools.tasks.make_reports-out-0", FileTypes.JSON),
+        ("pbsvtools.tasks.make_reports-out-1", FileTypes.JSON),
+        ("pbreports.tasks.structural_variants_report-out-0", FileTypes.REPORT),
+        ("pbsvtools.tasks.config-out-0", FileTypes.CFG)
+
+    ])
+    return whitelist + blacklist + _log_view_rules()
+
+
+#HGAP5
 @register_pipeline_rules("hgap_fat", "3.2")
 def hgap5_view_rules():
     return _to_blacklist([
@@ -279,103 +536,6 @@ def hgap5_view_rules():
         ("falcon_ns.tasks.task_hgap_run-out-2", FileTypes.REPORT),
         ("falcon_ns.tasks.task_hgap_run-out-3", FileTypes.LOG)
     ])
-
-
-def _isoseq_view_rules():
-    whitelist = _to_whitelist([
-        ("pbtranscript.tasks.combine_cluster_bins-out-0", FileTypes.FASTA),
-        ("pbtranscript.tasks.combine_cluster_bins-out-2", FileTypes.CSV),
-        ("pbtranscript.tasks.combine_cluster_bins-out-3", FileTypes.DS_CONTIG),
-        ("pbtranscript.tasks.combine_cluster_bins-out-4", FileTypes.FASTQ),
-        ("pbtranscript.tasks.combine_cluster_bins-out-5", FileTypes.DS_CONTIG),
-        ("pbtranscript.tasks.combine_cluster_bins-out-6", FileTypes.FASTQ),
-    ])
-    blacklist = _to_blacklist([
-        ("pbtranscript.tasks.separate_flnc-out-0", FileTypes.PICKLE),
-        ("pbtranscript.tasks.create_chunks-out-0", FileTypes.PICKLE),
-        ("pbtranscript.tasks.create_chunks-out-1", FileTypes.PICKLE),
-        ("pbtranscript.tasks.create_chunks-out-2", FileTypes.PICKLE),
-        ("pbtranscript.tasks.combine_cluster_bins-out-1", FileTypes.JSON),
-        ("pbtranscript.tasks.combine_cluster_bins-out-7", FileTypes.PICKLE),
-        ("pbtranscript.tasks.gather_ice_partial_cluster_bins_pickle-out-0",
-         FileTypes.TXT),
-        ("pbtranscript.tasks.cluster_bins-out-0", FileTypes.TXT),
-        ("pbtranscript.tasks.ice_partial_cluster_bins-out-0", FileTypes.TXT),
-        ("pbtranscript.tasks.ice_polish_cluster_bins-out-0", FileTypes.TXT),
-        ("pbtranscript.tasks.gather_polished_isoforms_in_each_bin-out-0",
-         FileTypes.TXT),
-        ("pbtranscript.tasks.ice_cleanup-out-0", FileTypes.TXT),
-        ("pbreports.tasks.isoseq_cluster-out-0", FileTypes.REPORT)
-    ])
-    return _isoseq_report_rules() + _ccs_report_rules() + blacklist + whitelist
-
-
-@register_pipeline_rules("sa3_ds_isoseq", "3.2")
-def isoseq_view_rules():
-    return _isoseq_view_rules()
-
-
-@register_pipeline_rules("sa3_ds_isoseq_with_genome", "3.2")
-def isoseq_with_genome_view_rules():
-    """View rules for isoseq with genome."""
-    blacklist = _to_blacklist([
-        ("pbtranscript.tasks.scatter_contigset_gmap-out-0", FileTypes.CHUNK)
-    ])
-    whitelist = _to_whitelist([
-        ("pbtranscript.tasks.map_isoforms_to_genome-out-0", FileTypes.SAM),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-0", FileTypes.FASTQ),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-1", FileTypes.GFF),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-2", FileTypes.TXT),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-3", FileTypes.TXT),
-        ("pbtranscript.tasks.post_mapping_to_genome-out-4", FileTypes.TXT)
-    ])
-    return _isoseq_view_rules() + blacklist + whitelist
-
-
-@register_pipeline_rules("sa3_ds_isoseq_classify", "3.2")
-def isoseq_classify_view_rules():
-    return _isoseq_report_rules() + _ccs_report_rules()
-
-
-@register_pipeline_rules("sa3_ds_laa", "3.2")
-def laa_view_rules():
-    r1 = [
-        ("pblaa.tasks.laa-out-3", FileTypes.CSV, True)
-    ]
-    return r1 + _laa_report_rules()
-
-
-@register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
-def laa_barcode_view_rules():
-    r1 = [("pblaa.tasks.laa-out-3", FileTypes.CSV, True)]
-    return _barcode_report_rules() + r1 + _laa_report_rules()
-
-
-@register_pipeline_rules("sa3_sat", "3.2")
-def sat_view_rules():
-    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _variant_report_rules() + [
-        ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT, True)
-    ]
-
-
-@register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
-def resequencing_view_rules():
-    return _pbalign_alignmentset_rules() + _mapping_report_rules() + _variant_report_rules() + [
-        ("genomic_consensus.tasks.variantcaller-out-1", FileTypes.DS_CONTIG, False, "Consensus Sequences"),
-        ("genomic_consensus.tasks.variantcaller-out-2", FileTypes.FASTQ, False, "Consensus Sequences")
-]
-
-@register_pipeline_rules("sa3_ds_sv", "3.2")
-def structural_variant_view_rules():
-    return [
-        ("pbsvtools.tasks.prepare_reference-out-0", FileTypes.DS_REF, True),
-        ("pbsvtools.tasks.prepare_reference-out-1", FileTypes.TXT, True),
-        ("pbsvtools.tasks.make_reports-out-0", FileTypes.JSON, True),
-        ("pbsvtools.tasks.make_reports-out-1", FileTypes.JSON, True),
-        ("pbreports.tasks.structural_variants_report-out-0", FileTypes.REPORT, True),
-        ("pbsvtools.tasks.config-out-0", FileTypes.CFG, True)
-
-    ]
 
 
 def main(argv):
