@@ -218,7 +218,8 @@ def _laa_view_rules():
 def _laa_barcode_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
-        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS)
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS),
+        ("barcoding.tasks.lima-out-0", FileTypes.DS_SUBREADS)
     ])
     return whitelist + _laa_view_rules()
 
@@ -243,6 +244,7 @@ def _mv_barcode_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
         ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS),
+        ("barcoding.tasks.lima-out-0", FileTypes.DS_SUBREADS),
         ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT)
     ])
     return whitelist + _mv_view_rules()
@@ -332,7 +334,8 @@ def hgap4_view_rules():
 def barcode_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
-        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS)
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS),
+        ("barcoding.tasks.lima-out-0", FileTypes.DS_SUBREADS)
     ])
     blacklist = _to_blacklist([
         ("pbreports.tasks.barcode_report-out-0", FileTypes.REPORT)
@@ -412,7 +415,8 @@ def ccs_barcoding_view_rules():
         ("pbccs.tasks.ccs-out-0", FileTypes.DS_CCS),
         ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
         ("pbcoretools.tasks.filterdataset-out-0", FileTypes.DS_SUBREADS),
-        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS)
+        ("pbcoretools.tasks.bam2bam_barcode-out-0", FileTypes.DS_SUBREADS),
+        ("barcoding.tasks.lima-out-0", FileTypes.DS_SUBREADS)
     ])
     blacklist = _to_blacklist([
         ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT),
