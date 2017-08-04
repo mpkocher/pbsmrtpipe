@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 """
@@ -207,7 +206,7 @@ def _laa_view_rules():
     blacklist = _to_blacklist([
         ("pblaa.tasks.laa-out-3", FileTypes.CSV),
         ("pbreports.tasks.amplicon_analysis_input-out-0", FileTypes.REPORT),
-        ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT))
+        ("pbreports.tasks.amplicon_analysis_consensus-out-0", FileTypes.REPORT)
     ])
     customlist = [
         ("pbcoretools.tasks.split_laa_fastq-out-0", FileTypes.GZIP, False, "Consensus Sequences (FASTQ)"),
@@ -399,7 +398,7 @@ def ccs_mapping_view_rules():
         ("pbreports.tasks.ccs_report-out-0", FileTypes.REPORT),
         ("pbreports.tasks.mapping_stats-out-0", FileTypes.REPORT),
         ("pbreports.tasks.coverage_report-out-0", FileTypes.REPORT),
-        (("pbreports.tasks.mapping_stats_ccs-out-0", FileTypes.REPORT)
+        ("pbreports.tasks.mapping_stats_ccs-out-0", FileTypes.REPORT)
     ])
     return whitelist + blacklist + _log_view_rules()
 
