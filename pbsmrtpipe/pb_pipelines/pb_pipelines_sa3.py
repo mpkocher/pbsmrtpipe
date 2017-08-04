@@ -430,14 +430,14 @@ def ds_laa():
 
 def _core_barcode(subreads=Constants.ENTRY_DS_SUBREAD):
     return [
-        (subreads, "pbcoretools.tasks.bam2bam_barcode:0"),
-        (Constants.ENTRY_DS_BARCODE, "pbcoretools.tasks.bam2bam_barcode:1"),
-        ("pbcoretools.tasks.bam2bam_barcode:0", "pbreports.tasks.barcode_report:0"),
+        (subreads, "barcoding.tasks.lima:0"),
+        (Constants.ENTRY_DS_BARCODE, "barcoding.tasks.lima:1"),
+        ("barcoding.tasks.lima:0", "pbreports.tasks.barcode_report:0"),
         (Constants.ENTRY_DS_BARCODE, "pbreports.tasks.barcode_report:1")
     ]
 
 
-@sa3_register("sa3_ds_barcode", "Barcoding", "0.1.0",
+@sa3_register("sa3_ds_barcode", "Barcoding", "0.2.0",
               tags=(Tags.BARCODE,))
 def ds_barcode():
     """
@@ -446,13 +446,14 @@ def ds_barcode():
     return _core_barcode()
 
 
+# TODO deprecated, will become internal pipeline
 @sa3_register("sa3_ds_barcode_laa", "LAA with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.LAA))
 def ds_barcode_laa():
     """
     Internal pipeline for testing barcoding in combination with LAA
     """
     b1  = _core_barcode()
-    subreadset = "pbcoretools.tasks.bam2bam_barcode:0"
+    subreadset = "barcoding.tasks.lima:0"
     b2 = _core_laa_plus(subreadset)
     return b1 + b2
 
@@ -480,13 +481,14 @@ def ds_ccs():
     return b1 + _core_ccs("pbcoretools.tasks.filterdataset:0")
 
 
+# TODO deprecated, will become internal pipeline
 @sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
 def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
     """
     b1 = _core_barcode()
-    b2 = [("pbcoretools.tasks.bam2bam_barcode:0", "pbcoretools.tasks.filterdataset:0")]
+    b2 = [("barcoding.tasks.lima:0", "pbcoretools.tasks.filterdataset:0")]
     b3 = _core_ccs("pbcoretools.tasks.filterdataset:0")
     return b1 + b2 + b3
 
@@ -851,6 +853,7 @@ MV_BC_OPTS = dict(MV_OPTS)
 MV_BC_OPTS.update({
     "pbcoretools.task_options.other_filters": "bq>45"
 })
+# TODO deprecated, will become internal pipeline
 @sa3_register("sa3_ds_barcode_minorseq", "Minor Variants Analysis with Barcoding [Beta]", "0.2.0", tags=(Tags.MINORVAR,Tags.BARCODE,Tags.BETA), task_options=MV_BC_OPTS)
 def ds_barcode_minorseq():
     return _core_minorseq_multiplexed("pbsmrtpipe.pipelines.sa3_ds_barcode_ccs:pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)

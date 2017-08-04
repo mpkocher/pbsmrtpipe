@@ -1,0 +1,164 @@
+{
+    "driver": {
+        "env": {},
+        "exe": "lima --resolved-tool-contract",
+        "serialization": "json"
+    },
+    "schema_version": "2.0.0",
+    "tool_contract": {
+        "_comment": "Created by v0.1.0",
+        "description": "Lima, Demultiplex Barcoded PacBio Data and Clip Barcodes ",
+        "input_types": [
+            {
+                "description": "Subread DataSet or .bam file",
+                "file_type_id": "PacBio.DataSet.SubreadSet",
+                "id": "subread_set",
+                "title": "SubreadSet"
+            },
+            {
+                "description": "Barcode DataSet or .fasta file",
+                "file_type_id": "PacBio.DataSet.BarcodeSet",
+                "id": "barcode_set",
+                "title": "BarcodeSet"
+            }
+        ],
+        "is_distributed": true,
+        "name": "lima",
+        "nproc": "$max_nproc",
+        "output_types": [
+            {
+                "default_name": "lima_output",
+                "description": "Demultiplexed Reads by lima",
+                "file_type_id": "PacBio.DataSet.SubreadSet",
+                "id": "bam_output",
+                "title": "Demultiplexed Reads"
+            },
+            {
+                "default_name": "lima_output",
+                "description": "Per Barcode Pair Counts by lima",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "counts_output",
+                "title": "Counts"
+            },
+            {
+                "default_name": "lima_output",
+                "description": "Per ZMW Report by lima",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "report_output",
+                "title": "Report"
+            },
+            {
+                "default_name": "lima_output",
+                "description": "Summary by lima",
+                "file_type_id": "PacBio.FileTypes.txt",
+                "id": "summary_output",
+                "title": "Symmary"
+            }
+        ],
+        "resource_types": [],
+        "schema_options": [
+            {
+                "default": false,
+                "description": "CCS mode, use optimal alignment options -A 4 -B 1 -D 3 -I 3 -X 4.",
+                "id": "lima.task_options.ccs",
+                "name": "CCS",
+                "optionTypeId": "boolean"
+            },
+            {
+                "default": false,
+                "description": "Dump clipped regions in a separate output file prefix.demux.clips",
+                "id": "lima.task_options.dumpclips",
+                "name": "Dump clipped regions",
+                "optionTypeId": "boolean"
+            },
+            {
+                "default": false,
+                "description": "Only use subreads flanked by adapters for barcode identification",
+                "id": "lima.task_options.fullpass",
+                "name": "Only Full Passes",
+                "optionTypeId": "boolean"
+            },
+            {
+                "default": 0,
+                "description": "Try to guess the used barcodes, using the provided mean score threshold; 0 means guessing deactivated.",
+                "id": "lima.task_options.guess",
+                "name": "Guess",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": false,
+                "description": "Only keep same barcodes in a pair in BAM output.",
+                "id": "lima.task_options.keepsame",
+                "name": "KeepSame",
+                "optionTypeId": "boolean"
+            },
+            {
+                "default": 0,
+                "description": "Only use up to N barcode pair regions to find the barcode, 0 means use all.",
+                "id": "lima.task_options.maxscoredbarcodes",
+                "name": "MaxScoredBarcodes",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": 50,
+                "description": "Minimum sequence length after clipping.",
+                "id": "lima.task_options.minlength",
+                "name": "MinLength",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": 0,
+                "description": "Minimal number of full passes.",
+                "id": "lima.task_options.minpasses",
+                "name": "Minimal Number Passes",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": 40,
+                "description": "Minimum barcode score.",
+                "id": "lima.task_options.minscore",
+                "name": "MinScore",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": 15,
+                "description": "The minimal mean score difference required to call a barcode pair different.",
+                "id": "lima.task_options.minscorediff",
+                "name": "Minimal Score Difference",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": 0,
+                "description": "Demux the first N ZMWs and return the mean score; 0 means peeking deactivated.",
+                "id": "lima.task_options.peek",
+                "name": "Peek",
+                "optionTypeId": "integer"
+            },
+            {
+                "default": false,
+                "description": "Do not tag per ZMW, but per read.",
+                "id": "lima.task_options.perread",
+                "name": "Tag per read",
+                "optionTypeId": "boolean"
+            },
+            {
+                "default": false,
+                "description": "Split BAM output by barcode pair.",
+                "id": "lima.task_options.splitbam",
+                "name": "SplitBam",
+                "optionTypeId": "boolean"
+            },
+            {
+                "default": 1.5,
+                "description": "The candidate region size multiplier: barcode_length * multiplier.",
+                "id": "lima.task_options.windowsizemult",
+                "name": "WindowSizeMult",
+                "optionTypeId": "float"
+            }
+        ],
+        "task_type": "pbsmrtpipe.task_types.standard",
+        "tool_contract_id": "barcoding.tasks.lima"
+    },
+    "tool_contract_id": "barcoding.tasks.lima",
+    "version": "0.25.0 (commit 46446ce-dirty)"
+}
