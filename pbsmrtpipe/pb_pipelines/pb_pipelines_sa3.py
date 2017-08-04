@@ -437,8 +437,11 @@ def _core_barcode(subreads=Constants.ENTRY_DS_SUBREAD):
     ]
 
 
+BARCODING_OPTIONS = {
+    "lima.task_options.keepsame": True
+}
 @sa3_register("sa3_ds_barcode", "Barcoding", "0.2.0",
-              tags=(Tags.BARCODE,))
+              tags=(Tags.BARCODE,), task_options=BARCODING_OPTIONS)
 def ds_barcode():
     """
     SubreadSet barcoding pipeline
@@ -447,7 +450,7 @@ def ds_barcode():
 
 
 # TODO deprecated, will become internal pipeline
-@sa3_register("sa3_ds_barcode_laa", "LAA with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.LAA))
+@sa3_register("sa3_ds_barcode_laa", "LAA with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.LAA), task_options=BARCODING_OPTIONS)
 def ds_barcode_laa():
     """
     Internal pipeline for testing barcoding in combination with LAA
@@ -482,7 +485,9 @@ def ds_ccs():
 
 
 # TODO deprecated, will become internal pipeline
-@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_TASK_OPTIONS)
+CCS_BARCODE_OPTIONS = dict(CCS_TASK_OPTIONS)
+CCS_BARCODE_OPTIONS.update(BARCODING_OPTIONS)
+@sa3_register("sa3_ds_barcode_ccs", "CCS with Barcoding", "0.2.0", tags=(Tags.BARCODE, Tags.CCS), task_options=CCS_BARCODE_OPTIONS)
 def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
@@ -853,6 +858,7 @@ MV_BC_OPTS = dict(MV_OPTS)
 MV_BC_OPTS.update({
     "pbcoretools.task_options.other_filters": "bq>45"
 })
+MV_BC_OPTS.update(BARCODING_OPTIONS)
 # TODO deprecated, will become internal pipeline
 @sa3_register("sa3_ds_barcode_minorseq", "Minor Variants Analysis with Barcoding [Beta]", "0.2.0", tags=(Tags.MINORVAR,Tags.BARCODE,Tags.BETA), task_options=MV_BC_OPTS)
 def ds_barcode_minorseq():
