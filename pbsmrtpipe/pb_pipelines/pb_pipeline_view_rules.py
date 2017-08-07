@@ -19,6 +19,7 @@ from pbsmrtpipe.loader import load_all
 
 log = logging.getLogger(__name__)
 
+SMRTLINK_VERSION = "5.1.0"
 REGISTERED_VIEW_RULES = {}
 RTASKS, _, _, PIPELINES = load_all()
 
@@ -93,7 +94,7 @@ def load_pipeline_view_rules(registered_views_d, pipeline_id, smrtlink_version,
     return registered_views_d
 
 
-def register_pipeline_rules(pipeline_id, smrtlink_version):
+def register_pipeline_rules(pipeline_id):
     """
     Decorator function which processes view rules for storage in the global
     dict.
@@ -104,7 +105,7 @@ def register_pipeline_rules(pipeline_id, smrtlink_version):
                      i=pipeline_id))
         rules = func()
         load_pipeline_view_rules(REGISTERED_VIEW_RULES, pipeline_id,
-                                 smrtlink_version, rules)
+                                 SMRTLINK_VERSION, rules)
 
         def wrapper(*args, **kwds):
             return func(*args, **kwds)
@@ -123,7 +124,7 @@ def set_default_view_rules():
                 log.warn("%s does not have view rules, using defaults",
                          pipeline_id)
                 load_pipeline_view_rules(REGISTERED_VIEW_RULES, pipeline_id,
-                                         "5.0", [])
+                                         SMRTLINK_VERSION, [])
 
 
 def _log_view_rules():
@@ -275,7 +276,7 @@ def _resequencing_view_rules():
     return whitelist + blacklist + customlist + _log_view_rules()
 
 #HGAP
-@register_pipeline_rules("polished_falcon_fat", "3.2")
+@register_pipeline_rules("polished_falcon_fat")
 def hgap4_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.summarize_coverage-out-0", FileTypes.GFF),
@@ -326,7 +327,7 @@ def hgap4_view_rules():
 
 
 #Barcoding
-@register_pipeline_rules("sa3_ds_barcode", "3.2")
+@register_pipeline_rules("sa3_ds_barcode")
 def barcode_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
@@ -340,7 +341,7 @@ def barcode_view_rules():
 
 
 #Base Modification Detection
-@register_pipeline_rules("ds_modification_detection", "3.2")
+@register_pipeline_rules("ds_modification_detection")
 def basemod_view_rules():
     whitelist = _to_whitelist([
         ("kinetics_tools.tasks.ipd_summary-out-2", FileTypes.H5),
@@ -360,7 +361,7 @@ def basemod_view_rules():
 
 
 #Base Modification and Motif Analysis
-@register_pipeline_rules("ds_modification_motif_analysis", "3.2")
+@register_pipeline_rules("ds_modification_motif_analysis")
 def basemod_and_motif_view_rules():
     whitelist = _to_whitelist([
         ("motif_maker.tasks.reprocess-out-0", FileTypes.GFF),
@@ -383,7 +384,7 @@ def basemod_and_motif_view_rules():
 
 
 #CCS Mapping
-@register_pipeline_rules("sa3_ds_ccs_align", "3.2")
+@register_pipeline_rules("sa3_ds_ccs_align")
 def ccs_mapping_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.summarize_coverage_ccs-out-0", FileTypes.GFF),
@@ -403,7 +404,7 @@ def ccs_mapping_view_rules():
 
 
 #CCS with Barcoding
-@register_pipeline_rules("sa3_ds_barcode_ccs", "3.2")
+@register_pipeline_rules("sa3_ds_barcode_ccs")
 def ccs_barcoding_view_rules():
     whitelist = _to_whitelist([
         ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
@@ -422,7 +423,7 @@ def ccs_barcoding_view_rules():
 
 
 #Circular Consensus Sequences (CCS 2)
-@register_pipeline_rules("sa3_ds_ccs", "3.2")
+@register_pipeline_rules("sa3_ds_ccs")
 def ccs_view_rules():
     whitelist = _to_whitelist([
         ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
@@ -436,7 +437,7 @@ def ccs_view_rules():
 
 
 #Convert BAM to FASTX
-@register_pipeline_rules("sa3_ds_subreads_to_fastx", "3.2")
+@register_pipeline_rules("sa3_ds_subreads_to_fastx")
 def bam2fastx_view_rules():
     whitelist = _to_whitelist([
         ("pbcoretools.tasks.bam2fastq_archive-out-0", FileTypes.TGZ),
@@ -447,56 +448,56 @@ def bam2fastx_view_rules():
 
 
 #Iso-Seq
-@register_pipeline_rules("sa3_ds_isoseq", "3.2")
+@register_pipeline_rules("sa3_ds_isoseq")
 def isoseq_view_rules():
     return _isoseq_view_rules()
 
 
 #Iso-Seq Classify Only
-@register_pipeline_rules("sa3_ds_isoseq_classify", "3.2")
+@register_pipeline_rules("sa3_ds_isoseq_classify")
 def isoseq_classify_view_rules():
     return _isoseq_cluster_view_rules()
 
 
 #Iso-Seq with Mapping
-@register_pipeline_rules("sa3_ds_isoseq_with_genome", "3.2")
+@register_pipeline_rules("sa3_ds_isoseq_with_genome")
 def isoseq_with_genome_view_rules():
     """View rules for isoseq with genome."""
     return _isoseq_mapping_view_rules()
 
 
 #LAA with Barcoding
-@register_pipeline_rules("sa3_ds_barcode_laa", "3.2")
+@register_pipeline_rules("sa3_ds_barcode_laa")
 def laa_barcode_view_rules():
     return _laa_barcode_view_rules()
 
 
 #Long Amplicon Analysis (LAA 2)
-@register_pipeline_rules("sa3_ds_laa", "3.2")
+@register_pipeline_rules("sa3_ds_laa")
 def laa_view_rules():
     return _laa_view_rules()
 
 
 #Minor Variants Analysis [Beta]
-@register_pipeline_rules("sa3_ds_minorseq", "3.2")
+@register_pipeline_rules("sa3_ds_minorseq")
 def mv_view_rules():
     return _mv_view_rules()
 
 
 #Minor Variants Analysis with Barcoding [Beta]
-@register_pipeline_rules("sa3_ds_barcode_minorseq", "3.2")
+@register_pipeline_rules("sa3_ds_barcode_minorseq")
 def mv_barcode_view_rules():
     return _mv_barcode_view_rules()
 
 
 #Resequencing
-@register_pipeline_rules("sa3_ds_resequencing_fat", "3.2")
+@register_pipeline_rules("sa3_ds_resequencing_fat")
 def resequencing_view_rules():
     return _resequencing_view_rules()
 
 
 #SAT
-@register_pipeline_rules("sa3_sat", "3.2")
+@register_pipeline_rules("sa3_sat")
 def sat_view_rules():
     blacklist = _to_blacklist([
         ("pbreports.tasks.sat_report-out-0", FileTypes.REPORT)
@@ -505,7 +506,7 @@ def sat_view_rules():
 
 
 #Structural Variant Calling [Beta]
-@register_pipeline_rules("sa3_ds_sv", "3.2")
+@register_pipeline_rules("sa3_ds_sv")
 def structural_variant_view_rules():
     whitelist = _to_whitelist([
         ("pbsvtools.tasks.call-out-0", FileTypes.BED),
@@ -525,7 +526,7 @@ def structural_variant_view_rules():
 
 
 #HGAP5
-@register_pipeline_rules("hgap_fat", "3.2")
+@register_pipeline_rules("hgap_fat")
 def hgap5_view_rules():
     return _to_blacklist([
         ("falcon_ns.tasks.task_hgap_prepare-out-0", FileTypes.JSON),
