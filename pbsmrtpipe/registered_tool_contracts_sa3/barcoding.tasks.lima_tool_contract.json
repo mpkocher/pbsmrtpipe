@@ -100,7 +100,7 @@
                 "optionTypeId": "integer"
             },
             {
-                "default": 40,
+                "default": 0,
                 "description": "Minimum barcode score.",
                 "id": "lima.task_options.minscore",
                 "name": "MinScore",
@@ -146,5 +146,5 @@
         "tool_contract_id": "barcoding.tasks.lima"
     },
     "tool_contract_id": "barcoding.tasks.lima",
-    "version": "0.26.0 (commit 738de61)"
+    "version": "0.27.0 (commit 027c287)"
 }
