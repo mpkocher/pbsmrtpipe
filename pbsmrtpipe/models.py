@@ -6,7 +6,8 @@ import collections
 
 # legacy. imports into this module.
 import uuid
-from pbcommand.models import FileType
+from pbcommand.models import (FileType, TaskTypes, SymbolTypes, ResourceTypes,
+                              DataStoreFile, DataStore)
 from pbcommand.models.common import REGISTERED_FILE_TYPES, to_workflow_option_ns
 
 import pbsmrtpipe
@@ -22,14 +23,12 @@ REGISTERED_CHUNK_OPERATORS = {}
 
 REGISTERED_CLUSTER_RENDERERS = {}
 
-__all__ = ['Constants', 'TaskTypes', 'SymbolTypes',
-           'ResourceTypes', 'FileTypes',
+__all__ = ['Constants',
            'MetaTask', 'Task', 'ToolContractMetaTask',
            'ScatterTask',
            'GatherTask',
            'RunnableTask',
-           'DataStoreFile', 'DataStore',
-           'Pipeline', "PipelineChunk", 'ChunkOperator']
+           'Pipeline', 'ChunkOperator']
 
 
 class GlobalRegistry(object):
