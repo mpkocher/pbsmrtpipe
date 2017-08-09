@@ -40,11 +40,11 @@
                 "description": "The minimum site coverage that must be achieved for variant calls and consensus to be calculated for a site."
             },
             {
-                "optionTypeId": "integer",
-                "default": 3,
-                "id": "genomic_consensus.task_options.mask_radius",
-                "name": "Mask radius",
-                "description": "Radius of template window for identifying poorly-concordant regions of reads to exclude from polishing (arrow-only). A value of 0 disables masking."
+                "optionTypeId": "boolean",
+                "default": true,
+                "id": "genomic_consensus.task_options.masking",
+                "name": "Masking",
+                "description": "Mask regions of reads with low template concordance from contributing during polishing."
             }
         ],
         "output_types": [
