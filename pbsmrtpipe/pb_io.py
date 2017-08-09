@@ -1,10 +1,8 @@
-import copy
 import os
-import sys
 import types
 import functools
 import logging
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 import warnings
 from xml.etree.cElementTree import ElementTree
 import collections
@@ -1108,7 +1106,7 @@ def parse_operator_xml(f):
 
 
 def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d,
-        output_file_names):
+                  output_file_names):
     mutable_files = []
     display_names = [oft.display_name for oft in tc.task.output_file_types]
     descriptions = [oft.description for oft in tc.task.output_file_types]

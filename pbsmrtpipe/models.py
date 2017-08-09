@@ -375,13 +375,17 @@ class MetaGatherTask(MetaTask):
 class Task(object):
     # FIXME. This needs to be consolidated with the ResolvedToolContract and Runnable Task data-models
 
-    def __init__(self, task_uuid, task_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
-        # globablly unique task id
+    def __init__(self, task_uuid, display_name, task_id, task_type_id, is_distributed, input_files, output_files, resolved_options, nproc, resources, cmd, output_dir):
+        # globally unique task id
         self.uuid = task_uuid
+
         # locally unique task id that is user friendly
         self.task_id = task_id
+
         # the tool_contract id, or id defined in the python Task
-        self.task_type_id = task_id
+        self.task_type_id = task_type_id
+
+        self.display_name = display_name
         # List of strings
         self.input_files = input_files
         # List of Strings
@@ -420,6 +424,7 @@ class Task(object):
 
     def to_dict(self):
         return dict(task_id=self.task_id,
+                    task_name=self.display_name,
                     uuid=self.uuid,
                     task_type_id=self.task_type_id,
                     input_files=self.input_files,
@@ -432,7 +437,9 @@ class Task(object):
 
     @staticmethod
     def from_d(d):
-        return Task(d['uuid'], d['task_id'], d['is_distributed'],
+        task_type_id = d['task_id']
+        display_name = d.get('task_name', "Task {}".format(task_type_id))
+        return Task(d['uuid'], display_name, task_type_id, task_type_id, d['is_distributed'],
                     d['input_files'], d['output_files'],
                     d['options'], d['nproc'],
                     d['resources'], d['cmds'], d['output_dir'])
@@ -440,8 +447,8 @@ class Task(object):
 
 class ScatterTask(Task):
 
-    def __init__(self, task_uuid, task_id, task_type, input_files, output_files, resolved_opts, nproc, resources, cmd, nchunks, output_dir, chunk_keys):
-        super(ScatterTask, self).__init__(task_uuid, task_id, task_type, input_files, output_files, resolved_opts, nproc, resources, cmd, output_dir)
+    def __init__(self, task_uuid, display_name, task_id, task_type_id, is_distributed, input_files, output_files, resolved_opts, nproc, resources, cmd, nchunks, output_dir, chunk_keys):
+        super(ScatterTask, self).__init__(task_uuid, display_name, task_id, task_type_id, is_distributed, input_files, output_files, resolved_opts, nproc, resources, cmd, output_dir)
         self.nchunks = nchunks
         self.chunk_keys = chunk_keys
 
@@ -453,7 +460,7 @@ class ScatterTask(Task):
                   r=len(self.resources),
                   n=self.nproc,
                   c=self.nchunks, x=self.chunk_keys)
-        return "<{k} id:{i} inputs:{p} outputs:{o} resources:{r} nproc:{n} nchunks:{c} keys:{x} >".format(**_d)
+        return "<{k} task-type:{i} inputs:{p} outputs:{o} resources:{r} nproc:{n} nchunks:{c} keys:{x} >".format(**_d)
 
 
 class GatherTask(Task):
@@ -680,9 +687,6 @@ GatherChunk = namedtuple("GatherChunk", "gather_task_id chunk_key task_input")
 Gather = namedtuple("Gather", "chunks")
 
 ChunkOperator = namedtuple("ChunkOperator", "idx scatter gather")
-
-SmrtAnalysisComponent = namedtuple("SmrtAnalysisComponent", "build version name")
-SmrtAnalysisSystem = namedtuple("SmrtAnalysisSystem", "build version")
 
 
 def validate_operator(op, registered_tasks):

@@ -1,7 +1,5 @@
 """Binding Graph Model and Utils"""
 import copy
-import random
-import sys
 import datetime
 import functools
 import os
@@ -48,7 +46,7 @@ from pbsmrtpipe.graph.models import (TaskBindingNode,
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger(GlobalConstants.SLOG_PREFIX + "__name__")
-#logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 
 class BindingsGraph(nx.DiGraph):
@@ -159,7 +157,7 @@ class BindingsGraph(nx.DiGraph):
         add_node_by_type(self, n)
         return n
 
-    def task_nodes(self, data=False):
+    def task_nodes(self):
         """
         This always returns a t-sorted list of task nodes
         """
@@ -171,6 +169,7 @@ class BindingsGraph(nx.DiGraph):
         return self._get_sorted_nodes_by_klass(_TaskLike)
 
     def chunked_task_nodes(self):
+        """:rtype: list[TaskChunkedBindingNode]"""
         return self._get_nodes_by_klasses((TaskChunkedBindingNode, ))
 
     def scattered_task_nodes(self):
@@ -179,15 +178,15 @@ class BindingsGraph(nx.DiGraph):
     def gathered_task_nodes(self):
         return self._get_nodes_by_klasses((TaskGatherBindingNode, ))
 
-    def file_nodes(self, data=False):
+    def file_nodes(self):
         return self._get_sorted_nodes_by_klass(VALID_FILE_NODE_CLASSES)
 
-    def entry_binding_nodes(self, data=False):
+    def entry_binding_nodes(self):
         # these are files-esque
         nodes = nx.topological_sort(self)
         return [n for n in nodes if isinstance(n, EntryOutBindingFileNode)]
 
-    def entry_point_nodes(self, data=False):
+    def entry_point_nodes(self):
         # these are task-esque
         nodes = nx.topological_sort(self)
         return [n for n in nodes if isinstance(n, EntryPointNode)]
@@ -750,6 +749,10 @@ def get_tasks_by_state(g, state_or_states):
     return node_states
 
 
+def get_task_state(g, tnode):
+    return g.node[tnode][ConstantsNodes.TASK_ATTR_STATE]
+
+
 def update_task_state(g, tnode, state):
     if state not in TaskStates.ALL_STATES():
         raise ValueError("Invalid task state '{s}'".format(s=state))
@@ -1224,9 +1227,9 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks)
                 pipeline_chunks = IO.load_pipeline_chunks_from_json(bg.node[tnode_]['task'].output_files[0])
 
                 if len(pipeline_chunks) > max_nchunks:
-                    raise TaskChunkingError("Task {i} created too many {n} chunks. Max chunks must be <= {m}".format(n=len(pipeline_chunks), m=max_nchunks, i=tnode_))
+                    raise TaskChunkingError("{i} created too many {n} chunks. Max chunks must be <= {m}".format(n=len(pipeline_chunks), m=max_nchunks, i=repr(tnode_)))
                 if not pipeline_chunks:
-                    raise TaskChunkingError("Task {i} generated 0 chunks. Chunks must be >0 and <= {m} file: {f}".format(i=tnode_, m=max_nchunks, f=bg.node[tnode_]['task'].output_files[0]))
+                    raise TaskChunkingError("{i} generated 0 chunks. Chunks must be >0 and <= {m} file: {f}".format(i=repr(tnode_), m=max_nchunks, f=bg.node[tnode_]['task'].output_files[0]))
 
                 # This applies the chunk operator once (or more) if task is chunked by multiple
                 # This needs to be revisited fixed.
@@ -1236,10 +1239,11 @@ def apply_chunk_operator(bg, chunk_operators_d, registered_tasks_d, max_nchunks)
                     bg.node[tnode_][ConstantsNodes.TASK_ATTR_WAS_CHUNKED] = True
                     bg.node[tnode_][ConstantsNodes.TASK_ATTR_OPERATOR_ID] = [chunk_operator.idx for chunk_operator in chunk_operators]
                     # bg.node[tnode_][ConstantsNodes.TASK_ATTR_CHUNK_KEYS] = [c.chunk_key for c in chunk_operator.scatter.chunks]
-                    slog.info("Successfully applying chunk operator {i} to {x} to generate {n} tasks.".format(x=tnode_, i=[c.idx for c in chunk_operators], n=len(chunked_nodes)))
-                    slog.info(chunked_nodes)
+                    slog.info("Successfully applying chunk operator {i} to {x} to generate {n} chunked tasks. Chunks:".format(x=tnode_, i=[c.idx for c in chunk_operators], n=len(chunked_nodes)))
+                    for ns in sorted(chunked_nodes, key=lambda x: (x.meta_task.task_id, x.instance_id)):
+                        slog.info(ns)
             else:
-                log.debug("Skipping {t}. Node was already chunked".format(t=tnode_))
+                log.debug("Skipping {t}. Node was already chunked".format(t=repr(tnode_)))
 
     resolve_successor_binding_file_path(bg)
     validate_binding_graph_integrity(bg)
@@ -1312,6 +1316,7 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
             # Add check to see if
             required_chunk_keys = node.meta_task.tool_contract.task.chunk_keys
 
+            # chunk keys are $chunk:<chunk-id>
             _to_i = lambda x: int(x.split(":")[-1])
 
             # {index -> (chunk_key, gather task id, X)}
@@ -1328,7 +1333,8 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                 raise ChunkGatheringError("Unable to find output chunked JSON file from task {t}".format(t=chunk_file_node))
 
             scattered_pipeline_chunks = IO.load_pipeline_chunks_from_json(scattered_chunked_json_path)
-            log.debug("Loaded {n} pipeline scattered chunks from {i} {p}".format(n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path, i=node))
+            log.debug("Loaded {n} pipeline scattered chunks from {i} {p}".format(
+                n=len(scattered_pipeline_chunks), p=scattered_chunked_json_path, i=node))
 
             # The Scattering task should have written keys that are
             # defined in the ToolContract
@@ -1343,7 +1349,8 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                 return isinstance(cnode, TaskChunkedBindingNode) and cnode.chunk_group_id == chunk_group_id_ and cnode.operator_id == operator_id
 
             # Look for all TaskChunkedBindingNodes with the same chunk group
-            chunked_task_states = [(chunk_node_, bg.node[chunk_node_][ConstantsNodes.TASK_ATTR_STATE]) for chunk_node_ in bg.chunked_task_nodes() if _filter_chunks_by_group_and_operator(chunk_node_, node.chunk_group_id)]
+            _chunked_task_states = [(chunk_node_, bg.node[chunk_node_][ConstantsNodes.TASK_ATTR_STATE]) for chunk_node_ in bg.chunked_task_nodes() if _filter_chunks_by_group_and_operator(chunk_node_, node.chunk_group_id)]
+            chunked_task_states = sorted(_chunked_task_states, key=lambda x: (x[0].meta_task.task_id, x[0].instance_id))
 
             # Check for failure in chunked tasks
             if any(s in TaskStates.FAILURE_STATES() for s, c in chunked_task_states):
@@ -1384,7 +1391,9 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                             output_chunk_key, _, _ = gs[output_node.index]
                             cpath = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
 
-                            slog.debug("Mapping outputs of chunked task {n} Chunk {i} key: {k} {p}".format(n=output_node.idx, i=chunk_id, k=output_chunk_key, p=cpath))
+                            slog.debug("Mapping outputs of chunk {n} chunk-id:{i} chunk-key:{k} path:{p}".format(
+                                n=repr(output_node), i=chunk_id, k=output_chunk_key, p=cpath))
+
                             gathered_pipeline_chunks_d[chunk_id]._datum[output_chunk_key] = bg.node[output_node][ConstantsNodes.FILE_ATTR_PATH]
 
                     comment = "Gathered pipeline chunks {t}. Scattered {f}".format(t=node, f=scattered_chunked_json_path)
@@ -1458,11 +1467,11 @@ def add_gather_to_completed_task_chunks(bg, chunk_operators_d, registered_tasks_
                     update_or_set_node_attrs(bg, attrs, [node])
                     log.debug("Updated chunked task is_running {t}".format(t=node))
 
-                    slog.info("complete chunking task {n} chunk-group {g}".format(n=node, g=chunk_group_id))
+                    slog.info("complete chunking {n} chunk-group-id:{g}".format(n=repr(node), g=chunk_group_id))
                 else:
-                    log.debug("Chunked tasks not completed, or resolved for {n} group: {g}".format(n=node, g=chunk_group_id))
+                    log.debug("Chunked tasks not completed, or resolved for {n} chunk-group-id:{g}".format(n=repr(node), g=chunk_group_id))
             else:
-                log.debug("Chunked tasks for are not completed, or successful {n} group: {g}".format(n=node, g=chunk_group_id))
+                log.debug("Chunked tasks for are not completed, or successful {n} chunk-group-id:{g}".format(n=repr(node), g=chunk_group_id))
 
     resolve_successor_binding_file_path(bg)
     validate_binding_graph_integrity(bg)

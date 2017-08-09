@@ -1,18 +1,13 @@
 """Utils for Creating and Resolving the DI options graph"""
-import sys
 import inspect
 import json
 import logging
 import functools
-import re
 import types
-import pprint
 import uuid
-import jsonschema
 
-from pbcommand.models import FileTypes, TaskTypes, SymbolTypes
-from pbsmrtpipe.exceptions import (InvalidDependencyInjectError,
-                                   MalformedDependencyInjectionFileMetadataError)
+from pbcommand.models import FileTypes, SymbolTypes
+from pbsmrtpipe.exceptions import (InvalidDependencyInjectError)
 
 from pbsmrtpipe.models import (MetaScatterTask,
                                MetaTask, ScatterTask, Task, MetaGatherTask,
@@ -20,12 +15,8 @@ from pbsmrtpipe.models import (MetaScatterTask,
                                GatherToolContractMetaTask,
                                ToolContractMetaTask)
 
-from pbsmrtpipe.dataset_io import (dispatch_metadata_resolver,
-                                   has_metadata_resolver,
-                                   DatasetMetadata)
+from pbsmrtpipe.dataset_io import (dispatch_metadata_resolver, DatasetMetadata)
 
-
-import networkx as nx
 
 log = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.DEBUG)
@@ -210,14 +201,13 @@ def meta_task_to_task(meta_task,
 
     if isinstance(meta_task, (MetaScatterTask, ScatterToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, r_task_options, r_nproc, rfiles, r_nchunks)
-        t = ScatterTask(task_uuid, meta_task.task_id, meta_task.is_distributed, input_files, ofiles,
-                        r_task_options, r_nproc, rfiles, cmd_str, r_nproc, output_dir, meta_task.chunk_keys)
+        t = ScatterTask(task_uuid, meta_task.display_name, meta_task.task_id, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, r_nproc, output_dir, meta_task.chunk_keys)
     elif isinstance(meta_task, (MetaGatherTask, GatherToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, r_task_options, r_nproc, rfiles)
-        t = GatherTask(task_uuid, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
+        t = GatherTask(task_uuid, meta_task.display_name, meta_task.task_id, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
     elif isinstance(meta_task, (MetaTask, ToolContractMetaTask)):
         cmd_str = meta_task.to_cmd(input_files, ofiles, r_task_options, r_nproc, rfiles)
-        t = Task(task_uuid, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
+        t = Task(task_uuid, meta_task.display_name, meta_task.task_id, meta_task.task_id, meta_task.is_distributed, input_files, ofiles, r_task_options, r_nproc, rfiles, cmd_str, output_dir)
     else:
         raise TypeError("Unsupported meta task type {m}".format(m=meta_task))
 
