@@ -10,10 +10,12 @@ import datetime
 import functools
 import platform
 
+import pbcommand.cli.utils as U
+from pbcommand.models import ResourceTypes, TaskTypes
 from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli import get_default_argparser
 from pbcommand.models.report import Attribute, Report
-from pbcommand.utils import which
+from pbcommand.utils import which, nfs_exists_check
 from pbcommand.validators import validate_file
 from pbcommand.cli.utils import main_runner_default
 
@@ -21,9 +23,6 @@ from pbsmrtpipe.cluster import ClusterTemplateRender, ClusterTemplate
 from pbsmrtpipe.cluster import Constants as ClusterConstants
 from pbsmrtpipe.engine import run_command, backticks
 from pbsmrtpipe.models import RunnableTask, TaskStates
-from pbcommand.models import ResourceTypes, TaskTypes
-from pbsmrtpipe.utils import nfs_exists_check
-import pbcommand.cli.utils as U
 import pbsmrtpipe.pb_io as IO
 
 

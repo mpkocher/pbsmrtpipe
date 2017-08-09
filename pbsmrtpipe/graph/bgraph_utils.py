@@ -53,8 +53,10 @@ def bindings_graph_to_dict(bg):
 
 
 class DateTimeEncoder(json.JSONEncoder):
+    # See pylint issue
+    # https://github.com/PyCQA/pylint/issues/414
 
-    def default(self, o):
+    def default(self, o):  # pylint: disable=E0202
         if isinstance(o, datetime.datetime):
             return o.isoformat()
 

@@ -20,6 +20,8 @@ from pbsmrtpipe.tools.dev import (subread_dataset_report,
                                   run_reference_dataset_report,
                                   run_fasta_report)
 
+# pylint: disable=E0102
+
 log = logging.getLogger(__name__)
 
 TOOL_NAMESPACE = 'pbsmrtpipe'

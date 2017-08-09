@@ -9,6 +9,8 @@ from pbsmrtpipe.constants import ENTRY_PREFIX
 
 log = logging.getLogger(__name__)
 
+# pylint: disable=E0102
+
 
 def _to_entry(entry_prefix, value):
     return "".join([entry_prefix, value])

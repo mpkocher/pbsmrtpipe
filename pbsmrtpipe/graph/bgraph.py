@@ -13,6 +13,8 @@ import uuid
 
 import networkx as nx
 from xmlbuilder import XMLBuilder
+
+from pbcommand.utils import nfs_refresh, validate_type_or_raise
 from pbcommand.models import ResourceTypes
 from pbcommand.pb_io.common import write_pipeline_chunks
 
@@ -27,7 +29,7 @@ from pbsmrtpipe.exceptions import (MalformedBindingGraphError,
 from pbsmrtpipe.models import MetaScatterTask, TaskStates
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.pb_io import strip_entry_prefix, binding_str_to_task_id_and_instance_id
-from pbsmrtpipe.utils import validate_type_or_raise, nfs_refresh
+
 from pbsmrtpipe.graph.models import (TaskBindingNode,
                                      ConstantsNodes,
                                      BindingInFileNode,

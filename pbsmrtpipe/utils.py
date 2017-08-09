@@ -9,15 +9,8 @@ import logging
 import logging.config
 import logging.handlers
 
-import functools
-
 from jinja2 import Environment, PackageLoader
 
-from pbcore.util.Process import backticks
-
-# for backward compatibility
-from pbcommand.utils import setup_log, compose, nfs_exists_check, nfs_refresh
-from pbcommand.validators import (validate_file, validate_dir, validate_fofn, validate_output_dir, fofn_to_files)
 
 from pbsmrtpipe.decos import ignored
 from pbsmrtpipe.constants import SLOG_PREFIX

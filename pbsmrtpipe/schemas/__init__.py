@@ -9,8 +9,6 @@ SCHEMA_REGISTRY = {}
 
 __all__ = ['validate_pipeline_template',
            'validate_pipeline_template_view_rules',
-           'validate_tc',
-           'validate_rtc',
            'SCHEMA_REGISTRY']
 
 
