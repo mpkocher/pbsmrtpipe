@@ -32,6 +32,9 @@ clean-testkit:
 	find testkit-data -name "0.stdout" | xargs rm -rf;
 	find testkit-data -name "0.stderr" | xargs rm -rf;
 
+test-pylint:
+	pylint --errors-only pbsmrtpipe
+
 test-dev: clean-testkit
 	cd testkit-data && pbtestkit-multirunner --debug --nworkers 8 dev.fofn
 
