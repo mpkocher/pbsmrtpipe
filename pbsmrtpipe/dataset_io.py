@@ -85,10 +85,10 @@ def _to_fastax_dataset_metadata(fastx_reader_klass, path):
 
 
 @register_metadata_resolver(FileTypes.FASTA)
-def f(path):
+def _to_fasta_resolver(path):
     return _to_fastax_dataset_metadata(FastaReader, path)
 
 
 @register_metadata_resolver(FileTypes.FASTQ)
-def f(path):
+def _to_fastq_resolver(path):
     return _to_fastax_dataset_metadata(FastqReader, path)
