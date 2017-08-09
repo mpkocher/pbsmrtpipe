@@ -1,10 +1,8 @@
-import copy
 import os
-import sys
 import types
 import functools
 import logging
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 import warnings
 from xml.etree.cElementTree import ElementTree
 import collections
@@ -193,7 +191,7 @@ def _to_max_nproc_option():
 
 
 @register_workflow_option
-def _to_max_nproc_option():
+def _to_max_total_nproc_option():
     return OP.to_option_schema(_to_wopt_id("max_total_nproc"), ("integer", "null"),
                                "Maximum Total Number of Processors",
                                "Maximum Total number of Processors/Slots the workflow engine will use (null means there is no limit).", GlobalConstants.MAX_TOTAL_NPROC)
@@ -248,7 +246,7 @@ def _get_exit_on_failure():
 
 
 @register_workflow_option
-def _get_exit_on_failure():
+def _get_debug_model_option():
     return OP.to_option_schema(_to_wopt_id("debug_mode"), "boolean", "Enable Debug Mode",
                                "Debug will emit debug messages to Stdout and set the level in the master log to DEBUG.", GlobalConstants.DEBUG_MODE)
 
@@ -489,7 +487,8 @@ def validate_workflow_options(d):
             raw_value = d[option_id]
             types_ = schema['properties'][option_id]['type']
             coerced_value = crude_coerce_type_from_str(raw_value, types_)
-            _ = jsonschema.validate(schema, {option_id: coerced_value})
+            # this will raise if invalid
+            jsonschema.validate(schema, {option_id: coerced_value})
             wopts.append((option_id, coerced_value))
         else:
             # grab default
@@ -1108,7 +1107,7 @@ def parse_operator_xml(f):
 
 
 def _to_meta_task(tc, task_type, input_types, output_types, schema_option_d,
-        output_file_names):
+                  output_file_names):
     mutable_files = []
     display_names = [oft.display_name for oft in tc.task.output_file_types]
     descriptions = [oft.description for oft in tc.task.output_file_types]

@@ -26,7 +26,7 @@
 
 	<!-- MAX Number of Chunks/per Task created -->
         <option id="pbsmrtpipe.options.max_nchunks">
-            <value>7</value>
+            <value>13</value>
         </option>
 
         <option id="pbsmrtpipe.options.cluster_manager" >

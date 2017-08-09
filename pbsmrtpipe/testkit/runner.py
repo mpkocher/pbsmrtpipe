@@ -12,10 +12,7 @@ from pbcommand.cli import pacbio_args_runner, get_default_argparser
 # the pbcommand version raise OSError for some reason
 from pbcommand.cli.core import get_default_argparser_with_base_opts
 from pbcommand.utils import (setup_console_and_file_logger, setup_logger,
-                             Constants, compose)
-from pbcommand.common_options import (add_log_debug_option,
-                                      add_log_file_option,
-                                      add_log_level_option)
+                             Constants, compose, setup_log)
 from pbcommand.validators import validate_file
 
 from pbsmrtpipe.engine import run_command_async
@@ -26,8 +23,6 @@ import pbsmrtpipe.testkit.butler as B
 import pbsmrtpipe.testkit.loader as L
 import pbsmrtpipe.testkit.xunit as X
 import pbsmrtpipe.tools.utils as TU
-
-from pbsmrtpipe.utils import setup_log, StdOutStatusLogFilter
 
 log = logging.getLogger()
 log.addHandler(logging.NullHandler())

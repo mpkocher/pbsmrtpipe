@@ -5,18 +5,18 @@ import pprint
 import shutil
 import uuid
 
+from pbcommand.utils import setup_log
 from pbcommand.models import DataStore, DataStoreFile, FileTypes
 from pbcommand.models.report import Attribute, Report, Table, Column, Plot, PlotGroup
 
 import pbsmrtpipe
 
 import pbsmrtpipe.report_renderer as R
-import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
 from pbsmrtpipe.graph.models import VALID_ALL_TASK_NODE_CLASSES
 from pbsmrtpipe.models import TaskStates, JobResources, RunnableTask
-from pbsmrtpipe.utils import setup_log, setup_internal_logs
+from pbsmrtpipe.utils import setup_internal_logs
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)

@@ -9,6 +9,11 @@ from .pb_pipelines_sa3 import Constants, Tags
 
 log = logging.getLogger(__name__)
 
+# We're using deco's here by design. We don't
+# care about the function already defined here
+# http://pylint-messages.wikidot.com/messages:e0102
+# pylint: disable=E0102
+
 
 def dev_register(relative_id, display_name, tags=(), task_options=None):
     pipeline_id = to_pipeline_ns(relative_id)

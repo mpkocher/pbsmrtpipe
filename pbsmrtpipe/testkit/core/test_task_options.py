@@ -12,6 +12,8 @@ from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_js
 from pbsmrtpipe.testkit.core.base import TestValuesLoader
 from pbsmrtpipe.models import RunnableTask
 
+log = logging.getLogger(__name__)
+
 
 class LoadResolvedToolContractMixin(object):
 

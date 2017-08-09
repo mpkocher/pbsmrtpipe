@@ -3,18 +3,18 @@ import logging
 import os
 import socket
 import sys
+
 from pbcommand.cli import get_default_argparser
-
-from pbcore.io import (FastaWriter, FastaReader, ReferenceSet)
-
-import pbcore.io.dataset as DIO
-
+from pbcommand.utils import compose
 from pbcommand.common_options import add_log_debug_option
+import pbcommand.cli.utils as U
 from pbcommand.cli.utils import main_runner_default
 from pbcommand.models.report import Report, Attribute
-import pbcommand.cli.utils as U
+
+from pbcore.io import (FastaWriter, FastaReader, ReferenceSet)
+import pbcore.io.dataset as DIO
+
 import pbsmrtpipe.mock as M
-from pbsmrtpipe.utils import compose
 
 __version__ = '0.1.0'
 
@@ -143,7 +143,7 @@ def fasta_to_plot_group(fasta_file, output_dir):
             lengths.append(len(record.sequence))
 
     from pbreports.plot.helper import get_fig_axes
-    from pbreports.model.model import PlotGroup, Plot
+    from pbcommand.models.report import PlotGroup, Plot
     fig, ax = get_fig_axes()
 
     if len(lengths) == 1:

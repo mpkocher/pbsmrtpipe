@@ -26,7 +26,7 @@ def display_dot(dot_file):
 
 def networkx_graph_to_dot_str(g):
     f = StringIO.StringIO()
-    nx.write_dot(g, f)
+    write_dot(g, f)
     contents = f.getvalue()
     f.close()
     return contents
