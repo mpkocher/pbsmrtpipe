@@ -19,12 +19,11 @@ from pbcommand.pb_io import (write_resolved_tool_contract,
                              write_tool_contract,
                              load_report_from_json)
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
-from pbcommand.utils import log_traceback
+from pbcommand.utils import log_traceback, nfs_exists_check
 from pbcommand.models import (FileTypes, DataStoreFile)
 from pbcommand.services.service_access_layer import JobServiceClient
 from pbcore.io import getDataSetUuid
 
-from pbsmrtpipe.utils import nfs_exists_check
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.exceptions import (PipelineRuntimeError,
