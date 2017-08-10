@@ -216,7 +216,7 @@ def run_reference_dataset_report(reference_ds, output_json):
 
     fasta_file = reference_ds.toExternalFiles()[0]
 
-    plot_groups = try_fasta_to_plot_group(fasta_file, output_dir)
+    plot_groups = try_fasta_to_plot_group(fasta_file, output_json)
     report = Report("dev_diagnostic_report",
                     attributes=attributes,
                     plotgroups=plot_groups,
