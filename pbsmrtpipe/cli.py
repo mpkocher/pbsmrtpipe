@@ -5,6 +5,7 @@ import pprint
 import sys
 import logging
 import urlparse
+from collections import OrderedDict
 
 from pbcommand.utils import setup_log, compose
 from pbcommand.cli.utils import main_runner, args_executer, subparser_builder
@@ -222,7 +223,7 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
 
     from pbsmrtpipe.pb_io import binding_str_to_task_id_and_instance_id
 
-    pb_options = []
+    pb_options = {}
 
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]
@@ -247,16 +248,19 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
                             log.warn("Unable to load task {x}".format(x=task_id))
                         else:
                             for pb_opt in task.option_schemas:
-                                if pb_opt.option_id in pipeline.task_options:
+                                if pb_opt.option_id in pb_options:
+                                    continue
+                                elif pb_opt.option_id in pipeline.task_options:
                                     x = copy.deepcopy(pb_opt)
                                     value = pipeline.task_options[pb_opt.option_id]
                                     x._default = value # XXX hacky
-                                    pb_options.append(x)
+                                    pb_options[pb_opt.option_id] = x
                                 else:
-                                    pb_options.append(pb_opt)
+                                    pb_options[pb_opt.option_id] = pb_opt
 
         warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
-        task_options_d = {o.option_id: o.default for o in pb_options}
+        task_options_d = OrderedDict(
+            [(k, pb_options[k].default) for k in sorted(pb_options.keys())])
 
         if isinstance(output_preset_xml, str):
             write_task_options_to_preset_xml_and_print(task_options_d, output_preset_xml, warn_msg)
@@ -265,7 +269,7 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
             write_presets_json_and_print(pipeline, task_options_d, output_preset_json, warn_msg)
 
         if pb_options:
-            _print_pacbio_options(pb_options)
+            _print_pacbio_options([pb_options[k] for k in sorted(pb_options.keys())])
         else:
             print "No default task options"
 
