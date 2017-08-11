@@ -44,7 +44,7 @@
                 "default": true,
                 "id": "genomic_consensus.task_options.masking",
                 "name": "Masking",
-                "description": "Mask regions of reads with low template concordance from contributing during polishing."
+                "description": "During the polishing step omit regions of reads that have low concordance with the template."
             }
         ],
         "output_types": [
