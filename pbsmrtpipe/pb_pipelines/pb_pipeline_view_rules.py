@@ -526,7 +526,7 @@ def structural_variant_view_rules():
 
 
 #HGAP5
-@register_pipeline_rules("hgap_fat")
+#@register_pipeline_rules("hgap_fat")
 def hgap5_view_rules():
     return _to_blacklist([
         ("falcon_ns.tasks.task_hgap_prepare-out-0", FileTypes.JSON),
