@@ -124,25 +124,38 @@ def _add_output_preset_xml_option(p):
     return p
 
 
-def pretty_registered_pipelines(registered_new_pipelines_d):
-
-    n = len(registered_new_pipelines_d)
-    title = "{n} Registered Pipelines (name -> version, id)".format(n=n)
+def _pretty_registered_pipelines(pipelines, pipeline_type):
+    n = len(pipelines)
+    title = "{n} Registered {t} Pipelines (name -> version, id)".format(n=n, t=pipeline_type)
     header = len(title) * "*"
 
     outs = []
     outs.append(header)
     outs.append(title)
     outs.append(header)
-
-    max_name_len = max(len(pipeline.display_name) for pipeline in registered_new_pipelines_d.values())
+    max_name_len = max(len(pipeline.display_name) for pipeline in pipelines)
     pad = 4 + max_name_len
 
-    spipelines = sorted(registered_new_pipelines_d.values(), key=lambda x: x.pipeline_id)
+    spipelines = sorted(pipelines, key=lambda x: x.display_name)
     for i, k in enumerate(spipelines):
         outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.version, k.idx]))
 
     return "\n".join(outs)
+
+
+def pretty_registered_pipelines(registered_new_pipelines_d, show_all=True):
+    def _is_user_pipeline(pipeline):
+        return not ("dev" in pipeline.tags or "internal" in pipeline.tags)
+    pipelines = registered_new_pipelines_d.values()
+    user_pipelines = [p for p in pipelines if _is_user_pipeline(p)]
+    internal_pipelines = [p for p in pipelines if not _is_user_pipeline(p)]
+
+    outs = [_pretty_registered_pipelines(user_pipelines, "User")]
+    if show_all:
+        outs.append(_pretty_registered_pipelines(internal_pipelines, "Developer/Internal"))
+    else:
+        outs.append("Run with --show-all to display developer/internal pipelines")
+    return "\n\n".join(outs)
 
 
 def pretty_bindings(bindings):
@@ -166,14 +179,15 @@ def pretty_bindings(bindings):
     return "\n".join(outs)
 
 
-def run_show_templates(avro_output_dir=None, json_output_dir=None):
+def run_show_templates(avro_output_dir=None, json_output_dir=None,
+                       show_all=False):
     import pbsmrtpipe.loader as L
     from pbsmrtpipe.pb_io import (write_pipeline_templates_to_avro,
                                   write_pipeline_templates_to_json)
 
     rtasks_d, _, _, pts = L.load_all()
 
-    print pretty_registered_pipelines(pts)
+    print pretty_registered_pipelines(pts, show_all=show_all)
 
     if avro_output_dir is not None:
         write_pipeline_templates_to_avro(pts.values(), rtasks_d, avro_output_dir)
@@ -192,13 +206,15 @@ def add_run_show_templates_options(p):
 
     p.add_argument('--output-templates-avro', type=str, help=_to_h("AVRO"))
     p.add_argument('--output-templates-json', type=str, help=_to_h("JSON"))
+    p.add_argument('--show-all', action="store_true", help="Display developer/internal pipelines")
 
     return p
 
 
 def _args_run_show_templates(args):
     return run_show_templates(avro_output_dir=args.output_templates_avro,
-                              json_output_dir=args.output_templates_json)
+                              json_output_dir=args.output_templates_json,
+                              show_all=args.show_all)
 
 
 def write_task_options_to_preset_xml_and_print(task_options_d, output_file, warning_msg):
