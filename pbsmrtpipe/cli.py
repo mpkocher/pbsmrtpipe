@@ -155,19 +155,19 @@ def pretty_registered_pipelines(registered_new_pipelines_d, show_all=True):
 
     internal_tags = ("dev", "internal")
 
-    def _is_not_internal_pipeline(pipeline):
-        return any(t in pipeline.tags for t in internal_tags)
-
     def _is_internal_pipeline(pipeline):
         return not _is_not_internal_pipeline(pipeline)
+
+    def _is_not_internal_pipeline(pipeline):
+        return not any(t in pipeline.tags for t in internal_tags)
 
     def _pipeline_summary(filter_func, description):
         return _pretty_registered_pipelines([p_ for p_ in registered_new_pipelines_d.values() if filter_func(p_)], description)
 
-    outs = [_pipeline_summary(_is_internal_pipeline, "User")]
+    outs = [_pipeline_summary(_is_not_internal_pipeline, "User")]
 
     if show_all:
-        outs.append(_pipeline_summary(_is_not_internal_pipeline, "Developer/Internal"))
+        outs.append(_pipeline_summary(_is_internal_pipeline, "Developer/Internal"))
 
     return "\n\n".join(outs)
 
