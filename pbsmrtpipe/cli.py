@@ -126,35 +126,49 @@ def _add_output_preset_xml_option(p):
 
 def _pretty_registered_pipelines(pipelines, pipeline_type):
     n = len(pipelines)
-    title = "{n} Registered {t} Pipelines (name -> version, id)".format(n=n, t=pipeline_type)
+    title = "{n} Registered {t} Pipelines (name -> version, id, tags)".format(n=n, t=pipeline_type)
     header = len(title) * "*"
 
-    outs = []
-    outs.append(header)
-    outs.append(title)
-    outs.append(header)
-    max_name_len = max(len(pipeline.display_name) for pipeline in pipelines)
-    pad = 4 + max_name_len
+    outs = [header, title, header]
+    pad_len = 3
+
+    def get_max(attr_name):
+        return max(len(getattr(pipeline, attr_name)) for pipeline in pipelines)
+
+    name_pad = pad_len + get_max("display_name")
+    id_pad = pad_len + get_max("idx")
+    version_pad = pad_len + get_max("version")
 
     spipelines = sorted(pipelines, key=lambda x: x.display_name)
     for i, k in enumerate(spipelines):
-        outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.version, k.idx]))
+        sx = [(str(i + 1) + ".").rjust(4),
+              k.display_name.ljust(name_pad),
+              k.version.ljust(version_pad),
+              k.idx.ljust(id_pad),
+              ",".join(k.tags)]
+        outs.append(" ".join(sx))
 
     return "\n".join(outs)
 
 
 def pretty_registered_pipelines(registered_new_pipelines_d, show_all=True):
-    def _is_user_pipeline(pipeline):
-        return not ("dev" in pipeline.tags or "internal" in pipeline.tags)
-    pipelines = registered_new_pipelines_d.values()
-    user_pipelines = [p for p in pipelines if _is_user_pipeline(p)]
-    internal_pipelines = [p for p in pipelines if not _is_user_pipeline(p)]
 
-    outs = [_pretty_registered_pipelines(user_pipelines, "User")]
+    internal_tags = ("dev", "internal")
+
+    def _is_not_internal_pipeline(pipeline):
+        return any(t in pipeline.tags for t in internal_tags)
+
+    def _is_internal_pipeline(pipeline):
+        return not _is_not_internal_pipeline(pipeline)
+
+    def _pipeline_summary(filter_func, description):
+        return _pretty_registered_pipelines([p_ for p_ in registered_new_pipelines_d.values() if filter_func(p_)], description)
+
+    outs = [_pipeline_summary(_is_internal_pipeline, "User")]
+
     if show_all:
-        outs.append(_pretty_registered_pipelines(internal_pipelines, "Developer/Internal"))
-    else:
-        outs.append("Run with --show-all to display developer/internal pipelines")
+        outs.append(_pipeline_summary(_is_not_internal_pipeline, "Developer/Internal"))
+
     return "\n\n".join(outs)
 
 
@@ -188,6 +202,8 @@ def run_show_templates(avro_output_dir=None, json_output_dir=None,
     rtasks_d, _, _, pts = L.load_all()
 
     print pretty_registered_pipelines(pts, show_all=show_all)
+    if not show_all:
+        print "Run with --show-all to display (unsupported) developer/internal pipelines"
 
     if avro_output_dir is not None:
         write_pipeline_templates_to_avro(pts.values(), rtasks_d, avro_output_dir)
