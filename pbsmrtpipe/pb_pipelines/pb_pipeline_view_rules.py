@@ -327,7 +327,7 @@ def hgap4_view_rules():
 
 
 #Barcoding
-@register_pipeline_rules("sa3_ds_barcode")
+@register_pipeline_rules("sa3_ds_barcode2")
 def barcode_view_rules():
     whitelist = _to_whitelist([
         ("pbreports.tasks.barcode_report-out-1", FileTypes.CSV),
@@ -404,7 +404,7 @@ def ccs_mapping_view_rules():
 
 
 #CCS with Barcoding
-@register_pipeline_rules("sa3_ds_barcode_ccs")
+@register_pipeline_rules("sa3_ds_barcode2_ccs")
 def ccs_barcoding_view_rules():
     whitelist = _to_whitelist([
         ("pbcoretools.tasks.bam2fastq_ccs-out-0", FileTypes.TGZ),
@@ -467,7 +467,7 @@ def isoseq_with_genome_view_rules():
 
 
 #LAA with Barcoding
-@register_pipeline_rules("sa3_ds_barcode_laa")
+@register_pipeline_rules("sa3_ds_barcode2_laa")
 def laa_barcode_view_rules():
     return _laa_barcode_view_rules()
 
@@ -485,7 +485,7 @@ def mv_view_rules():
 
 
 #Minor Variants Analysis with Barcoding [Beta]
-@register_pipeline_rules("sa3_ds_barcode_minorseq")
+@register_pipeline_rules("sa3_ds_barcode2_minorseq")
 def mv_barcode_view_rules():
     return _mv_barcode_view_rules()
 
