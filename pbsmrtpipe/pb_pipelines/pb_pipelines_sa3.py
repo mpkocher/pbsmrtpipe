@@ -512,8 +512,8 @@ def ds_barcode_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
     """
-    b1 = _core_barcode()
-    b2 = [("barcoding.tasks.lima:0", "pbcoretools.tasks.filterdataset:0")]
+    b1 = _core_barcode(bc_task="pbcoretools.tasks.bam2bam_barcode")
+    b2 = [("pbcoretools.tasks.bam2bam_barcode:0", "pbcoretools.tasks.filterdataset:0")]
     b3 = _core_ccs("pbcoretools.tasks.filterdataset:0")
     return b1 + b2 + b3
 
@@ -525,7 +525,7 @@ def ds_barcode2_ccs():
     """
     Internal pipeline for testing barcoding in combination with CCS
     """
-    b1 = _core_barcode()
+    b1 = _core_barcode(bc_task="barcoding.tasks.lima")
     b2 = [("barcoding.tasks.lima:0", "pbcoretools.tasks.filterdataset:0")]
     b3 = _core_ccs("pbcoretools.tasks.filterdataset:0")
     return b1 + b2 + b3
@@ -899,7 +899,7 @@ def ds_barcode_minorseq():
 
 @sa3_register("sa3_ds_barcode2_minorseq", "Minor Variants Analysis with Barcoding [Beta]", "0.1.0", tags=(Tags.MINORVAR,Tags.BARCODE,Tags.BETA,Tags.INTERNAL), task_options=MV_BC_OPTS)
 def ds_barcode2_minorseq():
-    return _core_minorseq_multiplexed("pbsmrtpipe.pipelines.sa3_ds_barcode_ccs:pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
+    return _core_minorseq_multiplexed("pbsmrtpipe.pipelines.sa3_ds_barcode2_ccs:pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
 
 
 def _core_sv(ds_subread, ds_ref):
