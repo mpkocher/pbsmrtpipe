@@ -899,7 +899,7 @@ def ds_barcode_minorseq():
 
 @sa3_register("sa3_ds_barcode2_minorseq", "Minor Variants Analysis with Barcoding [Beta]", "0.1.0", tags=(Tags.MINORVAR,Tags.BARCODE,Tags.BETA,Tags.INTERNAL), task_options=MV_BC_OPTS)
 def ds_barcode2_minorseq():
-    return _core_minorseq_multiplexed("pbsmrtpipe.pipelines.sa3_ds_barcode_ccs:pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
+    return _core_minorseq_multiplexed("pbsmrtpipe.pipelines.sa3_ds_barcode2_ccs:pbccs.tasks.ccs:0", Constants.ENTRY_DS_REF)
 
 
 def _core_sv(ds_subread, ds_ref):
