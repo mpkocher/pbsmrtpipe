@@ -5,7 +5,7 @@ from pbcommand.models.common import to_pipeline_ns
 
 from pbsmrtpipe.core import register_pipeline
 
-from .pb_pipelines_sa3 import Constants, Tags
+from .pb_pipeline_constants import Constants, Tags
 
 log = logging.getLogger(__name__)
 

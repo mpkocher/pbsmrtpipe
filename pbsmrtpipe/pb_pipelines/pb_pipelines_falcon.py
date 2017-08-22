@@ -4,7 +4,8 @@ from pbcommand.models.common import to_pipeline_ns
 
 from pbsmrtpipe.core import register_pipeline
 
-from .pb_pipelines_sa3 import Constants, Tags, _core_align, _core_gc
+from pbsmrtpipe.pb_pipelines.pb_pipeline_constants import Constants, Tags
+from .pb_pipelines_sa3 import _core_align, _core_gc
 
 log = logging.getLogger(__name__)
 
