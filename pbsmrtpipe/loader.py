@@ -75,6 +75,17 @@ def _get_env_path_if_defined(env_var):
     return None
 
 
+def _get_env_bundle_sub_dir(bundle_sub_dir):
+    """
+    Get a subdirectory under the resources bundle directory configured by an
+    env variable, or return None
+    """
+    root = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
+    if root is not None:
+        return os.path.join(root, bundle_sub_dir)
+    return None
+
+
 def load_all_tool_contracts():
     """
     This name is a bit of misnomer. This loads the TCs, then converts to MetaTask
@@ -107,9 +118,8 @@ def load_all_tool_contracts():
         tcs_mtasks = _load_all_tool_contracts_from(tc_path)
         rtasks.update(tcs_mtasks)
 
-    bundle_path = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
-    if bundle_path is not None:
-        bundle_tc_path = os.path.join(bundle_path, "registered-tool-contracts")
+    bundle_tc_path = _get_env_bundle_sub_dir("registered-tool-contracts")
+    if bundle_tc_path is not None:
         tcs_bundle = _load_all_tool_contracts_from(bundle_tc_path)
         rtasks.update(tcs_mtasks)
 
@@ -146,11 +156,10 @@ def _load_xml_chunk_operators_from_python_module_name(name):
 
 
 def _load_xml_chunk_operators_from_bundle():
-    bundle_path = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
+    operators_dir = _get_env_bundle_sub_dir("chunk_operators")
     operators_d = {}
-    if bundle_path is not None:
-        dir_name = os.path.join(bundle_path, "chunk_operators")
-        operators_d.update(__load_chunk_operators_from_dir(dir_name))
+    if operators_dir is not None:
+        operators_d.update(__load_chunk_operators_from_dir(operators_dir))
     return operators_d
 
 
@@ -240,9 +249,8 @@ def _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_P
 def load_all_installed_pipelines():
     _ = _load_pipelines_from_python_module_name("")
     _ = _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_PT_DIR)
-    bundle_path = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
-    if bundle_path is not None:
-        bundle_pipeline_path = os.path.join(bundle_path, "resolved-pipeline-templates")
+    bundle_pipeline_path = _get_env_bundle_sub_dir("resolved-pipeline-templates")
+    if bundle_pipeline_path is not None:
         _load_resolved_pipeline_template_json_from_dir(bundle_pipeline_path)
     return _REGISTERED_PIPELINES
 
