@@ -126,6 +126,8 @@ def _add_output_preset_xml_option(p):
 
 def _pretty_registered_pipelines(pipelines, pipeline_type):
     n = len(pipelines)
+    if n == 0:
+        return ""
     title = "{n} Registered {t} Pipelines (name -> version, id, tags)".format(n=n, t=pipeline_type)
     header = len(title) * "*"
 

@@ -16,6 +16,9 @@ ENV_PT_DIR = "PB_PIPELINE_TEMPLATE_DIR"
 # Chunk Operators
 ENV_CHK_OPT_DIR = "PB_CHUNK_OPERATOR_DIR"
 
+# External resources bundle
+ENV_BUNDLE_DIR = "SMRT_PIPELINE_BUNDLE_DIR"
+
 
 PBSMRTPIPE_PID_KILL_FILE_SCRIPT = ".pbsmrtpipe-terminate.sh"
 

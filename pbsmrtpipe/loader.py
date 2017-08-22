@@ -75,6 +75,17 @@ def _get_env_path_if_defined(env_var):
     return None
 
 
+def _get_env_bundle_sub_dir(bundle_sub_dir):
+    """
+    Get a subdirectory under the resources bundle directory configured by an
+    env variable, or return None
+    """
+    root = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
+    if root is not None:
+        return os.path.join(root, bundle_sub_dir)
+    return None
+
+
 def load_all_tool_contracts():
     """
     This name is a bit of misnomer. This loads the TCs, then converts to MetaTask
@@ -105,6 +116,11 @@ def load_all_tool_contracts():
     tc_path = _get_env_path_if_defined(GlobalConstants.ENV_TC_DIR)
     if tc_path is not None:
         tcs_mtasks = _load_all_tool_contracts_from(tc_path)
+        rtasks.update(tcs_mtasks)
+
+    bundle_tc_path = _get_env_bundle_sub_dir("registered-tool-contracts")
+    if bundle_tc_path is not None:
+        tcs_bundle = _load_all_tool_contracts_from(bundle_tc_path)
         rtasks.update(tcs_mtasks)
 
     return rtasks
@@ -139,6 +155,14 @@ def _load_xml_chunk_operators_from_python_module_name(name):
     return __load_chunk_operators_from_dir(path)
 
 
+def _load_xml_chunk_operators_from_bundle():
+    operators_dir = _get_env_bundle_sub_dir("chunk_operators")
+    operators_d = {}
+    if operators_dir is not None:
+        operators_d.update(__load_chunk_operators_from_dir(operators_dir))
+    return operators_d
+
+
 def load_all_installed_chunk_operators():
     """:rtype dict[str, ChunkOperator]"""
 
@@ -149,8 +173,10 @@ def load_all_installed_chunk_operators():
     if _REGISTERED_OPERATORS is None:
         d1 = _load_xml_chunk_operators_from_python_module_name(module_name)
         d2 = _load_chunk_operators_from_env(env_name=chunk_operator_env_name)
+        d3 = _load_xml_chunk_operators_from_bundle()
         # Values defined in the ENV will overwrite operators defined in python module loading
         d1.update(d2)
+        d1.update(d3)
         _REGISTERED_OPERATORS = d1
         log.debug("Loaded {o} total chunk operators from module {m} ENV {e} (if defined)".format(o=len(d1), m=module_name, e=chunk_operator_env_name))
 
@@ -197,6 +223,14 @@ def load_resolved_pipeline_template_jsons_from_dir(dir_name):
     return pipelines
 
 
+def _load_resolved_pipeline_template_json_from_dir(dir_name):
+    # print "Loading from ", dir_name
+    # this needs to be able to reference existing pipeline templates
+    resolved_pipeline_templates = load_resolved_pipeline_template_jsons_from_dir(dir_name)
+    for resolved_pipeline_template in resolved_pipeline_templates:
+        _REGISTERED_PIPELINES[resolved_pipeline_template.idx] = resolved_pipeline_template
+
+
 def _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_PT_DIR):
 
     global _REGISTERED_PIPELINES
@@ -207,11 +241,7 @@ def _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_P
     if dir_value:
         dir_names = dir_value.split(":")
         for dir_name in dir_names:
-            # print "Loading from ", dir_name
-            # this needs to be able to reference existing pipeline templates
-            resolved_pipeline_templates = load_resolved_pipeline_template_jsons_from_dir(dir_name)
-            for resolved_pipeline_template in resolved_pipeline_templates:
-                _REGISTERED_PIPELINES[resolved_pipeline_template.idx] = resolved_pipeline_template
+            _load_resolved_pipeline_template_json_from_dir(dir_name)
 
     return _REGISTERED_PIPELINES
 
@@ -219,6 +249,9 @@ def _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_P
 def load_all_installed_pipelines():
     _ = _load_pipelines_from_python_module_name("")
     _ = _env_load_resolved_pipeline_template_json_from_env(env=GlobalConstants.ENV_PT_DIR)
+    bundle_pipeline_path = _get_env_bundle_sub_dir("resolved-pipeline-templates")
+    if bundle_pipeline_path is not None:
+        _load_resolved_pipeline_template_json_from_dir(bundle_pipeline_path)
     return _REGISTERED_PIPELINES
 
 
