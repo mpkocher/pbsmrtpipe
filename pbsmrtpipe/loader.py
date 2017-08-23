@@ -121,7 +121,7 @@ def load_all_tool_contracts():
     bundle_tc_path = _get_env_bundle_sub_dir("registered-tool-contracts")
     if bundle_tc_path is not None:
         tcs_bundle = _load_all_tool_contracts_from(bundle_tc_path)
-        rtasks.update(tcs_mtasks)
+        rtasks.update(tcs_bundle)
 
     return rtasks
 
