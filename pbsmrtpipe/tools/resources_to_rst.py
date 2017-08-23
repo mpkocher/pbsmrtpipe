@@ -107,7 +107,7 @@ def convert_pipeline_to_rst(pipeline_d):
               task_table_summary=task_option_table_str)
 
     t = ENV.get_template("pipeline_details_rst.tmpl")
-    s = t.render(**_d)
+    s = t.render(**_d) #pylint: disable=no-member
 
     return [s, pipeline_id, name]
 
@@ -116,7 +116,7 @@ def generate_index(pipeline_ids, title, doc_version):
     _d = dict(title=title,
               version=doc_version,
               pipeline_ids=pipeline_ids)
-    return ENV.get_template("pipeline_index_rst.tmpl").render(**_d)
+    return ENV.get_template("pipeline_index_rst.tmpl").render(**_d) #pylint: disable=no-member
 
 
 def _write_file(output_file, content):
@@ -145,7 +145,7 @@ def write_converted_pipelines(converted_pipelines, doc_output_dir, index_rst="in
 
 def _render_template(tmpl_name, output_file, **kwargs):
     tmpl = ENV.get_template(tmpl_name)
-    content = tmpl.render(**kwargs)
+    content = tmpl.render(**kwargs) #pylint: disable=no-member
     _write_file(output_file, content)
     return content
 

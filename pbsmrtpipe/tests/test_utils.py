@@ -38,5 +38,5 @@ class TestLoadJinjaTemplate(unittest.TestCase):
         self.assertIsNotNone(t)
 
         d = dict(value=1)
-        html = t.render(**d)
+        html = t.render(**d) #pylint: disable=no-member
         self.assertIsInstance(html, basestring)

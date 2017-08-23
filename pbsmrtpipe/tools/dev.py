@@ -142,7 +142,7 @@ def fasta_to_plot_group(fasta_file, output_dir):
         for record in f:
             lengths.append(len(record.sequence))
 
-    from pbreports.plot.helper import get_fig_axes
+    from pbreports.plot.helper import get_fig_axes #pylint: disable=import-error
     from pbcommand.models.report import PlotGroup, Plot
     fig, ax = get_fig_axes()
 
