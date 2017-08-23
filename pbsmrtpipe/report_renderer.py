@@ -70,7 +70,7 @@ def render_report(report, template_name="report.html"):
               plot_groups=plot_groups_d,
               tables=tables_d)
 
-    return template.render(**_d) #pylint disable=no-member
+    return template.render(**_d) #pylint: disable=no-member
 
 
 def _get_js_css_root_dir():
@@ -120,7 +120,7 @@ def write_report_with_html_extras(report, output_file, extras_dir):
 def render_analysis_link_report(analysis_report_links):
     # links [{name: "Display name", path: "relative_path"}, ...]
     t = ENV.get_template("analysis.html")
-    return t.render(file_links=analysis_report_links) #pylint disable=no-member
+    return t.render(file_links=analysis_report_links) #pylint: disable=no-member
 
 
 def write_analysis_link_report(analysis_report_links, output_file):
