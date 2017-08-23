@@ -96,22 +96,22 @@ class _TestBase(unittest.TestCase):
     def test_n_files(self):
         self.assertEqual(self.NFILES, len(self.bgraph.file_nodes()))
 
-    @unittest.skip
-    def test_mock_runner(self):
-        B.resolve_entry_points(self.bgraph, self.EPOINTS_D)
-        state = M.mock_workflow_runner(self.bgraph, {},
-                                       self.output_dir,
-                                       self.workflow_options,
-                                       self.TASK_OPTIONS,
-                                       REGISTERED_FILE_TYPES,
-                                       self.cluster_engine, self.envs)
+    #@unittest.skip
+    #def test_mock_runner(self):
+    #    B.resolve_entry_points(self.bgraph, self.EPOINTS_D)
+    #    state = M.mock_workflow_runner(self.bgraph, {},
+    #                                   self.output_dir,
+    #                                   self.workflow_options,
+    #                                   self.TASK_OPTIONS,
+    #                                   REGISTERED_FILE_TYPES,
+    #                                   self.cluster_engine, self.envs)
 
-        _ = B.get_tasks_by_state(self.bgraph, B.TaskStates.SUCCESSFUL)
+    #   _ = B.get_tasks_by_state(self.bgraph, B.TaskStates.SUCCESSFUL)
 
-        if state is False:
-            log.debug(B.to_binding_graph_summary(self.bgraph))
+    #   if state is False:
+    #       log.debug(B.to_binding_graph_summary(self.bgraph))
 
-        self.assertTrue(state)
+    #   self.assertTrue(state)
 
 
 # class TestRSFetch(_TestBase):

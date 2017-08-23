@@ -28,4 +28,5 @@ $PIP install --user -r REQUIREMENTS_CI.txt
 $PIP install --user -r REQUIREMENTS.txt
 $PIP install --user -e ./
 
+make test-pylint
 make test-suite

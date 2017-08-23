@@ -4,7 +4,7 @@ import tempfile
 import StringIO
 import networkx as nx
 from networkx.drawing.nx_agraph import write_dot
-from IPython.display import display_svg
+from IPython.display import display_svg #pylint: disable=import-error
 
 from pbsmrtpipe.external_tools import dot_file_to_svg, dot_file_to_png
 
