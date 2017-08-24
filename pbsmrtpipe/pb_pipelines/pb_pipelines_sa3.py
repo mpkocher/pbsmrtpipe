@@ -371,9 +371,7 @@ def ds_barcode():
     return _core_barcode(bc_task="pbcoretools.tasks.bam2bam_barcode")
 
 
-BARCODING_OPTIONS = {
-    "lima.task_options.keepsame": True
-}
+BARCODING_OPTIONS = {}
 @sa3_register("sa3_ds_barcode2", "Barcoding", "0.1.0",
               tags=(Tags.BARCODE,), task_options=BARCODING_OPTIONS)
 def ds_barcode2():
