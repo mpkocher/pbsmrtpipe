@@ -798,6 +798,7 @@ def ds_barcode2_minorseq():
 
 
 def _core_sv(ds_subread, ds_ref):
+    sample = [(ds_subread, 'pbsvtools.tasks.make_samples:0')]
     prepare = [(ds_ref, 'pbsvtools.tasks.prepare_reference:0')]
     config = [
         (ds_subread, 'pbsvtools.tasks.config:0')
@@ -805,7 +806,8 @@ def _core_sv(ds_subread, ds_ref):
     align = [
         ('pbsvtools.tasks.config:0', 'pbsvtools.tasks.align:0'),
         (ds_subread, 'pbsvtools.tasks.align:1'),
-        ('pbsvtools.tasks.prepare_reference:0', 'pbsvtools.tasks.align:2')
+        ('pbsvtools.tasks.prepare_reference:0', 'pbsvtools.tasks.align:2'),
+        ('pbsvtools.tasks.make_samples:0', 'pbsvtools.tasks.align:3')
     ]
     call = [
         ('pbsvtools.tasks.config:0', 'pbsvtools.tasks.call:0'),
@@ -818,7 +820,7 @@ def _core_sv(ds_subread, ds_ref):
         ('pbsvtools.tasks.make_reports:0', 'pbreports.tasks.structural_variants_report:0'),
         ('pbsvtools.tasks.make_reports:1', 'pbreports.tasks.structural_variants_report:1')
     ]
-    return prepare + config + align + call + report
+    return sample + prepare + config + align + call + report
 
 
 @sa3_register("sa3_ds_sv", "Structural Variant Calling [Beta]", "0.1.0", tags=(Tags.SV,))
