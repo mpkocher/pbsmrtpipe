@@ -80,6 +80,9 @@ def _get_env_bundle_sub_dir(bundle_sub_dir):
     Get a subdirectory under the resources bundle directory configured by an
     env variable, or return None
     """
+    # workaround for running pipeline sanity checks using smrttools build
+    if ENV_IGNORE_BUNDLE in os.environ:
+        return None
     root = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
     if root is not None:
         return os.path.join(root, bundle_sub_dir)
