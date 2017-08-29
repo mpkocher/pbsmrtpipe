@@ -193,8 +193,6 @@ def _load_pipelines_from_python_module_name(name):
 
     if _REGISTERED_PIPELINES is None:
         import pbsmrtpipe.pb_pipelines.pb_pipelines_dev
-        import pbsmrtpipe.pb_pipelines.pb_pipelines_sa3
-        import pbsmrtpipe.pb_pipelines.pb_pipelines_falcon
 
         from pbsmrtpipe.models import REGISTERED_PIPELINES
         _REGISTERED_PIPELINES = REGISTERED_PIPELINES
