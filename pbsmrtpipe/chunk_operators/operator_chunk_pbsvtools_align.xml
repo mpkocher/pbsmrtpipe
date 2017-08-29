@@ -9,6 +9,7 @@
             <chunk out="$chunk.config_id" in="pbsvtools.tasks.align:0"/>
             <chunk out="$chunk.subreadset_id" in="pbsvtools.tasks.align:1"/>
             <chunk out="$chunk.ref_id" in="pbsvtools.tasks.align:2"/>
+            <chunk out="$chunk.json_id" in="pbsvtools.tasks.align:3"/>
         </chunks>
     </scatter>
     <!-- Define the Gather Mechanism -->

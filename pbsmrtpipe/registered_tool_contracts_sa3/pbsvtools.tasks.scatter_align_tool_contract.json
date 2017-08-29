@@ -28,7 +28,7 @@
                 "file_type_id": "PacBio.FileTypes.CHUNK"
             }
         ],
-        "_comment": "Created by pbcommand 0.6.0",
+        "_comment": "Created by pbcommand 0.6.3",
         "nchunks": "$max_nchunks",
         "name": "pbsvtools.tasks.scatter_align",
         "input_types": [
@@ -49,12 +49,19 @@
                 "title": "Reference Set In",
                 "id": "referenceset_in",
                 "file_type_id": "PacBio.DataSet.ReferenceSet"
+            },
+            {
+                "description": "Link movie names to samples",
+                "title": "Movie names to samples JSON In",
+                "id": "movienames2samples_in",
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ],
         "chunk_keys": [
             "$chunk.config_id",
             "$chunk.subreadset_id",
-            "$chunk.ref_id"
+            "$chunk.ref_id",
+            "$chunk.json_id"
         ],
         "nproc": 1,
         "is_distributed": true,

@@ -20,8 +20,8 @@
                 "file_type_id": "PacBio.FileTypes.bam"
             }
         ],
-        "_comment": "Created by pbcommand 0.6.0",
-        "name": "Gather pbsv align BAM",
+        "_comment": "Created by pbcommand 0.6.5",
+        "name": "pbsvtools.tasks.gather_align",
         "input_types": [
             {
                 "description": "Gathered CHUNK Json with chunk key",
