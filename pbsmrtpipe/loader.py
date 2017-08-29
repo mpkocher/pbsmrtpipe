@@ -80,6 +80,9 @@ def _get_env_bundle_sub_dir(bundle_sub_dir):
     Get a subdirectory under the resources bundle directory configured by an
     env variable, or return None
     """
+    # workaround for running pipeline sanity checks using smrttools build
+    if GlobalConstants.ENV_IGNORE_BUNDLE in os.environ:
+        return None
     root = _get_env_path_if_defined(GlobalConstants.ENV_BUNDLE_DIR)
     if root is not None:
         return os.path.join(root, bundle_sub_dir)
@@ -193,8 +196,6 @@ def _load_pipelines_from_python_module_name(name):
 
     if _REGISTERED_PIPELINES is None:
         import pbsmrtpipe.pb_pipelines.pb_pipelines_dev
-        import pbsmrtpipe.pb_pipelines.pb_pipelines_sa3
-        import pbsmrtpipe.pb_pipelines.pb_pipelines_falcon
 
         from pbsmrtpipe.models import REGISTERED_PIPELINES
         _REGISTERED_PIPELINES = REGISTERED_PIPELINES
