@@ -22,7 +22,7 @@
                 "file_type_id": "PacBio.FileTypes.bam"
             }
         ],
-        "_comment": "Created by pbcommand 0.6.0",
+        "_comment": "Created by pbcommand 0.6.5",
         "name": "pbsvtools.tasks.align",
         "input_types": [
             {
@@ -42,6 +42,12 @@
                 "title": "Reference Set In",
                 "id": "referenceset_in",
                 "file_type_id": "PacBio.DataSet.ReferenceSet"
+            },
+            {
+                "description": "Link movie names to samples",
+                "title": "Movie names to samples JSON In",
+                "id": "movienames2samples_in",
+                "file_type_id": "PacBio.FileTypes.json"
             }
         ],
         "nproc": "$max_nproc",
