@@ -58,7 +58,9 @@ def f():
 def f():
     """Simplest possible pipeline, a single Task"""
     b = [("$entry:eid_subread", "pbsmrtpipe.tasks.dev_subread_report:0")]
-    return b
+
+    b2 = [("$entry:eid_subread", "pbsmrtpipe.tasks.dev_txt_to_datastore:0")]
+    return b + b2
 
 
 @dev_register("dev_02", "Example Dev 02 pipeline")
