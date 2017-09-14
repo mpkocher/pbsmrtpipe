@@ -2,16 +2,16 @@ import logging
 import os
 import shutil
 import time
+import uuid
 import xml.dom.minidom
+import sys
+import random
 
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.pb_io.report import fofn_to_report
-from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
-import sys
-
+from pbcommand.models import FileTypes, SymbolTypes, DataStore, DataStoreFile
 from pbcore.io import (readFofn, ReferenceSet, FastqReader, FastaWriter,
                        FastaRecord, FastaReader)
-import random
 
 from pbsmrtpipe.mock import write_random_fasta_records
 import pbsmrtpipe.schema_opt_utils as OP
@@ -19,6 +19,7 @@ from pbsmrtpipe.tools.dev import (subread_dataset_report,
                                   run_random_fofn,
                                   run_reference_dataset_report,
                                   run_fasta_report)
+
 
 # pylint: disable=E0102
 
@@ -260,6 +261,27 @@ def run_chem_bundle_check(rtc):
         f.write("VERSION={v}".format(v=version))
     return 0
 
+
+@registry("dev_txt_to_datastore", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False)
+def run_dev_txt_to_datastore(rtc):
+
+    p = os.path.dirname(rtc.task.output_files[0])
+
+    def to_f(x):
+        source_id = "out-1"
+        out_path = os.path.join(p, "file-{}.fasta".format(x))
+        write_random_fasta_records(out_path)
+        name = "fasta-{}".format(x)
+        dsf = DataStoreFile(uuid.uuid4(), source_id,
+                            FileTypes.FASTA.file_type_id, out_path,
+                            name=name,
+                            description="{} Example Description".format(name))
+        return dsf
+
+    files = [to_f(i) for i in xrange(1, 10)]
+    ds = DataStore(files)
+    ds.write_json(rtc.task.output_files[0])
+    return 0
 
 if __name__ == '__main__':
     sys.exit(registry_runner(registry, sys.argv[1:]))
