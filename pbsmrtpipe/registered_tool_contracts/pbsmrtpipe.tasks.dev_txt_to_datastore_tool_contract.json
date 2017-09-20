@@ -6,7 +6,7 @@
     },
     "schema_version": "2.0.0",
     "tool_contract": {
-        "_comment": "Created by pbcommand 0.6.6",
+        "_comment": "Created by pbcommand 0.6.7",
         "description": "Quick tool dev_txt_to_datastore pbsmrtpipe.tasks.dev_txt_to_datastore",
         "input_types": [
             {
@@ -21,15 +21,23 @@
         "nproc": 1,
         "output_types": [
             {
-                "default_name": "datastore",
-                "description": "description for <FileType id=PacBio.FileTypes.Datastore name=datastore >",
+                "default_name": "file",
+                "description": "description for <FileType id=PacBio.FileTypes.Datastore name=file >",
                 "file_type_id": "PacBio.FileTypes.Datastore",
                 "id": "Label PacBio.FileTypes.Datastore_0",
-                "title": "<FileType id=PacBio.FileTypes.Datastore name=datastore >"
+                "title": "<FileType id=PacBio.FileTypes.Datastore name=file >"
             }
         ],
         "resource_types": [],
-        "schema_options": [],
+        "schema_options": [
+            {
+                "default": 384,
+                "description": "Option num_subreadsets description",
+                "id": "pbsmrtpipe.task_options.num_subreadsets",
+                "name": "Option num_subreadsets",
+                "optionTypeId": "integer"
+            }
+        ],
         "task_type": "pbsmrtpipe.task_types.standard",
         "tool_contract_id": "pbsmrtpipe.tasks.dev_txt_to_datastore"
     },
