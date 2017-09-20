@@ -262,23 +262,32 @@ def run_chem_bundle_check(rtc):
     return 0
 
 
-@registry("dev_txt_to_datastore", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False)
+@registry("dev_txt_to_datastore", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
 def run_dev_txt_to_datastore(rtc):
 
     p = os.path.dirname(rtc.task.output_files[0])
 
+    from pbcore.io import SubreadSet
+
+    num_subreadsets = rtc.task.options['pbsmrtpipe.task_options.num_subreadsets']
+
+    sset = SubreadSet(rtc.task.input_files[0])
+
     def to_f(x):
         source_id = "out-1"
-        out_path = os.path.join(p, "file-{}.fasta".format(x))
-        write_random_fasta_records(out_path)
-        name = "fasta-{}".format(x)
-        dsf = DataStoreFile(uuid.uuid4(), source_id,
-                            FileTypes.FASTA.file_type_id, out_path,
+        sset.newUuid()
+        file_name = "file-{x:03d}.subreadset.xml".format(x=x)
+        out_path = os.path.join(p, file_name)
+        sset.write(out_path)
+        sset_uuid = sset.uniqueId
+        name = "subreadset-{}".format(x)
+        dsf = DataStoreFile(sset_uuid, source_id,
+                            FileTypes.DS_SUBREADS.file_type_id, file_name,
                             name=name,
                             description="{} Example Description".format(name))
         return dsf
 
-    files = [to_f(i) for i in xrange(1, 10)]
+    files = [to_f(i + 1) for i in xrange(num_subreadsets)]
     ds = DataStore(files)
     ds.write_json(rtc.task.output_files[0])
     return 0
