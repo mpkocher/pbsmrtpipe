@@ -302,27 +302,27 @@ def run_dev_txt_to_datastore(rtc):
                 well_sample_name="unknown"))
 def run_verify_sample_names(rtc):
     from pbcore.io import SubreadSet
-    bio_sample = rtc.task.options['pbsmrtpipe.task_options.bio_sample_name']
-    well_sample = rtc.task.options['pbsmrtpipe.task_options.well_sample_name']
+    expected_bio_samples = set(rtc.task.options['pbsmrtpipe.task_options.bio_sample_name'].split(";"))
+    expected_well_samples = set(rtc.task.options['pbsmrtpipe.task_options.well_sample_name'].split(";"))
+    _to_samples_str = lambda s: ";".join(sorted(list(s)))
     with SubreadSet(rtc.task.input_files[0]) as ds:
         well_samples = {c.wellSample.name for c in ds.metadata.collections}
         bio_samples = set(itertools.chain(
             *([[b.name for b in c.wellSample.bioSamples]
                for c in ds.metadata.collections])))
-        well_samples_str = ";".join(sorted(list(well_samples)))
-        bio_samples_str = ";".join(sorted(list(bio_samples)))
-        if well_samples_str != well_sample:
+        if well_samples != expected_well_samples:
             raise ValueError(
                 "Expected well sample name(s) '{e}', got '{v}'".format(
-                    e=well_sample,
-                    v=well_samples_str))
-        if bio_samples_str != bio_sample:
+                    e=_to_samples_str(well_samples),
+                    v=_to_samples_str(expected_well_samples)))
+        if bio_samples != expected_bio_samples:
             raise ValueError(
                 "Expected bio sample name(s) '{e}', got '{v}'".format(
-                    e=bio_sample,
-                    v=bio_samples_str))
+                    e=_to_samples_str(bio_samples),
+                    v=_to_samples_str(expected_bio_samples)))
         with open(rtc.task.output_files[0], "w") as f:
-            f.write("\n".join([well_samples_str, bio_samples_str]))
+            f.write("\n".join([_to_samples_str(s) for s in
+                               [well_samples, bio_samples]]))
     return 0
 
 
