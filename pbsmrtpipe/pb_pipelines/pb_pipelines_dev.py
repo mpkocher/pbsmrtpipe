@@ -213,3 +213,8 @@ def get_subreads_reports():
 @dev_register("dev_verify_chemistry", "Verify Chemistry Bundle Version", tags=("subreads",))
 def get_verify_chemistry():
     return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_chemistry:0")]
+
+
+@dev_register("dev_verify_sample_names", "Verify Sample Name Propagaton", tags=("subreads",))
+def get_verify_sample_names():
+    return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_sample_names:0")]

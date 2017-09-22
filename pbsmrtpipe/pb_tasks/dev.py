@@ -1,3 +1,4 @@
+import itertools
 import logging
 import os
 import shutil
@@ -291,6 +292,39 @@ def run_dev_txt_to_datastore(rtc):
     ds = DataStore(files)
     ds.write_json(rtc.task.output_files[0])
     return 0
+
+
+@registry("dev_verify_sample_names", "0.1.0",
+          FileTypes.DS_SUBREADS, FileTypes.TXT,
+          is_distributed=False,
+          options=dict(
+                bio_sample_name="unknown",
+                well_sample_name="unknown"))
+def run_verify_sample_names(rtc):
+    from pbcore.io import SubreadSet
+    expected_bio_samples = set(rtc.task.options['pbsmrtpipe.task_options.bio_sample_name'].split(";"))
+    expected_well_samples = set(rtc.task.options['pbsmrtpipe.task_options.well_sample_name'].split(";"))
+    _to_samples_str = lambda s: ";".join(sorted(list(s)))
+    with SubreadSet(rtc.task.input_files[0]) as ds:
+        well_samples = {c.wellSample.name for c in ds.metadata.collections}
+        bio_samples = set(itertools.chain(
+            *([[b.name for b in c.wellSample.bioSamples]
+               for c in ds.metadata.collections])))
+        if well_samples != expected_well_samples:
+            raise ValueError(
+                "Expected well sample name(s) '{e}', got '{v}'".format(
+                    e=_to_samples_str(well_samples),
+                    v=_to_samples_str(expected_well_samples)))
+        if bio_samples != expected_bio_samples:
+            raise ValueError(
+                "Expected bio sample name(s) '{e}', got '{v}'".format(
+                    e=_to_samples_str(bio_samples),
+                    v=_to_samples_str(expected_bio_samples)))
+        with open(rtc.task.output_files[0], "w") as f:
+            f.write("\n".join([_to_samples_str(s) for s in
+                               [well_samples, bio_samples]]))
+    return 0
+
 
 if __name__ == '__main__':
     sys.exit(registry_runner(registry, sys.argv[1:]))
