@@ -127,7 +127,7 @@ def _status_task_msg(bg, task_node, task_result):
     system_message = "{}/{} total tasks completed.".format(ncompleted_tasks, ntasks)
 
     if task_result.state == TaskStates.SUCCESSFUL:
-        task_state_msg = "Successful"
+        task_state_msg = "was Successful"
     else:
         task_state_msg = task_result.state
 
