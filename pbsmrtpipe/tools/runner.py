@@ -9,6 +9,7 @@ import time
 import datetime
 import functools
 import platform
+import re
 
 import pbcommand.cli.utils as U
 from pbcommand.models import ResourceTypes, TaskTypes
@@ -420,14 +421,14 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
     chmod_x(rcmd_shell)
 
     cluster_cmd = render.render(ClusterConstants.START, rcmd_shell, job_id, qstdout, qstderr, runnable_task.task.nproc)
-    log.debug(cluster_cmd)
+    log.info("Job submission command: " + cluster_cmd)
 
     with open(qshell, 'w') as f:
         f.write("#!/bin/bash\n")
         f.write("set -o errexit\n")
         f.write("set -o pipefail\n")
         f.write("set -o nounset\n")
-        f.write(cluster_cmd + "\n")
+        f.write(cluster_cmd.rstrip("\n") + " ${1+\"$@\"}\n")
         f.write("exit $?")
 
     chmod_x(qshell)
@@ -436,6 +437,12 @@ def run_task_on_cluster(runnable_task, task_manifest_path, output_dir, debug_mod
 
     # so core dumps are written to the job dir
     os.chdir(output_dir)
+
+    # print the underlying jms command if using runjmscmd
+    if re.search(r'/runjmscmd\b', cluster_cmd):
+        rcode, cstdout, cstderr, run_time = backticks("bash {q} --printcmd".format(q=qshell))
+        if rcode == 0:
+            log.info("Underlying JMS job submission command: " + "\n".join(cstdout))
 
     # Blocking call
     rcode, cstdout, cstderr, run_time = backticks("bash {q}".format(q=qshell))
