@@ -469,7 +469,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             ds.write_update_json(job_resources.datastore_json)
 
             # Update Services
-            services_add_datastore_file(ds_file_)
+            if not is_chunked_:
+                services_add_datastore_file(ds_file_)
 
             dsr = DU.datastore_to_report(ds)
             R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
