@@ -21,7 +21,8 @@ def _to_runnable_task(task_id, input_files, output_files, cmds, output_dir):
     ropts = {}
     nproc = 1
     resources = []
-    task = Task(uuid.uuid4(), task_id, False, input_files, output_files, ropts, nproc, resources, cmds, output_dir)
+    # There's some inconsistency looseness with the task type and task id
+    task = Task(uuid.uuid4(), "MY task display name", task_id, task_id, False, input_files, output_files, ropts, nproc, resources, cmds, output_dir)
     rt = RunnableTask(task, None)
     return rt
 

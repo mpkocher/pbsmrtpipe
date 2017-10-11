@@ -29,13 +29,13 @@ def bindings_graph_to_dict(bg):
 
     _d = dict(_comment="Updated at {x}".format(x=datetime.datetime.now()))
 
-    def _to_a(n, name):
-        return bg.node[n][name]
+    def _to_a(n_, name):
+        return bg.node[n_][name]
 
     def _to_d(n_):
         _x = {a: _to_a(n_, a) for a in n_.NODE_ATTRS.keys()}
         _x['klass'] = n_.__class__.__name__
-        _x['node_id'] = n.idx
+        _x['node_id'] = n_.idx
         return _x
 
     nodes = []
@@ -53,8 +53,10 @@ def bindings_graph_to_dict(bg):
 
 
 class DateTimeEncoder(json.JSONEncoder):
+    # See pylint issue
+    # https://github.com/PyCQA/pylint/issues/414
 
-    def default(self, o):
+    def default(self, o):  # pylint: disable=E0202
         if isinstance(o, datetime.datetime):
             return o.isoformat()
 

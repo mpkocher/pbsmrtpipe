@@ -5,9 +5,14 @@ from pbcommand.models.common import to_pipeline_ns
 
 from pbsmrtpipe.core import register_pipeline
 
-from .pb_pipelines_sa3 import Constants, Tags
+from .pb_pipeline_constants import Constants, Tags
 
 log = logging.getLogger(__name__)
+
+# We're using deco's here by design. We don't
+# care about the function already defined here
+# http://pylint-messages.wikidot.com/messages:e0102
+# pylint: disable=E0102
 
 
 def dev_register(relative_id, display_name, tags=(), task_options=None):
@@ -53,7 +58,9 @@ def f():
 def f():
     """Simplest possible pipeline, a single Task"""
     b = [("$entry:eid_subread", "pbsmrtpipe.tasks.dev_subread_report:0")]
-    return b
+
+    b2 = [("$entry:eid_subread", "pbsmrtpipe.tasks.dev_txt_to_datastore:0")]
+    return b + b2
 
 
 @dev_register("dev_02", "Example Dev 02 pipeline")
@@ -198,6 +205,7 @@ def get_dev_task_options_pipeline():
 def get_subreads_reports():
     return [
         (Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_subread_report:0"),
+        (Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_optional_failure_subreads:0"),
         (Constants.ENTRY_DS_SUBREAD, "pbcoretools.tasks.pbvalidate:0")
     ]
 
@@ -205,3 +213,8 @@ def get_subreads_reports():
 @dev_register("dev_verify_chemistry", "Verify Chemistry Bundle Version", tags=("subreads",))
 def get_verify_chemistry():
     return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_chemistry:0")]
+
+
+@dev_register("dev_verify_sample_names", "Verify Sample Name Propagaton", tags=("subreads",))
+def get_verify_sample_names():
+    return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_sample_names:0")]

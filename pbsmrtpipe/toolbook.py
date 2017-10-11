@@ -4,7 +4,7 @@ import tempfile
 import StringIO
 import networkx as nx
 from networkx.drawing.nx_agraph import write_dot
-from IPython.display import display_svg
+from IPython.display import display_svg #pylint: disable=import-error
 
 from pbsmrtpipe.external_tools import dot_file_to_svg, dot_file_to_png
 
@@ -26,7 +26,7 @@ def display_dot(dot_file):
 
 def networkx_graph_to_dot_str(g):
     f = StringIO.StringIO()
-    nx.write_dot(g, f)
+    write_dot(g, f)
     contents = f.getvalue()
     f.close()
     return contents

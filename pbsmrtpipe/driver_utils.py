@@ -5,18 +5,18 @@ import pprint
 import shutil
 import uuid
 
+from pbcommand.utils import setup_log
 from pbcommand.models import DataStore, DataStoreFile, FileTypes
 from pbcommand.models.report import Attribute, Report, Table, Column, Plot, PlotGroup
 
 import pbsmrtpipe
 
 import pbsmrtpipe.report_renderer as R
-import pbsmrtpipe.graph.bgraph as B
 import pbsmrtpipe.graph.bgraph_utils as BU
 import pbsmrtpipe.pb_io as IO
 from pbsmrtpipe.graph.models import VALID_ALL_TASK_NODE_CLASSES
 from pbsmrtpipe.models import TaskStates, JobResources, RunnableTask
-from pbsmrtpipe.utils import setup_log, setup_internal_logs
+from pbsmrtpipe.utils import setup_internal_logs
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -249,7 +249,7 @@ def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, 
     report_path = os.path.join(job_resources.workflow, 'report-tasks.json')
     report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
     report_.write_json(report_path)
-    R.write_report_with_html_extras(report_, os.path.join(job_resources.root, 'index.html'), job_resources.html)
+    R.write_report_with_html_extras(report_, os.path.join(job_resources.html, 'index.html'), job_resources.html)
 
     setting_report = _to_workflow_settings_report(bg_, workflow_opts, task_opts, state_, was_successful_)
     R.write_report_to_html(setting_report, os.path.join(job_resources.html, 'settings.html'))
@@ -267,7 +267,7 @@ def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_su
     report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
     report_.write_json(report_path)
 
-    R.write_report_to_html(report_, os.path.join(job_resources.root, 'index.html'))
+    R.write_report_to_html(report_, os.path.join(job_resources.html, 'index.html'))
 
     return True
 

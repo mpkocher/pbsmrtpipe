@@ -71,7 +71,7 @@ class ConstantsNodes(object):
     TASK_ATTR_UPDATED_AT = 'updated_at'
     TASK_ATTR_CREATED_AT = 'created_at'
 
-    # label for identifiying tasks that have a companion chunk task
+    # label for identifying tasks that have a companion chunk task
     # defined by the chunk operator
     TASK_ATTR_IS_CHUNKABLE = 'is_chunkable'
 
@@ -103,18 +103,24 @@ class _NodeLike(object):
 
 class _NodeEqualityMixin(object):
 
+    @property
+    def ix(self):
+        # Node Id
+        raise NotImplementedError("Class {} must implement ix".format(
+            self.__class__.__name__))
+
     def __repr__(self):
-        return ''.join(['<', str(self), '>'])
+        return ''.join(['<', str(self), ' >'])
 
     def __str__(self):
-        return "{k}_{i}".format(k=self.__class__.__name__, i=self.idx)
+        return "{k} ix:{i}".format(k=self.__class__.__name__, i=self.ix)
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(self.ix)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if self.idx == other.idx:
+            if self.ix == other.ix:
                 return True
         return False
 
@@ -184,18 +190,25 @@ class EntryPointNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
         :type idx: str
         :type file_klass: FileType
 
-        :param idx:
-        :param file_klass:
-        :return:
+        :param idx: entry point id Example, "e_01"
+        :param file_klass: FileType
         """
-        self.idx = idx
+        self._idx = idx
         # FileType instance
         self.file_klass = file_klass
         # adding this to consistent with the Task data model
         self.instance_id = 0
 
+    @property
+    def ix(self):
+        return self._idx
+
+    @property
+    def idx(self):
+        return self.ix
+
     def __str__(self):
-        _d = dict(k=self.__class__.__name__, i=self.idx, f=self.file_klass.file_type_id)
+        _d = dict(k=self.__class__.__name__, i=self.ix, f=self.file_klass.file_type_id)
         return "{k} {i} {f}".format(**_d)
 
 
@@ -217,23 +230,22 @@ class TaskBindingNode(_NodeEqualityMixin, _DotAbleMixin, _TaskLike):
 
         self.meta_task = validate_type_or_raise(meta_task, (MetaTask, ToolContractMetaTask))
         self.instance_id = validate_type_or_raise(instance_id, int)
-
-    @property
-    def url(self):
-        # for backwards compatible with the driver
-        return str(self)
+        self.display_name = self.meta_task.display_name
 
     @property
     def idx(self):
+        # this needs to be collapsed and consolidated. This is the graph node id.
+        # which has format issues when used with dot.
         return self.meta_task.task_id
+
+    @property
+    def ix(self):
+        # This should be used as the "friendly" task id.
+        return "-".join([self.meta_task.task_id, str(self.instance_id)])
 
     @property
     def nid(self):
         return repr(self)
-
-    def __str__(self):
-        _d = dict(k=self.__class__.__name__, i=self.idx, n=self.instance_id)
-        return "{k} {i}-{n}".format(**_d)
 
 
 class TaskChunkedBindingNode(TaskBindingNode):
@@ -245,16 +257,18 @@ class TaskChunkedBindingNode(TaskBindingNode):
 
     def __init__(self, meta_task, instance_id, chunk_id, chunk_group_id, operator_id):
         super(TaskChunkedBindingNode, self).__init__(meta_task, instance_id)
-        # Chunk Operator Id
+        # Globally Unique Chunk Operator Id. This uses the {}.operators.{} format
         self.operator_id = operator_id
+
+        # What is the expected form here? <task>-<instance-id> ? scattered-fasta_3
         self.chunk_id = chunk_id
         # str(uuid)
         self.chunk_group_id = chunk_group_id
 
     def __str__(self):
         _d = dict(k=self.__class__.__name__,
-                  i=self.idx, n=self.instance_id, c=self.chunk_id, u=self.chunk_group_id)
-        return "{k}-{c} {i}-{n} group {u}".format(**_d)
+                  i=self.ix, c=self.chunk_id, u=self.chunk_group_id)
+        return "{k} chunk-id:{c} ix:{i} chunk-group-id:{u}".format(**_d)
 
 
 class TaskScatterBindingNode(TaskBindingNode):
@@ -275,6 +289,13 @@ class TaskScatterBindingNode(TaskBindingNode):
         self.original_nid = original_nid
         self.chunk_group_id = chunk_group_id
 
+    def __str__(self):
+        _d = dict(k=self.__class__.__name__,
+                  i=self.ix,
+                  u=self.chunk_group_id,
+                  t=self.original_task_id)
+        return "{k} ix:{i} original-task:{t} chunk-group-id:{u}".format(**_d)
+
 
 class TaskGatherBindingNode(TaskBindingNode):
 
@@ -290,6 +311,11 @@ class TaskGatherBindingNode(TaskBindingNode):
         # Keep track of the chunk_key that was passed to the exe.
         # Perhaps this should be in the meta task instance?
         self.chunk_key = chunk_key
+
+    def __str__(self):
+        _d = dict(k=self.__class__.__name__,
+                  i=self.ix, u=self.chunk_key)
+        return "{k} ix:{i} chunk-key:{u}".format(**_d)
 
 
 class _BindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
@@ -326,19 +352,19 @@ class _BindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
         # this is a little odd. The input/output type are not necessarily identical
         self.file_klass = validate_type_or_raise(file_type_instance, FileType)
 
-    @property
-    def task_instance_id(self):
         # this is the {file klass}-{Instance id}
         types_ = getattr(self.meta_task, self.__class__.ATTR_NAME)
         file_type = types_[self.index]
-        return "-".join([file_type.file_type_id, str(self.instance_id)])
+
+        self.task_instance_id = "-".join([file_type.file_type_id, str(instance_id)])
 
     @property
     def idx(self):
         # the fundamental id used in the graph
         return "{n}.{i}".format(n=self.task_instance_id, i=self.index)
 
-    def __str__(self):
+    @property
+    def ix(self):
         _d = dict(k=self.__class__.__name__,
                   d=self.__class__.DIRECTION,
                   i=self.idx,
@@ -346,6 +372,9 @@ class _BindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
                   n=self.meta_task.task_id,
                   m=self.instance_id)
         return "{k} {n}-{m} {i}".format(**_d)
+
+    def __str__(self):
+        return self.ix
 
 
 class BindingInFileNode(_BindingFileNode):
@@ -396,9 +425,10 @@ class EntryOutBindingFileNode(_NodeEqualityMixin, _DotAbleMixin, _FileLike):
         self.index = 0
         self.direction = 'out'
 
-    def __str__(self):
+    @property
+    def ix(self):
         _d = dict(k=self.__class__.__name__,
-                  i=self.entry_id,
+                  i=self.idx,
                   f=self.file_klass.file_type_id)
         return "{k} {f} {i}".format(**_d)
 

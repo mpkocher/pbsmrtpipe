@@ -1,39 +1,33 @@
 from collections import deque
 import logging
 import os
+import copy
 import socket
 import time
 import sys
 import random
 import multiprocessing
-import json
 import Queue
 import pprint
-import traceback
 import types
 import functools
 import uuid
 import platform
-import datetime
-import pytz
 import tempfile
 
 from pbcommand.pb_io import (write_resolved_tool_contract,
                              write_tool_contract,
                              load_report_from_json)
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
-from pbcommand.utils import log_traceback
+from pbcommand.utils import log_traceback, nfs_exists_check
 from pbcommand.models import (FileTypes, DataStoreFile)
 from pbcommand.services.service_access_layer import JobServiceClient
-from pbsmrtpipe.utils import nfs_exists_check
-
 from pbcore.io import getDataSetUuid
 
 import pbsmrtpipe
 import pbsmrtpipe.constants as GlobalConstants
 from pbsmrtpipe.exceptions import (PipelineRuntimeError,
                                    PipelineRuntimeKeyboardInterrupt,
-                                   WorkflowBaseException,
                                    MalformedChunkOperatorError)
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.graph.bgraph as B
@@ -44,14 +38,11 @@ import pbsmrtpipe.report_renderer as R
 import pbsmrtpipe.driver_utils as DU
 import pbsmrtpipe.services as WS
 from pbsmrtpipe import opts_graph as GX
-
 from pbsmrtpipe.graph.models import (TaskStates,
                                      TaskBindingNode,
                                      TaskChunkedBindingNode,
                                      EntryOutBindingFileNode,
                                      TaskScatterBindingNode)
-
-
 from pbsmrtpipe.models import (Pipeline, ToolContractMetaTask, MetaTask,
                                GlobalRegistry, TaskResult, validate_operator,
                                AnalysisLink, RunnableTask,
@@ -59,7 +50,6 @@ from pbsmrtpipe.models import (Pipeline, ToolContractMetaTask, MetaTask,
                                GatherToolContractMetaTask)
 from pbsmrtpipe.engine import TaskManifestWorker
 from pbsmrtpipe.pb_io import WorkflowLevelOptions
-
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -117,6 +107,52 @@ def _status(bg):
     ntasks = len(bg.all_task_type_nodes())
     ncompleted_tasks = len(B.get_tasks_by_state(bg, TaskStates.SUCCESSFUL))
     return "Workflow status {n}/{t} completed/total tasks".format(t=ntasks, n=ncompleted_tasks)
+
+
+def _status_task_msg(bg, task_node, task_result):
+    """
+    Returns a message of the
+
+    :type bg: `pbsmrtpipe.bgraph.BindingsGraph`
+    :type task_type_id: str
+    :type ix: Task Id
+    :type task_result: TaskResult
+
+    :rtype: str
+    """
+    # import ipdb;ipdb.set_trace()
+
+    ntasks = len(bg.all_task_type_nodes())
+    ncompleted_tasks = len(B.get_tasks_by_state(bg, TaskStates.SUCCESSFUL))
+    system_message = "{}/{} total tasks completed.".format(ncompleted_tasks, ntasks)
+
+    if task_result.state == TaskStates.SUCCESSFUL:
+        task_state_msg = "was Successful"
+    else:
+        task_state_msg = task_result.state
+
+    def _to_task_summary(prefix="Task"):
+        return "{} {} {} {} in {:.2f} sec".format(system_message,
+                                                  prefix,
+                                                  task_node.display_name,
+                                                  task_state_msg,
+                                                  task_result.run_time_sec)
+
+    def _summary_from_states(states):
+        num_successful = len([sx for sx in states if TaskStates.SUCCESSFUL == sx])
+        return "({}/{})".format(num_successful, len(states))
+
+    if isinstance(task_node, TaskChunkedBindingNode):
+        chunk_group_tasks = []
+        for n in bg.chunked_task_nodes():
+            if n.chunk_group_id == task_node.chunk_group_id:
+                task_state = B.get_task_state(bg, n)
+                chunk_group_tasks.append((n, task_state))
+        m = _summary_from_states([s for _, s in chunk_group_tasks])
+        msg = _to_task_summary("Chunked Task {}".format(m))
+    else:
+        msg = _to_task_summary()
+    return msg
 
 
 def _get_report_uuid(path):
@@ -389,7 +425,6 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     def services_create_job_task(task_uuid_, task_id_, task_type_id_, name_):
         if service_job_client is not None:
-            created_at = datetime.datetime.now(pytz.utc)
             service_job_client.create_task(task_uuid_, task_id_, task_type_id_, name_)
 
     def services_update_job_task(task_uuid_, task_state_, message_, error_message=None):
@@ -400,6 +435,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         if service_job_client is not None:
             log.info("Adding datastore file to services {d}".format(d=datastore_file_))
             service_job_client.add_datastore_file(datastore_file_)
+
+    def services_update_datastore_file(datastore_file_):
+        if service_job_client is not None:
+            service_job_client.update_datastore_file(datastore_file_.uuid, file_size=f.file_size)
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
@@ -430,7 +469,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
             ds.write_update_json(job_resources.datastore_json)
 
             # Update Services
-            services_add_datastore_file(ds_file_)
+            if not is_chunked_:
+                services_add_datastore_file(ds_file_)
 
             dsr = DU.datastore_to_report(ds)
             R.write_report_to_html(dsr, os.path.join(job_resources.html, 'datastore.html'))
@@ -471,8 +511,10 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     exit_code = None
     # For book-keeping
+    # This
     # task id -> tnode
     tid_to_tnode = {}
+
     # tnode -> Task instance
     tnode_to_task = {}
 
@@ -567,7 +609,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
                     # this will raise if a task output is failed to be resolved
                     B.validate_outputs_and_update_task_to_success(bg, tnode_, result.run_time_sec, bg.node[tnode_]['task'].output_files)
-                    slog.info("Successfully validated outputs of {t}".format(t=repr(tnode_)))
+                    slog.info("Successfully validated outputs of {t}".format(t=str(tnode_)))
 
                     services_log_update_progress("pbsmrtpipe::{i}".format(i=result.task_id), WS.LogLevels.INFO, msg_)
                     B.update_task_output_file_nodes(bg, tnode_, tnode_to_task[tnode_])
@@ -580,7 +622,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                     # Update Analysis Reports and Register output files to Datastore
                     _update_analysis_reports_and_datastore(tnode_, task_)
 
-                    update_msg_ = "Successfully completed task {i} in {s:.2f} sec".format(s=result.run_time_sec, i=task_.task_id)
+                    update_msg_ = _status_task_msg(bg, tnode_, result)
+
+                    slog.info(update_msg_)
                     services_update_job_task(task_.uuid, TaskStates.SUCCESSFUL, update_msg_)
 
                     # BU.write_binding_graph_images(bg, job_resources.workflow)
@@ -657,6 +701,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 bg.node[tnode]['task'] = task
                 tnode_to_task[tnode] = task
 
+                task_tmp = copy.deepcopy(task)
                 if isinstance(tnode.meta_task, (ToolContractMetaTask, ScatterToolContractMetaTask, GatherToolContractMetaTask)):
                     # the task.options have actually already been resolved here, but using this other
                     # code path for clarity
@@ -685,9 +730,11 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                         write_resolved_tool_contract_avro(rtc, rtc_avro_path)
                     # for debugging
                     write_resolved_tool_contract(rtc, rtc_json_path)
+                    # workaround for SE-587
+                    task_tmp.resolved_options = rtc.task.options
 
                 runnable_task_path = os.path.join(task_dir, GlobalConstants.RUNNABLE_TASK_JSON)
-                runnable_task = RunnableTask(task, global_registry.cluster_renderer)
+                runnable_task = RunnableTask(task_tmp, global_registry.cluster_renderer)
                 runnable_task.write_json(runnable_task_path)
 
                 # Create an instance of Worker
@@ -704,9 +751,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 log.debug(msg_)
                 tid_to_tnode[tid] = tnode
                 services_log_update_progress("pbsmrtpipe::{i}".format(i=tnode.idx), WS.LogLevels.INFO, msg_)
-                # This should use the TC name
-                task_name = "Task {i}".format(i=task.task_id)
-                services_create_job_task(task.uuid, task.task_id, task.task_type_id, task_name)
+
+                services_create_job_task(task.uuid, task.task_id, task.task_type_id, task.display_name)
                 # BU.write_binding_graph_images(bg, job_resources.workflow)
 
             elif isinstance(tnode, EntryOutBindingFileNode):
@@ -763,6 +809,14 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     finally:
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
+        ds_files_by_id = {f.file_id:f for k,f in ds.files.iteritems()}
+        for file_id in ["master.log", "pbsmrtpipe.log"]:
+            source_id = "pbsmrtpipe::{f}".format(f=file_id)
+            if source_id in ds_files_by_id:
+                f = ds_files_by_id[source_id]
+                f.file_size = os.path.getsize(f.path)
+                services_update_datastore_file(f)
+        ds.write_update_json(job_resources.datastore_json)
 
     return exit_code
 

@@ -1,17 +1,18 @@
+import itertools
 import logging
 import os
 import shutil
 import time
+import uuid
 import xml.dom.minidom
+import sys
+import random
 
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.pb_io.report import fofn_to_report
-from pbcommand.models import FileTypes, TaskTypes, SymbolTypes, ResourceTypes
-import sys
-
+from pbcommand.models import FileTypes, SymbolTypes, DataStore, DataStoreFile
 from pbcore.io import (readFofn, ReferenceSet, FastqReader, FastaWriter,
                        FastaRecord, FastaReader)
-import random
 
 from pbsmrtpipe.mock import write_random_fasta_records
 import pbsmrtpipe.schema_opt_utils as OP
@@ -19,6 +20,9 @@ from pbsmrtpipe.tools.dev import (subread_dataset_report,
                                   run_random_fofn,
                                   run_reference_dataset_report,
                                   run_fasta_report)
+
+
+# pylint: disable=E0102
 
 log = logging.getLogger(__name__)
 
@@ -93,6 +97,14 @@ def run_rtc_optional_failure(rtc):
     with open(rtc.task.output_files[0], 'w') as w:
         w.write("Hello, world!")
     return 0
+
+
+@registry("dev_optional_failure_subreads", "0.1.0", FileTypes.DS_SUBREADS,
+          FileTypes.TXT,
+          is_distributed=False,
+          options={"raise_exception":False})
+def run_rtc_optional_failure_subreads(rtc):
+    return run_rtc_optional_failure(rtc)
 
 
 dev_diagnostic_options = dict(
@@ -248,6 +260,69 @@ def run_chem_bundle_check(rtc):
     with open(rtc.task.output_files[0], 'w') as f:
         f.write("SMRT_CHEMISTRY_BUNDLE_DIR={f}".format(f=rtc.task.input_files[0]))
         f.write("VERSION={v}".format(v=version))
+    return 0
+
+
+@registry("dev_txt_to_datastore", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
+def run_dev_txt_to_datastore(rtc):
+
+    p = os.path.dirname(rtc.task.output_files[0])
+
+    from pbcore.io import SubreadSet
+
+    num_subreadsets = rtc.task.options['pbsmrtpipe.task_options.num_subreadsets']
+
+    sset = SubreadSet(rtc.task.input_files[0])
+
+    def to_f(x):
+        source_id = "out-1"
+        sset.newUuid()
+        file_name = "file-{x:03d}.subreadset.xml".format(x=x)
+        out_path = os.path.join(p, file_name)
+        sset.write(out_path)
+        sset_uuid = sset.uniqueId
+        name = "subreadset-{}".format(x)
+        dsf = DataStoreFile(sset_uuid, source_id,
+                            FileTypes.DS_SUBREADS.file_type_id, file_name,
+                            name=name,
+                            description="{} Example Description".format(name))
+        return dsf
+
+    files = [to_f(i + 1) for i in xrange(num_subreadsets)]
+    ds = DataStore(files)
+    ds.write_json(rtc.task.output_files[0])
+    return 0
+
+
+@registry("dev_verify_sample_names", "0.1.0",
+          FileTypes.DS_SUBREADS, FileTypes.TXT,
+          is_distributed=False,
+          options=dict(
+                bio_sample_name="unknown",
+                well_sample_name="unknown"))
+def run_verify_sample_names(rtc):
+    from pbcore.io import SubreadSet
+    expected_bio_samples = set(rtc.task.options['pbsmrtpipe.task_options.bio_sample_name'].split(";"))
+    expected_well_samples = set(rtc.task.options['pbsmrtpipe.task_options.well_sample_name'].split(";"))
+    _to_samples_str = lambda s: ";".join(sorted(list(s)))
+    with SubreadSet(rtc.task.input_files[0]) as ds:
+        well_samples = {c.wellSample.name for c in ds.metadata.collections}
+        bio_samples = set(itertools.chain(
+            *([[b.name for b in c.wellSample.bioSamples]
+               for c in ds.metadata.collections])))
+        if well_samples != expected_well_samples:
+            raise ValueError(
+                "Expected well sample name(s) '{e}', got '{v}'".format(
+                    e=_to_samples_str(well_samples),
+                    v=_to_samples_str(expected_well_samples)))
+        if bio_samples != expected_bio_samples:
+            raise ValueError(
+                "Expected bio sample name(s) '{e}', got '{v}'".format(
+                    e=_to_samples_str(bio_samples),
+                    v=_to_samples_str(expected_bio_samples)))
+        with open(rtc.task.output_files[0], "w") as f:
+            f.write("\n".join([_to_samples_str(s) for s in
+                               [well_samples, bio_samples]]))
     return 0
 
 

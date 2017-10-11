@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 
 def validate_entry_points(d):
-    from pbsmrtpipe.pb_pipelines.pb_pipelines_sa3 import Constants, to_entry
+    from pbsmrtpipe.pb_pipelines.pb_pipeline_constants import Constants, to_entry
     for ep in d['entryPoints']:
         eid = to_entry(ep['entryId'])
         if eid in Constants.ENTRY_FILE_TYPES:

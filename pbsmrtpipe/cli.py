@@ -5,7 +5,9 @@ import pprint
 import sys
 import logging
 import urlparse
+from collections import OrderedDict
 
+from pbcommand.utils import setup_log, compose
 from pbcommand.cli.utils import main_runner, args_executer, subparser_builder
 from pbcommand.common_options import add_log_debug_option
 from pbcommand.cli import get_default_argparser
@@ -21,7 +23,7 @@ from pbsmrtpipe.exceptions import MalformedEntryStrError
 from pbsmrtpipe.models import MetaTask, MetaScatterTask, MetaGatherTask
 import pbsmrtpipe.pb_io as IO
 import pbsmrtpipe.driver as D
-from pbsmrtpipe.utils import StdOutStatusLogFilter, setup_log, compose
+from pbsmrtpipe.utils import StdOutStatusLogFilter
 
 from pbsmrtpipe.constants import (ENV_PRESET, ENTRY_PREFIX, RX_ENTRY, ENV_TC_DIR,
                                   ENV_CHK_OPT_DIR)
@@ -122,25 +124,54 @@ def _add_output_preset_xml_option(p):
     return p
 
 
-def pretty_registered_pipelines(registered_new_pipelines_d):
-
-    n = len(registered_new_pipelines_d)
-    title = "{n} Registered Pipelines (name -> version, id)".format(n=n)
+def _pretty_registered_pipelines(pipelines, pipeline_type):
+    n = len(pipelines)
+    if n == 0:
+        return ""
+    title = "{n} Registered {t} Pipelines (name -> version, id, tags)".format(n=n, t=pipeline_type)
     header = len(title) * "*"
 
-    outs = []
-    outs.append(header)
-    outs.append(title)
-    outs.append(header)
+    outs = [header, title, header]
+    pad_len = 3
 
-    max_name_len = max(len(pipeline.display_name) for pipeline in registered_new_pipelines_d.values())
-    pad = 4 + max_name_len
+    def get_max(attr_name):
+        return max(len(getattr(pipeline, attr_name)) for pipeline in pipelines)
 
-    spipelines = sorted(registered_new_pipelines_d.values(), key=lambda x: x.pipeline_id)
+    name_pad = pad_len + get_max("display_name")
+    id_pad = pad_len + get_max("idx")
+    version_pad = pad_len + get_max("version")
+
+    spipelines = sorted(pipelines, key=lambda x: x.display_name)
     for i, k in enumerate(spipelines):
-        outs.append(" ".join([(str(i + 1) + ".").rjust(4), k.display_name.ljust(pad), k.version, k.idx]))
+        sx = [(str(i + 1) + ".").rjust(4),
+              k.display_name.ljust(name_pad),
+              k.version.ljust(version_pad),
+              k.idx.ljust(id_pad),
+              ",".join(k.tags)]
+        outs.append(" ".join(sx))
 
     return "\n".join(outs)
+
+
+def pretty_registered_pipelines(registered_new_pipelines_d, show_all=True):
+
+    internal_tags = ("dev", "internal")
+
+    def _is_internal_pipeline(pipeline):
+        return not _is_not_internal_pipeline(pipeline)
+
+    def _is_not_internal_pipeline(pipeline):
+        return not any(t in pipeline.tags for t in internal_tags)
+
+    def _pipeline_summary(filter_func, description):
+        return _pretty_registered_pipelines([p_ for p_ in registered_new_pipelines_d.values() if filter_func(p_)], description)
+
+    outs = [_pipeline_summary(_is_not_internal_pipeline, "User")]
+
+    if show_all:
+        outs.append(_pipeline_summary(_is_internal_pipeline, "Developer/Internal"))
+
+    return "\n\n".join(outs)
 
 
 def pretty_bindings(bindings):
@@ -164,14 +195,17 @@ def pretty_bindings(bindings):
     return "\n".join(outs)
 
 
-def run_show_templates(avro_output_dir=None, json_output_dir=None):
+def run_show_templates(avro_output_dir=None, json_output_dir=None,
+                       show_all=False):
     import pbsmrtpipe.loader as L
     from pbsmrtpipe.pb_io import (write_pipeline_templates_to_avro,
                                   write_pipeline_templates_to_json)
 
     rtasks_d, _, _, pts = L.load_all()
 
-    print pretty_registered_pipelines(pts)
+    print pretty_registered_pipelines(pts, show_all=show_all)
+    if not show_all:
+        print "Run with --show-all to display (unsupported) developer/internal pipelines"
 
     if avro_output_dir is not None:
         write_pipeline_templates_to_avro(pts.values(), rtasks_d, avro_output_dir)
@@ -190,13 +224,15 @@ def add_run_show_templates_options(p):
 
     p.add_argument('--output-templates-avro', type=str, help=_to_h("AVRO"))
     p.add_argument('--output-templates-json', type=str, help=_to_h("JSON"))
+    p.add_argument('--show-all', action="store_true", help="Display developer/internal pipelines")
 
     return p
 
 
 def _args_run_show_templates(args):
     return run_show_templates(avro_output_dir=args.output_templates_avro,
-                              json_output_dir=args.output_templates_json)
+                              json_output_dir=args.output_templates_json,
+                              show_all=args.show_all)
 
 
 def write_task_options_to_preset_xml_and_print(task_options_d, output_file, warning_msg):
@@ -221,7 +257,7 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
 
     from pbsmrtpipe.pb_io import binding_str_to_task_id_and_instance_id
 
-    pb_options = []
+    pb_options = {}
 
     if template_id in pipelines_d:
         pipeline = pipelines_d[template_id]
@@ -246,16 +282,19 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
                             log.warn("Unable to load task {x}".format(x=task_id))
                         else:
                             for pb_opt in task.option_schemas:
-                                if pb_opt.option_id in pipeline.task_options:
+                                if pb_opt.option_id in pb_options:
+                                    continue
+                                elif pb_opt.option_id in pipeline.task_options:
                                     x = copy.deepcopy(pb_opt)
                                     value = pipeline.task_options[pb_opt.option_id]
                                     x._default = value # XXX hacky
-                                    pb_options.append(x)
+                                    pb_options[pb_opt.option_id] = x
                                 else:
-                                    pb_options.append(pb_opt)
+                                    pb_options[pb_opt.option_id] = pb_opt
 
         warn_msg = "Pipeline {i} has no options.".format(i=pipeline.idx)
-        task_options_d = {o.option_id: o.default for o in pb_options}
+        task_options_d = OrderedDict(
+            [(k, pb_options[k].default) for k in sorted(pb_options.keys())])
 
         if isinstance(output_preset_xml, str):
             write_task_options_to_preset_xml_and_print(task_options_d, output_preset_xml, warn_msg)
@@ -264,7 +303,7 @@ def run_show_template_details(template_id, output_preset_xml, output_preset_json
             write_presets_json_and_print(pipeline, task_options_d, output_preset_json, warn_msg)
 
         if pb_options:
-            _print_pacbio_options(pb_options)
+            _print_pacbio_options([pb_options[k] for k in sorted(pb_options.keys())])
         else:
             print "No default task options"
 

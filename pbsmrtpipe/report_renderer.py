@@ -45,7 +45,7 @@ def table_to_jinja(table):
     return _d
 
 
-def render_report(report):
+def render_report(report, template_name="report.html"):
     """
     General rendering a pbreport Report model to a string
 
@@ -58,7 +58,7 @@ def render_report(report):
     """
     import pbcommand.models.report as RM
 
-    template = ENV.get_template("report.html")
+    template = ENV.get_template(template_name)
 
     rattrs_d = [a.to_dict() for a in report.attributes if report.attributes]
     plot_groups_d = [pg.to_dict() for pg in report.plotGroups if report.plotGroups]
@@ -70,7 +70,7 @@ def render_report(report):
               plot_groups=plot_groups_d,
               tables=tables_d)
 
-    return template.render(**_d)
+    return template.render(**_d) #pylint: disable=no-member
 
 
 def _get_js_css_root_dir():
@@ -101,9 +101,9 @@ def _write_str_report(s, path, mode):
         f.write(s)
 
 
-def write_report_to_html(report, output_file):
+def write_report_to_html(report, output_file, template_name="report.html"):
     """Render the report and write the file"""
-    s = render_report(report)
+    s = render_report(report, template_name)
     _write_str_report(s, output_file, 'w')
     return 0
 
@@ -120,7 +120,7 @@ def write_report_with_html_extras(report, output_file, extras_dir):
 def render_analysis_link_report(analysis_report_links):
     # links [{name: "Display name", path: "relative_path"}, ...]
     t = ENV.get_template("analysis.html")
-    return t.render(file_links=analysis_report_links)
+    return t.render(file_links=analysis_report_links) #pylint: disable=no-member
 
 
 def write_analysis_link_report(analysis_report_links, output_file):

@@ -124,9 +124,9 @@ class FileTail(object):
         I recommend using this after read(n) to avoid
         reading and logging excessively large output.
         """
-        pos = ifh.tell()
+        pos = self.ifh.tell()
         self.ifh.seek(0, 2)
-        self.pos = ifh.tell()
+        self.pos = self.ifh.tell()
         return self.pos - pos
 
     def read(self, nbytes):

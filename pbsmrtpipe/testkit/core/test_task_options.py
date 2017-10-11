@@ -10,6 +10,9 @@ from pbcommand.pb_io.tool_contract_io import load_resolved_tool_contract_from
 
 from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_json
 from pbsmrtpipe.testkit.core.base import TestValuesLoader
+from pbsmrtpipe.models import RunnableTask
+
+log = logging.getLogger(__name__)
 
 
 class LoadResolvedToolContractMixin(object):
@@ -19,6 +22,7 @@ class LoadResolvedToolContractMixin(object):
         cls.tasks_dir = op.join(cls.job_dir, "tasks")
         task_contents = os.listdir(cls.tasks_dir)
         cls.resolved_tool_contracts = []
+        cls.runnable_tasks = []
         for task_name in task_contents:
             task_dir = op.join(cls.tasks_dir, task_name)
             if not op.isdir(task_dir):
@@ -30,6 +34,9 @@ class LoadResolvedToolContractMixin(object):
                 continue
             rtc = load_resolved_tool_contract_from(rtc_json)
             cls.resolved_tool_contracts.append(rtc)
+            rt_json = op.join(task_dir, "runnable-task.json")
+            rt = RunnableTask.from_manifest_json(rt_json)
+            cls.runnable_tasks.append(rt)
 
 
 class TestTaskOptions(TestValuesLoader, LoadResolvedToolContractMixin):
@@ -63,6 +70,16 @@ class TestTaskOptions(TestValuesLoader, LoadResolvedToolContractMixin):
             if option_id in task_options:
                 self._compare_values(key, value, task_options[option_id])
                 n_tested += 1
+        if n_tested == 0:
+            raise SkipTest("No options tested.")
+
+    def test_runnable_task_options(self):
+        n_tested = 0
+        for key, value in self.iterate_rtc_task_options():
+            for runnable_task in self.runnable_tasks:
+                if key in runnable_task.task.resolved_options:
+                    n_tested += 1
+                    self.assertEqual(runnable_task.task.resolved_options[key], value, "Mismatch between RTC and runnable-task.json for {i}".format(i=key))
         if n_tested == 0:
             raise SkipTest("No options tested.")
 
