@@ -6,7 +6,8 @@ import re
 import os.path as op
 import os
 
-from pbcommand.pb_io.tool_contract_io import load_resolved_tool_contract_from
+from pbcommand.pb_io import (load_report_from_json,
+                             load_resolved_tool_contract_from)
 
 from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_json
 from pbsmrtpipe.testkit.core.base import TestValuesLoader
@@ -20,10 +21,15 @@ class LoadResolvedToolContractMixin(object):
     @classmethod
     def loadRtcs(cls):
         cls.tasks_dir = op.join(cls.job_dir, "tasks")
-        task_contents = os.listdir(cls.tasks_dir)
         cls.resolved_tool_contracts = []
         cls.runnable_tasks = []
-        for task_name in task_contents:
+        tasks_rpt = op.join(cls.job_dir, "workflow", "report-tasks.json")
+        rpt = load_report_from_json(tasks_rpt)
+        table = {t.id:t for t in rpt.tables}['tasks']
+        tasks = {c.id:c.values for c in table.columns}['task_id']
+        for task_id_str in tasks:
+            fields = task_id_str.split()
+            task_name = fields[1].split(":")[-1]
             task_dir = op.join(cls.tasks_dir, task_name)
             if not op.isdir(task_dir):
                 continue
