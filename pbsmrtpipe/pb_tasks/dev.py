@@ -236,6 +236,14 @@ def run_rtc(rtc):
     return run_fasta_filter(rtc.task.input_files[0], rtc.task.output_files[0], min_seq_length)
 
 
+@registry("dev_subreads_to_txt", "0.1.1", FileTypes.DS_SUBREADS, FileTypes.TXT,
+          is_distributed=False)
+def run_subreads_to_txt(rtc):
+    with open(rtc.task.output_files[0], "w") as txt_out:
+        txt_out.write("Subreads: {f}".format(f=rtc.task.input_files[0]))
+    return 0
+
+
 @registry("rset_to_txt", "0.1.0", FileTypes.DS_REF, FileTypes.TXT, is_distributed=False)
 def run_rtc(rtc):
     """Dev Task for testing pipelines. Generates a Txt file"""
