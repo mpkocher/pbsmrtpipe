@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<chunk-operator id="pbsmrtpipe.operators.chunk_dev_filter_fasta">
+<chunk-operator id="pbsmrtpipe.operators.chunk_dev_subreads">
 
     <task-id>pbsmrtpipe.tasks.dev_subreads_to_txt</task-id>
 
