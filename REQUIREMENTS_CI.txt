@@ -1,7 +1,7 @@
 cython
 numpy
 jinja2
-networkx
+networkx >= 1.9.1, < 2.0.0
 pysam
 jsonschema
 xmlbuilder

@@ -1187,7 +1187,9 @@ def _filter_chunk_operators(bg, chunk_operators_d):
 
     dn = len(chunk_operators_d) - len(operators_d)
     if dn != 0:
-        log.warn("Filtered {n} chunk operators from registry.".format(n=dn))
+        # this is too chatty for common use
+        # log.warn("Filtered {n} chunk operators from registry.".format(n=dn))
+        pass
 
     return operators_d
 
