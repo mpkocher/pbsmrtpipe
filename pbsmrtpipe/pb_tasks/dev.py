@@ -271,7 +271,7 @@ def run_chem_bundle_check(rtc):
     return 0
 
 
-@registry("dev_txt_to_datastore", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
+@registry("dev_txt_to_datastore", "0.1.1", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
 def run_dev_txt_to_datastore(rtc):
 
     p = os.path.dirname(rtc.task.output_files[0])
@@ -284,7 +284,7 @@ def run_dev_txt_to_datastore(rtc):
 
     def to_f(x):
         source_id = "out-1"
-        sset.newUuid()
+        sset.newUuid(random=True)
         file_name = "file-{x:03d}.subreadset.xml".format(x=x)
         out_path = os.path.join(p, file_name)
         sset.write(out_path)
