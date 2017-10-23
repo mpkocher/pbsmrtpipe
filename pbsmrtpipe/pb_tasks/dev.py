@@ -88,10 +88,7 @@ def run_rtc(rtc):
     assert 0
 
 
-@registry("dev_optional_failure", "0.1.0", FileTypes.DS_REF, FileTypes.TXT,
-          is_distributed=False,
-          options={"raise_exception":False})
-def run_rtc_optional_failure(rtc):
+def _run_rtc_optional_failure(rtc):
     if rtc.task.options["pbsmrtpipe.task_options.raise_exception"]:
         raise ValueError("raise_exception=True, failing task!")
     with open(rtc.task.output_files[0], 'w') as w:
@@ -99,12 +96,19 @@ def run_rtc_optional_failure(rtc):
     return 0
 
 
+@registry("dev_optional_failure", "0.1.0", FileTypes.DS_REF, FileTypes.TXT,
+          is_distributed=False,
+          options={"raise_exception":False})
+def run_rtc_optional_failure(rtc):
+    return _run_rtc_optional_failure(rtc)
+
+
 @registry("dev_optional_failure_subreads", "0.1.0", FileTypes.DS_SUBREADS,
           FileTypes.TXT,
           is_distributed=False,
           options={"raise_exception":False})
 def run_rtc_optional_failure_subreads(rtc):
-    return run_rtc_optional_failure(rtc)
+    return _run_rtc_optional_failure(rtc)
 
 
 dev_diagnostic_options = dict(
