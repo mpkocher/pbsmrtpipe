@@ -88,10 +88,7 @@ def run_rtc(rtc):
     assert 0
 
 
-@registry("dev_optional_failure", "0.1.0", FileTypes.DS_REF, FileTypes.TXT,
-          is_distributed=False,
-          options={"raise_exception":False})
-def run_rtc_optional_failure(rtc):
+def _run_rtc_optional_failure(rtc):
     if rtc.task.options["pbsmrtpipe.task_options.raise_exception"]:
         raise ValueError("raise_exception=True, failing task!")
     with open(rtc.task.output_files[0], 'w') as w:
@@ -99,12 +96,19 @@ def run_rtc_optional_failure(rtc):
     return 0
 
 
+@registry("dev_optional_failure", "0.1.0", FileTypes.DS_REF, FileTypes.TXT,
+          is_distributed=False,
+          options={"raise_exception":False})
+def run_rtc_optional_failure(rtc):
+    return _run_rtc_optional_failure(rtc)
+
+
 @registry("dev_optional_failure_subreads", "0.1.0", FileTypes.DS_SUBREADS,
           FileTypes.TXT,
           is_distributed=False,
           options={"raise_exception":False})
 def run_rtc_optional_failure_subreads(rtc):
-    return run_rtc_optional_failure(rtc)
+    return _run_rtc_optional_failure(rtc)
 
 
 dev_diagnostic_options = dict(
@@ -236,6 +240,14 @@ def run_rtc(rtc):
     return run_fasta_filter(rtc.task.input_files[0], rtc.task.output_files[0], min_seq_length)
 
 
+@registry("dev_subreads_to_txt", "0.1.1", FileTypes.DS_SUBREADS, FileTypes.TXT,
+          is_distributed=False)
+def run_subreads_to_txt(rtc):
+    with open(rtc.task.output_files[0], "w") as txt_out:
+        txt_out.write("Subreads: {f}".format(f=rtc.task.input_files[0]))
+    return 0
+
+
 @registry("rset_to_txt", "0.1.0", FileTypes.DS_REF, FileTypes.TXT, is_distributed=False)
 def run_rtc(rtc):
     """Dev Task for testing pipelines. Generates a Txt file"""
@@ -263,7 +275,7 @@ def run_chem_bundle_check(rtc):
     return 0
 
 
-@registry("dev_txt_to_datastore", "0.1.0", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
+@registry("dev_txt_to_datastore", "0.1.1", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
 def run_dev_txt_to_datastore(rtc):
 
     p = os.path.dirname(rtc.task.output_files[0])
@@ -276,7 +288,7 @@ def run_dev_txt_to_datastore(rtc):
 
     def to_f(x):
         source_id = "out-1"
-        sset.newUuid()
+        sset.newUuid(random=True)
         file_name = "file-{x:03d}.subreadset.xml".format(x=x)
         out_path = os.path.join(p, file_name)
         sset.write(out_path)
