@@ -275,10 +275,13 @@ def run_chem_bundle_check(rtc):
     return 0
 
 
-@registry("dev_txt_to_datastore", "0.1.1", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
+@registry("dev_txt_to_datastore", "0.1.2", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384, sleep_multiplier=0))
 def run_dev_txt_to_datastore(rtc):
 
     p = os.path.dirname(rtc.task.output_files[0])
+
+    sleep_multiplier = rtc.task.options['pbsmrtpipe.task_options.sleep_multiplier']
+    time.sleep(sleep_multiplier * random.random())
 
     from pbcore.io import SubreadSet
 
