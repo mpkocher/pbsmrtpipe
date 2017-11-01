@@ -31,6 +31,13 @@
         "resource_types": [],
         "schema_options": [
             {
+                "default": 0,
+                "description": "Option sleep_multiplier description",
+                "id": "pbsmrtpipe.task_options.sleep_multiplier",
+                "name": "Option sleep_multiplier",
+                "optionTypeId": "integer"
+            },
+            {
                 "default": 384,
                 "description": "Option num_subreadsets description",
                 "id": "pbsmrtpipe.task_options.num_subreadsets",
@@ -42,5 +49,5 @@
         "tool_contract_id": "pbsmrtpipe.tasks.dev_txt_to_datastore"
     },
     "tool_contract_id": "pbsmrtpipe.tasks.dev_txt_to_datastore",
-    "version": "0.1.0"
+    "version": "0.1.2"
 }
