@@ -281,7 +281,9 @@ def run_dev_txt_to_datastore(rtc):
     p = os.path.dirname(rtc.task.output_files[0])
 
     sleep_multiplier = rtc.task.options['pbsmrtpipe.task_options.sleep_multiplier']
-    time.sleep(sleep_multiplier * random.random())
+    t_sleep = sleep_multiplier * random.random()
+    log.info("Sleeping for %.1f seconds", t_sleep)
+    time.sleep(t_sleep)
 
     from pbcore.io import SubreadSet
 
