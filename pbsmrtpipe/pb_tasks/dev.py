@@ -293,11 +293,16 @@ def run_dev_txt_to_datastore(rtc):
 
     def to_f(x):
         source_id = "out-1"
-        sset.newUuid(random=True)
+        sset_out = sset.copy()
+        sset_out.newUuid(random=True)
+        sset_out.metadata.addParentDataSet(sset.uuid,
+                                           sset.datasetType,
+                                           createdBy="AnalysisJob",
+                                           timeStampedName="")
         file_name = "file-{x:03d}.subreadset.xml".format(x=x)
         out_path = os.path.join(p, file_name)
-        sset.write(out_path)
-        sset_uuid = sset.uniqueId
+        sset_out.write(out_path)
+        sset_uuid = sset_out.uniqueId
         name = "subreadset-{}".format(x)
         dsf = DataStoreFile(sset_uuid, source_id,
                             FileTypes.DS_SUBREADS.file_type_id, file_name,
