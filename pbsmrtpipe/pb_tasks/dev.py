@@ -275,10 +275,15 @@ def run_chem_bundle_check(rtc):
     return 0
 
 
-@registry("dev_txt_to_datastore", "0.1.1", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384))
+@registry("dev_txt_to_datastore", "0.1.2", FileTypes.DS_SUBREADS, FileTypes.DATASTORE, is_distributed=False, options=dict(num_subreadsets=384, sleep_multiplier=0))
 def run_dev_txt_to_datastore(rtc):
 
     p = os.path.dirname(rtc.task.output_files[0])
+
+    sleep_multiplier = rtc.task.options['pbsmrtpipe.task_options.sleep_multiplier']
+    t_sleep = sleep_multiplier * random.random()
+    log.info("Sleeping for %.1f seconds", t_sleep)
+    time.sleep(t_sleep)
 
     from pbcore.io import SubreadSet
 
@@ -288,11 +293,16 @@ def run_dev_txt_to_datastore(rtc):
 
     def to_f(x):
         source_id = "out-1"
-        sset.newUuid(random=True)
+        sset_out = sset.copy()
+        sset_out.newUuid(random=True)
+        sset_out.metadata.addParentDataSet(sset.uuid,
+                                           sset.datasetType,
+                                           createdBy="AnalysisJob",
+                                           timeStampedName="")
         file_name = "file-{x:03d}.subreadset.xml".format(x=x)
         out_path = os.path.join(p, file_name)
-        sset.write(out_path)
-        sset_uuid = sset.uniqueId
+        sset_out.write(out_path)
+        sset_uuid = sset_out.uniqueId
         name = "subreadset-{}".format(x)
         dsf = DataStoreFile(sset_uuid, source_id,
                             FileTypes.DS_SUBREADS.file_type_id, file_name,
