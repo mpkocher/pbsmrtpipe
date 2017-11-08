@@ -17,6 +17,7 @@ import pbsmrtpipe.pb_io as IO
 from pbsmrtpipe.graph.models import VALID_ALL_TASK_NODE_CLASSES
 from pbsmrtpipe.models import TaskStates, JobResources, RunnableTask
 from pbsmrtpipe.utils import setup_internal_logs
+import pbsmrtpipe.constants as GlobalConstants
 
 log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
@@ -338,7 +339,7 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
 
     setup_internal_logs(master_log_path, master_log_level, pb_log_path, stdout_level)
 
-    log.info("Starting pbsmrtpipe v{v}".format(v=pbsmrtpipe.get_version()))
+    log.info("Starting pbsmrtpipe {v}".format(v=pbsmrtpipe.get_version()))
     log.info("\n" + _log_pbsmrptipe_header())
 
     BU.write_binding_graph_images(bg, job_resources.workflow)
@@ -347,8 +348,14 @@ def job_resource_create_and_setup_logs(job_root_dir, bg, task_opts, workflow_lev
 
     # Need to map entry points to a FileType and store in the DataStore? or
     # does DataStore only represent outputs?
-    smrtpipe_log_df = DataStoreFile(str(uuid.uuid4()), "pbsmrtpipe::pbsmrtpipe.log", FileTypes.LOG.file_type_id, pb_log_path, name="Analysis Log", description="pbsmrtpipe log")
-    master_log_df = DataStoreFile(str(uuid.uuid4()), "pbsmrtpipe::master.log", FileTypes.LOG.file_type_id, master_log_path, name="Master Log", description="Master log")
+
+    # For historical reasons, this is a bit non-obvious. The "master" log is now at the
+    # the SMRT Link level, so we've promoted the pbsmrtpipe "master" log (i.e., master.log) to the
+    # be Analysis Details Log using the pbsmrtpipe::pbsmrtpipe.log source Id. There's also this friction point
+    # of marketing using "Analysis" vs "pbsmrtpipe which has generated some inconsistency.
+    smrtpipe_log_df = DataStoreFile(str(uuid.uuid4()), GlobalConstants.SOURCE_ID_INFO_LOG, FileTypes.LOG.file_type_id, pb_log_path, name="Analysis Log", description="pbsmrtpipe INFO log")
+    master_log_df = DataStoreFile(str(uuid.uuid4()), GlobalConstants.SOURCE_ID_MASTER_LOG , FileTypes.LOG.file_type_id, master_log_path, name="Analysis Details Log", description="Analysis Details log")
+
     ds = write_and_initialize_data_store_json(job_resources.datastore_json, [smrtpipe_log_df, master_log_df])
     slog.info("successfully initialized datastore.")
 
