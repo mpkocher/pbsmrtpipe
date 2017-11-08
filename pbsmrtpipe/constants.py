@@ -88,6 +88,9 @@ RESOLVED_TOOL_CONTRACT_JSON = "resolved-tool-contract.json"
 RESOLVED_TOOL_CONTRACT_AVRO = 'resolved-tool-contract.avro'
 TOOL_CONTRACT_JSON = "tool-contract.json"
 
+SOURCE_ID_MASTER_LOG = "pbsmrtpipe::pbsmrtpipe.log"
+SOURCE_ID_INFO_LOG = "pbsmrtpipe::pbsmrtpipe-info.log"
+
 # ***** DEFAULT PIPELINE LEVEL OPTIONS ******
 # Global hard limit on the maximum number of chunks per task are created
 MAX_NCHUNKS = 128
