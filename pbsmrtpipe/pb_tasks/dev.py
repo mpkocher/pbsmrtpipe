@@ -290,15 +290,20 @@ def run_dev_txt_to_datastore(rtc):
     num_subreadsets = rtc.task.options['pbsmrtpipe.task_options.num_subreadsets']
 
     sset = SubreadSet(rtc.task.input_files[0])
+    add_parent = True
+    if len(sset.metadata.provenance) > 0:
+        log.warn("Not adding provenance since input already has a parent")
+        add_parent = False
 
     def to_f(x):
         source_id = "out-1"
         sset_out = sset.copy()
         sset_out.newUuid(random=True)
-        sset_out.metadata.addParentDataSet(sset.uuid,
-                                           sset.datasetType,
-                                           createdBy="AnalysisJob",
-                                           timeStampedName="")
+        if add_parent:
+            sset_out.metadata.addParentDataSet(sset.uuid,
+                                               sset.datasetType,
+                                               createdBy="AnalysisJob",
+                                               timeStampedName="")
         file_name = "file-{x:03d}.subreadset.xml".format(x=x)
         out_path = os.path.join(p, file_name)
         sset_out.write(out_path)
