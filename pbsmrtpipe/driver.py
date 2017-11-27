@@ -290,7 +290,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     The function is doing way too much. This is really terrible.
     """
-    # this used for the cluster submission.
+    # this is used for the local cluster submission.
     job_id = random.randint(100000, 999999)
     started_at = time.time()
     tempfile.tempdir = workflow_opts.tmp_dir
@@ -438,7 +438,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     def services_update_datastore_file(datastore_file_):
         if service_job_client is not None:
-            service_job_client.update_datastore_file(datastore_file_.uuid, file_size=f.file_size)
+            service_job_client.update_datastore_file(datastore_file_.uuid, file_size=datastore_file_.file_size)
 
     def _update_analysis_reports_and_datastore(tnode_, task_):
         assert (len(tnode_.meta_task.output_file_display_names) ==
@@ -809,13 +809,17 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     finally:
         write_task_summary_report(bg)
         BU.write_binding_graph_images(bg, job_resources.workflow)
-        ds_files_by_id = {f.file_id:f for k,f in ds.files.iteritems()}
-        for file_id in ["master.log", "pbsmrtpipe.log"]:
-            source_id = "pbsmrtpipe::{f}".format(f=file_id)
-            if source_id in ds_files_by_id:
-                f = ds_files_by_id[source_id]
-                f.file_size = os.path.getsize(f.path)
-                services_update_datastore_file(f)
+
+        source_ids_to_update = (GlobalConstants.SOURCE_ID_INFO_LOG, GlobalConstants.SOURCE_ID_MASTER_LOG)
+        # file_id and source_id are the same
+        ds_files_by_id = {f.file_id: f for k, f in ds.files.iteritems()}
+
+        for source_id in source_ids_to_update:
+            ds_file = ds_files_by_id.get(source_id, None)
+            if ds_file is not None:
+                ds_file.file_size = os.path.getsize(ds_file.path)
+                services_update_datastore_file(ds_file)
+
         ds.write_update_json(job_resources.datastore_json)
 
     return exit_code

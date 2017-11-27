@@ -13,7 +13,6 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     # Class constants used in TestBase
-    FILES = 'FILES'
     DIRS = 'DIRS'
 
     HTML_DIRS = "HTML_DIRS"
@@ -136,9 +135,6 @@ def _bolt_on_datastore_validators(cls, class_constant_id):
 
 def monkey_patch(cls):
     cls._was_monkey_patched = True
-
-    if hasattr(cls, Constants.FILES):
-        _bolt_on_file_existence(cls, Constants.FILES)
 
     if hasattr(cls, Constants.DIRS):
         _bolt_on_dir_existence_test(cls, Constants.DIRS)
