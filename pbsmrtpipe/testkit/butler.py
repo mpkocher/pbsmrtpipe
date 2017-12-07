@@ -36,6 +36,7 @@ class Constants(object):
     CFG_TASK_ID = 'task_id'
     CFG_BASE_EXE = 'base_exe'
     CFG_REQUIREMENTS = 'requirements'
+    CFG_XRAY_TESTS = "xray_tests"
 
     CFG_OUTPUT_DIR = 'output_dir'
 
@@ -49,7 +50,7 @@ class Butler(object):
     def __init__(self, job_id, output_dir, entry_points, preset_json,
                  preset_xml, debug,
                  force_distribute=None, force_chunk=None, base_exe=EXE,
-                 requirements=()):
+                 requirements=(), xray_tests=()):
         self.output_dir = output_dir
         self.entry_points = entry_points
         self.preset_json = preset_json
@@ -65,6 +66,7 @@ class Butler(object):
 
         self.base_exe = base_exe
         self.requirements = requirements
+        self.xray_tests = xray_tests
 
     def __repr__(self):
         _d = dict(k=self.__class__.__name__, p=self.prefix)
@@ -86,8 +88,8 @@ class Butler(object):
 
 class ButlerWorkflow(Butler):
 
-    def __init__(self, job_id, output_dir, pipeline_id, workflow_xml, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE, requirements=()):
-        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe, requirements=requirements)
+    def __init__(self, job_id, output_dir, pipeline_id, workflow_xml, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=None, force_chunk=None, base_exe=EXE, requirements=(), xray_tests=()):
+        super(ButlerWorkflow, self).__init__(job_id, output_dir, entry_points, preset_json_path, preset_xml_path, debug, force_distribute=force_distribute, force_chunk=force_chunk, base_exe=base_exe, requirements=requirements, xray_tests=xray_tests)
         assert [workflow_xml, pipeline_id].count(None) == 1
         self.workflow_xml = workflow_xml
         self.pipeline_id = pipeline_id
@@ -115,7 +117,8 @@ class ButlerWorkflow(Butler):
                 debug=d.get("debug", False),
                 force_distribute=force_distribute,
                 force_chunk=force_chunk,
-                requirements=tuple(d.get("requirements", [])))
+                requirements=tuple(d.get("requirements", [])),
+                xray_tests=tuple(d.get("xrayTests", [])))
 
 
 class ButlerTask(Butler):
@@ -239,7 +242,7 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         base_exe = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_BASE_EXE, p, EXE)
         requirements = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_REQUIREMENTS, p, "").split()
 
-        return ButlerWorkflow(job_id, job_output_dir, None, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe, requirements=requirements)
+        return ButlerWorkflow(job_id, job_output_dir, None, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe, requirements=requirements, xray_tests=xray_tests)
 
     return _parse_workflow_config
 

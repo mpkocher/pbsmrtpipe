@@ -14,6 +14,7 @@ from pbcommand.cli.core import get_default_argparser_with_base_opts
 from pbcommand.utils import (setup_console_and_file_logger, setup_logger,
                              Constants, compose, setup_log)
 from pbcommand.validators import validate_file
+from pbcommand.testkit import nunit
 
 from pbsmrtpipe.engine import run_command_async
 from pbsmrtpipe.cli import (LOG_LEVELS, resolve_dist_chunk_overrides)
@@ -73,6 +74,20 @@ def _write_xunit_output(test_cases, result, output_xml, job_id,
     
     log.info("Completed running {t} tests. {s} skipped, {e} errors, and {n} failed tests.".format(e=nerrors, n=nfailed_tests, s=nskipped, t=len(xsuite)))
     return xsuite
+
+
+def write_nunit_output(name, xunit_out, nunit_out, requirements=(),
+                       tests=()):
+    log.info("Writing NUnit report for JIRA/X-ray integration")
+    xsuite = X.XunitTestSuite.from_xml(xunit_out)
+    success = xsuite.nfailure + xsuite.nerrors
+    result = nunit.TestCase(name, success, tests, requirements,
+                            asserts=len(xsuite.tests))
+    xml_doc = nunit.create_nunit_xml([result])
+    with open(nunit_out, "w") as xml_out:
+        xml_out.write(xml_doc.toprettyxml(indent="  "))
+    log.info("Wrote %s", nunit_out)
+    return xml_doc
 
 
 def run_butler_tests(test_cases, output_dir, output_xml, job_id,

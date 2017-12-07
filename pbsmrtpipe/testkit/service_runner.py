@@ -23,7 +23,7 @@ import pbsmrtpipe.loader as L
 from pbsmrtpipe.testkit.butler import config_parser_to_butler
 from pbsmrtpipe.testkit.loader import (parse_cfg_file,
     dtype_and_uuid_from_dataset_xml)
-from pbsmrtpipe.testkit.runner import run_butler_tests
+from pbsmrtpipe.testkit.runner import run_butler_tests, write_nunit_output
 
 log = logging.getLogger(__name__)
 
@@ -133,7 +133,8 @@ def _patch_test_cases_with_service_access_layer(test_cases,
 
 
 def run_butler_tests_from_cfg(testkit_cfg, output_dir, output_xml,
-                              service_access_layer, services_job_id=None):
+                              service_access_layer, services_job_id=None,
+                              nunit_out=None):
     job_id = job_id_from_testkit_cfg(testkit_cfg)
     butler = config_parser_to_butler(testkit_cfg)
     test_cases = parse_cfg_file(testkit_cfg)
@@ -147,11 +148,19 @@ def run_butler_tests_from_cfg(testkit_cfg, output_dir, output_xml,
         output_xml=output_xml,
         job_id=job_id,
         requirements=butler.requirements)
+    if nunit_out is not None and len(butler.xray_tests) > 0:
+        write_nunit_output(
+            name=job_id,
+            xunit_out=output_xml,
+            nunit_out=nunit_out,
+            requirements=butler.requirements,
+            tests=butler.xray_tests)
     return exit_code
 
 
 def run_services_testkit_job(host, port, testkit_cfg,
                              xml_out="test-output.xml",
+                             nunit_out="nunit_out.xml",
                              ignore_test_failures=False,
                              time_out=1800, sleep_time=2,
                              import_only=False, test_job_id=None):
@@ -170,7 +179,8 @@ def run_services_testkit_job(host, port, testkit_cfg,
             output_dir=engine_job.path,
             output_xml=xml_out,
             service_access_layer=sal,
-            services_job_id=test_job_id)
+            services_job_id=test_job_id,
+            nunit_out=nunit_out)
     entrypoints = get_entrypoints(testkit_cfg)
     pipeline_id = pipeline_id_from_testkit_cfg(testkit_cfg)
     job_id = job_id_from_testkit_cfg(testkit_cfg)
@@ -197,7 +207,8 @@ def run_services_testkit_job(host, port, testkit_cfg,
         output_dir=engine_job.path,
         output_xml=xml_out,
         service_access_layer=sal,
-        services_job_id=engine_job.id)
+        services_job_id=engine_job.id,
+        nunit_out=nunit_out)
     if ignore_test_failures and engine_job.was_successful():
         return 0
     return exit_code
@@ -209,6 +220,7 @@ def args_runner(args):
         port=args.port,
         testkit_cfg=args.testkit_cfg,
         xml_out=args.xml_out,
+        nunit_out=args.nunit_out,
         ignore_test_failures=args.ignore_test_failures,
         time_out=args.time_out,
         sleep_time=args.sleep,
@@ -228,6 +240,8 @@ def get_parser():
                    help="Services port number")
     p.add_argument("-x", "--xunit", dest="xml_out", default="test-output.xml",
                    help="Output XUnit test results")
+    p.add_argument("-n", "--nunit", dest="nunit_out", default="unit_out.xml",
+                   help="Optional NUnit output file, used for JIRA/Xray integration; will be written only if the 'xray_tests' field is populated.")
     p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
                    help="Timeout for blocking after job submission")
     p.add_argument("-s", "--sleep", dest="sleep", type=int, default=2,
