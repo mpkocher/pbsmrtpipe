@@ -240,7 +240,7 @@ def get_parser():
                    help="Services port number")
     p.add_argument("-x", "--xunit", dest="xml_out", default="test-output.xml",
                    help="Output XUnit test results")
-    p.add_argument("-n", "--nunit", dest="nunit_out", default="unit_out.xml",
+    p.add_argument("-n", "--nunit", dest="nunit_out", default="nunit_out.xml",
                    help="Optional NUnit output file, used for JIRA/Xray integration; will be written only if the 'xray_tests' field is populated.")
     p.add_argument("-t", "--timeout", dest="time_out", type=int, default=1800,
                    help="Timeout for blocking after job submission")

@@ -10,6 +10,7 @@ from pbcommand.cli import pacbio_args_runner, get_default_argparser
 from pbcommand.common_options import add_log_debug_option
 from pbcommand.validators import validate_file
 from pbcommand.utils import setup_log, compose
+from pbcommand.testkit import nunit
 
 from pbsmrtpipe.testkit.runner import add_ignore_test_failures_option
 from pbsmrtpipe.testkit.xunit import merge_junit_files
@@ -79,6 +80,21 @@ def merge_junit_results(testkit_cfgs, output_file, file_base):
     else:
         merge_junit_files(output_file, junit_files)
         log.info("Wrote combined test results to {f}".format(f=output_file))
+
+
+def merge_nunit_results(testkit_cfgs, output_file, file_base):
+    nunit_files = []
+    for testkit_cfg in testkit_cfgs:
+        nunit_file = os.path.join(os.path.dirname(testkit_cfg), file_base)
+        if os.path.exists(nunit_file):
+            nunit_files.append(nunit_file)
+    if len(nunit_files) == 0:
+        log.error("No NUnit XML outputs found")
+    else:
+        doc = nunit.combine_results(nunit_files)
+        with open(output_file, "w") as xml_out:
+            xml_out.write(doc.toprettyxml(indent="  "))
+        log.info("Wrote combined NUnit test results to {f}".format(f=output_file))
 
 
 def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=""):
