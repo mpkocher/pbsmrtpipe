@@ -19,7 +19,7 @@ from pbcommand.cli import (get_default_argparser_with_base_opts,
 from pbcommand.utils import setup_log
 
 from pbsmrtpipe.testkit.multirunner import (validate_testkit_cfg_fofn,
-    testkit_cfg_fofn_to_files, merge_junit_results)
+    testkit_cfg_fofn_to_files, merge_junit_results, merge_nunit_results)
 from pbsmrtpipe.engine import backticks
 
 __version__ = '0.2.0'
@@ -59,7 +59,8 @@ def testkit_cfg_fofns_to_files(fofns):
 
 def run_services_testkit_jobs(host, port, testkit_cfg_fofns, nworkers=1,
                               ignore_test_failures=False, time_out=1800,
-                              sleep_time=2, import_only=False, junit_out=None):
+                              sleep_time=2, import_only=False,
+                              junit_out=None, nunit_out=None):
     assert isinstance(testkit_cfg_fofns, list)
     testkit_cfgs = testkit_cfg_fofns_to_files(testkit_cfg_fofns)
     nworkers = min(len(testkit_cfgs), nworkers)
@@ -116,6 +117,8 @@ def run_services_testkit_jobs(host, port, testkit_cfg_fofns, nworkers=1,
     log.info(msg)
     if junit_out is not None:
         merge_junit_results(testkit_cfgs, junit_out, "jenkins_test-output.xml")
+    if nunit_out is not None:
+        merge_nunit_results(testkit_cfgs, nunit_out, "nunit_out.xml")
     # should this propagate the rcodes from siv_butler calls?
     return 0 if nfailed == 0 else -1
 
@@ -130,7 +133,8 @@ def args_runner(args):
         time_out=args.time_out,
         sleep_time=args.sleep,
         import_only=args.import_only,
-        junit_out=os.path.abspath(args.junit_out))
+        junit_out=os.path.abspath(args.junit_out),
+        nunit_out=os.path.abspath(args.nunit_out))
 
 
 def get_parser():
@@ -161,6 +165,9 @@ def get_parser():
     p.add_argument("-j", "--junit-xml", dest="junit_out", action="store",
                    default="junit_combined_results.xml",
                    help="JUnit output file for all tests")
+    p.add_argument("-x", "--nunit-xml", dest="nunit_out", action="store",
+                   default="nunit_combined_results.xml",
+                   help="NUnit output file for all tests")
     return p
 
 

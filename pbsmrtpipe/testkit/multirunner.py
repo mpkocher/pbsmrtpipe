@@ -10,8 +10,10 @@ from pbcommand.cli import pacbio_args_runner, get_default_argparser
 from pbcommand.common_options import add_log_debug_option
 from pbcommand.validators import validate_file
 from pbcommand.utils import setup_log, compose
+from pbcommand.testkit import nunit
 
-from pbsmrtpipe.testkit.runner import add_ignore_test_failures_option
+from pbsmrtpipe.testkit.runner import (add_ignore_test_failures_option,
+                                       write_xml)
 from pbsmrtpipe.testkit.xunit import merge_junit_files
 import pbsmrtpipe.tools.utils as TU
 from pbsmrtpipe.engine import backticks
@@ -68,17 +70,29 @@ def _validate_testkit_cfg_fofn(path):
 validate_testkit_cfg_fofn = compose(_validate_testkit_cfg_fofn, validate_file)
 
 
-def merge_junit_results(testkit_cfgs, output_file, file_base):
-    junit_files = []
+def _merge_xml_results(xml_type, merge_function, testkit_cfgs, output_file,
+                       file_base):
+    log.info("Combining individual %s XML files", xml_type)
+    xml_files = []
     for testkit_cfg in testkit_cfgs:
-        junit_file = os.path.join(os.path.dirname(testkit_cfg), file_base)
-        if os.path.exists(junit_file):
-            junit_files.append(junit_file)
-    if len(junit_files) == 0:
-        log.error("No JUnit XML outputs found")
+        xml_file = os.path.join(os.path.dirname(testkit_cfg), file_base)
+        if os.path.exists(xml_file):
+            xml_files.append(xml_file)
+    if len(xml_files) == 0:
+        log.error("No %s XML outputs found", xml_type)
     else:
-        merge_junit_files(output_file, junit_files)
-        log.info("Wrote combined test results to {f}".format(f=output_file))
+        merge_function(output_file, xml_files)
+
+
+def _merge_nunit_files(output_file, xml_files):
+    doc = nunit.combine_results(xml_files)
+    write_xml(doc, output_file)
+
+
+merge_junit_results = functools.partial(_merge_xml_results, "JUnit",
+                                        merge_junit_files)
+merge_nunit_results = functools.partial(_merge_xml_results, "Nunit",
+                                        _merge_nunit_files)
 
 
 def _run_testkit_cfg(testkit_cfg, debug=False, misc_opts=""):
