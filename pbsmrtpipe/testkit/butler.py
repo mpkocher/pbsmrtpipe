@@ -242,7 +242,7 @@ def _to_parse_workflow_config(job_output_dir, base_dir):
         base_exe = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_BASE_EXE, p, EXE)
         requirements = _parse_or_default(Constants.CFG_WORKFLOW, Constants.CFG_REQUIREMENTS, p, "").split()
 
-        return ButlerWorkflow(job_id, job_output_dir, None, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe, requirements=requirements, xray_tests=xray_tests)
+        return ButlerWorkflow(job_id, job_output_dir, None, workflow_xml, ep_d, preset_json, preset_xml, d, base_exe=base_exe, requirements=requirements)
 
     return _parse_workflow_config
 
