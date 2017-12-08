@@ -76,18 +76,21 @@ def _write_xunit_output(test_cases, result, output_xml, job_id,
     return xsuite
 
 
+def write_xml(xml_doc, output_file, xml_type="NUnit"):
+    with open(output_file, "w") as xml_out:
+        xml_out.write(xml_doc.toprettyxml(indent="  "))
+    log.info("Wrote %s XML results to %s", xml_type, output_file)
+
+
 def write_nunit_output(name, xunit_out, nunit_out, requirements=(),
                        tests=()):
-    log.info("Writing NUnit report for JIRA/X-ray integration")
+    log.info("Exporting NUnit report for JIRA/X-ray integration")
     xsuite = X.XunitTestSuite.from_xml(xunit_out)
     success = (xsuite.nfailure + xsuite.nerrors) == 0
     result = nunit.TestCase(name, success, tests, requirements,
                             asserts=len(xsuite.tests))
     xml_doc = nunit.create_nunit_xml([result])
-    with open(nunit_out, "w") as xml_out:
-        xml_out.write(xml_doc.toprettyxml(indent="  "))
-    log.info("Wrote %s", nunit_out)
-    return xml_doc
+    return write_xml(xml_doc, nunit_out)
 
 
 def run_butler_tests(test_cases, output_dir, output_xml, job_id,
