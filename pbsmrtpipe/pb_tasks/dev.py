@@ -11,6 +11,7 @@ import random
 from pbcommand.cli import registry_builder, registry_runner
 from pbcommand.pb_io.report import fofn_to_report
 from pbcommand.models import FileTypes, SymbolTypes, DataStore, DataStoreFile
+from pbcommand.models.report import Report, Attribute
 from pbcore.io import (readFofn, ReferenceSet, FastqReader, FastaWriter,
                        FastaRecord, FastaReader)
 
@@ -350,6 +351,36 @@ def run_verify_sample_names(rtc):
         with open(rtc.task.output_files[0], "w") as f:
             f.write("\n".join([_to_samples_str(s) for s in
                                [well_samples, bio_samples]]))
+    return 0
+
+
+@registry("dev_verify_dataset_filters", "0.1.0",
+          FileTypes.DS_SUBREADS, FileTypes.REPORT,
+          is_distributed=False,
+          options=dict(
+                num_records=0,
+                total_length=0))
+def run_verify_dataset_filters(rtc):
+    from pbcore.io import SubreadSet
+    expected_num_records = rtc.task.options['pbsmrtpipe.task_options.num_records']
+    expected_length = rtc.task.options['pbsmrtpipe.task_options.total_length']
+    with SubreadSet(rtc.task.input_files[0]) as ds:
+        # FIXME ideally we should not need to do this, but Scala code does not
+        # have the ability to update counts directly
+        ds.updateCounts()
+        if ds.numRecords != expected_num_records:
+            raise ValueError("Expected {e} records, got {n}".format(
+                             e=expected_num_records, n=ds.numRecords))
+        if ds.totalLength != expected_length:
+            raise ValueError("Expected length {e}, got {n}".format(
+                             e=expected_length, n=ds.totalLength))
+        attr = [
+            Attribute("number_of_records", value=ds.numRecords),
+            Attribute("total_length", value=ds.totalLength)
+        ]
+        report = Report("subreads_report", title="SubreadSet XML Report",
+                        attributes=attr)
+        report.write_json(rtc.task.output_files[0])
     return 0
 
 
