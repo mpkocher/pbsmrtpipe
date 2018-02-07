@@ -223,3 +223,7 @@ def get_verify_sample_names():
 @dev_register("dev_subreads_chunk", "Verify chunking", tags=("subreads",))
 def get_subreads_chunk():
     return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_subreads_to_txt:0")]
+
+@dev_register("dev_verify_dataset_filters", "Verify dataset filters", tags=("subreads",))
+def get_verify_dataset_filters():
+    return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_dataset_filters:0")]
