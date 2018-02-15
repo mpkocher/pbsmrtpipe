@@ -60,22 +60,25 @@ def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, erro
     """
     emsg = "" if error_message is None else error_message
 
-    attributes = [Attribute('was_successful', was_successful, name="Was Successful"),
-                  Attribute('total_run_time_sec', int(run_time), name="Walltime (sec)"),
-                  Attribute('error_message', emsg, name="Error Message"),
-                  Attribute('job_id', job_id, name="Job Id"),
-                  Attribute('job_state', state, name="Job State"),
-                  Attribute('job_output_dir', job_output_dir, name="Job Output Directory"),
-                  Attribute('pbsmrtpipe_version', pbsmrtpipe.get_version(), name="pbsmrtpipe Version")]
-
     columns = [Column('task_id', header='Task id'),
                Column('was_successful', header='Was Successful'),
                Column('state', header="Task State"),
                Column('run_time_sec', header="Run Time (sec)"),
-               Column('nproc', header="# of procs")]
+               Column('nproc', header="# of procs"),
+               Column("num_core_hours", header="Core Hours")
+               ]
 
     tasks_table = Table('tasks', columns=columns)
     for tnode in bg.all_task_type_nodes():
+
+        nproc = bg.node[tnode]['nproc']
+        # the task might not be completed.
+        run_time_sec = bg.node[tnode]['run_time']
+        if run_time_sec is None:
+            core_hours = 0.0
+        else:
+            core_hours = (run_time_sec / 60.0 / 60.0) * nproc
+
         tasks_table.add_data_by_column_id('task_id', str(tnode))
         tasks_table.add_data_by_column_id('nproc', bg.node[tnode]['nproc'])
         tasks_table.add_data_by_column_id('state', bg.node[tnode]['state'])
@@ -83,6 +86,19 @@ def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, erro
         # rt_ = bg.node[tnode]['run_time']
         # rtime = None if rt_ is None else int(rt_)
         tasks_table.add_data_by_column_id('run_time_sec', bg.node[tnode]['run_time'])
+        tasks_table.add_data_by_column_id('num_core_hours', round(core_hours, 4))
+
+    total_core_hours = sum(tasks_table.get_column_by_id('num_core_hours').values)
+
+    attributes = [Attribute('was_successful', was_successful, name="Was Successful"),
+                  Attribute('total_run_time_sec', int(run_time), name="Walltime (sec)"),
+                  Attribute('error_message', emsg, name="Error Message"),
+                  Attribute('job_id', job_id, name="Job Id"),
+                  Attribute('job_state', state, name="Job State"),
+                  Attribute('job_output_dir', job_output_dir, name="Job Output Directory"),
+                  Attribute('pbsmrtpipe_version', pbsmrtpipe.get_version(), name="pbsmrtpipe Version"),
+                  Attribute('total_core_hours', round(total_core_hours, 4), "Total core hours")
+                  ]
 
     ep_table = _to_table("entry_points", bg, bg.entry_binding_nodes())
     fnodes_table = _to_table("file_node", bg, bg.file_nodes())
