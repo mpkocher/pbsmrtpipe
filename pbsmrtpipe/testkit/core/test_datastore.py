@@ -2,20 +2,28 @@
 import unittest
 import os
 import logging
-import json
 import re
 
-from pbcommand.pb_io.report import (load_report_from_json,
-                                    load_report_spec_from_json)
+from pbcommand.pb_io import (load_report_from_json, load_report_spec_from_json)
 from pbcommand.validators import validate_report
-from pbcommand.models import FileTypes
+from pbcommand.models import FileTypes, DataStore
 from pbcore.io import getDataSetUuid
 
 from .base import TestBase
 from pbsmrtpipe.testkit.base import monkey_patch
 from pbsmrtpipe.testkit.validators2 import (ValidateFasta, ValidateJsonReport)
 
+try:
+    import pbreports
+    HAS_PBREPORTS = True
+except ImportError:
+    HAS_PBREPORTS = False
+
 log = logging.getLogger(__name__)
+
+
+def _to_ds_json(job_dir):
+    return os.path.join(job_dir, "workflow", "datastore.json")
 
 
 @monkey_patch
@@ -31,10 +39,8 @@ class TestDataStore(TestBase):
         Can load Datastore from Json
         :return:
         """
-        p = os.path.join(self.job_dir, "workflow", "datastore.json")
-        with open(p, 'r') as r:
-            d = json.loads(r.read())
-        self.assertIsInstance(d, dict)
+        ds = DataStore.load_from_json(_to_ds_json(self.job_dir))
+        self.assertIsInstance(ds, DataStore)
 
 
 @monkey_patch
@@ -54,12 +60,12 @@ class TestDataStoreFileLabels(TestBase):
         """
         Make sure output files have non-blank name and description.
         """
-        p = os.path.join(self.job_dir, "workflow", "datastore.json")
-        with open(p, 'r') as r:
-            d = json.loads(r.read())
-            for fd in d["files"]:
-                self.assertTrue(re.search("[a-zA-Z0-9]{1,}", fd["name"]))
-                self.assertTrue(re.search("[a-zA-Z0-9]{1,}", fd["description"]))
+        ds = DataStore.load_from_json(_to_ds_json(self.job_dir))
+        rx = re.compile(r'[a-zA-Z0-9]{1,}')
+
+        for fd in ds.files.values():
+            for x in (fd.name, fd.description):
+                self.assertTrue(rx.search(x))
 
 
 class TestDataStoreUuids(TestBase):
@@ -68,42 +74,44 @@ class TestDataStoreUuids(TestBase):
     """
 
     def test_datastore_report_file_uuid(self):
-        p = os.path.join(self.job_dir, "workflow", "datastore.json")
-        with open(p, 'r') as r:
-            d = json.loads(r.read())
-            n_tested = 0
-            for file_info in d['files']:
-                if file_info['fileTypeId'] == FileTypes.REPORT.file_type_id:
-                    rpt = load_report_from_json(file_info['path'])
-                    self.assertEqual(rpt.uuid, file_info['uniqueId'],
-                                     "{p}: {u1} != {u2}".format(
-                                     p=file_info['path'],
+        """Test that the DataStore file and the Underlying Report have the same UUID"""
+        ds = DataStore.load_from_json(_to_ds_json(self.job_dir))
+        n_tested = 0
+        for ds_file in ds.files.values():
+            if ds_file.file_type_id == FileTypes.REPORT.file_type_id:
+                rpt = load_report_from_json(ds_file.path)
+                emsg = "{p}: {u1} != {u2}".format(
+                                     p=ds_file.path,
                                      u1=rpt.uuid,
-                                     u2=file_info['uniqueId']))
-                    n_tested += 1
-            if n_tested == 0:
-                raise unittest.SkipTest("No Report JSON files in datastore.")
+                                     u2=ds_file.uuid)
+                # by convention the DS UUID and the Report UUID should the same value
+                self.assertEqual(rpt.uuid, ds_file.uuid, emsg)
+                n_tested += 1
+
+        if n_tested == 0:
+            raise unittest.SkipTest("Warning. No Report JSON files in datastore.")
 
     def test_datastore_dataset_file_uuid(self):
-        FILE_TYPE_IDS = ["DS_SUBREADS_H5", "DS_SUBREADS", "DS_CCS", "DS_REF",
-                         "DS_ALIGN", "DS_CONTIG", "DS_BARCODE", "DS_ALIGN_CCS"]
-        DATASET_FILE_TYPES = set([getattr(FileTypes, t).file_type_id
-                                  for t in FILE_TYPE_IDS])
-        p = os.path.join(self.job_dir, "workflow", "datastore.json")
-        with open(p, 'r') as r:
-            d = json.loads(r.read())
-            n_tested = 0
-            for file_info in d['files']:
-                if file_info['fileTypeId'] in DATASET_FILE_TYPES:
-                    uuid = getDataSetUuid(file_info['path'])
-                    self.assertEqual(uuid, file_info['uniqueId'],
+        """Test that the DataStore file and the Underlying Report have the same UUID"""
+        dataset_type_ids = FileTypes.ALL_DATASET_TYPES().keys()
+
+        ds = DataStore.load_from_json(_to_ds_json(self.job_dir))
+
+        n_tested = 0
+        for ds_file in ds.files.values():
+            if ds_file.file_type_id in dataset_type_ids:
+                path = ds_file.path
+                dsf_uuid = ds_file.uuid
+                uuid = getDataSetUuid(path)
+                self.assertEqual(uuid, dsf_uuid,
                                      "{p}: {u1} != {u2}".format(
-                                     p=file_info['path'],
+                                     p=path,
                                      u1=uuid,
-                                     u2=file_info['uniqueId']))
-                    n_tested += 1
-            if n_tested == 0:
-                raise unittest.SkipTest("No DataSet XML files in datastore.")
+                                     u2=dsf_uuid))
+                n_tested += 1
+
+        if n_tested == 0:
+            raise unittest.SkipTest("Warning. No DataSet XML files in datastore.")
 
 
 class TestReports(TestBase):
@@ -111,13 +119,12 @@ class TestReports(TestBase):
     Validate Report JSON files against AVRO schema and specifications.
     """
 
+    # These will be report types will be ignored in the Report Spec lookup.
+    INTERNAL_REPORTS = ('pbsmrtpipe',)
+
     def setUp(self):
         # FIXME This will change at some point
-        try:
-            import pbreports
-        except ImportError:
-            self._specs = None
-        else:
+        if HAS_PBREPORTS:
             self._specs = {}
             spec_path = os.path.join(os.path.dirname(pbreports.__file__),
                                      "report", "specs")
@@ -126,22 +133,25 @@ class TestReports(TestBase):
                     path = os.path.join(spec_path, file_name)
                     spec = load_report_spec_from_json(path)
                     self._specs[spec.id] = spec
+        else:
+            self._specs = None
 
     def _validate_datastore_reports(self, validate_func):
-        p = os.path.join(self.job_dir, "workflow", "datastore.json")
+
+        ds = DataStore.load_from_json(_to_ds_json(self.job_dir))
+
+        # found one or more valid Report
         have_reports = True
-        with open(p, 'r') as r:
-            d = json.loads(r.read())
-            n_tested = 0
-            for file_info in d['files']:
-                if file_info['fileTypeId'] == FileTypes.REPORT.file_type_id:
-                    try:
-                        r = validate_func(file_info['path'])
-                    except ValueError as e:
-                        self.fail("Report validation failed:\n{e}".format(
-                                  e=str(e)))
-                    else:
-                        have_reports = True
+
+        for ds_file in ds.files.values():
+            if ds_file.file_type_id == FileTypes.REPORT.file_type_id:
+                try:
+                    _ = validate_func(ds_file.path)
+                except ValueError as e:
+                    self.fail("Report validation failed:\n{e}".format(e=str(e)))
+                else:
+                    have_reports = True
+
         if not have_reports:
             raise unittest.SkipTest("No Report JSON files in datastore.")
         return have_reports
@@ -151,9 +161,15 @@ class TestReports(TestBase):
 
     def test_datastore_report_spec_validation(self):
         def _validate_against_spec(path):
+            # always load the Report JSON to make sure it valid with respect to the Report core schema
+            rpt = load_report_from_json(path)
+
+            if rpt.id in self.INTERNAL_REPORTS:
+                raise unittest.SkipTest("Ignoring internal report type '{}'".format(rpt.id))
+
             if self._specs is None:
                 raise unittest.SkipTest("Can't find report specs.")
-            rpt = load_report_from_json(path)
+
             spec = self._specs.get(rpt.id, None)
             if spec is None:
                 self.fail("No spec found for report {r}".format(r=rpt.id))
