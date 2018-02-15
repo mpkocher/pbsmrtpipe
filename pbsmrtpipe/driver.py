@@ -373,6 +373,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # Running total of current number of slots/cpu's used
     total_nproc = 0
 
+    # Assign the workflow "task report" UUID, so this can be used in the datastore
+    task_report_dsf_uuid = str(uuid.uuid4())
+
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
 
@@ -412,7 +415,8 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
     def write_workflow_report_(bg_, current_state_, was_successful_):
-        return DU.write_update_main_workflow_report(job_id, job_resources, bg_, current_state_, was_successful_, _to_run_time())
+        return DU.write_update_main_workflow_report(job_id, job_resources, bg_, current_state_, was_successful_,
+                                                    _to_run_time(), report_uuid=task_report_dsf_uuid)
 
     def write_task_summary_report(bg_):
         task_summary_report = DU.to_task_summary_report(bg_)
@@ -508,6 +512,14 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # write initial report.
     DU.write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg, TaskStates.RUNNING, False, 0.0)
+
+    # now that we've written the file, create a DataStoreFile.
+    task_report_dsf = DataStoreFile(task_report_dsf_uuid, "pbsmrtpipe-report-tasks", FileTypes.REPORT.file_type_id,
+                                    job_resources.tasks_report,
+                                    name="Workflow Task Reports",
+                                    description="Workflow Task Report details")
+    ds.add(task_report_dsf)
+    ds.write_update_json(job_resources.datastore_json)
 
     exit_code = None
     # For book-keeping
