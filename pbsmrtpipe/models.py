@@ -1,5 +1,6 @@
 from collections import namedtuple
 import logging
+import shutil
 import json
 import os
 import collections
@@ -402,6 +403,11 @@ class Task(object):
 
         # Task output dir
         self.output_dir = output_dir
+
+    def __del__(self):
+        for resource in self.resources:
+            if os.path.isdir(resource):
+                shutil.rmtree(resource)
 
     @property
     def stderr(self):
