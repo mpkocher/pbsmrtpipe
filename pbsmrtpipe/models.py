@@ -407,7 +407,6 @@ class Task(object):
     def __del__(self):
         for resource in self.resources:
             if os.path.isdir(resource):
-                print "cleaning up " + resource
                 shutil.rmtree(resource)
 
     @property
