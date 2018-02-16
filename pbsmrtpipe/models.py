@@ -92,7 +92,7 @@ class TaskResult(object):
                   k=self.__class__.__name__)
         return "<{k} id:{i} state:{s} runtime:{r} sec uuid:{u} >".format(**_d)
 
-_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
+_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json', 'tasks_report']
 JobResources = namedtuple("JobResources", _JOB_ATTRS)
 
 

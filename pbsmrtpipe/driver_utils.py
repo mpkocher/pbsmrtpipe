@@ -23,13 +23,13 @@ log = logging.getLogger(__name__)
 slog = logging.getLogger('status.' + __name__)
 
 
-def _to_table(tid, bg, nodes):
+def _to_table(tid, bg, nodes, title):
     """Create a table from File nodes or Entry nodes"""
     columns = [Column('id', header="Id"),
                Column('is_resolved', header='Is Resolved'),
                Column('path', header="Path")]
 
-    table = Table(tid, columns=columns)
+    table = Table(tid, title=title, columns=columns)
     for node in nodes:
         table.add_data_by_column_id('id', str(node))
         table.add_data_by_column_id('is_resolved', bg.node[node]['is_resolved'])
@@ -43,7 +43,7 @@ def _to_table(tid, bg, nodes):
     return table
 
 
-def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, error_message=None):
+def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, error_message=None, report_uuid=None):
     """ High Level Report of the workflow state
 
     Write the output of workflow datastore to pbreports report object
@@ -60,22 +60,25 @@ def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, erro
     """
     emsg = "" if error_message is None else error_message
 
-    attributes = [Attribute('was_successful', was_successful, name="Was Successful"),
-                  Attribute('total_run_time_sec', int(run_time), name="Walltime (sec)"),
-                  Attribute('error_message', emsg, name="Error Message"),
-                  Attribute('job_id', job_id, name="Job Id"),
-                  Attribute('job_state', state, name="Job State"),
-                  Attribute('job_output_dir', job_output_dir, name="Job Output Directory"),
-                  Attribute('pbsmrtpipe_version', pbsmrtpipe.get_version(), name="pbsmrtpipe Version")]
-
     columns = [Column('task_id', header='Task id'),
                Column('was_successful', header='Was Successful'),
                Column('state', header="Task State"),
                Column('run_time_sec', header="Run Time (sec)"),
-               Column('nproc', header="# of procs")]
+               Column('nproc', header="# of procs"),
+               Column("num_core_hours", header="Core Hours")
+               ]
 
-    tasks_table = Table('tasks', columns=columns)
+    tasks_table = Table('tasks', title="Tasks", columns=columns)
     for tnode in bg.all_task_type_nodes():
+
+        nproc = bg.node[tnode]['nproc']
+        # the task might not be completed.
+        run_time_sec = bg.node[tnode]['run_time']
+        if run_time_sec is None:
+            core_hours = 0.0
+        else:
+            core_hours = (run_time_sec / 60.0 / 60.0) * nproc
+
         tasks_table.add_data_by_column_id('task_id', str(tnode))
         tasks_table.add_data_by_column_id('nproc', bg.node[tnode]['nproc'])
         tasks_table.add_data_by_column_id('state', bg.node[tnode]['state'])
@@ -83,12 +86,27 @@ def _to_report(bg, job_output_dir, job_id, state, was_successful, run_time, erro
         # rt_ = bg.node[tnode]['run_time']
         # rtime = None if rt_ is None else int(rt_)
         tasks_table.add_data_by_column_id('run_time_sec', bg.node[tnode]['run_time'])
+        tasks_table.add_data_by_column_id('num_core_hours', round(core_hours, 4))
 
-    ep_table = _to_table("entry_points", bg, bg.entry_binding_nodes())
-    fnodes_table = _to_table("file_node", bg, bg.file_nodes())
+    total_core_hours = sum(tasks_table.get_column_by_id('num_core_hours').values)
 
+    attributes = [Attribute('was_successful', was_successful, name="Was Successful"),
+                  Attribute('total_run_time_sec', int(run_time), name="Walltime (sec)"),
+                  Attribute('error_message', emsg, name="Error Message"),
+                  Attribute('job_id', job_id, name="Job Id"),
+                  Attribute('job_state', state, name="Job State"),
+                  Attribute('job_output_dir', job_output_dir, name="Job Output Directory"),
+                  Attribute('pbsmrtpipe_version', pbsmrtpipe.get_version(), name="pbsmrtpipe Version"),
+                  Attribute('total_core_hours', round(total_core_hours, 4), "Total core hours")
+                  ]
+
+    ep_table = _to_table("entry_points", bg, bg.entry_binding_nodes(), "Entry Points")
+    fnodes_table = _to_table("file_node", bg, bg.file_nodes(), "File Nodes")
+
+    # this would be nice if the DataSet UUIDs of the entry-points are added to the
+    # dataset_uuids of the report.
     report = Report('pbsmrtpipe', tables=[tasks_table, ep_table, fnodes_table],
-                    attributes=attributes)
+                    attributes=attributes, uuid=report_uuid)
     return report
 
 
@@ -181,7 +199,7 @@ def _to_workflow_report(job_resources, bg, workflow_opts, task_opts, state, was_
     return Report("workflow_report", plotgroups=plot_groups)
 
 
-def datastore_to_report(ds):
+def datastore_to_report(ds, report_uuid=None):
     """
 
     :type ds: DataStore
@@ -215,7 +233,7 @@ def datastore_to_report(ds):
         t.add_data_by_column_id(to_i("created_at"), ds_file.created_at)
         t.add_data_by_column_id(to_i("modified_at"), ds_file.modified_at)
 
-    return Report("datastore_report", tables=[t], attributes=attrs)
+    return Report("datastore_report", tables=[t], attributes=attrs, uuid=report_uuid)
 
 
 def _get_images_in_dir(dir_name, formats=(".png", ".svg")):
@@ -223,7 +241,7 @@ def _get_images_in_dir(dir_name, formats=(".png", ".svg")):
     return [os.path.join(dir_name, i_) for i_ in os.listdir(dir_name) if any(i_.endswith(x) for x in formats)]
 
 
-def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg_, state_, was_successful_, run_time_sec):
+def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg_, state_, was_successful_, run_time_sec, report_uuid=None):
     """
     Write the main workflow level report.
 
@@ -247,8 +265,8 @@ def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, 
     # with open(workflow_json, 'w+') as f:
     #     f.write(json.dumps(json_graph.node_link_data(bg_)))
 
-    report_path = os.path.join(job_resources.workflow, 'report-tasks.json')
-    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
+    report_path = job_resources.tasks_report
+    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec, report_uuid=report_uuid)
     report_.write_json(report_path)
     R.write_report_with_html_extras(report_, os.path.join(job_resources.html, 'index.html'), job_resources.html)
 
@@ -259,13 +277,13 @@ def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, 
     R.write_report_to_html(setting_report, os.path.join(job_resources.html, 'workflow.html'))
 
 
-def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_successful_, run_time_sec):
+def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_successful_, run_time_sec, report_uuid=None):
     """
     This will only update the index.html with the current state of each task
     """
 
     report_path = os.path.join(job_resources.workflow, 'report-tasks.json')
-    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec)
+    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec, report_uuid=report_uuid)
     report_.write_json(report_path)
 
     R.write_report_to_html(report_, os.path.join(job_resources.html, 'index.html'))
@@ -411,7 +429,8 @@ def to_job_resources_and_create_dirs(root_job_dir):
                    f(root_job_dir, 'html', 'js'),
                    f(root_job_dir, 'html', 'images'),
                    os.path.join(root_job_dir, 'workflow', 'datastore.json'),
-                   os.path.join(root_job_dir, 'workflow', 'entry-points.json')]
+                   os.path.join(root_job_dir, 'workflow', 'entry-points.json'),
+                   os.path.join(root_job_dir, 'workflow', 'report-tasks.json')]
 
     return JobResources(*attr_values)
 
