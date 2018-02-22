@@ -384,5 +384,22 @@ def run_verify_dataset_filters(rtc):
     return 0
 
 
+@registry("dev_ccs_report", "0.1.0",
+          FileTypes.DS_CCS, FileTypes.REPORT,
+          is_distributed=False)
+def run_dev_ccs_report(rtc):
+    from pbcore.io import ConsensusReadSet
+    with ConsensusReadSet(rtc.task.input_files[0]) as ds:
+        ds.updateCounts()
+        attr = [
+            Attribute("number_of_records", value=ds.numRecords),
+            Attribute("total_length", value=ds.totalLength)
+        ]
+        report = Report("ccs_report", title="ConsensusReadSet XML Report",
+                        attributes=attr)
+        report.write_json(rtc.task.output_files[0])
+    return 0
+
+
 if __name__ == '__main__':
     sys.exit(registry_runner(registry, sys.argv[1:]))
