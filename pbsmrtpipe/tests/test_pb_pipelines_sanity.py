@@ -50,7 +50,7 @@ class TestPipelineSanity(unittest.TestCase):
 
                 bg = BU.binding_strs_to_binding_graph(rtasks, pipeline.all_bindings)
                 BU.validate_binding_graph_integrity(bg)
-
+                BU.validate_compatible_binding_file_types(bg)
                 validate_entry_points(d)
                 # pprint.pprint(d)
 
