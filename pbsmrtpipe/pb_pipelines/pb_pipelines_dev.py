@@ -131,7 +131,7 @@ def get_dev_local_chunk():
           ("pbsmrtpipe.tasks.dev_txt_to_fofn_report:1", "pbsmrtpipe.tasks.dev_fofn_example:1")]
 
     # Add a task to the chunked output of the txt
-    b5 = [("pbsmrtpipe.tasks.dev_txt_to_fofn_report:0", "pbsmrtpipe.tasks.dev_hello_worlder:0")]
+    b5 = [("pbsmrtpipe.tasks.dev_fofn_example:0", "pbsmrtpipe.tasks.dev_hello_worlder:0")]
 
     return b1 + b3 + b4 + b5
 
