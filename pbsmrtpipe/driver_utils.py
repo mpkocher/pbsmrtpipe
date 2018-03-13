@@ -241,7 +241,7 @@ def _get_images_in_dir(dir_name, formats=(".png", ".svg")):
     return [os.path.join(dir_name, i_) for i_ in os.listdir(dir_name) if any(i_.endswith(x) for x in formats)]
 
 
-def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg_, state_, was_successful_, run_time_sec, report_uuid=None):
+def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg_, state_, was_successful_, run_time_sec, report_uuid=None, error_message=None):
     """
     Write the main workflow level report.
 
@@ -266,7 +266,7 @@ def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, 
     #     f.write(json.dumps(json_graph.node_link_data(bg_)))
 
     report_path = job_resources.tasks_report
-    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec, report_uuid=report_uuid)
+    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec, report_uuid=report_uuid, error_message=error_message)
     report_.write_json(report_path)
     R.write_report_with_html_extras(report_, os.path.join(job_resources.html, 'index.html'), job_resources.html)
 
@@ -277,13 +277,13 @@ def write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, 
     R.write_report_to_html(setting_report, os.path.join(job_resources.html, 'workflow.html'))
 
 
-def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_successful_, run_time_sec, report_uuid=None):
+def write_update_main_workflow_report(job_id, job_resources, bg_, state_, was_successful_, run_time_sec, report_uuid=None, error_message=None):
     """
     This will only update the index.html with the current state of each task
     """
 
     report_path = os.path.join(job_resources.workflow, 'report-tasks.json')
-    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec, report_uuid=report_uuid)
+    report_ = _to_report(bg_, job_resources.root, job_id, state_, was_successful_, run_time_sec, report_uuid=report_uuid, error_message=error_message)
     report_.write_json(report_path)
 
     R.write_report_to_html(report_, os.path.join(job_resources.html, 'index.html'))
