@@ -912,7 +912,9 @@ def pipeline_template_to_dict(pipeline, rtasks):
 
 def _write_json(d, output_file, sort_keys=True):
     with open(output_file, 'w') as f:
-        f.write(json.dumps(d, sort_keys=sort_keys, indent=4))
+        # The ',' separator suppresses trailing whitespace.
+        f.write(json.dumps(d, sort_keys=sort_keys, indent=4, separators=(',', ': ')))
+        f.write('\n') # Add a trailing newline.
     return d
 
 

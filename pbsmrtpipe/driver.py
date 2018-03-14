@@ -373,6 +373,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # Running total of current number of slots/cpu's used
     total_nproc = 0
 
+    # Assign the workflow "task report" UUID, so this can be used in the datastore
+    task_report_dsf_uuid = str(uuid.uuid4())
+
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
 
@@ -411,8 +414,9 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
     # Define a bunch of util funcs to try to make the main driver while loop
     # more understandable. Not the greatest model.
-    def write_workflow_report_(bg_, current_state_, was_successful_):
-        return DU.write_update_main_workflow_report(job_id, job_resources, bg_, current_state_, was_successful_, _to_run_time())
+    def write_workflow_report_(bg_, current_state_, was_successful_, error_message=None):
+        return DU.write_update_main_workflow_report(job_id, job_resources, bg_, current_state_, was_successful_,
+                                                    _to_run_time(), report_uuid=task_report_dsf_uuid, error_message=error_message)
 
     def write_task_summary_report(bg_):
         task_summary_report = DU.to_task_summary_report(bg_)
@@ -490,6 +494,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
         services_log_update_progress("pbsmrtpipe::{i}".format(i=task_id_), WS.LogLevels.ERROR, mx)
         # is this detailed error message too large?
         services_update_job_task(task_result.task_uuid, TaskStates.FAILED, terse_msg, error_message=task_result.error_message)
+        return mx
 
     def has_available_slots(n):
         if max_total_nproc is None:
@@ -509,7 +514,16 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     # write initial report.
     DU.write_main_workflow_report(job_id, job_resources, workflow_opts, task_opts, bg, TaskStates.RUNNING, False, 0.0)
 
+    # now that we've written the file, create a DataStoreFile.
+    task_report_dsf = DataStoreFile(task_report_dsf_uuid, "pbsmrtpipe-report-tasks", FileTypes.REPORT.file_type_id,
+                                    job_resources.tasks_report,
+                                    name="Workflow Task Reports",
+                                    description="Workflow Task Report details")
+    ds.add(task_report_dsf)
+    ds.write_update_json(job_resources.datastore_json)
+
     exit_code = None
+    error_message = None
     # For book-keeping
     # This
     # task id -> tnode
@@ -631,7 +645,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
                 else:
                     # Process Non-Successful Task Result
                     B.update_task_state(bg, tnode_, result.state)
-                    _log_task_failure_and_call_services(result, result.task_id)
+                    error_message = _log_task_failure_and_call_services(result, result.task_id)
 
                     # let the remaining running jobs continue
                     w_ = workers.pop(result.task_id)
@@ -782,7 +796,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
 
         was_successful = B.was_workflow_successful(bg)
         s_ = TaskStates.SUCCESSFUL if was_successful else TaskStates.FAILED
-        write_workflow_report_(bg, s_, was_successful)
+        write_workflow_report_(bg, s_, was_successful, error_message)
         # FIXME(nechols)(2016-11-30) very hacky workaround
         if was_successful:
             exit_code = GlobalConstants.EXIT_SUCCESS
@@ -800,7 +814,7 @@ def __exe_workflow(global_registry, ep_d, bg, task_opts, workflow_opts, output_d
     except Exception as e:
         slog.error("Unexpected error {e}. Writing reports and shutting down".format(e=str(e)))
         # update workflow reports to failed
-        write_workflow_report_(bg, TaskStates.FAILED, False)
+        write_workflow_report_(bg, TaskStates.FAILED, False, error_message)
         write_task_summary_report(bg)
         services_log_update_progress("pbsmrtpipe", WS.LogLevels.ERROR, "Error {e}".format(e=e))
         BU.write_binding_graph_images(bg, job_resources.workflow)

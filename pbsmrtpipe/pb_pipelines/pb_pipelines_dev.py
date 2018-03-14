@@ -131,7 +131,7 @@ def get_dev_local_chunk():
           ("pbsmrtpipe.tasks.dev_txt_to_fofn_report:1", "pbsmrtpipe.tasks.dev_fofn_example:1")]
 
     # Add a task to the chunked output of the txt
-    b5 = [("pbsmrtpipe.tasks.dev_txt_to_fofn_report:0", "pbsmrtpipe.tasks.dev_hello_worlder:0")]
+    b5 = [("pbsmrtpipe.tasks.dev_fofn_example:0", "pbsmrtpipe.tasks.dev_hello_worlder:0")]
 
     return b1 + b3 + b4 + b5
 
@@ -223,3 +223,15 @@ def get_verify_sample_names():
 @dev_register("dev_subreads_chunk", "Verify chunking", tags=("subreads",))
 def get_subreads_chunk():
     return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_subreads_to_txt:0")]
+
+@dev_register("dev_verify_dataset_filters", "Verify dataset filters", tags=("subreads",))
+def get_verify_dataset_filters():
+    return [(Constants.ENTRY_DS_SUBREAD, "pbsmrtpipe.tasks.dev_verify_dataset_filters:0")]
+
+
+@dev_register("dev_diagnostic_ccs", "ConsensusReadSet diagnostic pipeline",
+              tags=("ccs",))
+def get_dev_diagnostic_ccs():
+    return [
+        (Constants.ENTRY_DS_CCS, "pbsmrtpipe.tasks.dev_ccs_report:0")
+    ]

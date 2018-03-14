@@ -1,5 +1,6 @@
 from collections import namedtuple
 import logging
+import shutil
 import json
 import os
 import collections
@@ -92,7 +93,7 @@ class TaskResult(object):
                   k=self.__class__.__name__)
         return "<{k} id:{i} state:{s} runtime:{r} sec uuid:{u} >".format(**_d)
 
-_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json']
+_JOB_ATTRS = ['root', 'workflow', 'html', 'logs', 'tasks', 'css', 'js', 'images', 'datastore_json', 'entry_points_json', 'tasks_report']
 JobResources = namedtuple("JobResources", _JOB_ATTRS)
 
 
@@ -402,6 +403,11 @@ class Task(object):
 
         # Task output dir
         self.output_dir = output_dir
+
+    def __del__(self):
+        for resource in self.resources:
+            if os.path.isdir(resource):
+                shutil.rmtree(resource)
 
     @property
     def stderr(self):
