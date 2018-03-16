@@ -935,8 +935,27 @@ def write_pipeline_template_to_avro(pipeline, rtasks_d, output_file):
     return _write_avro(PT_SCHEMA, d, output_file)
 
 
+def canonicalize_pipeline_template(d):
+    """Sort lists canonically so the pipeline template file will be easier to diff/debug.
+    List elements under the dict d may be modified.
+    """
+    # We could safely trap errors, but we prefer to see them clearly.
+    bindings = d['bindings']
+    bindings.sort(key=lambda v: (v['in']['taskTypeId'], v['in']['index']))
+    #taskOptions = d['taskOptions']
+    #taskOptions.sort(key=lambda v: v['id']) # already sorted
+    tags = d['tags']
+    tags.sort() # just strings
+    entryPoints = d['entryPoints']
+    entryPoints.sort(key=lambda v: v['entryId']) # usually just 1
+    for ep in entryPoints:
+        etasks = ep['tasks']
+        etasks.sort(key=lambda v: (v['taskTypeId'], v['index']))
+
+
 def write_pipeline_template_to_json(pipeline, rtasks_d, output_file):
     d = pipeline_template_to_dict(pipeline, rtasks_d)
+    canonicalize_pipeline_template(d)
     return _write_json(_validate_with_schema(PT_SCHEMA, d), output_file)
 
 
