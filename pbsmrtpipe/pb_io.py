@@ -1209,7 +1209,7 @@ def tool_contract_to_meta_task(tc, max_nchunks):
     input_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.input_file_types])
     output_types = validate_provided_file_types([_get_ft(x.file_type_id) for x in tc.task.output_file_types])
     _spe = os.path.splitext
-    output_file_names = [ (_spe(x.default_name)[0], ft.ext) for x, ft in zip(tc.task.output_file_types, output_types) ]
+    output_file_names = [ (x.default_name, ft.ext) for x, ft in zip(tc.task.output_file_types, output_types) ]
 
     #
     task_type = validate_task_type(tc.task.is_distributed)
