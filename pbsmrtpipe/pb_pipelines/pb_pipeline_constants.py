@@ -24,6 +24,7 @@ class Constants(object):
     ENTRY_DS_ALIGN = to_entry("eid_alignment")
     ENTRY_DS_CCS = to_entry("eid_ccs")
     ENTRY_DS_GMAPREF = to_entry("eid_gmapref_dataset")
+    ENTRY_DS_TRANSCRIPT = to_entry("eid_transcript")
 
     # This should only be used for internal use
     ENTRY_COND_JSON = to_entry("cond_json")
