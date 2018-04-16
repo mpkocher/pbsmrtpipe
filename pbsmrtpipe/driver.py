@@ -21,7 +21,7 @@ from pbcommand.pb_io import (write_resolved_tool_contract,
 from pbcommand.pb_io.tool_contract_io import write_resolved_tool_contract_avro
 from pbcommand.utils import log_traceback, nfs_exists_check
 from pbcommand.models import (FileTypes, DataStoreFile)
-from pbcommand.services.service_access_layer import JobServiceClient
+from pbcommand.services._service_access_layer import JobServiceClient
 from pbcore.io import getDataSetUuid
 
 import pbsmrtpipe
