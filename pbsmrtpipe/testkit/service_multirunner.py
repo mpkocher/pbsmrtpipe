@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 class Constants(object):
     PORT = int(os.environ.get("PB_SERVICE_PORT", "8081"))
-    HOST = os.environ.get("PB_SERVICE_HOST", "http://localhost")
+    HOST = os.environ.get("PB_SERVICE_HOST", "localhost")
     EXE = "pbtestkit-service-runner"
     NPROC = 1
     MISC_OPTS = ""
