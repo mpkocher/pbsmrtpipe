@@ -217,7 +217,8 @@ def run_show_templates(avro_output_dir=None, json_output_dir=None,
 
 
 def add_run_show_templates_options(p):
-    add_log_level_option(p)
+    #add_log_level_option(p)
+    add_log_debug_option(p)
 
     def _to_h(m):
         return "Resolve, Validate and Output Registered pipeline templates to {m} files to output-dir".format(m=m)
