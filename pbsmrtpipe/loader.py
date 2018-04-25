@@ -70,7 +70,7 @@ def _get_env_path_if_defined(env_var):
         if os.path.isdir(path):
             return os.path.abspath(path)
         else:
-            warnings.warn("Skipping loading contracts from {e} Enable to find {p}".format(e=env_var, p=path))
+            warnings.warn("Skipping loading contracts from {e} Unable to find {p}".format(e=env_var, p=path))
 
     return None
 

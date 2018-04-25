@@ -14,9 +14,9 @@ from pbcommand.models.common import TaskOptionTypes
 from pbcommand.cli import (get_default_argparser_with_base_opts,
                            pacbio_args_runner)
 from pbcommand.utils import setup_log
-from pbcommand.services import ServiceAccessLayer, ServiceEntryPoint
+from pbcommand.services import ServiceEntryPoint
+from pbcommand.services._service_access_layer import get_smrtlink_client
 from pbcommand.services.cli import run_analysis_job
-import pbcommand.services
 
 from pbsmrtpipe.pb_io import parse_pipeline_preset_xml, parse_pipeline_preset_json, validate_raw_task_options
 import pbsmrtpipe.loader as L
@@ -163,7 +163,8 @@ def run_services_testkit_job(host, port, testkit_cfg,
                              nunit_out="nunit_out.xml",
                              ignore_test_failures=False,
                              time_out=1800, sleep_time=2,
-                             import_only=False, test_job_id=None):
+                             import_only=False, test_job_id=None,
+                             user=None, password=None):
     """
     Given a testkit.cfg and host/port parameters:
         1. convert the .cfg to a JSON file
@@ -171,7 +172,7 @@ def run_services_testkit_job(host, port, testkit_cfg,
            until it finishes
         3. run the standard test suite on the job output
     """
-    sal = ServiceAccessLayer(host, port, sleep_time=sleep_time)
+    sal = get_smrtlink_client(host, port, user, password)
     if test_job_id is not None:
         engine_job = sal.get_job_by_id(test_job_id)
         return run_butler_tests_from_cfg(
@@ -225,7 +226,9 @@ def args_runner(args):
         time_out=args.time_out,
         sleep_time=args.sleep,
         import_only=args.import_only,
-        test_job_id=args.test_job_id)
+        test_job_id=args.test_job_id,
+        user=args.user,
+        password=args.password)
 
 
 def get_parser():
@@ -234,10 +237,17 @@ def get_parser():
         description=__doc__)
     p.add_argument("testkit_cfg")
     p.add_argument("-u", "--host", dest="host", action="store",
-                   default=os.environ.get("PB_SERVICE_HOST", "http://localhost"))
+                   default=os.environ.get("PB_SERVICE_HOST", "localhost"),
+                   help="Hostname of SMRT Link server.  If this is anything other than 'localhost' you must supply authentication.")
     p.add_argument("-p", "--port", dest="port", action="store", type=int,
                    default=int(os.environ.get("PB_SERVICE_PORT", "8081")),
                    help="Services port number")
+    p.add_argument("--user", dest="user", action="store",
+                   default=os.environ.get("PB_SERVICE_AUTH_USER", None),
+                   help="User to authenticate with (if using HTTPS)")
+    p.add_argument("--password", dest="password", action="store",
+                   default=os.environ.get("PB_SERVICE_AUTH_PASSWORD", None),
+                   help="Password to authenticate with (if using HTTPS)")
     p.add_argument("-x", "--xunit", dest="xml_out", default="test-output.xml",
                    help="Output XUnit test results")
     p.add_argument("-n", "--nunit", dest="nunit_out", default="nunit_out.xml",

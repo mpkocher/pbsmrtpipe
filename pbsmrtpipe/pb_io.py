@@ -941,7 +941,7 @@ def canonicalize_pipeline_template(d):
     """
     # We could safely trap errors, but we prefer to see them clearly.
     bindings = d['bindings']
-    bindings.sort(key=lambda v: (v['in']['taskTypeId'], v['in']['index']))
+    bindings.sort(key=lambda v: (v['in']['taskTypeId'], v['in']['index'], v['in']['instanceId']))
     #taskOptions = d['taskOptions']
     #taskOptions.sort(key=lambda v: v['id']) # already sorted
     tags = d['tags']
